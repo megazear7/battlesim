@@ -225,7 +225,7 @@ class BattleSim extends connect(store)(LitElement) {
       <main role="main" class="main-content">
         <create-view class="page" ?active="${this._page === 'create'}"></create-view>
         <battle-view class="page" ?active="${this._page === 'battle'}"></battle-view>
-        <my-view404 class="page" ?active="${this._page === 'view404'}"></my-view404>
+        <view-404 class="page" ?active="${this._page === 'view-404'}"></view-404>
       </main>
 
       <footer>

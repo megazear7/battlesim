@@ -35,8 +35,8 @@ const loadPage = (page) => (dispatch) => {
       import('../components/battle-view.js');
       break;
     default:
-      page = 'view404';
-      import('../components/my-view404.js');
+      page = 'view-404';
+      import('../components/view-404.js');
   }
 
   dispatch(updatePage(page));
