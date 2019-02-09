@@ -200,7 +200,7 @@ class BattleSim extends connect(store)(LitElement) {
           @opened-changed="${this._drawerOpenedChanged}">
         <nav class="drawer-list">
           <a ?selected="${this._page === 'war'}" href="/war">War</a>
-          <a ?selected="${this._page === 'battle'}" href="/battle">battle</a>
+          <a ?selected="${this._page === 'battle'}" href="/battle">Battle</a>
           <a ?selected="${this._page === 'fight'}" href="/fight">Fight</a>
           <a ?selected="${this._page === 'rules'}" href="/rules">Rules</a>
         </nav>
