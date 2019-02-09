@@ -792,7 +792,7 @@ define(["exports","meta","require"],function(_exports,meta,_require){"use strict
           @opened-changed="${this._drawerOpenedChanged}">
         <nav class="drawer-list">
           <a ?selected="${"war"===this._page}" href="/war">War</a>
-          <a ?selected="${"battle"===this._page}" href="/create">battle</a>
+          <a ?selected="${"battle"===this._page}" href="/battle">battle</a>
           <a ?selected="${"fight"===this._page}" href="/fight">Fight</a>
           <a ?selected="${"rules"===this._page}" href="/rules">Rules</a>
         </nav>
