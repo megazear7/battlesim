@@ -29,7 +29,14 @@ class CreateView extends connect(store)(PageViewElement) {
       ButtonSharedStyles,
       css`
         #added-message {
-          display: none;
+          opacity: 0;
+          color: green;
+          transition: opacity 300ms;
+        }
+        #error-message {
+          opacity: 0;
+          color: red;
+          transition: opacity 300ms;
         }
       `
     ];
@@ -56,6 +63,7 @@ class CreateView extends connect(store)(PageViewElement) {
           <button @click="${this._add}">Add</button>
           <br>
           <p id="added-message">Unit Added!</p>
+          <p id="error-message">All fields need valid input.</p>
         </div>
       </section>
     `;
@@ -91,15 +99,29 @@ class CreateView extends connect(store)(PageViewElement) {
     };
   }
 
+  get statsValid() {
+    let stats = this.stats;
+    return typeof stats.army !== 'undefined' &&
+      stats.name.length > 0 &&
+      stats.hp > 0 &&
+      stats.speed > 0 &&
+      stats.energy > 0;
+  }
+
   _add() {
-    store.dispatch(add(this.stats));
-    this.shadowRoot.getElementById('army').value = '';
-    this.shadowRoot.getElementById('name').value = '';
-    this.shadowRoot.getElementById('hp').value = '';
-    this.shadowRoot.getElementById('speed').value = '';
-    this.shadowRoot.getElementById('energy').value = '';
-    this.shadowRoot.getElementById('added-message').style.display = 'block';
-    setTimeout(() => this.shadowRoot.getElementById('added-message').style.display = 'none', 3000);
+    if (this.statsValid) {
+      store.dispatch(add(this.stats));
+      this.shadowRoot.getElementById('army').value = '0';
+      this.shadowRoot.getElementById('name').value = '';
+      this.shadowRoot.getElementById('hp').value = '';
+      this.shadowRoot.getElementById('speed').value = '';
+      this.shadowRoot.getElementById('energy').value = '';
+      this.shadowRoot.getElementById('added-message').style.opacity = '1';
+      setTimeout(() => this.shadowRoot.getElementById('added-message').style.opacity = '0', 3000);
+    } else {
+      this.shadowRoot.getElementById('error-message').style.opacity = '1';
+      setTimeout(() => this.shadowRoot.getElementById('error-message').style.opacity = '0', 3000);
+    }
   }
 }
 
