@@ -11,28 +11,6 @@ define(["./battle-sim.js"],function(_battleSim){"use strict";_battleSim.store.ad
         }
       `]}render(){return _battleSim.html`
       <section>
-        <h2>Add Unit</h2>
-        <div>
-          <select id="army">
-            <option value="0">Brittish</option>
-            <option value="1">Americans</option>
-          </select>
-          <br>
-          <input id="name" type="text" placeholder="Name"></input>
-          <br>
-          <input id="hp" type="number" placeholder="HP"></input>
-          <br>
-          <input id="speed" type="number" placeholder="Speed"></input>
-          <br>
-          <input id="energy" type="number" placeholder="Energy"></input>
-          <br>
-          <button @click="${this._add}">Add</button>
-          <br>
-          <p id="added-message">Unit Added!</p>
-          <p id="error-message">All fields need valid input.</p>
-        </div>
-      </section>
-      <section>
         <div>
           <h3>${this._army0Name}</h3>
           ${(0,_battleSim.repeat)(this._army0Units,({index,unit})=>_battleSim.html`
@@ -52,6 +30,28 @@ define(["./battle-sim.js"],function(_battleSim){"use strict";_battleSim.store.ad
               <button class="btn-link" @click="${this._remove}">Remove</button>
             </div>
           `)}
+        </div>
+      </section>
+      <section>
+        <h2>Add Unit</h2>
+        <div>
+          <select id="army">
+            <option value="0">Brittish</option>
+            <option value="1">Americans</option>
+          </select>
+          <br>
+          <input id="name" type="text" placeholder="Name"></input>
+          <br>
+          <input id="hp" type="number" placeholder="HP"></input>
+          <br>
+          <input id="speed" type="number" placeholder="Speed"></input>
+          <br>
+          <input id="energy" type="number" placeholder="Energy"></input>
+          <br>
+          <button @click="${this._add}">Add</button>
+          <br>
+          <p id="added-message">Unit Added!</p>
+          <p id="error-message">All fields need valid input.</p>
         </div>
       </section>
     `}get army(){return parseInt(this.shadowRoot.getElementById("army").value)}get name(){return this.shadowRoot.getElementById("name").value}get hp(){return parseInt(this.shadowRoot.getElementById("hp").value)}get speed(){return parseInt(this.shadowRoot.getElementById("speed").value)}get energy(){return parseInt(this.shadowRoot.getElementById("energy").value)}get stats(){return{army:this.army,name:this.name,hp:this.hp,speed:this.speed,energy:this.energy}}get statsValid(){let stats=this.stats;return"undefined"!==typeof stats.army&&0<stats.name.length&&0<stats.hp&&0<stats.speed&&0<stats.energy}_remove(e){_battleSim.store.dispatch((0,_battleSim.remove)(e.target.closest(".unit").dataset.index))}_add(){if(this.statsValid){_battleSim.store.dispatch((0,_battleSim.add)(this.stats));this.shadowRoot.getElementById("army").value="0";this.shadowRoot.getElementById("name").value="";this.shadowRoot.getElementById("hp").value="";this.shadowRoot.getElementById("speed").value="";this.shadowRoot.getElementById("energy").value="";this.shadowRoot.getElementById("added-message").style.opacity="1";setTimeout(()=>this.shadowRoot.getElementById("added-message").style.opacity="0",3e3)}else{this.shadowRoot.getElementById("error-message").style.opacity="1";setTimeout(()=>this.shadowRoot.getElementById("error-message").style.opacity="0",3e3)}}stateChanged(state){let units=state.battle.units.map((unit,index)=>({index,unit}));this._army0Units=units.filter(({unit})=>0===unit.army);this._army1Units=units.filter(({unit})=>1===unit.army);this._army0Name=state.battle.armies[0].name;this._army1Name=state.battle.armies[1].name}}window.customElements.define("battle-view",BattleView)});
