@@ -47,9 +47,18 @@ class FightView extends connect(store)(PageViewElement) {
         <div>
           <div id="unit">${this._activeUnit.name}</div>
           <div id="army">Army: ${this._army.name}</div>
-          <div>HP: ${this._activeUnit.hp}</div>
-          <div>Speed: ${this._activeUnit.speed}</div>
-          <div>Energy: ${this._activeUnit.energy}</div>
+        </div>
+        <p>Show unit status textual description.</p>
+        <p>Show unit description. i.e. experience level, weaponry, etc...</p>
+        <p>Dont show situational details until after the user selects an action.
+          Upon selecting an action they are then given the fields that they need to input data for and given extra info such as how far they can move or fire, etc...
+          After submitting the action they are told the result such as if any unit took casualties or if the unit refused etc...
+          and if any follow up actions are needed such as retreats or remove a unit from  the board, etc...</p>
+        <div>
+          <button @click="${this._rest}">Rest</button>
+          <button @click="${this._move}">Move</button>
+          <button @click="${this._charge}">Charge</button>
+          <button @click="${this._fire}">Fire</button>
         </div>
         <div id="situation">
           Distance:
@@ -66,13 +75,10 @@ class FightView extends connect(store)(PageViewElement) {
           <input id="uphill" type="checkbox">Uphill</input>
           <br>
           <input id="terrain" type="checkbox">Difficult Terrain</input>
-        </div>
         <div>
-          <button @click="${this._rest}">Rest</button>
-          <button @click="${this._move}">Move</button>
-          <button @click="${this._charge}">Charge</button>
-          <button @click="${this._fire}">Fire</button>
+          <button @click="${this._takeAction}">Take Action</button>
         </div>
+
       </section>
     `;
   }
@@ -100,6 +106,10 @@ class FightView extends connect(store)(PageViewElement) {
       terrain: this.terrain,
       target: this.target
     }
+  }
+
+  _takeAction() {
+    // TODO
   }
 
   _move() {

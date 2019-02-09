@@ -31,7 +31,7 @@ class WarView extends connect(store)(PageViewElement) {
     return html`
       <section>
         <p>You will be able to create new battles and select a battle to play from here</p>
-        <p>TODO: List battles</p>
+        <p>TODO: List battles and make them selectable. Upon selecting a battle it becomes the active battle and the other three views reference it for the battle overview, the fighting and taking actions, and the rules.</p>
       </section>
       <section>
         <div>
