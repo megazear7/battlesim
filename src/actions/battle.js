@@ -1,5 +1,6 @@
 export const REST = 'REST';
 export const MOVE = 'MOVE';
+export const CHARGE = 'CHARGE';
 
 export const rest = () => {
   return {
@@ -10,6 +11,13 @@ export const rest = () => {
 export const move = (distance) => {
   return {
     type: MOVE,
+    distance
+  };
+};
+
+export const charge = (distance) => {
+  return {
+    type: CHARGE,
     distance
   };
 };
