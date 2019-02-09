@@ -32,7 +32,14 @@ const INITIAL_STATE = {
   ]
 };
 
-const battle = (state = INITIAL_STATE, action) => {
+let initialState = JSON.parse(localStorage.getItem("battle"));
+
+if (! initialState) {
+  initialState = INITIAL_STATE;
+}
+
+const battle = (state = initialState, action) => {
+  localStorage.setItem("battle", JSON.stringify(state));
   if (action.type === REST) {
     var oldActiveUnit = state.activeUnit;
     var newActiveUnit = oldActiveUnit >= state.units.length - 1 ? 0 : oldActiveUnit + 1;

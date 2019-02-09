@@ -152,11 +152,8 @@ class CreateView extends connect(store)(PageViewElement) {
   }
 
   stateChanged(state) {
-    console.log('test');
-    console.log(state.battle.units);
     this._army0Units = state.battle.units.filter(unit => unit.army === 0);
     this._army1Units = state.battle.units.filter(unit => unit.army === 1);
-    console.log(this._army0Units);
   }
 }
 
