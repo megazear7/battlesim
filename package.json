@@ -8,7 +8,7 @@
   "repository": "https://github.com/megazear7/battlesim",
   "scripts": {
     "start": "polymer serve",
-    "build": "polymer build; rm -rf docs; cp -r build/es6-bundled docs",
+    "build": "polymer build; cp -r build/es6-bundled docs",
     "test": "npm run test:unit && npm run test:integration",
     "test:integration": "mocha test/integration --timeout=10000",
     "test:unit": "polymer test --module-resolution=node --npm",

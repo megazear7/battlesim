@@ -8,6 +8,8 @@
 
 ### Deployment
 
+ALERT: The build removes the CNAME file causing the hosting to break!!!
+
 ```
 npm run build
 git add docs
