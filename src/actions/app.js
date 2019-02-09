@@ -34,6 +34,9 @@ const loadPage = (page) => (dispatch) => {
     case 'battle':
       import('../components/battle-view.js');
       break;
+    case 'rules':
+      import('../components/rules-view.js');
+      break;
     default:
       page = 'view-404';
       import('../components/view-404.js');

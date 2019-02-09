@@ -208,6 +208,7 @@ class BattleSim extends connect(store)(LitElement) {
         <nav class="toolbar-list">
           <a ?selected="${this._page === 'create'}" href="/create">Create</a>
           <a ?selected="${this._page === 'battle'}" href="/battle">Battle</a>
+          <a ?selected="${this._page === 'rules'}" href="/rules">Rules</a>
         </nav>
       </app-header>
 
@@ -218,6 +219,7 @@ class BattleSim extends connect(store)(LitElement) {
         <nav class="drawer-list">
           <a ?selected="${this._page === 'create'}" href="/create">Create</a>
           <a ?selected="${this._page === 'battle'}" href="/battle">Battle</a>
+          <a ?selected="${this._page === 'rules'}" href="/rules">Rules</a>
         </nav>
       </app-drawer>
 
@@ -225,6 +227,7 @@ class BattleSim extends connect(store)(LitElement) {
       <main role="main" class="main-content">
         <create-view class="page" ?active="${this._page === 'create'}"></create-view>
         <battle-view class="page" ?active="${this._page === 'battle'}"></battle-view>
+        <rules-view class="rules" ?active="${this._page === 'rules'}"></rules-view>
         <view-404 class="page" ?active="${this._page === 'view-404'}"></view-404>
       </main>
 
