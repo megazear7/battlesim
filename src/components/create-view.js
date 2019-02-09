@@ -8,7 +8,7 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
-import { html } from 'lit-element';
+import { html, css } from 'lit-element';
 import { PageViewElement } from './page-view-element.js';
 
 import { add } from '../actions/battle.js';
@@ -26,7 +26,12 @@ class CreateView extends connect(store)(PageViewElement) {
   static get styles() {
     return [
       SharedStyles,
-      ButtonSharedStyles
+      ButtonSharedStyles,
+      css`
+        #added-message {
+          display: none;
+        }
+      `
     ];
   }
 
@@ -49,6 +54,8 @@ class CreateView extends connect(store)(PageViewElement) {
           <input id="energy" type="number" placeholder="Energy"></input>
           <br>
           <button @click="${this._add}">Add</button>
+          <br>
+          <p id="added-message">Unit Added!</p>
         </div>
       </section>
     `;
@@ -86,6 +93,13 @@ class CreateView extends connect(store)(PageViewElement) {
 
   _add() {
     store.dispatch(add(this.stats));
+    this.shadowRoot.getElementById('army').value = '';
+    this.shadowRoot.getElementById('name').value = '';
+    this.shadowRoot.getElementById('hp').value = '';
+    this.shadowRoot.getElementById('speed').value = '';
+    this.shadowRoot.getElementById('energy').value = '';
+    this.shadowRoot.getElementById('added-message').style.display = 'block';
+    setTimeout(() => this.shadowRoot.getElementById('added-message').style.display = 'none', 3000);
   }
 }
 
