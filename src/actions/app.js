@@ -16,7 +16,7 @@ export const CLOSE_SNACKBAR = 'CLOSE_SNACKBAR';
 
 export const navigate = (path) => (dispatch) => {
   // Extract the page name from path.
-  const page = path === '/' ? 'create' : path.slice(1);
+  const page = path === '/' ? 'war' : path.slice(1);
 
   // Any other info you might want to extract from the path (like page type),
   // you can do here
@@ -36,6 +36,9 @@ const loadPage = (page) => (dispatch) => {
       break;
     case 'rules':
       import('../components/rules-view.js');
+      break;
+    case 'war':
+      import('../components/war-view.js');
       break;
     default:
       page = 'view-404';

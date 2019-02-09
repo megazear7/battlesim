@@ -195,36 +195,34 @@ class BattleSim extends connect(store)(LitElement) {
   }
 
   render() {
-    // Anything that's related to rendering should be done in here.
     return html`
-      <!-- Header -->
       <app-header condenses reveals effects="waterfall">
         <app-toolbar class="toolbar-top">
           <button class="menu-btn" title="Menu" @click="${this._menuButtonClicked}">${menuIcon}</button>
           <div main-title>${this.appTitle}</div>
         </app-toolbar>
 
-        <!-- This gets hidden on a small screen-->
         <nav class="toolbar-list">
+          <a ?selected="${this._page === 'war'}" href="/war">War</a>
           <a ?selected="${this._page === 'create'}" href="/create">Create</a>
           <a ?selected="${this._page === 'battle'}" href="/battle">Battle</a>
           <a ?selected="${this._page === 'rules'}" href="/rules">Rules</a>
         </nav>
       </app-header>
 
-      <!-- Drawer content -->
       <app-drawer
           .opened="${this._drawerOpened}"
           @opened-changed="${this._drawerOpenedChanged}">
         <nav class="drawer-list">
+          <a ?selected="${this._page === 'war'}" href="/war">War</a>
           <a ?selected="${this._page === 'create'}" href="/create">Create</a>
           <a ?selected="${this._page === 'battle'}" href="/battle">Battle</a>
           <a ?selected="${this._page === 'rules'}" href="/rules">Rules</a>
         </nav>
       </app-drawer>
 
-      <!-- Main content -->
       <main role="main" class="main-content">
+        <war-view class="page" ?active="${this._page === 'war'}"></war-view>
         <create-view class="page" ?active="${this._page === 'create'}"></create-view>
         <battle-view class="page" ?active="${this._page === 'battle'}"></battle-view>
         <rules-view class="rules" ?active="${this._page === 'rules'}"></rules-view>
