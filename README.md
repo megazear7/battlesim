@@ -1,6 +1,6 @@
 # Battle Sim
 
-> Computer managed table top battle simulation.
+> Computer managed historical combat for tabletop gaming.
 
 ### Development
 
@@ -9,7 +9,7 @@
 ### Deployment
 
 ```
-npm run build:static
+npm run build
 git add docs
 git commit -m "Updated build"
 git push origin master

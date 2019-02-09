@@ -2,16 +2,13 @@
   "name": "pwa-starter-kit",
   "version": "0.9.0",
   "contributors": [
-    "The Polymer Authors"
+    "Alex Lockhart"
   ],
   "license": "BSD-3-Clause",
-  "repository": "Polymer/pwa-starter-kit",
+  "repository": "https://github.com/megazear7/battlesim",
   "scripts": {
     "start": "polymer serve",
-    "build": "polymer build --auto-base-path && gulp prpl-server",
-    "build:static": "polymer build; rm -rf docs; cp -r build/es5-bundled docs",
-    "serve": "prpl-server --root server/build",
-    "serve:static": "polymer serve --port 5000 build/es5-bundled",
+    "build": "polymer build; rm -rf docs; cp -r build/es5-bundled docs",
     "test": "npm run test:unit && npm run test:integration",
     "test:integration": "mocha test/integration --timeout=10000",
     "test:unit": "polymer test --module-resolution=node --npm",
