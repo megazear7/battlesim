@@ -31,6 +31,9 @@ class RulesView extends PageViewElement {
         <p>
           Here are the rules
         </p>
+        <p>
+          TODO show battle specific rules here.
+        </p>
       </section>
     `;
   }
