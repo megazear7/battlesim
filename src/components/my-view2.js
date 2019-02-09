@@ -8,7 +8,7 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
-import { html } from 'lit-element';
+import { html, css } from 'lit-element';
 import { repeat } from 'lit-html/directives/repeat';
 import { PageViewElement } from './page-view-element.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
@@ -27,6 +27,7 @@ store.addReducers({
 
 // These are the shared styles needed by this element.
 import { SharedStyles } from './shared-styles.js';
+import { ButtonSharedStyles } from './button-shared-styles.js';
 
 class MyView2 extends connect(store)(PageViewElement) {
   static get properties() {
@@ -39,7 +40,21 @@ class MyView2 extends connect(store)(PageViewElement) {
 
   static get styles() {
     return [
-      SharedStyles
+      SharedStyles,
+      ButtonSharedStyles,
+      css`
+        #unit {
+          text-align: center;
+          font-size: 2rem;
+        }
+        #army {
+          text-align: center;
+          color: var(--app-muted-text-color);
+        }
+        #situation {
+          margin-top: 1rem;
+        }
+      `
     ];
   }
 
@@ -47,30 +62,32 @@ class MyView2 extends connect(store)(PageViewElement) {
     return html`
       <section>
         <div>
-          <div>Army: ${this._army.name}</div>
-          <div>${this._activeUnit.name}</div>
+          <div id="unit">${this._activeUnit.name}</div>
+          <div id="army">Army: ${this._army.name}</div>
           <div>HP: ${this._activeUnit.hp}</div>
           <div>Speed: ${this._activeUnit.speed}</div>
           <div>Energy: ${this._activeUnit.energy}</div>
+        </div>
+        <div id="situation">
+          Distance:
           <input id="distance" type="number" placeholder="Distance"></input>
-          <br>
-          <input id="uphill" type="checkbox">Uphill</input>
-          <br>
-          <input id="terrain" type="checkbox">Difficult Terrain</input>
           <br>
           Target:
           <select id="target">
+            <option></option>
             ${repeat(this._targets, target => html`
               <option value="${target.id}">${target.unit.name}</option>
             `)}
           </select>
           <br>
+          <input id="uphill" type="checkbox">Uphill</input>
+          <br>
+          <input id="terrain" type="checkbox">Difficult Terrain</input>
+        </div>
+        <div>
           <button @click="${this._rest}">Rest</button>
-          <br>
           <button @click="${this._move}">Move</button>
-          <br>
           <button @click="${this._charge}">Charge</button>
-          <br>
           <button @click="${this._fire}">Fire</button>
         </div>
       </section>

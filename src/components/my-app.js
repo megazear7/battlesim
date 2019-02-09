@@ -55,7 +55,10 @@ class MyApp extends connect(store)(LitElement) {
 
           --app-primary-color: #E91E63;
           --app-secondary-color: #293237;
+          --app-grey-color: #c1c1c1;
+          --app-grey-color: #fff;
           --app-dark-text-color: var(--app-secondary-color);
+          --app-muted-text-color: #919191;
           --app-light-text-color: white;
           --app-section-even-color: #f7f7f7;
           --app-section-odd-color: white;
