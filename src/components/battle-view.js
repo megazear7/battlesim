@@ -42,28 +42,6 @@ class BattleView extends connect(store)(PageViewElement) {
   render() {
     return html`
       <section>
-        <h2>Add Unit</h2>
-        <div>
-          <select id="army">
-            <option value="0">Brittish</option>
-            <option value="1">Americans</option>
-          </select>
-          <br>
-          <input id="name" type="text" placeholder="Name"></input>
-          <br>
-          <input id="hp" type="number" placeholder="HP"></input>
-          <br>
-          <input id="speed" type="number" placeholder="Speed"></input>
-          <br>
-          <input id="energy" type="number" placeholder="Energy"></input>
-          <br>
-          <button @click="${this._add}">Add</button>
-          <br>
-          <p id="added-message">Unit Added!</p>
-          <p id="error-message">All fields need valid input.</p>
-        </div>
-      </section>
-      <section>
         <div>
           <h3>${this._army0Name}</h3>
           ${repeat(this._army0Units, ({index, unit}) => html`
@@ -83,6 +61,28 @@ class BattleView extends connect(store)(PageViewElement) {
               <button class="btn-link" @click="${this._remove}">Remove</button>
             </div>
           `)}
+        </div>
+      </section>
+      <section>
+        <h2>Add Unit</h2>
+        <div>
+          <select id="army">
+            <option value="0">Brittish</option>
+            <option value="1">Americans</option>
+          </select>
+          <br>
+          <input id="name" type="text" placeholder="Name"></input>
+          <br>
+          <input id="hp" type="number" placeholder="HP"></input>
+          <br>
+          <input id="speed" type="number" placeholder="Speed"></input>
+          <br>
+          <input id="energy" type="number" placeholder="Energy"></input>
+          <br>
+          <button @click="${this._add}">Add</button>
+          <br>
+          <p id="added-message">Unit Added!</p>
+          <p id="error-message">All fields need valid input.</p>
         </div>
       </section>
     `;

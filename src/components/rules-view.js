@@ -32,7 +32,8 @@ class RulesView extends PageViewElement {
           Here are the rules
         </p>
         <p>
-          TODO show battle specific rules here.
+          TODO show battle specific rules here. Each battle should have a corresponding ruleset.
+          The ruleset associated with the active battle should be shown here.
         </p>
       </section>
     `;
