@@ -30,7 +30,7 @@ import { SharedStyles } from './shared-styles.js';
 class MyView2 extends connect(store)(PageViewElement) {
   static get properties() {
     return {
-      _activeUnit: { type: Number }
+      _activeUnit: { type: Object }
     };
   }
 
@@ -45,7 +45,8 @@ class MyView2 extends connect(store)(PageViewElement) {
       <section>
         <p>Hello</p>
         <div>
-          ${this._activeUnit}
+          ${this._activeUnit.name}
+          <br>
           <button @click="${this._takeNextAction}">Next Action</button>
         </div>
       </section>
@@ -58,7 +59,8 @@ class MyView2 extends connect(store)(PageViewElement) {
 
   // This is called every time something is updated in the store.
   stateChanged(state) {
-    this._activeUnit = state.battle.activeUnit;
+    console.log(state);
+    this._activeUnit = state.battle.units[state.battle.activeUnit];
   }
 }
 

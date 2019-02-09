@@ -31,7 +31,7 @@ const INITIAL_STATE = {
 const battle = (state = INITIAL_STATE, action) => {
   if (action.type === TAKE_ACTION) {
     var oldActiveUnit = state.activeUnit;
-    var newActiveUnit = oldActiveUnit >= state.units.length
+    var newActiveUnit = oldActiveUnit >= state.units.length - 1
       ? 0 : oldActiveUnit + 1;
     return {
       ...state,
