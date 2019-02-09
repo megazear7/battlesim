@@ -81,20 +81,22 @@ class CreateView extends connect(store)(PageViewElement) {
       </section>
       <section>
         <div>
+          <h3>${this._army0Name}</h3>
           ${repeat(this._army0Units, ({index, unit}) => html`
             <div class="unit" data-index="${index}">
               ${unit.name}
-              <button @click="${this._remove}">Remove</button>
+              <button class="btn-link" @click="${this._remove}">Remove</button>
             </div>
           `)}
         </div>
       </section>
       <section>
         <div>
+          <h3>${this._army1Name}</h3>
           ${repeat(this._army1Units, ({index, unit}) => html`
             <div class="unit" data-index="${index}">
               ${unit.name}
-              <button @click="${this._remove}">Remove</button>
+              <button class="btn-link" @click="${this._remove}">Remove</button>
             </div>
           `)}
         </div>
@@ -165,6 +167,8 @@ class CreateView extends connect(store)(PageViewElement) {
     let units = state.battle.units.map((unit, index) => ({ index, unit }));
     this._army0Units = units.filter(({unit}) => unit.army === 0);
     this._army1Units = units.filter(({unit}) => unit.army === 1);
+    this._army0Name = state.battle.armies[0].name;
+    this._army1Name = state.battle.armies[1].name;
   }
 }
 

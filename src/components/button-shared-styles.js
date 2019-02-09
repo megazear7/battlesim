@@ -32,8 +32,18 @@ export const ButtonSharedStyles = css`
     margin-top: 1rem;
   }
 
-  button:hover, button:active {
+  button:hover {
     background: var(--app-primary-color);
     color: var(--app-light-text-color);
+  }
+
+  .btn-link {
+    border: 0;
+  }
+
+  .btn-link:hover {
+    background: none;
+    border: 0;
+    color: var(--app-primary-color);
   }
 `;
