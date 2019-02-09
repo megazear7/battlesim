@@ -832,9 +832,19 @@ define(["exports","meta","require"],function(_exports,meta,_require){"use strict
     margin-top: 1rem;
   }
 
-  button:hover, button:active {
+  button:hover {
     background: var(--app-primary-color);
     color: var(--app-light-text-color);
+  }
+
+  .btn-link {
+    border: 0;
+  }
+
+  .btn-link:hover {
+    background: none;
+    border: 0;
+    color: var(--app-primary-color);
   }
 `;_exports.ButtonSharedStyles=ButtonSharedStyles;var buttonSharedStyles={ButtonSharedStyles:ButtonSharedStyles};_exports.$buttonSharedStyles=buttonSharedStyles;class PageViewElement extends LitElement{shouldUpdate(){return this.active}static get properties(){return{active:{type:Boolean}}}}_exports.PageViewElement=PageViewElement;var pageViewElement={PageViewElement:PageViewElement};_exports.$pageViewElement=pageViewElement;const SharedStyles=css`
   :host {
