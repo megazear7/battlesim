@@ -9,7 +9,7 @@
   "scripts": {
     "start": "polymer serve",
     "build": "polymer build --auto-base-path && gulp prpl-server",
-    "build:static": "polymer build",
+    "build:static": "polymer build; rm -rf docs; cp -r build/es5-bundled docs",
     "serve": "prpl-server --root server/build",
     "serve:static": "polymer serve --port 5000 build/es5-bundled",
     "test": "npm run test:unit && npm run test:integration",
