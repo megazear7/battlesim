@@ -37,7 +37,7 @@
 /* eslint-disable indent, no-unused-vars, no-multiple-empty-lines, max-nested-callbacks, space-before-function-paren, quotes, comma-spacing */
 'use strict';
 
-var precacheConfig = [["index.html","c0b425ffaa895c888580390ddf1e4cdd"],["manifest.json","b920acb4df50b3dbc95acc75084bc665"],["src/components/battle-sim.js","e0510092bd5b8ee98b1da6efe99eec18"],["src/components/battle-view.js","013531bbe7cdae590f0c082202cfc193"],["src/components/create-view.js","42adb479f2480ea8d229c2d3bca3ba01"],["src/components/view-404.js","e2879b361013e19ce20a91f474d5a04e"]];
+var precacheConfig = [["index.html","c0b425ffaa895c888580390ddf1e4cdd"],["manifest.json","b920acb4df50b3dbc95acc75084bc665"],["src/components/battle-sim.js","33160ee2f8b4b30745d21908a2f1d9ab"],["src/components/battle-view.js","c82d58beaef3f913337a9c6b971df28f"],["src/components/create-view.js","7ea5a3f6d35cd7024aeaea95b26bd3eb"],["src/components/view-404.js","e2879b361013e19ce20a91f474d5a04e"]];
 var cacheName = 'sw-precache-v3--' + (self.registration ? self.registration.scope : '');
 
 

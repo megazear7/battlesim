@@ -1,4 +1,4 @@
-define(["./battle-sim.js"],function(_battleSim){"use strict";class CreateView extends(0,_battleSim.connect)(_battleSim.store)(_battleSim.PageViewElement){static get styles(){return[_battleSim.SharedStyles,_battleSim.ButtonSharedStyles,_battleSim.css`
+define(["./battle-sim.js"],function(_battleSim){"use strict";_battleSim.store.addReducers({battle:_battleSim.$battleDefault});class CreateView extends(0,_battleSim.connect)(_battleSim.store)(_battleSim.PageViewElement){static get properties(){return{_army0Units:{type:Object},_army1Units:{type:Object}}}static get styles(){return[_battleSim.SharedStyles,_battleSim.ButtonSharedStyles,_battleSim.css`
         #added-message {
           opacity: 0;
           color: green;
@@ -32,4 +32,24 @@ define(["./battle-sim.js"],function(_battleSim){"use strict";class CreateView ex
           <p id="error-message">All fields need valid input.</p>
         </div>
       </section>
-    `}get army(){return this.shadowRoot.getElementById("army").value}get name(){return this.shadowRoot.getElementById("name").value}get hp(){return this.shadowRoot.getElementById("hp").value}get speed(){return this.shadowRoot.getElementById("speed").value}get energy(){return this.shadowRoot.getElementById("energy").value}get stats(){return{army:this.army,name:this.name,hp:this.hp,speed:this.speed,energy:this.energy}}get statsValid(){let stats=this.stats;return"undefined"!==typeof stats.army&&0<stats.name.length&&0<stats.hp&&0<stats.speed&&0<stats.energy}_add(){if(this.statsValid){_battleSim.store.dispatch((0,_battleSim.add)(this.stats));this.shadowRoot.getElementById("army").value="0";this.shadowRoot.getElementById("name").value="";this.shadowRoot.getElementById("hp").value="";this.shadowRoot.getElementById("speed").value="";this.shadowRoot.getElementById("energy").value="";this.shadowRoot.getElementById("added-message").style.opacity="1";setTimeout(()=>this.shadowRoot.getElementById("added-message").style.opacity="0",3e3)}else{this.shadowRoot.getElementById("error-message").style.opacity="1";setTimeout(()=>this.shadowRoot.getElementById("error-message").style.opacity="0",3e3)}}}window.customElements.define("create-view",CreateView)});
+      <section>
+        <div>
+          ${(0,_battleSim.repeat)(this._army0Units,({index,unit})=>_battleSim.html`
+            <div class="unit" data-index="${index}">
+              ${unit.name}
+              <button @click="${this._remove}">Remove</button>
+            </div>
+          `)}
+        </div>
+      </section>
+      <section>
+        <div>
+          ${(0,_battleSim.repeat)(this._army1Units,({index,unit})=>_battleSim.html`
+            <div class="unit" data-index="${index}">
+              ${unit.name}
+              <button @click="${this._remove}">Remove</button>
+            </div>
+          `)}
+        </div>
+      </section>
+    `}get army(){return parseInt(this.shadowRoot.getElementById("army").value)}get name(){return this.shadowRoot.getElementById("name").value}get hp(){return parseInt(this.shadowRoot.getElementById("hp").value)}get speed(){return parseInt(this.shadowRoot.getElementById("speed").value)}get energy(){return parseInt(this.shadowRoot.getElementById("energy").value)}get stats(){return{army:this.army,name:this.name,hp:this.hp,speed:this.speed,energy:this.energy}}get statsValid(){let stats=this.stats;return"undefined"!==typeof stats.army&&0<stats.name.length&&0<stats.hp&&0<stats.speed&&0<stats.energy}_remove(e){_battleSim.store.dispatch((0,_battleSim.remove)(e.target.closest(".unit").dataset.index))}_add(){if(this.statsValid){_battleSim.store.dispatch((0,_battleSim.add)(this.stats));this.shadowRoot.getElementById("army").value="0";this.shadowRoot.getElementById("name").value="";this.shadowRoot.getElementById("hp").value="";this.shadowRoot.getElementById("speed").value="";this.shadowRoot.getElementById("energy").value="";this.shadowRoot.getElementById("added-message").style.opacity="1";setTimeout(()=>this.shadowRoot.getElementById("added-message").style.opacity="0",3e3)}else{this.shadowRoot.getElementById("error-message").style.opacity="1";setTimeout(()=>this.shadowRoot.getElementById("error-message").style.opacity="0",3e3)}}stateChanged(state){let units=state.battle.units.map((unit,index)=>({index,unit}));this._army0Units=units.filter(({unit})=>0===unit.army);this._army1Units=units.filter(({unit})=>1===unit.army)}}window.customElements.define("create-view",CreateView)});
