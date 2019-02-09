@@ -9,6 +9,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 */
 
 import { html, css } from 'lit-element';
+import { repeat } from 'lit-html/directives/repeat';
 import { PageViewElement } from './page-view-element.js';
 
 import { add } from '../actions/battle.js';
@@ -18,11 +19,23 @@ import { connect } from 'pwa-helpers/connect-mixin.js';
 // This element is connected to the Redux store.
 import { store } from '../store.js';
 
+import battle from '../reducers/battle.js';
+store.addReducers({
+  battle
+});
+
 // These are the shared styles needed by this element.
 import { SharedStyles } from './shared-styles.js';
 import { ButtonSharedStyles } from './button-shared-styles.js';
 
 class CreateView extends connect(store)(PageViewElement) {
+  static get properties() {
+    return {
+      _army0Units: { type: Object },
+      _army1Units: { type: Object },
+    };
+  }
+
   static get styles() {
     return [
       SharedStyles,
@@ -66,11 +79,25 @@ class CreateView extends connect(store)(PageViewElement) {
           <p id="error-message">All fields need valid input.</p>
         </div>
       </section>
+      <section>
+        <div>
+          ${repeat(this._army0Units, unit => html`
+            <div>${unit.name}</div>
+          `)}
+        </div>
+      </section>
+      <section>
+        <div>
+          ${repeat(this._army1Units, unit => html`
+            <div>${unit.name}</div>
+          `)}
+        </div>
+      </section>
     `;
   }
 
   get army() {
-    return this.shadowRoot.getElementById('army').value;
+    return parseInt(this.shadowRoot.getElementById('army').value);
   }
 
   get name() {
@@ -78,15 +105,15 @@ class CreateView extends connect(store)(PageViewElement) {
   }
 
   get hp() {
-    return this.shadowRoot.getElementById('hp').value;
+    return parseInt(this.shadowRoot.getElementById('hp').value);
   }
 
   get speed() {
-    return this.shadowRoot.getElementById('speed').value;
+    return parseInt(this.shadowRoot.getElementById('speed').value);
   }
 
   get energy() {
-    return this.shadowRoot.getElementById('energy').value;
+    return parseInt(this.shadowRoot.getElementById('energy').value);
   }
 
   get stats() {
@@ -122,6 +149,14 @@ class CreateView extends connect(store)(PageViewElement) {
       this.shadowRoot.getElementById('error-message').style.opacity = '1';
       setTimeout(() => this.shadowRoot.getElementById('error-message').style.opacity = '0', 3000);
     }
+  }
+
+  stateChanged(state) {
+    console.log('test');
+    console.log(state.battle.units);
+    this._army0Units = state.battle.units.filter(unit => unit.army === 0);
+    this._army1Units = state.battle.units.filter(unit => unit.army === 1);
+    console.log(this._army0Units);
   }
 }
 

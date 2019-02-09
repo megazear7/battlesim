@@ -95,7 +95,7 @@ class BattleView extends connect(store)(PageViewElement) {
   }
 
   get distance() {
-    return this.shadowRoot.getElementById('distance').value;
+    return parseInt(this.shadowRoot.getElementById('distance').value);
   }
 
   get uphill() {
