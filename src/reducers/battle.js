@@ -13,7 +13,8 @@ import {
   CHARGE,
   MOVE,
   FIRE,
-  ADD
+  ADD,
+  REMOVE
 } from '../actions/battle.js';
 
 const INITIAL_STATE = {
@@ -39,7 +40,7 @@ if (! initialState) {
 }
 
 const battle = (state = initialState, action) => {
-  localStorage.setItem("battle", JSON.stringify(state));
+  var newState = { ...state }
   if (action.type === REST) {
     var oldActiveUnit = state.activeUnit;
     var newActiveUnit = oldActiveUnit >= state.units.length - 1 ? 0 : oldActiveUnit + 1;
@@ -48,44 +49,29 @@ const battle = (state = initialState, action) => {
       activeUnit: newActiveUnit
     }
     newState.units[oldActiveUnit].energy += 10;
-    return {
-      ...state,
-      activeUnit: newActiveUnit
-    }
+
   } else if (action.type === MOVE) {
     var oldActiveUnit = state.activeUnit;
     var newActiveUnit = oldActiveUnit >= state.units.length - 1 ? 0 : oldActiveUnit + 1;
-    var newState = {
-      ...state,
-      activeUnit: newActiveUnit
-    }
+    newState.activeUnit = newActiveUnit;
     newState.units[oldActiveUnit].energy -= action.situation.distance;
-    return newState;
   } else if (action.type === CHARGE) {
     var oldActiveUnit = state.activeUnit;
     var newActiveUnit = oldActiveUnit >= state.units.length - 1 ? 0 : oldActiveUnit + 1;
-    var newState = {
-      ...state,
-      activeUnit: newActiveUnit
-    }
+    newState.activeUnit = newActiveUnit;
     newState.units[oldActiveUnit].energy -= action.situation.distance * 2;
-    return newState;
   } else if (action.type === FIRE) {
     var oldActiveUnit = state.activeUnit;
     var newActiveUnit = oldActiveUnit >= state.units.length - 1 ? 0 : oldActiveUnit + 1;
-    var newState = {
-      ...state,
-      activeUnit: newActiveUnit
-    }
+    newState.activeUnit = newActiveUnit;
     newState.units[oldActiveUnit].energy -= 10;
-    return newState;
   } else if (action.type === ADD) {
-    var newState = { ...state }
     newState.units.push(action.stats);
-    return newState;
-  } else {
-    return state;
+  } else if (action.type === REMOVE) {
+    newState.units.splice(action.index, 1);
   }
+  localStorage.setItem("battle", JSON.stringify(newState));
+  return newState
 };
 
 export default battle;

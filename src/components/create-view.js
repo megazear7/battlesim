@@ -12,7 +12,7 @@ import { html, css } from 'lit-element';
 import { repeat } from 'lit-html/directives/repeat';
 import { PageViewElement } from './page-view-element.js';
 
-import { add } from '../actions/battle.js';
+import { add, remove } from '../actions/battle.js';
 
 import { connect } from 'pwa-helpers/connect-mixin.js';
 
@@ -81,15 +81,21 @@ class CreateView extends connect(store)(PageViewElement) {
       </section>
       <section>
         <div>
-          ${repeat(this._army0Units, unit => html`
-            <div>${unit.name}</div>
+          ${repeat(this._army0Units, ({index, unit}) => html`
+            <div class="unit" data-index="${index}">
+              ${unit.name}
+              <button @click="${this._remove}">Remove</button>
+            </div>
           `)}
         </div>
       </section>
       <section>
         <div>
-          ${repeat(this._army1Units, unit => html`
-            <div>${unit.name}</div>
+          ${repeat(this._army1Units, ({index, unit}) => html`
+            <div class="unit" data-index="${index}">
+              ${unit.name}
+              <button @click="${this._remove}">Remove</button>
+            </div>
           `)}
         </div>
       </section>
@@ -135,6 +141,10 @@ class CreateView extends connect(store)(PageViewElement) {
       stats.energy > 0;
   }
 
+  _remove(e) {
+    store.dispatch(remove(e.target.closest('.unit').dataset.index));
+  }
+
   _add() {
     if (this.statsValid) {
       store.dispatch(add(this.stats));
@@ -152,8 +162,9 @@ class CreateView extends connect(store)(PageViewElement) {
   }
 
   stateChanged(state) {
-    this._army0Units = state.battle.units.filter(unit => unit.army === 0);
-    this._army1Units = state.battle.units.filter(unit => unit.army === 1);
+    let units = state.battle.units.map((unit, index) => ({ index, unit }));
+    this._army0Units = units.filter(({unit}) => unit.army === 0);
+    this._army1Units = units.filter(({unit}) => unit.army === 1);
   }
 }
 

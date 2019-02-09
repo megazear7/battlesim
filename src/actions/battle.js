@@ -3,6 +3,7 @@ export const MOVE = 'MOVE';
 export const CHARGE = 'CHARGE';
 export const FIRE = 'FIRE';
 export const ADD = 'ADD';
+export const REMOVE = 'REMOVE';
 
 export const rest = () => {
   return {
@@ -35,5 +36,12 @@ export const add = (stats) => {
   return {
     type: ADD,
     stats
+  };
+};
+
+export const remove = (index) => {
+  return {
+    type: REMOVE,
+    index
   };
 };
