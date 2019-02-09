@@ -31,8 +31,29 @@ class WarView extends connect(store)(PageViewElement) {
     return html`
       <section>
         <p>You will be able to create new battles and select a battle to play from here</p>
+        <p>TODO: List battles</p>
+      </section>
+      <section>
+        <div>
+          Name:
+          <input id="name" type="text" placeholder="Name the Battle"></input>
+          <br>
+          Battle:
+          <select id="target">
+            <option value="0">Generic Revolutionary War</option>
+            <option value="1">Bunker Hill</option>
+            <option value="2">Chelsea Creek</option>
+            <option value="3">Battle of Saint-Pierre</option>
+          </select>
+          <br>
+          <button @click="${this._create}">Create</button>
+        </div>
       </section>
     `;
+  }
+
+  _create() {
+    // TODO
   }
 
   stateChanged(state) {
