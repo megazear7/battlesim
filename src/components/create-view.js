@@ -33,12 +33,9 @@ class CreateView extends connect(store)(PageViewElement) {
   render() {
     return html`
       <section>
-        <h2>Create Battle</h2>
-      </section>
-      <section>
         <h2>Add Unit</h2>
         <div>
-          <select id="target">
+          <select id="army">
             <option value="0">Brittish</option>
             <option value="1">Americans</option>
           </select>
@@ -54,21 +51,36 @@ class CreateView extends connect(store)(PageViewElement) {
           <button @click="${this._add}">Add</button>
         </div>
       </section>
-      <section>
-        <div>
-          <a href="/view2">Begin Battle</a>
-        </div>
-      </section>
     `;
+  }
+
+  get army() {
+    return this.shadowRoot.getElementById('army').value;
+  }
+
+  get name() {
+    return this.shadowRoot.getElementById('name').value;
+  }
+
+  get hp() {
+    return this.shadowRoot.getElementById('hp').value;
+  }
+
+  get speed() {
+    return this.shadowRoot.getElementById('speed').value;
+  }
+
+  get energy() {
+    return this.shadowRoot.getElementById('energy').value;
   }
 
   get stats() {
     return {
-      army: 0,
-      name: "Test",
-      hp: 100,
-      speed: 50,
-      energy: 100
+      army: this.army,
+      name: this.name,
+      hp: this.hp,
+      speed: this.speed,
+      energy: this.energy
     };
   }
 
