@@ -12,7 +12,8 @@ import {
   REST,
   CHARGE,
   MOVE,
-  FIRE
+  FIRE,
+  ADD
 } from '../actions/battle.js';
 
 const INITIAL_STATE = {
@@ -70,6 +71,10 @@ const battle = (state = INITIAL_STATE, action) => {
       activeUnit: newActiveUnit
     }
     newState.units[oldActiveUnit].energy -= 10;
+    return newState;
+  } else if (action.type === ADD) {
+    var newState = { ...state }
+    newState.units.push(action.stats);
     return newState;
   } else {
     return state;

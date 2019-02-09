@@ -11,13 +11,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 import { html } from 'lit-element';
 import { PageViewElement } from './page-view-element.js';
 
+import { add } from '../actions/battle.js';
+
+import { connect } from 'pwa-helpers/connect-mixin.js';
+
+// This element is connected to the Redux store.
+import { store } from '../store.js';
+
 // These are the shared styles needed by this element.
 import { SharedStyles } from './shared-styles.js';
+import { ButtonSharedStyles } from './button-shared-styles.js';
 
-class CreateView extends PageViewElement {
+class CreateView extends connect(store)(PageViewElement) {
   static get styles() {
     return [
-      SharedStyles
+      SharedStyles,
+      ButtonSharedStyles
     ];
   }
 
@@ -28,6 +37,22 @@ class CreateView extends PageViewElement {
       </section>
       <section>
         <h2>Add Unit</h2>
+        <div>
+          <select id="target">
+            <option value="0">Brittish</option>
+            <option value="1">Americans</option>
+          </select>
+          <br>
+          <input id="name" type="text" placeholder="Name"></input>
+          <br>
+          <input id="hp" type="number" placeholder="HP"></input>
+          <br>
+          <input id="speed" type="number" placeholder="Speed"></input>
+          <br>
+          <input id="energy" type="number" placeholder="Energy"></input>
+          <br>
+          <button @click="${this._add}">Add</button>
+        </div>
       </section>
       <section>
         <div>
@@ -35,6 +60,20 @@ class CreateView extends PageViewElement {
         </div>
       </section>
     `;
+  }
+
+  get stats() {
+    return {
+      army: 0,
+      name: "Test",
+      hp: 100,
+      speed: 50,
+      energy: 100
+    };
+  }
+
+  _add() {
+    store.dispatch(add(this.stats));
   }
 }
 
