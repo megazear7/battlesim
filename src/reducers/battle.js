@@ -11,7 +11,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 import {
   REST,
   CHARGE,
-  MOVE
+  MOVE,
+  FIRE
 } from '../actions/battle.js';
 
 const INITIAL_STATE = {
@@ -60,6 +61,15 @@ const battle = (state = INITIAL_STATE, action) => {
       activeUnit: newActiveUnit
     }
     newState.units[oldActiveUnit].energy -= action.distance * 2;
+    return newState;
+  } else if (action.type === FIRE) {
+    var oldActiveUnit = state.activeUnit;
+    var newActiveUnit = oldActiveUnit >= state.units.length - 1 ? 0 : oldActiveUnit + 1;
+    var newState = {
+      ...state,
+      activeUnit: newActiveUnit
+    }
+    newState.units[oldActiveUnit].energy -= 10;
     return newState;
   } else {
     return state;

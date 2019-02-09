@@ -16,7 +16,7 @@ import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
 
 // These are the actions needed by this element.
-import { rest, move, charge } from '../actions/battle.js';
+import { rest, move, charge, fire } from '../actions/battle.js';
 
 // We are lazy loading its reducer.
 import battle from '../reducers/battle.js';
@@ -56,6 +56,8 @@ class MyView2 extends connect(store)(PageViewElement) {
           <button @click="${this._move}">Move</button>
           <br>
           <button @click="${this._charge}">Charge</button>
+          <br>
+          <button @click="${this._fire}">Fire</button>
         </div>
       </section>
     `;
@@ -71,6 +73,10 @@ class MyView2 extends connect(store)(PageViewElement) {
 
   _rest() {
     store.dispatch(rest());
+  }
+
+  _fire() {
+    store.dispatch(fire());
   }
 
   // This is called every time something is updated in the store.
