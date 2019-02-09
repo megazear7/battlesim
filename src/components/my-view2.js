@@ -45,7 +45,9 @@ class MyView2 extends connect(store)(PageViewElement) {
       <section>
         <p>Hello</p>
         <div>
-          ${this._activeUnit.name}
+          <div>${this._activeUnit.name}</div>
+          <div>HP: ${this._activeUnit.hp}</div>
+          <div>Speed: ${this._activeUnit.speed}</div>
           <br>
           <button @click="${this._takeNextAction}">Next Action</button>
         </div>
