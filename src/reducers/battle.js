@@ -22,12 +22,12 @@ const INITIAL_STATE = {
     { name: "Americans" },
   ],
   units: [
-    { army: 0, name: "Red Coats", hp: 100, speed: 50, energy: 100, },
-    { army: 0, name: "Brittish Cavalry", hp: 100, speed: 70, energy: 100, },
-    { army: 0, name: "Red Coats", hp: 40, speed: 50, energy: 100, },
-    { army: 1, name: "Militia", hp: 30, speed: 60, energy: 100, },
-    { army: 1, name: "Continental Soldiers", hp: 80, speed: 40, energy: 100, },
-    { army: 1, name: "Militia", hp: 30, speed: 60, energy: 100, },
+    { army: 0, name: "15th Regiment (East Yorkshire)", hp: 100, speed: 50, energy: 100, },
+    { army: 0, name: "16th Cavalry (The Queen's Lancers)", hp: 100, speed: 70, energy: 100, },
+    { army: 0, name: "9th Regiment (Royal Norfolk)", hp: 40, speed: 50, energy: 100, },
+    { army: 1, name: "3rd Regiment of Militia", hp: 30, speed: 60, energy: 100, },
+    { army: 1, name: "Bradley's Regiment", hp: 80, speed: 40, energy: 100, },
+    { army: 1, name: "Waterbury's Regiment", hp: 30, speed: 60, energy: 100, },
   ]
 };
 
