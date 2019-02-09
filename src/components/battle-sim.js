@@ -34,7 +34,7 @@ import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import { menuIcon } from './my-icons.js';
 import './snack-bar.js';
 
-class MyApp extends connect(store)(LitElement) {
+class BattleSim extends connect(store)(LitElement) {
   static get properties() {
     return {
       appTitle: { type: String },
@@ -206,8 +206,8 @@ class MyApp extends connect(store)(LitElement) {
 
         <!-- This gets hidden on a small screen-->
         <nav class="toolbar-list">
-          <a ?selected="${this._page === 'view1'}" href="/view1">Create</a>
-          <a ?selected="${this._page === 'view2'}" href="/view2">Fight</a>
+          <a ?selected="${this._page === 'create'}" href="/create">Create</a>
+          <a ?selected="${this._page === 'battle'}" href="/battle">Battle</a>
         </nav>
       </app-header>
 
@@ -216,15 +216,15 @@ class MyApp extends connect(store)(LitElement) {
           .opened="${this._drawerOpened}"
           @opened-changed="${this._drawerOpenedChanged}">
         <nav class="drawer-list">
-          <a ?selected="${this._page === 'view1'}" href="/view1">Create</a>
-          <a ?selected="${this._page === 'view2'}" href="/view2">Fight</a>
+          <a ?selected="${this._page === 'create'}" href="/create">Create</a>
+          <a ?selected="${this._page === 'battle'}" href="/battle">Battle</a>
         </nav>
       </app-drawer>
 
       <!-- Main content -->
       <main role="main" class="main-content">
-        <my-view1 class="page" ?active="${this._page === 'view1'}"></my-view1>
-        <my-view2 class="page" ?active="${this._page === 'view2'}"></my-view2>
+        <create-view class="page" ?active="${this._page === 'create'}"></create-view>
+        <battle-view class="page" ?active="${this._page === 'battle'}"></battle-view>
         <my-view404 class="page" ?active="${this._page === 'view404'}"></my-view404>
       </main>
 
@@ -279,4 +279,4 @@ class MyApp extends connect(store)(LitElement) {
   }
 }
 
-window.customElements.define('my-app', MyApp);
+window.customElements.define('battle-sim', BattleSim);

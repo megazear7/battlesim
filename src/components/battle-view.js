@@ -29,7 +29,7 @@ store.addReducers({
 import { SharedStyles } from './shared-styles.js';
 import { ButtonSharedStyles } from './button-shared-styles.js';
 
-class MyView2 extends connect(store)(PageViewElement) {
+class BattleView extends connect(store)(PageViewElement) {
   static get properties() {
     return {
       _targets: { type: Object },
@@ -145,4 +145,4 @@ class MyView2 extends connect(store)(PageViewElement) {
   }
 }
 
-window.customElements.define('my-view2', MyView2);
+window.customElements.define('battle-view', BattleView);
