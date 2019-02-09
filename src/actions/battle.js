@@ -9,22 +9,23 @@ export const rest = () => {
   };
 };
 
-export const move = (distance) => {
+export const move = (situation) => {
   return {
     type: MOVE,
-    distance
+    situation
   };
 };
 
-export const charge = (distance) => {
+export const charge = (situation) => {
   return {
     type: CHARGE,
-    distance
+    situation
   };
 };
 
-export const fire = () => {
+export const fire = (situation) => {
   return {
-    type: FIRE
+    type: FIRE,
+    situation
   };
 };

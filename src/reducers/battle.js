@@ -51,7 +51,7 @@ const battle = (state = INITIAL_STATE, action) => {
       ...state,
       activeUnit: newActiveUnit
     }
-    newState.units[oldActiveUnit].energy -= action.distance;
+    newState.units[oldActiveUnit].energy -= action.situation.distance;
     return newState;
   } else if (action.type === CHARGE) {
     var oldActiveUnit = state.activeUnit;
@@ -60,7 +60,7 @@ const battle = (state = INITIAL_STATE, action) => {
       ...state,
       activeUnit: newActiveUnit
     }
-    newState.units[oldActiveUnit].energy -= action.distance * 2;
+    newState.units[oldActiveUnit].energy -= action.situation.distance * 2;
     return newState;
   } else if (action.type === FIRE) {
     var oldActiveUnit = state.activeUnit;

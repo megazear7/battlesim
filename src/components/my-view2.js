@@ -43,13 +43,16 @@ class MyView2 extends connect(store)(PageViewElement) {
   render() {
     return html`
       <section>
-        <p>Hello</p>
         <div>
           <div>${this._activeUnit.name}</div>
           <div>HP: ${this._activeUnit.hp}</div>
           <div>Speed: ${this._activeUnit.speed}</div>
           <div>Energy: ${this._activeUnit.energy}</div>
           <input id="distance" type="number" placeholder="Distance"></input>
+          <br>
+          <input id="uphill" type="checkbox">Uphill</input>
+          <br>
+          <input id="terrain" type="checkbox">Difficult Terrain</input>
           <br>
           <button @click="${this._rest}">Rest</button>
           <br>
@@ -63,12 +66,32 @@ class MyView2 extends connect(store)(PageViewElement) {
     `;
   }
 
+  get distance() {
+    return this.shadowRoot.getElementById('distance').value;
+  }
+
+  get uphill() {
+    return this.shadowRoot.getElementById('uphill').value === 'on';
+  }
+
+  get terrain() {
+    return this.shadowRoot.getElementById('terrain').value === 'on';
+  }
+
+  get situation() {
+    return {
+      distance: this.distance,
+      uphill: this.uphill,
+      terrain: this.terrain
+    }
+  }
+
   _move() {
-    store.dispatch(move(this.shadowRoot.getElementById('distance').value));
+    store.dispatch(move(this.situation));
   }
 
   _charge() {
-    store.dispatch(charge(this.shadowRoot.getElementById('distance').value));
+    store.dispatch(charge(this.situation));
   }
 
   _rest() {
@@ -76,7 +99,7 @@ class MyView2 extends connect(store)(PageViewElement) {
   }
 
   _fire() {
-    store.dispatch(fire());
+    store.dispatch(fire(this.situation));
   }
 
   // This is called every time something is updated in the store.
