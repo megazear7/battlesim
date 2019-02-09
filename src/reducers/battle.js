@@ -9,7 +9,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 */
 
 import {
-  TAKE_ACTION
+  REST,
+  MOVE
 } from '../actions/battle.js';
 
 const INITIAL_STATE = {
@@ -19,24 +20,37 @@ const INITIAL_STATE = {
     { name: "Americans" },
   ],
   units: [
-    { army: 0, name: "Red Coats", hp: 100, speed: 50 },
-    { army: 0, name: "Brittish Cavalry", hp: 100, speed: 70 },
-    { army: 0, name: "Red Coats", hp: 40, speed: 50 },
-    { army: 1, name: "Militia", hp: 30, speed: 60 },
-    { army: 1, name: "Continental Soldiers", hp: 80, speed: 40 },
-    { army: 1, name: "Militia", hp: 30, speed: 60 },
+    { army: 0, name: "Red Coats", hp: 100, speed: 50, energy: 100, },
+    { army: 0, name: "Brittish Cavalry", hp: 100, speed: 70, energy: 100, },
+    { army: 0, name: "Red Coats", hp: 40, speed: 50, energy: 100, },
+    { army: 1, name: "Militia", hp: 30, speed: 60, energy: 100, },
+    { army: 1, name: "Continental Soldiers", hp: 80, speed: 40, energy: 100, },
+    { army: 1, name: "Militia", hp: 30, speed: 60, energy: 100, },
   ]
 };
 
 const battle = (state = INITIAL_STATE, action) => {
-  if (action.type === TAKE_ACTION) {
+  if (action.type === REST) {
     var oldActiveUnit = state.activeUnit;
-    var newActiveUnit = oldActiveUnit >= state.units.length - 1
-      ? 0 : oldActiveUnit + 1;
+    var newActiveUnit = oldActiveUnit >= state.units.length - 1 ? 0 : oldActiveUnit + 1;
+    var newState = {
+      ...state,
+      activeUnit: newActiveUnit
+    }
+    newState.units[oldActiveUnit].energy += 10;
     return {
       ...state,
       activeUnit: newActiveUnit
     }
+  } else if (action.type === MOVE) {
+    var oldActiveUnit = state.activeUnit;
+    var newActiveUnit = oldActiveUnit >= state.units.length - 1 ? 0 : oldActiveUnit + 1;
+    var newState = {
+      ...state,
+      activeUnit: newActiveUnit
+    }
+    newState.units[oldActiveUnit].energy -= action.distance;
+    return newState;
   } else {
     return state;
   }

@@ -1,7 +1,15 @@
-export const TAKE_ACTION = 'TAKE_ACTION';
+export const REST = 'REST';
+export const MOVE = 'MOVE';
 
-export const takeAction = () => {
+export const rest = () => {
   return {
-    type: TAKE_ACTION
+    type: REST
+  };
+};
+
+export const move = (distance) => {
+  return {
+    type: MOVE,
+    distance
   };
 };

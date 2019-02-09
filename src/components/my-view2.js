@@ -16,7 +16,7 @@ import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
 
 // These are the actions needed by this element.
-import { takeAction } from '../actions/battle.js';
+import { rest, move } from '../actions/battle.js';
 
 // We are lazy loading its reducer.
 import battle from '../reducers/battle.js';
@@ -48,20 +48,27 @@ class MyView2 extends connect(store)(PageViewElement) {
           <div>${this._activeUnit.name}</div>
           <div>HP: ${this._activeUnit.hp}</div>
           <div>Speed: ${this._activeUnit.speed}</div>
+          <div>Energy: ${this._activeUnit.energy}</div>
           <br>
-          <button @click="${this._takeNextAction}">Next Action</button>
+          <button @click="${this._rest}">Rest</button>
+          <br>
+          <button @click="${this._move}">Move</button>
+          <input id="distance" type="number" placeholder="Distance"></input>
         </div>
       </section>
     `;
   }
 
-  _takeNextAction() {
-    store.dispatch(takeAction());
+  _move() {
+    store.dispatch(move(this.shadowRoot.getElementById('distance').value));
+  }
+
+  _rest() {
+    store.dispatch(rest());
   }
 
   // This is called every time something is updated in the store.
   stateChanged(state) {
-    console.log(state);
     this._activeUnit = state.battle.units[state.battle.activeUnit];
   }
 }
