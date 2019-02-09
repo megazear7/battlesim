@@ -28,11 +28,11 @@ export const navigate = (path) => (dispatch) => {
 
 const loadPage = (page) => (dispatch) => {
   switch(page) {
-    case 'create':
-      import('../components/create-view.js');
-      break;
     case 'battle':
       import('../components/battle-view.js');
+      break;
+    case 'fight':
+      import('../components/fight-view.js');
       break;
     case 'rules':
       import('../components/rules-view.js');

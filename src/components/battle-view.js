@@ -11,15 +11,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 import { html, css } from 'lit-element';
 import { repeat } from 'lit-html/directives/repeat';
 import { PageViewElement } from './page-view-element.js';
+
+import { add, remove } from '../actions/battle.js';
+
 import { connect } from 'pwa-helpers/connect-mixin.js';
 
 // This element is connected to the Redux store.
 import { store } from '../store.js';
 
-// These are the actions needed by this element.
-import { rest, move, charge, fire } from '../actions/battle.js';
-
-// We are lazy loading its reducer.
 import battle from '../reducers/battle.js';
 store.addReducers({
   battle
@@ -32,9 +31,8 @@ import { ButtonSharedStyles } from './button-shared-styles.js';
 class BattleView extends connect(store)(PageViewElement) {
   static get properties() {
     return {
-      _targets: { type: Object },
-      _army: { type: Object },
-      _activeUnit: { type: Object }
+      _army0Units: { type: Object },
+      _army1Units: { type: Object },
     };
   }
 
@@ -43,16 +41,15 @@ class BattleView extends connect(store)(PageViewElement) {
       SharedStyles,
       ButtonSharedStyles,
       css`
-        #unit {
-          text-align: center;
-          font-size: 2rem;
+        #added-message {
+          opacity: 0;
+          color: green;
+          transition: opacity 300ms;
         }
-        #army {
-          text-align: center;
-          color: var(--app-muted-text-color);
-        }
-        #situation {
-          margin-top: 1rem;
+        #error-message {
+          opacity: 0;
+          color: red;
+          transition: opacity 300ms;
         }
       `
     ];
@@ -61,87 +58,117 @@ class BattleView extends connect(store)(PageViewElement) {
   render() {
     return html`
       <section>
+        <h2>Add Unit</h2>
         <div>
-          <div id="unit">${this._activeUnit.name}</div>
-          <div id="army">Army: ${this._army.name}</div>
-          <div>HP: ${this._activeUnit.hp}</div>
-          <div>Speed: ${this._activeUnit.speed}</div>
-          <div>Energy: ${this._activeUnit.energy}</div>
-        </div>
-        <div id="situation">
-          Distance:
-          <input id="distance" type="number" placeholder="Distance"></input>
-          <br>
-          Target:
-          <select id="target">
-            <option></option>
-            ${repeat(this._targets, target => html`
-              <option value="${target.id}">${target.unit.name}</option>
-            `)}
+          <select id="army">
+            <option value="0">Brittish</option>
+            <option value="1">Americans</option>
           </select>
           <br>
-          <input id="uphill" type="checkbox">Uphill</input>
+          <input id="name" type="text" placeholder="Name"></input>
           <br>
-          <input id="terrain" type="checkbox">Difficult Terrain</input>
+          <input id="hp" type="number" placeholder="HP"></input>
+          <br>
+          <input id="speed" type="number" placeholder="Speed"></input>
+          <br>
+          <input id="energy" type="number" placeholder="Energy"></input>
+          <br>
+          <button @click="${this._add}">Add</button>
+          <br>
+          <p id="added-message">Unit Added!</p>
+          <p id="error-message">All fields need valid input.</p>
         </div>
+      </section>
+      <section>
         <div>
-          <button @click="${this._rest}">Rest</button>
-          <button @click="${this._move}">Move</button>
-          <button @click="${this._charge}">Charge</button>
-          <button @click="${this._fire}">Fire</button>
+          <h3>${this._army0Name}</h3>
+          ${repeat(this._army0Units, ({index, unit}) => html`
+            <div class="unit" data-index="${index}">
+              ${unit.name}
+              <button class="btn-link" @click="${this._remove}">Remove</button>
+            </div>
+          `)}
+        </div>
+      </section>
+      <section>
+        <div>
+          <h3>${this._army1Name}</h3>
+          ${repeat(this._army1Units, ({index, unit}) => html`
+            <div class="unit" data-index="${index}">
+              ${unit.name}
+              <button class="btn-link" @click="${this._remove}">Remove</button>
+            </div>
+          `)}
         </div>
       </section>
     `;
   }
 
-  get distance() {
-    return parseInt(this.shadowRoot.getElementById('distance').value);
+  get army() {
+    return parseInt(this.shadowRoot.getElementById('army').value);
   }
 
-  get uphill() {
-    return this.shadowRoot.getElementById('uphill').value === 'on';
+  get name() {
+    return this.shadowRoot.getElementById('name').value;
   }
 
-  get terrain() {
-    return this.shadowRoot.getElementById('terrain').value === 'on';
+  get hp() {
+    return parseInt(this.shadowRoot.getElementById('hp').value);
   }
 
-  get target() {
-    return this.shadowRoot.getElementById('target').value;
+  get speed() {
+    return parseInt(this.shadowRoot.getElementById('speed').value);
   }
 
-  get situation() {
+  get energy() {
+    return parseInt(this.shadowRoot.getElementById('energy').value);
+  }
+
+  get stats() {
     return {
-      distance: this.distance,
-      uphill: this.uphill,
-      terrain: this.terrain,
-      target: this.target
+      army: this.army,
+      name: this.name,
+      hp: this.hp,
+      speed: this.speed,
+      energy: this.energy
+    };
+  }
+
+  get statsValid() {
+    let stats = this.stats;
+    return typeof stats.army !== 'undefined' &&
+      stats.name.length > 0 &&
+      stats.hp > 0 &&
+      stats.speed > 0 &&
+      stats.energy > 0;
+  }
+
+  _remove(e) {
+    store.dispatch(remove(e.target.closest('.unit').dataset.index));
+  }
+
+  _add() {
+    if (this.statsValid) {
+      store.dispatch(add(this.stats));
+      this.shadowRoot.getElementById('army').value = '0';
+      this.shadowRoot.getElementById('name').value = '';
+      this.shadowRoot.getElementById('hp').value = '';
+      this.shadowRoot.getElementById('speed').value = '';
+      this.shadowRoot.getElementById('energy').value = '';
+      this.shadowRoot.getElementById('added-message').style.opacity = '1';
+      setTimeout(() => this.shadowRoot.getElementById('added-message').style.opacity = '0', 3000);
+    } else {
+      this.shadowRoot.getElementById('error-message').style.opacity = '1';
+      setTimeout(() => this.shadowRoot.getElementById('error-message').style.opacity = '0', 3000);
     }
   }
 
-  _move() {
-    store.dispatch(move(this.situation));
-  }
-
-  _charge() {
-    store.dispatch(charge(this.situation));
-  }
-
-  _rest() {
-    store.dispatch(rest());
-  }
-
-  _fire() {
-    store.dispatch(fire(this.situation));
-  }
-
-  // This is called every time something is updated in the store.
   stateChanged(state) {
-    let targets = state.battle.units.map((unit, index) => ({ id: index, unit: unit}));
-    // This is a new array of units with everything but the active unit.
-    this._targets = targets.slice(0, state.battle.activeUnit).concat(targets.slice(state.battle.activeUnit + 1, targets.length));
-    this._activeUnit = state.battle.units[state.battle.activeUnit];
-    this._army = state.battle.armies[this._activeUnit.army];
+    let units = state.battle.units.map((unit, index) => ({ index, unit }));
+    this._army0Units = units.filter(({unit}) => unit.army === 0);
+    this._army1Units = units.filter(({unit}) => unit.army === 1);
+    this._army0Name = state.battle.armies[0].name;
+    this._army1Name = state.battle.armies[1].name;
   }
 }
 
