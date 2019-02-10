@@ -7,45 +7,54 @@ define(["./battle-sim.js"],function(_battleSim){"use strict";_battleSim.store.ad
           text-align: center;
           color: var(--app-muted-text-color);
         }
-        #situation {
-          margin-top: 1rem;
-        }
       `]}render(){return _battleSim.html`
       <section>
         <div>
           <div id="unit">${this._activeUnit.name}</div>
           <div id="army">Army: ${this._army.name}</div>
         </div>
-        <p>Show unit status textual description.</p>
-        <p>Show unit description. i.e. experience level, weaponry, etc...</p>
-        <p>Dont show situational details until after the user selects an action.
-          Upon selecting an action they are then given the fields that they need to input data for and given extra info such as how far they can move or fire, etc...
-          After submitting the action they are told the result such as if any unit took casualties or if the unit refused etc...
-          and if any follow up actions are needed such as retreats or remove a unit from  the board, etc...</p>
+        <p>TODO Show unit status textual description. This would be information
+        such as the moral and health of the unit. If they are visibly exhausted
+        or slow moving. If they have taken casualties, etc...</p>
+        <p>TODO Show unit description. This would be information that would
+        not change over the course of the game such as how experience the unit
+        is, what kind of training they have, what king of weaponry they have, if
+        they are mounted, skirmishers, line troops, artillary, etc..</p>
+      </section>
+      <section>
         <div>
-          <button @click="${this._rest}">Rest</button>
-          <button @click="${this._move}">Move</button>
-          <button @click="${this._charge}">Charge</button>
-          <button @click="${this._fire}">Fire</button>
+          <button @click="${this._rest}" id="rest">Rest</button>
+          <button @click="${this._move}" id="move">Move</button>
+          <button @click="${this._charge}" id="charge">Charge</button>
+          <button @click="${this._fire}" id="fire">Fire</button>
         </div>
-        <div id="situation">
+      </section>
+      <section>
+        <p>TODO Validate that the user entered valid input.</p>
+        <div id="distance" class="hidden">
           Distance:
-          <input id="distance" type="number" placeholder="Distance"></input>
-          <br>
+          <input type="number" placeholder="Distance"></input>
+        </div>
+        <div id="target" class="hidden">
           Target:
-          <select id="target">
+          <select>
             <option></option>
             ${(0,_battleSim.repeat)(this._targets,target=>_battleSim.html`
               <option value="${target.id}">${target.unit.name}</option>
             `)}
           </select>
-          <br>
-          <input id="uphill" type="checkbox">Uphill</input>
-          <br>
-          <input id="terrain" type="checkbox">Difficult Terrain</input>
-        <div>
-          <button @click="${this._takeAction}">Take Action</button>
         </div>
-
+        <div id="uphill" class="hidden">
+          <input type="checkbox">Uphill</input>
+        </div>
+        <div id="terrain" class="hidden">
+          <input type="checkbox">Difficult Terrain</input>
+        </div>
+        <div id="take-action" style="opacity: 0;">
+          <button @click="${this._takeAction}">Take Action</button>
+          <p>TODO After they take the action explain the result. Explain if any follow up actions
+          are needed such as a retreate or picking up a unit before switching to the next unit.
+          Provide a "done" button to move to next unit.<p>
+        </div>
       </section>
-    `}get distance(){return parseInt(this.shadowRoot.getElementById("distance").value)}get uphill(){return"on"===this.shadowRoot.getElementById("uphill").value}get terrain(){return"on"===this.shadowRoot.getElementById("terrain").value}get target(){return this.shadowRoot.getElementById("target").value}get situation(){return{distance:this.distance,uphill:this.uphill,terrain:this.terrain,target:this.target}}_takeAction(){}_move(){_battleSim.store.dispatch((0,_battleSim.move)(this.situation))}_charge(){_battleSim.store.dispatch((0,_battleSim.charge)(this.situation))}_rest(){_battleSim.store.dispatch((0,_battleSim.rest)())}_fire(){_battleSim.store.dispatch((0,_battleSim.fire)(this.situation))}stateChanged(state){this._activeUnit=state.battle.units[state.battle.activeUnit];this._targets=state.battle.units.filter(unit=>unit.army!==this._activeUnit.army).map((unit,index)=>({id:index,unit:unit}));this._army=state.battle.armies[this._activeUnit.army]}}window.customElements.define("fight-view",FightView)});
+    `}get distanceContainer(){return this.shadowRoot.getElementById("distance")}get uphillContainer(){return this.shadowRoot.getElementById("uphill")}get terrainContainer(){return this.shadowRoot.getElementById("terrain")}get targetContainer(){return this.shadowRoot.getElementById("target")}get distance(){return parseInt(this.distanceContainer.querySelector("input").value)}get uphill(){return"on"===this.uphillContainer.querySelector("input").value}get terrain(){return"on"===this.terrainContainer.querySelector("input").value}get target(){return this.targetContainer.querySelector("select").value}get situation(){return{distance:this.distance,uphill:this.uphill,terrain:this.terrain,target:this.target}}_takeAction(){this._removeSelection();this.shadowRoot.getElementById("move").style.opacity=1;this.shadowRoot.getElementById("charge").style.opacity=1;this.shadowRoot.getElementById("rest").style.opacity=1;this.shadowRoot.getElementById("fire").style.opacity=1;this.shadowRoot.getElementById("take-action").style.opacity=0;_battleSim.store.dispatch(this._selectedAction(this.situation))}_removeSelection(){[...this.shadowRoot.querySelectorAll("button")].forEach(button=>button.classList.remove("selected"));this.distanceContainer.classList.add("hidden");this.uphillContainer.classList.add("hidden");this.terrainContainer.classList.add("hidden");this.targetContainer.classList.add("hidden")}_move(e){this._removeSelection();e.target.classList.add("selected");this.distanceContainer.classList.remove("hidden");this.uphillContainer.classList.remove("hidden");this.terrainContainer.classList.remove("hidden");this.shadowRoot.getElementById("charge").style.opacity=0;this.shadowRoot.getElementById("rest").style.opacity=0;this.shadowRoot.getElementById("fire").style.opacity=0;this.shadowRoot.getElementById("take-action").style.opacity=1;this._selectedAction=_battleSim.move}_charge(e){this._removeSelection();e.target.classList.add("selected");this.distanceContainer.classList.remove("hidden");this.uphillContainer.classList.remove("hidden");this.terrainContainer.classList.remove("hidden");this.targetContainer.classList.remove("hidden");this.shadowRoot.getElementById("move").style.opacity=0;this.shadowRoot.getElementById("rest").style.opacity=0;this.shadowRoot.getElementById("fire").style.opacity=0;this.shadowRoot.getElementById("take-action").style.opacity=1;this._selectedAction=_battleSim.charge}_rest(e){this._removeSelection();e.target.classList.add("selected");this.shadowRoot.getElementById("move").style.opacity=0;this.shadowRoot.getElementById("charge").style.opacity=0;this.shadowRoot.getElementById("fire").style.opacity=0;this.shadowRoot.getElementById("take-action").style.opacity=1;this._selectedAction=_battleSim.rest}_fire(e){this._removeSelection();e.target.classList.add("selected");this.distanceContainer.classList.remove("hidden");this.terrainContainer.classList.remove("hidden");this.targetContainer.classList.remove("hidden");this.shadowRoot.getElementById("move").style.opacity=0;this.shadowRoot.getElementById("charge").style.opacity=0;this.shadowRoot.getElementById("rest").style.opacity=0;this.shadowRoot.getElementById("take-action").style.opacity=1;this._selectedAction=_battleSim.fire}stateChanged(state){var activeBattle=state.battle.battles[state.battle.activeBattle];this._activeUnit=activeBattle.units[activeBattle.activeUnit];this._targets=activeBattle.units.filter(unit=>unit.army!==this._activeUnit.army).map((unit,index)=>({id:index,unit:unit}));this._army=activeBattle.armies[this._activeUnit.army]}}window.customElements.define("fight-view",FightView)});
