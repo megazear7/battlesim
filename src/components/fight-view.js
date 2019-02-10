@@ -55,48 +55,69 @@ class FightView extends connect(store)(PageViewElement) {
           After submitting the action they are told the result such as if any unit took casualties or if the unit refused etc...
           and if any follow up actions are needed such as retreats or remove a unit from  the board, etc...</p>
         <div>
-          <button @click="${this._rest}">Rest</button>
-          <button @click="${this._move}">Move</button>
-          <button @click="${this._charge}">Charge</button>
-          <button @click="${this._fire}">Fire</button>
+          <button @click="${this._rest}" id="rest">Rest</button>
+          <button @click="${this._move}" id="move">Move</button>
+          <button @click="${this._charge}" id="charge">Charge</button>
+          <button @click="${this._fire}" id="fire">Fire</button>
         </div>
         <div id="situation">
-          Distance:
-          <input id="distance" type="number" placeholder="Distance"></input>
-          <br>
-          Target:
-          <select id="target">
-            <option></option>
-            ${repeat(this._targets, target => html`
-              <option value="${target.id}">${target.unit.name}</option>
-            `)}
-          </select>
-          <br>
-          <input id="uphill" type="checkbox">Uphill</input>
-          <br>
-          <input id="terrain" type="checkbox">Difficult Terrain</input>
+          <div id="distance" class="hidden">
+            Distance:
+            <input type="number" placeholder="Distance"></input>
+          </div>
+          <div id="target" class="hidden">
+            Target:
+            <select>
+              <option></option>
+              ${repeat(this._targets, target => html`
+                <option value="${target.id}">${target.unit.name}</option>
+              `)}
+            </select>
+          </div>
+          <div id="uphill" class="hidden">
+            <input type="checkbox">Uphill</input>
+          </div>
+          <div id="terrain" class="hidden">
+            <input type="checkbox">Difficult Terrain</input>
+          </div>
         <div>
-          <button @click="${this._takeAction}">Take Action</button>
+          <button @click="${this._takeAction}" id="take-action" style="opacity: 0;">Take Action</button>
         </div>
 
       </section>
     `;
   }
 
+  get distanceContainer() {
+    return this.shadowRoot.getElementById('distance');
+  }
+
+  get uphillContainer() {
+    return this.shadowRoot.getElementById('uphill');
+  }
+
+  get terrainContainer() {
+    return this.shadowRoot.getElementById('terrain');
+  }
+
+  get targetContainer() {
+    return this.shadowRoot.getElementById('target');
+  }
+
   get distance() {
-    return parseInt(this.shadowRoot.getElementById('distance').value);
+    return parseInt(this.distanceContainer.querySelector('input').value);
   }
 
   get uphill() {
-    return this.shadowRoot.getElementById('uphill').value === 'on';
+    return this.uphillContainer.querySelector('input').value === 'on';
   }
 
   get terrain() {
-    return this.shadowRoot.getElementById('terrain').value === 'on';
+    return this.terrainContainer.querySelector('input').value === 'on';
   }
 
   get target() {
-    return this.shadowRoot.getElementById('target').value;
+    return this.targetContainer.querySelector('select').value;
   }
 
   get situation() {
@@ -109,23 +130,72 @@ class FightView extends connect(store)(PageViewElement) {
   }
 
   _takeAction() {
-    // TODO
+    this._removeSelection();
+    this.shadowRoot.getElementById('move').style.opacity = 1;
+    this.shadowRoot.getElementById('charge').style.opacity = 1;
+    this.shadowRoot.getElementById('rest').style.opacity = 1;
+    this.shadowRoot.getElementById('fire').style.opacity = 1;
+    this.shadowRoot.getElementById('take-action').style.opacity = 0;
+    store.dispatch(this._selectedAction(this.situation));
   }
 
-  _move() {
-    store.dispatch(move(this.situation));
+  _removeSelection() {
+    [...this.shadowRoot.querySelectorAll('button')]
+    .forEach(button => button.classList.remove('selected'));
+    this.distanceContainer.classList.add('hidden');
+    this.uphillContainer.classList.add('hidden');
+    this.terrainContainer.classList.add('hidden');
+    this.targetContainer.classList.add('hidden');
   }
 
-  _charge() {
-    store.dispatch(charge(this.situation));
+  _move(e) {
+    this._removeSelection();
+    e.target.classList.add('selected');
+    this.distanceContainer.classList.remove('hidden');
+    this.uphillContainer.classList.remove('hidden');
+    this.terrainContainer.classList.remove('hidden');
+    this.shadowRoot.getElementById('charge').style.opacity = 0;
+    this.shadowRoot.getElementById('rest').style.opacity = 0;
+    this.shadowRoot.getElementById('fire').style.opacity = 0;
+    this.shadowRoot.getElementById('take-action').style.opacity = 1;
+    this._selectedAction = move;
   }
 
-  _rest() {
-    store.dispatch(rest());
+  _charge(e) {
+    this._removeSelection();
+    e.target.classList.add('selected');
+    this.distanceContainer.classList.remove('hidden');
+    this.uphillContainer.classList.remove('hidden');
+    this.terrainContainer.classList.remove('hidden');
+    this.targetContainer.classList.remove('hidden');
+    this.shadowRoot.getElementById('move').style.opacity = 0;
+    this.shadowRoot.getElementById('rest').style.opacity = 0;
+    this.shadowRoot.getElementById('fire').style.opacity = 0;
+    this.shadowRoot.getElementById('take-action').style.opacity = 1;
+    this._selectedAction = charge;
   }
 
-  _fire() {
-    store.dispatch(fire(this.situation));
+  _rest(e) {
+    this._removeSelection();
+    e.target.classList.add('selected');
+    this.shadowRoot.getElementById('move').style.opacity = 0;
+    this.shadowRoot.getElementById('charge').style.opacity = 0;
+    this.shadowRoot.getElementById('fire').style.opacity = 0;
+    this.shadowRoot.getElementById('take-action').style.opacity = 1;
+    this._selectedAction = rest;
+  }
+
+  _fire(e) {
+    this._removeSelection();
+    e.target.classList.add('selected');
+    this.distanceContainer.classList.remove('hidden');
+    this.terrainContainer.classList.remove('hidden');
+    this.targetContainer.classList.remove('hidden');
+    this.shadowRoot.getElementById('move').style.opacity = 0;
+    this.shadowRoot.getElementById('charge').style.opacity = 0;
+    this.shadowRoot.getElementById('rest').style.opacity = 0;
+    this.shadowRoot.getElementById('take-action').style.opacity = 1;
+    this._selectedAction = fire;
   }
 
   // This is called every time something is updated in the store.

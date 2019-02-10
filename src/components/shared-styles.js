@@ -45,4 +45,8 @@ export const SharedStyles = css`
     font-size: 30px;
     line-height: 64px;
   }
+  
+  .hidden {
+    display: none;
+  }
 `;

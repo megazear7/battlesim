@@ -22,7 +22,7 @@ export const ButtonSharedStyles = css`
     margin-top: 1rem;
   }
 
-  button:hover {
+  .selected, button:hover {
     background: var(--app-primary-color);
     color: var(--app-light-text-color);
   }
