@@ -34,7 +34,6 @@ class WarView extends connect(store)(PageViewElement) {
     return html`
       ${repeat(this._battles, ({battle, index, active}) => html`
         <section>
-          <p>TODO show the date the battle was created. Allow battles to be deleted.</p>
           <div class="${classMap({battle: true, active: active})}" data-index="${index}">
             ${battle.name}
             <br>
@@ -48,6 +47,7 @@ class WarView extends connect(store)(PageViewElement) {
       `)}
       <section>
         <div>
+          <p>TODO In the above section show the date the battle was created. Allow battles to be deleted.</p>
           <p>TODO Use the name field to override the default name.</p>
           Name:
           <input id="name" type="text" placeholder="Name the Battle"></input>
