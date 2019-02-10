@@ -16,18 +16,16 @@ define(["exports","./battle-sim.js"],function(_exports,_battleSim){"use strict";
       `)}
       <section>
         <div>
-          <p>TODO Use the name field to override the default name.</p>
-          Name:
-          <input id="name" type="text" placeholder="Name the Battle"></input>
-          <br>
-          Battle:
+          <p>TODO The battle templates should come from a separate reducer,
+          the data of which is not saved to local storage. This is so that when the
+          app is updated these unit template lists get updated.</p>
           <select id="battle-template">
             ${(0,_battleSim.repeat)(this._battleTemplates,({battleTemplate,index})=>_battleSim.html`
               <option value="${index}">${battleTemplate.name}</option>
             `)}
           </select>
-          <br>
+          <input id="name" type="text" placeholder="Optional: Provide a Different Name for the Battle"></input>
           <button @click="${this._create}">Create</button>
         </div>
       </section>
-    `}get newBattleTemplate(){return this.shadowRoot.getElementById("battle-template").value}get newBattleName(){return this.shadowRoot.getElementById("name").value}get battleStats(){return{name:this.newBattleName,templateIndex:this.newBattleTemplate}}_create(){_battleSim.store.dispatch((0,_battleSim.createBattle)(this.battleStats))}_playBattle(e){_battleSim.store.dispatch((0,_battleSim.setActiveBattle)(parseInt(e.target.closest(".battle").dataset.index)))}_removeBattle(e){if(confirm("Are you sure you want to delete the battle?")){_battleSim.store.dispatch((0,_battleSim.removeBattle)(parseInt(e.target.closest(".battle").dataset.index)))}}stateChanged(state){this._battles=state.battle.battles.map((battle$$1,index)=>{let createdAt=new Date(battle$$1.createdAt);return{battle:battle$$1,index,active:index===state.battle.activeBattle,createdAt:createdAt.getMonth()+1+"/"+createdAt.getDate()+"/"+createdAt.getFullYear()}});this._battleTemplates=state.battle.battleTemplates.map((battleTemplate,index)=>({battleTemplate,index}))}}window.customElements.define("war-view",WarView)});
+    `}get newBattleTemplate(){return this.shadowRoot.getElementById("battle-template").value}get newBattleNameElement(){return this.shadowRoot.getElementById("name")}get newBattleName(){return this.newBattleNameElement.value}set newBattleName(value){this.newBattleNameElement.value=value}get battleStats(){return{name:this.newBattleName,templateIndex:this.newBattleTemplate}}_create(){_battleSim.store.dispatch((0,_battleSim.createBattle)(this.battleStats));this.newBattleName=""}_playBattle(e){_battleSim.store.dispatch((0,_battleSim.setActiveBattle)(parseInt(e.target.closest(".battle").dataset.index)))}_removeBattle(e){if(confirm("Are you sure you want to delete the battle?")){_battleSim.store.dispatch((0,_battleSim.removeBattle)(parseInt(e.target.closest(".battle").dataset.index)))}}stateChanged(state){this._battles=state.battle.battles.map((battle$$1,index)=>{let createdAt=new Date(battle$$1.createdAt);return{battle:battle$$1,index,active:index===state.battle.activeBattle,createdAt:createdAt.getMonth()+1+"/"+createdAt.getDate()+"/"+createdAt.getFullYear()}});this._battleTemplates=state.battle.battleTemplates.map((battleTemplate,index)=>({battleTemplate,index}))}}window.customElements.define("war-view",WarView)});
