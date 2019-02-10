@@ -35,15 +35,14 @@ class WarView extends connect(store)(PageViewElement) {
       ${repeat(this._battles, ({battle, index, active, createdAt}) => html`
         <section>
           <div class="${classMap({battle: true, active: active})}" data-index="${index}">
-            ${battle.name}
-            Created ${createdAt}
-            <button class="btn-link remove-battle" @click="${this._removeBattle}">Remove</button>
-            <br>
-            ${! active ? html`
-              <button class="btn-link" @click="${this._playBattle}">Play</button>
+            <h3>${battle.name}</h3>
+            <pre>Created ${createdAt}</pre>
+            ${active ? html`
+              <p>This is the active battle</p>
             ` : html`
-              This is the active battle
+              <button @click="${this._playBattle}">Play</button>
             `}
+            <button @click="${this._removeBattle}">Remove</button>
           </div>
         </section>
       `)}
@@ -91,7 +90,9 @@ class WarView extends connect(store)(PageViewElement) {
   }
 
   _removeBattle(e) {
-    store.dispatch(removeBattle(parseInt(e.target.closest('.battle').dataset.index)));
+    if (confirm('Are you sure you want to delete the battle?')) {
+      store.dispatch(removeBattle(parseInt(e.target.closest('.battle').dataset.index)));
+    }
   }
 
   stateChanged(state) {
