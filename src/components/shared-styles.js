@@ -22,9 +22,14 @@ export const SharedStyles = css`
   }
 
   h2 {
-    font-size: 24px;
+    font-size: 2rem;
     text-align: center;
     color: var(--app-dark-text-color);
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 400;
   }
 
   @media (min-width: 460px) {
@@ -45,7 +50,7 @@ export const SharedStyles = css`
     font-size: 30px;
     line-height: 64px;
   }
-  
+
   .hidden {
     display: none;
   }

@@ -48,7 +48,6 @@ class WarView extends connect(store)(PageViewElement) {
       `)}
       <section>
         <div>
-          <p>TODO In the above section show the date the battle was created. Allow battles to be deleted.</p>
           <p>TODO Use the name field to override the default name.</p>
           Name:
           <input id="name" type="text" placeholder="Name the Battle"></input>
