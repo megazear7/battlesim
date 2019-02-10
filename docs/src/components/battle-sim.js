@@ -681,6 +681,8 @@ define(["exports","meta","require"],function(_exports,meta,_require){"use strict
           drawer button, and the text looks not centered. Add a padding to
           match that button */
           padding-right: 44px;
+          text-overflow: wrap;
+          white-space: nowrap;
         }
 
         h1 {
