@@ -90,6 +90,8 @@ class BattleSim extends connect(store)(LitElement) {
           drawer button, and the text looks not centered. Add a padding to
           match that button */
           padding-right: 44px;
+          text-overflow: wrap;
+          white-space: nowrap;
         }
 
         h1 {
