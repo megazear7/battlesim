@@ -34,9 +34,6 @@ class FightView extends connect(store)(PageViewElement) {
           text-align: center;
           color: var(--app-muted-text-color);
         }
-        #situation {
-          margin-top: 1rem;
-        }
       `
     ];
   }
@@ -48,42 +45,43 @@ class FightView extends connect(store)(PageViewElement) {
           <div id="unit">${this._activeUnit.name}</div>
           <div id="army">Army: ${this._army.name}</div>
         </div>
-        <p>Show unit status textual description.</p>
-        <p>Show unit description. i.e. experience level, weaponry, etc...</p>
-        <p>Dont show situational details until after the user selects an action.
-          Upon selecting an action they are then given the fields that they need to input data for and given extra info such as how far they can move or fire, etc...
-          After submitting the action they are told the result such as if any unit took casualties or if the unit refused etc...
-          and if any follow up actions are needed such as retreats or remove a unit from  the board, etc...</p>
+        <p>TODO Show unit status textual description.</p>
+        <p>TODO Show unit description. i.e. experience level, weaponry, etc...</p>
+      </section>
+      <section>
         <div>
           <button @click="${this._rest}" id="rest">Rest</button>
           <button @click="${this._move}" id="move">Move</button>
           <button @click="${this._charge}" id="charge">Charge</button>
           <button @click="${this._fire}" id="fire">Fire</button>
         </div>
-        <div id="situation">
-          <div id="distance" class="hidden">
-            Distance:
-            <input type="number" placeholder="Distance"></input>
-          </div>
-          <div id="target" class="hidden">
-            Target:
-            <select>
-              <option></option>
-              ${repeat(this._targets, target => html`
-                <option value="${target.id}">${target.unit.name}</option>
-              `)}
-            </select>
-          </div>
-          <div id="uphill" class="hidden">
-            <input type="checkbox">Uphill</input>
-          </div>
-          <div id="terrain" class="hidden">
-            <input type="checkbox">Difficult Terrain</input>
-          </div>
-        <div>
-          <button @click="${this._takeAction}" id="take-action" style="opacity: 0;">Take Action</button>
+      </section>
+      <section>
+        <div id="distance" class="hidden">
+          Distance:
+          <input type="number" placeholder="Distance"></input>
         </div>
-
+        <div id="target" class="hidden">
+          Target:
+          <select>
+            <option></option>
+            ${repeat(this._targets, target => html`
+              <option value="${target.id}">${target.unit.name}</option>
+            `)}
+          </select>
+        </div>
+        <div id="uphill" class="hidden">
+          <input type="checkbox">Uphill</input>
+        </div>
+        <div id="terrain" class="hidden">
+          <input type="checkbox">Difficult Terrain</input>
+        </div>
+        <div id="take-action" style="opacity: 0;">
+          <button @click="${this._takeAction}">Take Action</button>
+          <p>TODO After they take the action explain the result. Explain if any follow up actions
+          are needed such as a retreate or picking up a unit before switching to the next unit.
+          Provide a "done" button to move to next unit.<p>
+        </div>
       </section>
     `;
   }
