@@ -1,7 +1,7 @@
 import { html, css } from 'lit-element';
 import { repeat } from 'lit-html/directives/repeat';
 import { PageViewElement } from './page-view-element.js';
-import { add, remove } from '../actions/battle.js';
+import { createBattle, setActiveBattle } from '../actions/battle.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
 import battle from '../reducers/battle.js';
@@ -16,6 +16,7 @@ class WarView extends connect(store)(PageViewElement) {
   static get properties() {
     return {
       _battles: { type: Object },
+      _battleTemplates: { type: Object },
     };
   }
 
@@ -48,11 +49,10 @@ class WarView extends connect(store)(PageViewElement) {
           <input id="name" type="text" placeholder="Name the Battle"></input>
           <br>
           Battle:
-          <select id="target">
-            <option value="0">Generic Revolutionary War</option>
-            <option value="1">Bunker Hill</option>
-            <option value="2">Chelsea Creek</option>
-            <option value="3">Battle of Saint-Pierre</option>
+          <select id="battle-template">
+            ${repeat(this._battleTemplates, ({battleTemplate, index}) => html`
+              <option value="${index}">${battleTemplate.name}</option>
+            `)}
           </select>
           <br>
           <button @click="${this._create}">Create</button>
@@ -61,16 +61,32 @@ class WarView extends connect(store)(PageViewElement) {
     `;
   }
 
-  _create() {
-    // TODO
+  get newBattleTemplate() {
+    return this.shadowRoot.getElementById('battle-template').value
   }
 
-  _playBattle() {
-    // TODO
+  get newBattleName() {
+    return this.shadowRoot.getElementById('name').value
+  }
+
+  get battleStats() {
+    return {
+      name: this.newBattleName,
+      templateIndex: this.newBattleTemplate
+    };
+  }
+
+  _create() {
+    store.dispatch(createBattle(this.battleStats));
+  }
+
+  _playBattle(e) {
+    store.dispatch(setActiveBattle(e.target.closest('.battle').dataset.index));
   }
 
   stateChanged(state) {
     this._battles = state.battle.battles.map((battle, index) => ({ battle, index }));
+    this._battleTemplates = state.battle.battleTemplates.map((battleTemplate, index) => ({ battleTemplate, index }));
   }
 }
 

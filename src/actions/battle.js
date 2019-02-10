@@ -5,6 +5,7 @@ export const FIRE = 'FIRE';
 export const ADD = 'ADD';
 export const REMOVE = 'REMOVE';
 export const CREATE_BATTLE = 'CREATE_BATTLE';
+export const SET_ACTIVE_BATTLE = 'SET_ACTIVE_BATTLE';
 
 export const rest = () => {
   return {
@@ -47,10 +48,16 @@ export const remove = (index) => {
   };
 };
 
-export const createBattle = (name, templateIndex) => {
+export const createBattle = (battleStats) => {
   return {
     type: CREATE_BATTLE,
-    name,
-    templateIndex
+    battleStats
+  };
+};
+
+export const setActiveBattle = (index) => {
+  return {
+    type: SET_ACTIVE_BATTLE,
+    index,
   };
 };

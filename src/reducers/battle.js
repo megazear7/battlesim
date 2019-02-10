@@ -5,7 +5,8 @@ import {
   FIRE,
   ADD,
   REMOVE,
-  CREATE_BATTLE
+  CREATE_BATTLE,
+  SET_ACTIVE_BATTLE
 } from '../actions/battle.js';
 
 const INITIAL_STATE = {
@@ -86,8 +87,10 @@ const battle = (state = initialState, action) => {
   } else if (action.type === REMOVE) {
     activeBattle.units.splice(action.index, 1);
   } else if (action.type === CREATE_BATTLE) {
-    newState.battles.push({ ...state.battleTemplates[action.templateIndex] });
+    newState.battles.push({ ...state.battleTemplates[action.battleStats.templateIndex] });
     newState.activeBattle = newState.battles.length - 1;
+  } else if (action.type === SET_ACTIVE_BATTLE) {
+    newState.activeBattle = action.index;
   }
   localStorage.setItem("battle", JSON.stringify(newState));
   return newState
