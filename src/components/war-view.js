@@ -32,10 +32,11 @@ class WarView extends connect(store)(PageViewElement) {
 
   render() {
     return html`
-      ${repeat(this._battles, ({battle, index, active}) => html`
+      ${repeat(this._battles, ({battle, index, active, createdAt}) => html`
         <section>
           <div class="${classMap({battle: true, active: active})}" data-index="${index}">
             ${battle.name}
+            Created ${createdAt}
             <br>
             ${! active ? html`
               <button class="btn-link" @click="${this._playBattle}">Play</button>
@@ -89,8 +90,15 @@ class WarView extends connect(store)(PageViewElement) {
   }
 
   stateChanged(state) {
-    this._battles = state.battle.battles
-      .map((battle, index) => ({ battle, index, active: index === state.battle.activeBattle }));
+    this._battles = state.battle.battles.map((battle, index) => {
+      let createdAt = new Date(battle.createdAt);
+      return {
+        battle,
+        index,
+        active: index === state.battle.activeBattle,
+        createdAt: createdAt.getMonth()+1 + '/' + createdAt.getDate() + '/' + createdAt.getFullYear()
+      };
+    });
     this._battleTemplates = state.battle.battleTemplates
       .map((battleTemplate, index) => ({ battleTemplate, index }));
   }

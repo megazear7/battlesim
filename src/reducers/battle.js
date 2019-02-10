@@ -14,6 +14,7 @@ const INITIAL_STATE = {
   battles: [
     {
       activeUnit: 0,
+      createdAt: new Date().getTime(),
       name: "Example Battle",
       armies: [
         { name: "Brittish" },
@@ -89,7 +90,10 @@ const battle = (state = initialState, action) => {
   } else if (action.type === REMOVE) {
     activeBattle.units.splice(action.index, 1);
   } else if (action.type === CREATE_BATTLE) {
-    newState.battles.push({ ...state.battleTemplates[action.battleStats.templateIndex] });
+    newState.battles.push({
+      ...state.battleTemplates[action.battleStats.templateIndex],
+      createdAt: new Date().getTime()
+    });
     newState.activeBattle = newState.battles.length - 1;
   } else if (action.type === SET_ACTIVE_BATTLE) {
     newState.activeBattle = action.index;
