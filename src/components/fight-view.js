@@ -45,8 +45,13 @@ class FightView extends connect(store)(PageViewElement) {
           <div id="unit">${this._activeUnit.name}</div>
           <div id="army">Army: ${this._army.name}</div>
         </div>
-        <p>TODO Show unit status textual description.</p>
-        <p>TODO Show unit description. i.e. experience level, weaponry, etc...</p>
+        <p>TODO Show unit status textual description. This would be information
+        such as the moral and health of the unit. If they are visibly exhausted
+        or slow moving. If they have taken casualties, etc...</p>
+        <p>TODO Show unit description. This would be information that would
+        not change over the course of the game such as how experience the unit
+        is, what kind of training they have, what king of weaponry they have, if
+        they are mounted, skirmishers, line troops, artillary, etc..</p>
       </section>
       <section>
         <div>
@@ -57,6 +62,7 @@ class FightView extends connect(store)(PageViewElement) {
         </div>
       </section>
       <section>
+        <p>TODO Validate that the user entered valid input.</p>
         <div id="distance" class="hidden">
           Distance:
           <input type="number" placeholder="Distance"></input>

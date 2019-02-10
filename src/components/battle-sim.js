@@ -6,6 +6,7 @@ import { installOfflineWatcher } from 'pwa-helpers/network.js';
 import { installRouter } from 'pwa-helpers/router.js';
 import { updateMetadata } from 'pwa-helpers/metadata.js';
 import { store } from '../store.js';
+import battle from '../reducers/battle.js';
 import {
   navigate,
   updateOffline,
@@ -18,10 +19,15 @@ import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import { menuIcon } from './my-icons.js';
 import './snack-bar.js';
 
+store.addReducers({
+  battle
+});
+
 class BattleSim extends connect(store)(LitElement) {
   static get properties() {
     return {
       appTitle: { type: String },
+      _title: { type: String },
       _page: { type: String },
       _drawerOpened: { type: Boolean },
       _snackbarOpened: { type: Boolean },
@@ -72,13 +78,17 @@ class BattleSim extends connect(store)(LitElement) {
         }
 
         [main-title] {
-          font-family: 'Pacifico';
-          text-transform: lowercase;
-          font-size: 30px;
+          /*font-family: 'Pacifico';
+          text-transform: lowercase;*/
+          font-size: 2rem;
           /* In the narrow layout, the toolbar is offset by the width of the
           drawer button, and the text looks not centered. Add a padding to
           match that button */
           padding-right: 44px;
+        }
+
+        h1 {
+          font-size: 1.25rem;
         }
 
         .toolbar-list {
@@ -184,7 +194,7 @@ class BattleSim extends connect(store)(LitElement) {
         <app-toolbar class="toolbar-top">
           <button class="menu-btn" title="Menu" @click="${this._menuButtonClicked}">${menuIcon}</button>
           <!--  TODO replace title with active battle -->
-          <div main-title>${this.appTitle}</div>
+          <div main-title>${this._title}</div>
         </app-toolbar>
 
         <nav class="toolbar-list">
@@ -215,6 +225,7 @@ class BattleSim extends connect(store)(LitElement) {
       </main>
 
       <footer>
+        <h1>${this.appTitle}</h1>
         <p>Computer managed historical combat for tabletop gaming.</p>
       </footer>
 
@@ -258,6 +269,8 @@ class BattleSim extends connect(store)(LitElement) {
   }
 
   stateChanged(state) {
+    console.log('a', state);
+    this._title = state.battle.battles[state.battle.activeBattle].name;
     this._page = state.app.page;
     this._offline = state.app.offline;
     this._snackbarOpened = state.app.snackbarOpened;

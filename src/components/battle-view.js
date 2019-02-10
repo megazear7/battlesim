@@ -73,6 +73,8 @@ class BattleView extends connect(store)(PageViewElement) {
       <section>
         <h2>Add Unit</h2>
         <div>
+          <p>TODO Instead of giving the user stat fields to enter just allow them to
+          select from a list of unit types that can be chosen based upon the chosen battle.</p>
           <select id="army">
             <option value="0">Brittish</option>
             <option value="1">Americans</option>
