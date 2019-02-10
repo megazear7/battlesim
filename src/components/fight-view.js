@@ -62,7 +62,6 @@ class FightView extends connect(store)(PageViewElement) {
         </div>
       </section>
       <section>
-        <p>TODO Validate that the user entered valid input.</p>
         <div id="distance" class="hidden">
           Distance:
           <input type="number" placeholder="Distance"></input>
@@ -192,9 +191,10 @@ class FightView extends connect(store)(PageViewElement) {
     this.distanceContainer.classList.remove('hidden');
     this.uphillContainer.classList.remove('hidden');
     this.terrainContainer.classList.remove('hidden');
-    this.shadowRoot.getElementById('charge').style.opacity = 0;
-    this.shadowRoot.getElementById('rest').style.opacity = 0;
-    this.shadowRoot.getElementById('fire').style.opacity = 0;
+    this.shadowRoot.getElementById('move').style.opacity = 1;
+    this.shadowRoot.getElementById('charge').style.opacity = 0.5;
+    this.shadowRoot.getElementById('rest').style.opacity = 0.5;
+    this.shadowRoot.getElementById('fire').style.opacity = 0.5;
     this.shadowRoot.getElementById('take-action').style.opacity = 1;
     this._selectedAction = move;
   }
@@ -206,9 +206,10 @@ class FightView extends connect(store)(PageViewElement) {
     this.uphillContainer.classList.remove('hidden');
     this.terrainContainer.classList.remove('hidden');
     this.targetContainer.classList.remove('hidden');
-    this.shadowRoot.getElementById('move').style.opacity = 0;
-    this.shadowRoot.getElementById('rest').style.opacity = 0;
-    this.shadowRoot.getElementById('fire').style.opacity = 0;
+    this.shadowRoot.getElementById('move').style.opacity = 0.5;
+    this.shadowRoot.getElementById('charge').style.opacity = 1;
+    this.shadowRoot.getElementById('rest').style.opacity = 0.5;
+    this.shadowRoot.getElementById('fire').style.opacity = 0.5;
     this.shadowRoot.getElementById('take-action').style.opacity = 1;
     this._selectedAction = charge;
   }
@@ -216,9 +217,10 @@ class FightView extends connect(store)(PageViewElement) {
   _rest(e) {
     this._removeSelection();
     e.target.classList.add('selected');
-    this.shadowRoot.getElementById('move').style.opacity = 0;
-    this.shadowRoot.getElementById('charge').style.opacity = 0;
-    this.shadowRoot.getElementById('fire').style.opacity = 0;
+    this.shadowRoot.getElementById('move').style.opacity = 0.5;
+    this.shadowRoot.getElementById('charge').style.opacity = 0.5;
+    this.shadowRoot.getElementById('rest').style.opacity = 1;
+    this.shadowRoot.getElementById('fire').style.opacity = 0.5;
     this.shadowRoot.getElementById('take-action').style.opacity = 1;
     this._selectedAction = rest;
   }
@@ -229,9 +231,10 @@ class FightView extends connect(store)(PageViewElement) {
     this.distanceContainer.classList.remove('hidden');
     this.terrainContainer.classList.remove('hidden');
     this.targetContainer.classList.remove('hidden');
-    this.shadowRoot.getElementById('move').style.opacity = 0;
-    this.shadowRoot.getElementById('charge').style.opacity = 0;
-    this.shadowRoot.getElementById('rest').style.opacity = 0;
+    this.shadowRoot.getElementById('move').style.opacity = 0.5;
+    this.shadowRoot.getElementById('charge').style.opacity = 0.5;
+    this.shadowRoot.getElementById('rest').style.opacity = 0.5;
+    this.shadowRoot.getElementById('fire').style.opacity = 1;
     this.shadowRoot.getElementById('take-action').style.opacity = 1;
     this._selectedAction = fire;
   }
