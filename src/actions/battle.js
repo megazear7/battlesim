@@ -4,6 +4,7 @@ export const CHARGE = 'CHARGE';
 export const FIRE = 'FIRE';
 export const ADD = 'ADD';
 export const REMOVE = 'REMOVE';
+export const CREATE_BATTLE = 'CREATE_BATTLE';
 
 export const rest = () => {
   return {
@@ -43,5 +44,13 @@ export const remove = (index) => {
   return {
     type: REMOVE,
     index
+  };
+};
+
+export const createBattle = (name, templateIndex) => {
+  return {
+    type: CREATE_BATTLE,
+    name,
+    templateIndex
   };
 };

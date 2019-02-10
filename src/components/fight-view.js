@@ -130,11 +130,12 @@ class FightView extends connect(store)(PageViewElement) {
 
   // This is called every time something is updated in the store.
   stateChanged(state) {
-    this._activeUnit = state.battle.units[state.battle.activeUnit];
-    this._targets = state.battle.units
+    var activeBattle = state.battle.battles[state.battle.activeBattle];
+    this._activeUnit = activeBattle.units[activeBattle.activeUnit];
+    this._targets = activeBattle.units
       .filter(unit => unit.army !== this._activeUnit.army)
       .map((unit, index) => ({ id: index, unit: unit}));
-    this._army = state.battle.armies[this._activeUnit.army];
+    this._army = activeBattle.armies[this._activeUnit.army];
   }
 }
 

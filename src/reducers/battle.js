@@ -4,22 +4,51 @@ import {
   MOVE,
   FIRE,
   ADD,
-  REMOVE
+  REMOVE,
+  CREATE_BATTLE
 } from '../actions/battle.js';
 
 const INITIAL_STATE = {
-  activeUnit: 0,
-  armies: [
-    { name: "Brittish" },
-    { name: "Americans" },
+  activeBattle: 0,
+  battles: [
+    {
+      activeUnit: 0,
+      name: "Example Battle",
+      armies: [
+        { name: "Brittish" },
+        { name: "Americans" },
+      ],
+      units: [
+        { army: 0, name: "15th Regiment (East Yorkshire)", hp: 100, speed: 50, energy: 100, },
+      ],
+    }
   ],
-  units: [
-    { army: 0, name: "15th Regiment (East Yorkshire)", hp: 100, speed: 50, energy: 100, },
-    { army: 0, name: "16th Cavalry (The Queen's Lancers)", hp: 100, speed: 70, energy: 100, },
-    { army: 0, name: "9th Regiment (Royal Norfolk)", hp: 40, speed: 50, energy: 100, },
-    { army: 1, name: "3rd Regiment of Militia", hp: 30, speed: 60, energy: 100, },
-    { army: 1, name: "Bradley's Regiment", hp: 80, speed: 40, energy: 100, },
-    { army: 1, name: "Waterbury's Regiment", hp: 30, speed: 60, energy: 100, },
+  battleTemplates: [
+    {
+      name: "Generic Revolutionary War",
+      armies: [
+        { name: "Brittish" },
+        { name: "Americans" },
+      ],
+      units: [
+        { army: 0, name: "15th Regiment (East Yorkshire)", hp: 100, speed: 50, energy: 100, },
+      ],
+    },
+    {
+      name: "Bunker Hill",
+      armies: [
+        { name: "Brittish" },
+        { name: "Americans" },
+      ],
+      units: [
+        { army: 0, name: "15th Regiment (East Yorkshire)", hp: 100, speed: 50, energy: 100, },
+        { army: 0, name: "16th Cavalry (The Queen's Lancers)", hp: 100, speed: 70, energy: 100, },
+        { army: 0, name: "9th Regiment (Royal Norfolk)", hp: 40, speed: 50, energy: 100, },
+        { army: 1, name: "3rd Regiment of Militia", hp: 30, speed: 60, energy: 100, },
+        { army: 1, name: "Bradley's Regiment", hp: 80, speed: 40, energy: 100, },
+        { army: 1, name: "Waterbury's Regiment", hp: 30, speed: 60, energy: 100, },
+      ],
+    }
   ]
 };
 
@@ -31,34 +60,34 @@ if (! initialState) {
 
 const battle = (state = initialState, action) => {
   var newState = { ...state }
+  var activeBattle = newState.battles[newState.activeBattle];
   if (action.type === REST) {
-    var oldActiveUnit = state.activeUnit;
-    var newActiveUnit = oldActiveUnit >= state.units.length - 1 ? 0 : oldActiveUnit + 1;
-    var newState = {
-      ...state,
-      activeUnit: newActiveUnit
-    }
-    newState.units[oldActiveUnit].energy += 10;
-
+    var oldActiveUnit = activeBattle.activeUnit;
+    var newActiveUnit = oldActiveUnit >= activeBattle.units.length - 1 ? 0 : oldActiveUnit + 1;
+    activeBattle.activeUnit = newActiveUnit;
+    activeBattle.units[oldActiveUnit].energy += 10;
   } else if (action.type === MOVE) {
-    var oldActiveUnit = state.activeUnit;
-    var newActiveUnit = oldActiveUnit >= state.units.length - 1 ? 0 : oldActiveUnit + 1;
-    newState.activeUnit = newActiveUnit;
-    newState.units[oldActiveUnit].energy -= action.situation.distance;
+    var oldActiveUnit = activeBattle.activeUnit;
+    var newActiveUnit = oldActiveUnit >= activeBattle.units.length - 1 ? 0 : oldActiveUnit + 1;
+    activeBattle.activeUnit = newActiveUnit;
+    activeBattle.units[oldActiveUnit].energy -= action.situation.distance;
   } else if (action.type === CHARGE) {
-    var oldActiveUnit = state.activeUnit;
-    var newActiveUnit = oldActiveUnit >= state.units.length - 1 ? 0 : oldActiveUnit + 1;
-    newState.activeUnit = newActiveUnit;
-    newState.units[oldActiveUnit].energy -= action.situation.distance * 2;
+    var oldActiveUnit = activeBattle.activeUnit;
+    var newActiveUnit = oldActiveUnit >= activeBattle.units.length - 1 ? 0 : oldActiveUnit + 1;
+    activeBattle.activeUnit = newActiveUnit;
+    activeBattle.units[oldActiveUnit].energy -= action.situation.distance * 2;
   } else if (action.type === FIRE) {
-    var oldActiveUnit = state.activeUnit;
-    var newActiveUnit = oldActiveUnit >= state.units.length - 1 ? 0 : oldActiveUnit + 1;
-    newState.activeUnit = newActiveUnit;
-    newState.units[oldActiveUnit].energy -= 10;
+    var oldActiveUnit = activeBattle.activeUnit;
+    var newActiveUnit = oldActiveUnit >= activeBattle.units.length - 1 ? 0 : oldActiveUnit + 1;
+    activeBattle.activeUnit = newActiveUnit;
+    activeBattle.units[oldActiveUnit].energy -= 10;
   } else if (action.type === ADD) {
-    newState.units.push(action.stats);
+    activeBattle.units.push(action.stats);
   } else if (action.type === REMOVE) {
-    newState.units.splice(action.index, 1);
+    activeBattle.units.splice(action.index, 1);
+  } else if (action.type === CREATE_BATTLE) {
+    newState.battles.push({ ...state.battleTemplates[action.templateIndex] });
+    newState.activeBattle = newState.battles.length - 1;
   }
   localStorage.setItem("battle", JSON.stringify(newState));
   return newState

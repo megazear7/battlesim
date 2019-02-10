@@ -15,6 +15,7 @@ store.addReducers({
 class WarView extends connect(store)(PageViewElement) {
   static get properties() {
     return {
+      _battles: { type: Object },
     };
   }
 
@@ -32,6 +33,14 @@ class WarView extends connect(store)(PageViewElement) {
       <section>
         <p>You will be able to create new battles and select a battle to play from here</p>
         <p>TODO: List battles and make them selectable. Upon selecting a battle it becomes the active battle and the other three views reference it for the battle overview, the fighting and taking actions, and the rules.</p>
+        <div>
+          ${repeat(this._battles, ({battle, index}) => html`
+            <div class="battle" data-index="${index}">
+              ${battle.name}
+              <button class="btn-link" @click="${this._playBattle}">Play</button>
+            </div>
+          `)}
+        </div>
       </section>
       <section>
         <div>
@@ -56,8 +65,12 @@ class WarView extends connect(store)(PageViewElement) {
     // TODO
   }
 
-  stateChanged(state) {
+  _playBattle() {
     // TODO
+  }
+
+  stateChanged(state) {
+    this._battles = state.battle.battles.map((battle, index) => ({ battle, index }));
   }
 }
 
