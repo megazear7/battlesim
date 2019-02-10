@@ -6,6 +6,7 @@ export const ADD = 'ADD';
 export const REMOVE = 'REMOVE';
 export const CREATE_BATTLE = 'CREATE_BATTLE';
 export const SET_ACTIVE_BATTLE = 'SET_ACTIVE_BATTLE';
+export const REMOVE_BATTLE = 'REMOVE_BATTLE';
 
 export const rest = () => {
   return {
@@ -58,6 +59,13 @@ export const createBattle = (battleStats) => {
 export const setActiveBattle = (index) => {
   return {
     type: SET_ACTIVE_BATTLE,
+    index,
+  };
+};
+
+export const removeBattle = (index) => {
+  return {
+    type: REMOVE_BATTLE,
     index,
   };
 };

@@ -6,7 +6,8 @@ import {
   ADD,
   REMOVE,
   CREATE_BATTLE,
-  SET_ACTIVE_BATTLE
+  SET_ACTIVE_BATTLE,
+  REMOVE_BATTLE
 } from '../actions/battle.js';
 
 const INITIAL_STATE = {
@@ -95,6 +96,14 @@ const battle = (state = initialState, action) => {
       createdAt: new Date().getTime()
     });
     newState.activeBattle = newState.battles.length - 1;
+  } else if (action.type === REMOVE_BATTLE) {
+    newState.battles.splice(action.index, 1);
+    if (newState.activeBattle >= action.index) {
+      newState.activeBattle -= 1;
+    }
+    if (newState.activeBattle < 0) {
+      newState.activeBattle = 0;
+    }
   } else if (action.type === SET_ACTIVE_BATTLE) {
     newState.activeBattle = action.index;
   }

@@ -2,7 +2,7 @@ import { html, css } from 'lit-element';
 import { repeat } from 'lit-html/directives/repeat';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { PageViewElement } from './page-view-element.js';
-import { createBattle, setActiveBattle } from '../actions/battle.js';
+import { createBattle, setActiveBattle, removeBattle } from '../actions/battle.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
 import battle from '../reducers/battle.js';
@@ -37,6 +37,7 @@ class WarView extends connect(store)(PageViewElement) {
           <div class="${classMap({battle: true, active: active})}" data-index="${index}">
             ${battle.name}
             Created ${createdAt}
+            <button class="btn-link remove-battle" @click="${this._removeBattle}">Remove</button>
             <br>
             ${! active ? html`
               <button class="btn-link" @click="${this._playBattle}">Play</button>
@@ -87,6 +88,10 @@ class WarView extends connect(store)(PageViewElement) {
 
   _playBattle(e) {
     store.dispatch(setActiveBattle(parseInt(e.target.closest('.battle').dataset.index)));
+  }
+
+  _removeBattle(e) {
+    store.dispatch(removeBattle(parseInt(e.target.closest('.battle').dataset.index)));
   }
 
   stateChanged(state) {
