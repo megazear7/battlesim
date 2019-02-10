@@ -35,8 +35,18 @@ class BattleView extends connect(store)(PageViewElement) {
           color: red;
           transition: opacity 300ms;
         }
-        .remove-unit {
-          float: right;
+        h5 {
+          margin-top: 0;
+        }
+        .unit {
+          border-bottom: 1px solid black;
+          padding: 1rem 0;
+        }
+        .unit:last-child {
+          border-bottom: 0;
+        }
+        .unit:hover h5 {
+          color: var(--app-primary-color);
         }
       `
     ];
@@ -47,12 +57,10 @@ class BattleView extends connect(store)(PageViewElement) {
       <section>
         <div>
           <h3>${this._army0Name}</h3>
-          <hr>
           ${repeat(this._army0Units, ({index, unit}) => html`
             <div class="unit" data-index="${index}">
-              ${unit.name}
+              <h5 class="unit-name">${unit.name}</h5>
               <button class="btn-link remove-unit" @click="${this._remove}">Remove</button>
-              <hr>
             </div>
           `)}
         </div>
@@ -60,12 +68,10 @@ class BattleView extends connect(store)(PageViewElement) {
       <section>
         <div>
           <h3>${this._army1Name}</h3>
-          <hr>
           ${repeat(this._army1Units, ({index, unit}) => html`
             <div class="unit" data-index="${index}">
-              ${unit.name}
+              <h5 class="unit-name">${unit.name}</h5>
               <button class="btn-link remove-unit" @click="${this._remove}">Remove</button>
-              <hr>
             </div>
           `)}
         </div>
@@ -137,7 +143,11 @@ class BattleView extends connect(store)(PageViewElement) {
   }
 
   _remove(e) {
-    store.dispatch(remove(e.target.closest('.unit').dataset.index));
+    let unit = e.target.closest('.unit');
+    let name = unit.querySelector('.unit-name').innerText;
+    if (confirm(`Are you sure you want to delete "${name}"?`)) {
+      store.dispatch(remove(unit.dataset.index));
+    }
   }
 
   _add() {

@@ -31,6 +31,7 @@ export const ButtonSharedStyles = css`
     border: 0;
     margin-top: 0;
     padding: 0;
+    font-weight: 400;
   }
 
   .btn-link:hover {

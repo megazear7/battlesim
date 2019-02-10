@@ -32,6 +32,16 @@ export const SharedStyles = css`
     font-weight: 400;
   }
 
+  h4 {
+    font-size: 1.25rem;
+    font-weight: 400;
+  }
+
+  h5 {
+    font-size: 1.125rem;
+    font-weight: 400;
+  }
+
   @media (min-width: 460px) {
     h2 {
       font-size: 36px;
