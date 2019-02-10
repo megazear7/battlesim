@@ -91,10 +91,14 @@ const battle = (state = initialState, action) => {
   } else if (action.type === REMOVE) {
     activeBattle.units.splice(action.index, 1);
   } else if (action.type === CREATE_BATTLE) {
-    newState.battles.push({
+    let newBattle = {
       ...state.battleTemplates[action.battleStats.templateIndex],
       createdAt: new Date().getTime()
-    });
+    };
+    if (action.battleStats.name) {
+      newBattle.name = action.battleStats.name;
+    }
+    newState.battles.push(newBattle);
     newState.activeBattle = newState.battles.length - 1;
   } else if (action.type === REMOVE_BATTLE) {
     newState.battles.splice(action.index, 1);
