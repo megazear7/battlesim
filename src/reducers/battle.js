@@ -26,6 +26,7 @@ const INITIAL_STATE = {
   ],
   battleTemplates: [
     {
+      activeUnit: 0,
       name: "Generic Revolutionary War",
       armies: [
         { name: "Brittish" },
@@ -36,6 +37,7 @@ const INITIAL_STATE = {
       ],
     },
     {
+      activeUnit: 0,
       name: "Bunker Hill",
       armies: [
         { name: "Brittish" },

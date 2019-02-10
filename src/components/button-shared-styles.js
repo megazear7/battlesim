@@ -29,6 +29,8 @@ export const ButtonSharedStyles = css`
 
   .btn-link {
     border: 0;
+    margin-top: 0;
+    padding: 0;
   }
 
   .btn-link:hover {

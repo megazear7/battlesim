@@ -35,6 +35,9 @@ class BattleView extends connect(store)(PageViewElement) {
           color: red;
           transition: opacity 300ms;
         }
+        .remove-unit {
+          float: right;
+        }
       `
     ];
   }
@@ -44,10 +47,12 @@ class BattleView extends connect(store)(PageViewElement) {
       <section>
         <div>
           <h3>${this._army0Name}</h3>
+          <hr>
           ${repeat(this._army0Units, ({index, unit}) => html`
             <div class="unit" data-index="${index}">
               ${unit.name}
-              <button class="btn-link" @click="${this._remove}">Remove</button>
+              <button class="btn-link remove-unit" @click="${this._remove}">Remove</button>
+              <hr>
             </div>
           `)}
         </div>
@@ -55,10 +60,12 @@ class BattleView extends connect(store)(PageViewElement) {
       <section>
         <div>
           <h3>${this._army1Name}</h3>
+          <hr>
           ${repeat(this._army1Units, ({index, unit}) => html`
             <div class="unit" data-index="${index}">
               ${unit.name}
-              <button class="btn-link" @click="${this._remove}">Remove</button>
+              <button class="btn-link remove-unit" @click="${this._remove}">Remove</button>
+              <hr>
             </div>
           `)}
         </div>
