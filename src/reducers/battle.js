@@ -24,6 +24,20 @@ const INITIAL_STATE = {
       units: [
         { army: 0, name: "15th Regiment (East Yorkshire)", hp: 100, speed: 50, energy: 100, },
       ],
+      unitTemplates: [
+        { army: 0, name: "15th Regiment (East Yorkshire)", hp: 100, speed: 50, energy: 100, },
+        { army: 0, name: "16th Cavalry (The Queen's Lancers)", hp: 100, speed: 70, energy: 100, },
+        { army: 0, name: "9th Regiment (Royal Norfolk)", hp: 40, speed: 50, energy: 100, },
+        { army: 0, name: "Redcoats", hp: 30, speed: 60, energy: 100, },
+        { army: 0, name: "Brittish Cavalry", hp: 30, speed: 60, energy: 100, },
+        { army: 0, name: "Brittish Cannon", hp: 30, speed: 60, energy: 100, },
+        { army: 1, name: "3rd Regiment of Militia", hp: 30, speed: 60, energy: 100, },
+        { army: 1, name: "Bradley's Regiment", hp: 80, speed: 40, energy: 100, },
+        { army: 1, name: "Waterbury's Regiment", hp: 30, speed: 60, energy: 100, },
+        { army: 1, name: "Continental Line", hp: 30, speed: 60, energy: 100, },
+        { army: 1, name: "Continental Cavalry", hp: 30, speed: 60, energy: 100, },
+        { army: 1, name: "Continental Cannon", hp: 30, speed: 60, energy: 100, },
+      ],
     }
   ],
   battleTemplates: [
@@ -37,6 +51,20 @@ const INITIAL_STATE = {
       units: [
         { army: 0, name: "15th Regiment (East Yorkshire)", hp: 100, speed: 50, energy: 100, },
       ],
+      unitTemplates: [
+        { army: 0, name: "15th Regiment (East Yorkshire)", hp: 100, speed: 50, energy: 100, },
+        { army: 0, name: "16th Cavalry (The Queen's Lancers)", hp: 100, speed: 70, energy: 100, },
+        { army: 0, name: "9th Regiment (Royal Norfolk)", hp: 40, speed: 50, energy: 100, },
+        { army: 0, name: "Redcoats", hp: 30, speed: 60, energy: 100, },
+        { army: 0, name: "Brittish Cavalry", hp: 30, speed: 60, energy: 100, },
+        { army: 0, name: "Brittish Cannon", hp: 30, speed: 60, energy: 100, },
+        { army: 1, name: "3rd Regiment of Militia", hp: 30, speed: 60, energy: 100, },
+        { army: 1, name: "Bradley's Regiment", hp: 80, speed: 40, energy: 100, },
+        { army: 1, name: "Waterbury's Regiment", hp: 30, speed: 60, energy: 100, },
+        { army: 1, name: "Continental Line", hp: 30, speed: 60, energy: 100, },
+        { army: 1, name: "Continental Cavalry", hp: 30, speed: 60, energy: 100, },
+        { army: 1, name: "Continental Cannon", hp: 30, speed: 60, energy: 100, },
+      ]
     },
     {
       activeUnit: 0,
@@ -52,6 +80,20 @@ const INITIAL_STATE = {
         { army: 1, name: "3rd Regiment of Militia", hp: 30, speed: 60, energy: 100, },
         { army: 1, name: "Bradley's Regiment", hp: 80, speed: 40, energy: 100, },
         { army: 1, name: "Waterbury's Regiment", hp: 30, speed: 60, energy: 100, },
+      ],
+      unitTemplates: [
+        { army: 0, name: "15th Regiment (East Yorkshire)", hp: 100, speed: 50, energy: 100, },
+        { army: 0, name: "16th Cavalry (The Queen's Lancers)", hp: 100, speed: 70, energy: 100, },
+        { army: 0, name: "9th Regiment (Royal Norfolk)", hp: 40, speed: 50, energy: 100, },
+        { army: 0, name: "Redcoats", hp: 30, speed: 60, energy: 100, },
+        { army: 0, name: "Brittish Cavalry", hp: 30, speed: 60, energy: 100, },
+        { army: 0, name: "Brittish Cannon", hp: 30, speed: 60, energy: 100, },
+        { army: 1, name: "3rd Regiment of Militia", hp: 30, speed: 60, energy: 100, },
+        { army: 1, name: "Bradley's Regiment", hp: 80, speed: 40, energy: 100, },
+        { army: 1, name: "Waterbury's Regiment", hp: 30, speed: 60, energy: 100, },
+        { army: 1, name: "Continental Line", hp: 30, speed: 60, energy: 100, },
+        { army: 1, name: "Continental Cavalry", hp: 30, speed: 60, energy: 100, },
+        { army: 1, name: "Continental Cannon", hp: 30, speed: 60, energy: 100, },
       ],
     }
   ]
@@ -87,7 +129,11 @@ const battle = (state = initialState, action) => {
     activeBattle.activeUnit = newActiveUnit;
     activeBattle.units[oldActiveUnit].energy -= 10;
   } else if (action.type === ADD) {
-    activeBattle.units.push(action.stats);
+    let newUnit = activeBattle.unitTemplates[action.unitTemplate];
+    if (action.name) {
+      newUnit.name = action.name;
+    }
+    activeBattle.units.push(newUnit);
   } else if (action.type === REMOVE) {
     activeBattle.units.splice(action.index, 1);
   } else if (action.type === CREATE_BATTLE) {

@@ -17,6 +17,8 @@ class BattleView extends connect(store)(PageViewElement) {
     return {
       _army0Units: { type: Object },
       _army1Units: { type: Object },
+      _allUnitTemplates: { type: Object },
+      _unitTemplates: { type: Object },
     };
   }
 
@@ -57,7 +59,7 @@ class BattleView extends connect(store)(PageViewElement) {
     return html`
       <section>
         <div>
-          <h3>${this._army0Name}</h3>
+          <h2>${this._army0Name}</h3>
           ${repeat(this._army0Units, ({index, unit}) => html`
             <div class="unit" data-index="${index}">
               <h5 class="unit-name">${unit.name}</h5>
@@ -68,7 +70,7 @@ class BattleView extends connect(store)(PageViewElement) {
       </section>
       <section>
         <div>
-          <h3>${this._army1Name}</h3>
+          <h2>${this._army1Name}</h3>
           ${repeat(this._army1Units, ({index, unit}) => html`
             <div class="unit" data-index="${index}">
               <h5 class="unit-name">${unit.name}</h5>
@@ -80,21 +82,20 @@ class BattleView extends connect(store)(PageViewElement) {
       <section>
         <h2>Add Unit</h2>
         <div>
-          <p>TODO Instead of giving the user stat fields to enter just allow them to
-          select from a list of unit types that can be chosen based upon the chosen battle.</p>
-          <select id="army">
+          <p>TODO The unit templates that can be added to battles should come from a separate
+          reducer, the data of which is not saved to local storage. This is so that when the
+          app is updated these unit template lists get updated.</p>
+          <select id="army" @change="${this._armyChanged}">
             <option value="0">Brittish</option>
             <option value="1">Americans</option>
           </select>
-          <br>
-          <input id="name" type="text" placeholder="Name"></input>
-          <br>
-          <input id="hp" type="number" placeholder="HP"></input>
-          <br>
-          <input id="speed" type="number" placeholder="Speed"></input>
-          <br>
-          <input id="energy" type="number" placeholder="Energy"></input>
-          <br>
+          <select id="unit-template">
+            <option>Select Unit To Add</option>
+            ${repeat(this._unitTemplates, ({id, unit}) => html`
+              <option value="${id}">${unit.name}</option>
+            `)}
+          </select>
+          <input id="name" type="text" placeholder="Optionally Change the Units Name"></input>
           <button @click="${this._add}">Add</button>
           <p class="error">All fields need valid input.</p>
           <p id="added-message">Unit Added!</p>
@@ -103,43 +104,36 @@ class BattleView extends connect(store)(PageViewElement) {
     `;
   }
 
+  get armyElement() {
+    return this.shadowRoot.getElementById('army');
+  }
+
   get army() {
-    return parseInt(this.shadowRoot.getElementById('army').value);
+    if (this.armyElement) {
+      return parseInt(this.armyElement.value);
+    } else {
+      return 0;
+    }
+  }
+
+  get unitTemplateElement() {
+    return this.shadowRoot.getElementById('unit-template');
+  }
+
+  get unitTemplate() {
+    return parseInt(this.unitTemplateElement.value);
+  }
+
+  _armyChanged() {
+    this._unitTemplates = this._allUnitTemplates.filter(({unit}) => unit.army === this.army);
   }
 
   get name() {
     return this.shadowRoot.getElementById('name').value;
   }
 
-  get hp() {
-    return parseInt(this.shadowRoot.getElementById('hp').value);
-  }
-
-  get speed() {
-    return parseInt(this.shadowRoot.getElementById('speed').value);
-  }
-
-  get energy() {
-    return parseInt(this.shadowRoot.getElementById('energy').value);
-  }
-
-  get stats() {
-    return {
-      army: this.army,
-      name: this.name,
-      hp: this.hp,
-      speed: this.speed,
-      energy: this.energy
-    };
-  }
-
   get statsValid() {
-    let stats = this.stats;
-    return typeof stats.army !== 'undefined' &&
-      stats.name.length > 0 &&
-      stats.hp > 0 &&
-      stats.speed > 0 &&
-      stats.energy > 0;
+    return ! isNaN(this.unitTemplate);
   }
 
   _remove(e) {
@@ -152,12 +146,9 @@ class BattleView extends connect(store)(PageViewElement) {
 
   _add() {
     if (this.statsValid) {
-      store.dispatch(add(this.stats));
+      store.dispatch(add(this.unitTemplate, this.name));
       this.shadowRoot.getElementById('army').value = '0';
       this.shadowRoot.getElementById('name').value = '';
-      this.shadowRoot.getElementById('hp').value = '';
-      this.shadowRoot.getElementById('speed').value = '';
-      this.shadowRoot.getElementById('energy').value = '';
 
       let addedMessage = this.shadowRoot.getElementById('added-message');
       addedMessage.style.opacity = '1';
@@ -183,6 +174,8 @@ class BattleView extends connect(store)(PageViewElement) {
     this._army1Units = units.filter(({unit}) => unit.army === 1);
     this._army0Name = activeBattle.armies[0].name;
     this._army1Name = activeBattle.armies[1].name;
+    this._allUnitTemplates = activeBattle.unitTemplates.map((unit, index) => ({ id: index, unit }));
+    this._unitTemplates = this._allUnitTemplates.filter(({unit}) => unit.army === this.army);
   }
 }
 

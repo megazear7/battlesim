@@ -48,6 +48,9 @@ class WarView extends connect(store)(PageViewElement) {
       `)}
       <section>
         <div>
+          <p>TODO The battle templates should come from a separate reducer,
+          the data of which is not saved to local storage. This is so that when the
+          app is updated these unit template lists get updated.</p>
           <select id="battle-template">
             ${repeat(this._battleTemplates, ({battleTemplate, index }) => html`
               <option value="${index}">${battleTemplate.name}</option>

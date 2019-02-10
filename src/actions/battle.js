@@ -35,10 +35,11 @@ export const fire = (situation) => {
   };
 };
 
-export const add = (stats) => {
+export const add = (unitTemplate, name) => {
   return {
     type: ADD,
-    stats
+    unitTemplate,
+    name
   };
 };
 
