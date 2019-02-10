@@ -82,6 +82,7 @@ class FightView extends connect(store)(PageViewElement) {
         <div id="terrain" class="hidden">
           <input type="checkbox">Difficult Terrain</input>
         </div>
+        <p class="error hidden">You must provide valid values for each field</p>
         <div id="take-action" style="opacity: 0;">
           <button @click="${this._takeAction}">Take Action</button>
           <p>TODO After they take the action explain the result. Explain if any follow up actions
@@ -108,6 +109,10 @@ class FightView extends connect(store)(PageViewElement) {
     return this.shadowRoot.getElementById('target');
   }
 
+  get errorElement() {
+    return this.shadowRoot.querySelector('.error');
+  }
+
   get distance() {
     return parseInt(this.distanceContainer.querySelector('input').value);
   }
@@ -121,7 +126,7 @@ class FightView extends connect(store)(PageViewElement) {
   }
 
   get target() {
-    return this.targetContainer.querySelector('select').value;
+    return parseInt(this.targetContainer.querySelector('select').value);
   }
 
   get situation() {
@@ -133,14 +138,43 @@ class FightView extends connect(store)(PageViewElement) {
     }
   }
 
+  get validSituation() {
+    if (this._selectedAction === rest) {
+      return true;
+    } else if (this._selectedAction === move) {
+      return this.distance > 0;
+    } else if (this._selectedAction === charge) {
+      return this.distance > 0 && ! isNaN(this.target)
+    } else if (this._selectedAction === fire) {
+      return this.distance > 0 && ! isNaN(this.target)
+    } else {
+      return false;
+    }
+  }
+
   _takeAction() {
-    this._removeSelection();
-    this.shadowRoot.getElementById('move').style.opacity = 1;
-    this.shadowRoot.getElementById('charge').style.opacity = 1;
-    this.shadowRoot.getElementById('rest').style.opacity = 1;
-    this.shadowRoot.getElementById('fire').style.opacity = 1;
-    this.shadowRoot.getElementById('take-action').style.opacity = 0;
-    store.dispatch(this._selectedAction(this.situation));
+    if (this.validSituation) {
+      this._removeSelection();
+      this.shadowRoot.getElementById('move').style.opacity = 1;
+      this.shadowRoot.getElementById('charge').style.opacity = 1;
+      this.shadowRoot.getElementById('rest').style.opacity = 1;
+      this.shadowRoot.getElementById('fire').style.opacity = 1;
+      this.shadowRoot.getElementById('take-action').style.opacity = 0;
+
+      this.distanceContainer.querySelector('input').value = '';
+      this.uphillContainer.querySelector('input').checked = false;
+      this.terrainContainer.querySelector('input').checked = false;
+      this.targetContainer.querySelector('select').value = '';
+
+      store.dispatch(this._selectedAction(this.situation));
+    } else {
+      this.errorElement.style.opacity = '1';
+      this.errorElement.style.display = 'block';
+      setTimeout(() => {
+        this.errorElement.style.opacity = '0';
+        this.errorElement.style.display = 'none';
+      }, 3000);
+    }
   }
 
   _removeSelection() {

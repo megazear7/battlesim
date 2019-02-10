@@ -27,10 +27,11 @@ class BattleView extends connect(store)(PageViewElement) {
       css`
         #added-message {
           opacity: 0;
+          display: none;
           color: green;
           transition: opacity 300ms;
         }
-        #error-message {
+        #error {
           opacity: 0;
           color: red;
           transition: opacity 300ms;
@@ -95,9 +96,8 @@ class BattleView extends connect(store)(PageViewElement) {
           <input id="energy" type="number" placeholder="Energy"></input>
           <br>
           <button @click="${this._add}">Add</button>
-          <br>
+          <p class="error">All fields need valid input.</p>
           <p id="added-message">Unit Added!</p>
-          <p id="error-message">All fields need valid input.</p>
         </div>
       </section>
     `;
@@ -158,11 +158,21 @@ class BattleView extends connect(store)(PageViewElement) {
       this.shadowRoot.getElementById('hp').value = '';
       this.shadowRoot.getElementById('speed').value = '';
       this.shadowRoot.getElementById('energy').value = '';
-      this.shadowRoot.getElementById('added-message').style.opacity = '1';
-      setTimeout(() => this.shadowRoot.getElementById('added-message').style.opacity = '0', 3000);
+
+      let addedMessage = this.shadowRoot.getElementById('added-message');
+      addedMessage.style.opacity = '1';
+      addedMessage.style.display = 'block';
+      setTimeout(() => {
+        addedMessage.style.opacity = '0';
+        addedMessage.style.display = 'none';
+      }, 3000);
     } else {
-      this.shadowRoot.getElementById('error-message').style.opacity = '1';
-      setTimeout(() => this.shadowRoot.getElementById('error-message').style.opacity = '0', 3000);
+      this.shadowRoot.querySelector('.error').style.opacity = '1';
+      this.shadowRoot.querySelector('.error').style.display = 'block';
+      setTimeout(() => {
+        this.shadowRoot.querySelector('.error').style.opacity = '0';
+        this.shadowRoot.querySelector('.error').style.display = 'none';
+      }, 3000);
     }
   }
 

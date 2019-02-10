@@ -71,6 +71,11 @@ class BattleSim extends connect(store)(LitElement) {
           background-color: var(--app-header-background-color);
           color: var(--app-header-text-color);
           border-bottom: 1px solid #eee;
+          z-index: 1;
+        }
+
+        app-drawer {
+          z-index: 1;
         }
 
         .toolbar-top {
@@ -269,7 +274,6 @@ class BattleSim extends connect(store)(LitElement) {
   }
 
   stateChanged(state) {
-    console.log('a', state);
     this._title = state.battle.battles[state.battle.activeBattle].name;
     this._page = state.app.page;
     this._offline = state.app.offline;

@@ -42,6 +42,13 @@ export const SharedStyles = css`
     font-weight: 400;
   }
 
+  .error {
+    display: none;
+    opacity: 0;
+    color: orange;
+    font-weight: 600;
+  }
+
   @media (min-width: 460px) {
     h2 {
       font-size: 36px;
