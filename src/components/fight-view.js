@@ -62,28 +62,26 @@ class FightView extends connect(store)(PageViewElement) {
         </div>
       </section>
       <section>
-        <div id="distance" class="hidden">
-          Distance:
-          <input type="number" placeholder="Distance"></input>
-        </div>
-        <div id="target" class="hidden">
-          Target:
-          <select>
-            <option></option>
+        <div>
+          <input id="distance" class="hidden" type="number" placeholder="Distance"></input>
+          <select id="target" class="hidden">
+            <option>Select Target</option>
             ${repeat(this._targets, target => html`
               <option value="${target.id}">${target.unit.name}</option>
             `)}
           </select>
-        </div>
-        <div id="uphill" class="hidden">
-          <input type="checkbox">Uphill</input>
-        </div>
-        <div id="terrain" class="hidden">
-          <input type="checkbox">Difficult Terrain</input>
-        </div>
-        <p class="error hidden">You must provide valid values for each field</p>
+          <div id="uphill" class="hidden">
+            <input type="checkbox" id="uphill-checkbox"></input>
+            <label for="uphill-checkbox">Uphill</label>
+          </div>
+          <div id="terrain" class="hidden">
+            <input type="checkbox" id="terrain-checkbox"></input>
+            <label for="terrain-checkbox">Difficult Terrain</label>
+          </div>
+        <div>
         <div id="take-action" style="opacity: 0;">
           <button @click="${this._takeAction}">Take Action</button>
+          <p class="error hidden">You must provide valid values for each field</p>
           <p>TODO After they take the action explain the result. Explain if any follow up actions
           are needed such as a retreate or picking up a unit before switching to the next unit.
           Provide a "done" button to move to next unit.<p>
@@ -92,7 +90,7 @@ class FightView extends connect(store)(PageViewElement) {
     `;
   }
 
-  get distanceContainer() {
+  get distanceElement() {
     return this.shadowRoot.getElementById('distance');
   }
 
@@ -104,7 +102,7 @@ class FightView extends connect(store)(PageViewElement) {
     return this.shadowRoot.getElementById('terrain');
   }
 
-  get targetContainer() {
+  get targetElement() {
     return this.shadowRoot.getElementById('target');
   }
 
@@ -113,7 +111,7 @@ class FightView extends connect(store)(PageViewElement) {
   }
 
   get distance() {
-    return parseInt(this.distanceContainer.querySelector('input').value);
+    return parseInt(this.distanceElement.value);
   }
 
   get uphill() {
@@ -125,7 +123,7 @@ class FightView extends connect(store)(PageViewElement) {
   }
 
   get target() {
-    return parseInt(this.targetContainer.querySelector('select').value);
+    return parseInt(this.targetElement.value);
   }
 
   get situation() {
@@ -160,10 +158,10 @@ class FightView extends connect(store)(PageViewElement) {
       this.shadowRoot.getElementById('fire').style.opacity = 1;
       this.shadowRoot.getElementById('take-action').style.opacity = 0;
 
-      this.distanceContainer.querySelector('input').value = '';
+      this.distanceElement.value = '';
       this.uphillContainer.querySelector('input').checked = false;
       this.terrainContainer.querySelector('input').checked = false;
-      this.targetContainer.querySelector('select').value = '';
+      this.targetElement.value = '';
 
       store.dispatch(this._selectedAction(this.situation));
     } else {
@@ -179,16 +177,16 @@ class FightView extends connect(store)(PageViewElement) {
   _removeSelection() {
     [...this.shadowRoot.querySelectorAll('button')]
     .forEach(button => button.classList.remove('selected'));
-    this.distanceContainer.classList.add('hidden');
+    this.distanceElement.classList.add('hidden');
     this.uphillContainer.classList.add('hidden');
     this.terrainContainer.classList.add('hidden');
-    this.targetContainer.classList.add('hidden');
+    this.targetElement.classList.add('hidden');
   }
 
   _move(e) {
     this._removeSelection();
     e.target.classList.add('selected');
-    this.distanceContainer.classList.remove('hidden');
+    this.distanceElement.classList.remove('hidden');
     this.uphillContainer.classList.remove('hidden');
     this.terrainContainer.classList.remove('hidden');
     this.shadowRoot.getElementById('move').style.opacity = 1;
@@ -202,10 +200,10 @@ class FightView extends connect(store)(PageViewElement) {
   _charge(e) {
     this._removeSelection();
     e.target.classList.add('selected');
-    this.distanceContainer.classList.remove('hidden');
+    this.distanceElement.classList.remove('hidden');
     this.uphillContainer.classList.remove('hidden');
     this.terrainContainer.classList.remove('hidden');
-    this.targetContainer.classList.remove('hidden');
+    this.targetElement.classList.remove('hidden');
     this.shadowRoot.getElementById('move').style.opacity = 0.5;
     this.shadowRoot.getElementById('charge').style.opacity = 1;
     this.shadowRoot.getElementById('rest').style.opacity = 0.5;
@@ -228,9 +226,9 @@ class FightView extends connect(store)(PageViewElement) {
   _fire(e) {
     this._removeSelection();
     e.target.classList.add('selected');
-    this.distanceContainer.classList.remove('hidden');
+    this.distanceElement.classList.remove('hidden');
     this.terrainContainer.classList.remove('hidden');
-    this.targetContainer.classList.remove('hidden');
+    this.targetElement.classList.remove('hidden');
     this.shadowRoot.getElementById('move').style.opacity = 0.5;
     this.shadowRoot.getElementById('charge').style.opacity = 0.5;
     this.shadowRoot.getElementById('rest').style.opacity = 0.5;

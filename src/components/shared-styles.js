@@ -49,6 +49,31 @@ export const SharedStyles = css`
     font-weight: 600;
   }
 
+  input[type="text"], input[type="number"] {
+    padding: 1rem;
+    border: none;
+    width: 100%;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+
+  select {
+    -webkit-appearance: none;
+    background: white;
+    width: 100%;
+    border-radius: 0;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    padding: 1rem;
+  }
+
+  input[type="checkbox"] {
+    margin-bottom: 1rem;
+  }
+
   @media (min-width: 460px) {
     h2 {
       font-size: 36px;

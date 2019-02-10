@@ -48,16 +48,12 @@ class WarView extends connect(store)(PageViewElement) {
       `)}
       <section>
         <div>
-          Name:
-          <input id="name" type="text" placeholder="Name the Battle"></input>
-          <br>
-          Battle:
           <select id="battle-template">
             ${repeat(this._battleTemplates, ({battleTemplate, index }) => html`
               <option value="${index}">${battleTemplate.name}</option>
             `)}
           </select>
-          <br>
+          <input id="name" type="text" placeholder="Optional: Provide a Different Name for the Battle"></input>
           <button @click="${this._create}">Create</button>
         </div>
       </section>
@@ -68,8 +64,16 @@ class WarView extends connect(store)(PageViewElement) {
     return this.shadowRoot.getElementById('battle-template').value
   }
 
+  get newBattleNameElement() {
+    return this.shadowRoot.getElementById('name');
+  }
+
   get newBattleName() {
-    return this.shadowRoot.getElementById('name').value
+    return this.newBattleNameElement.value;
+  }
+
+  set newBattleName(value) {
+    this.newBattleNameElement.value = value;
   }
 
   get battleStats() {
@@ -81,9 +85,11 @@ class WarView extends connect(store)(PageViewElement) {
 
   _create() {
     store.dispatch(createBattle(this.battleStats));
+    this.newBattleName = '';
   }
 
   _playBattle(e) {
+
     store.dispatch(setActiveBattle(parseInt(e.target.closest('.battle').dataset.index)));
   }
 
