@@ -53,8 +53,8 @@ define(["./battle-sim.js"],function(_battleSim){"use strict";_battleSim.store.ad
           reducer, the data of which is not saved to local storage. This is so that when the
           app is updated these unit template lists get updated.</p>
           <select id="army" @change="${this._armyChanged}">
-            <option value="0">Brittish</option>
-            <option value="1">Americans</option>
+            <option value="0">${this._army0Name}</option>
+            <option value="1">${this._army1Name}</option>
           </select>
           <select id="unit-template">
             <option>Select Unit To Add</option>
