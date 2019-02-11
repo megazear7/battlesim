@@ -1,4 +1,11 @@
-import CIVIL_WAR_UNITS from './civil-war-units.js';
+import {
+  CIVIL_WAR_UNITS,
+  FRESH_UNION_BRIGADE,
+  FRESH_UNION_CAVALRY_REGIMENT,
+  FRESH_UNION_ARTILLERY,
+  FRESH_CONFEDERATE_BRIGADE,
+  FRESH_CONFEDERATE_CAVALRY_REGIMENT,
+  FRESH_CONFEDERATE_ARTILLERY, } from './civil-war-units.js';
 
 export default [
   {
@@ -10,7 +17,13 @@ export default [
       { name: "Confederate" },
     ],
     units: [
-      { army: 0, name: "15th Regiment (East Yorkshire)", hp: 100, speed: 50, energy: 100, },
+      { ...FRESH_UNION_BRIGADE,
+        name: "Tyler's 1st Brigade"
+      },
+      { ...FRESH_CONFEDERATE_BRIGADE,
+        name: "2nd Potomac Brigade",
+        strength: 2000
+      },
     ],
     unitTemplates: CIVIL_WAR_UNITS
   },
@@ -23,19 +36,55 @@ export default [
       { name: "Confederate" },
     ],
     units: [
-      { army: 0, name: "Tyler's 1st Brigade", strength: 3000 },
-      { army: 0, name: "Tyler's 3rd Brigade (Cavalry)", strength: 750 },
-      { army: 0, name: "Hunter's 1st Brigade", strength: 3000 },
-      { army: 0, name: "Hunter's 2nd Brigade", strength: 3000 },
-      { army: 0, name: "Blenker's Brigade", strength: 2000 },
-      { army: 0, name: "Franklin's Brigade", strength: 2000 },
-      { army: 1, name: "1st Potomac Brigade", strength: 2000 },
-      { army: 1, name: "2nd Potomac Brigade", strength: 2000 },
-      { army: 1, name: "3rd Potomac Brigade", strength: 2000 },
-      { army: 1, name: "1st Shenandoah Brigade", strength: 1500 },
-      { army: 1, name: "Thirteenth Virginia Brigade (Cavalry)", strength: 642 },
-      { army: 1, name: "Harrison's Battalion (Cavalry)", strength: 196 },
-      { army: 1, name: "Washington (Louisiana) Artillery", strength: 50 },
+      { ...FRESH_UNION_BRIGADE,
+        name: "Tyler's 1st Brigade"
+      },
+      { ...FRESH_UNION_CAVALRY_REGIMENT,
+        name: "Tyler's Cavalry",
+        strength: 750
+      },
+      { ...FRESH_UNION_BRIGADE,
+        name: "Hunter's 1st Brigade"
+      },
+      { ...FRESH_UNION_BRIGADE,
+        name: "Hunter's 2nd Brigade"
+      },
+      { ...FRESH_UNION_BRIGADE,
+        name: "Blenker's Brigade",
+        strength: 2000
+      },
+      { ...FRESH_UNION_BRIGADE,
+        name: "Franklin's Brigade",
+        strength: 2000
+      },
+      { ...FRESH_CONFEDERATE_BRIGADE,
+        name: "1st Potomac Brigade",
+        strength: 2000
+      },
+      { ...FRESH_CONFEDERATE_BRIGADE,
+        name: "2nd Potomac Brigade",
+        strength: 2000
+      },
+      { ...FRESH_CONFEDERATE_BRIGADE,
+        name: "3rd Potomac Brigade",
+        strength: 2000
+      },
+      { ...FRESH_CONFEDERATE_BRIGADE,
+        name: "1st Shenandoah Brigade",
+        strength: 2000
+      },
+      { ...FRESH_CONFEDERATE_CAVALRY_REGIMENT,
+        name: "Thirteenth Cavalry",
+        strength: 2000
+      },
+      { ...FRESH_CONFEDERATE_CAVALRY_REGIMENT,
+        name: "Harrison's Cavalry",
+        strength: 2000
+      },
+      { ...FRESH_CONFEDERATE_BRIGADE,
+        name: "Washington (Louisiana) Artillery",
+        strength: 2000
+      },
     ],
     unitTemplates: CIVIL_WAR_UNITS,
     rules: [

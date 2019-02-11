@@ -1,4 +1,10 @@
 export default {
+  hands: {
+    powerVsFoot: 5,
+    powerVsMounted: 5,
+    volume: 1,
+    weight: 0,
+  },
   sword: {
     powerVsFoot: 30,
     powerVsMounted: 20,
@@ -46,6 +52,12 @@ export default {
     powerVsMounted: 70,
     volume: 4,
     weight: 3,
+  },
+  cannon24PounderCivilWar: { // Standard civil war cannon
+    powerVsFoot: 500,
+    powerVsMounted: 500,
+    volume: 1,
+    weight: 10,
   },
   leeEnfield303: { // Standard ww1 rifle
     powerVsFoot: 75,
