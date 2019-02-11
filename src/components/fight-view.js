@@ -57,7 +57,6 @@ class FightView extends connect(store)(PageViewElement) {
 
           <h6>Unit Description</h6>
           <p>${this._unit.desc}</p>
-          <p>TODO We need to dynamically reference weapon data instead of coping it when the battle is created.</p>
         </section>
         <section>
           <div id="actions">
