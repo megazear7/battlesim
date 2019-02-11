@@ -1,5 +1,6 @@
 import { store } from './store.js';
 import battle from './reducers/battle.js';
+import { WEAPONS } from './weapons.js';
 
 store.addReducers({
   battle
@@ -30,8 +31,8 @@ export default class Unit {
     this.morale = morale;
     this.energy = energy;
     this.armor = armor;
-    this.meleeWeapon = meleeWeapon;
-    this.rangedWeapon = rangedWeapon;
+    this.meleeWeapon = WEAPONS[meleeWeapon];
+    this.rangedWeapon = WEAPONS[rangedWeapon];
     this.experience = experience;
     this.leadership = leadership;
     this.troopType = troopType;

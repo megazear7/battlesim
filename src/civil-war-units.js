@@ -1,5 +1,10 @@
 import ARMOR from './armor.js';
-import WEAPONS from './weapons.js';
+import {
+  BAYONETE,
+  SPRINGFIELD_RIFLED_MUSKET,
+  NONE,
+  CANNON_24_POUNDER_CIVIL_WAR,
+  CONFEDERATE_SMOOTH_BORE } from './weapons.js';
 
 const UNION = 0;
 const CONFEDERATE = 1;
@@ -19,8 +24,8 @@ export const FRESH_UNION_BRIGADE = {
   energy: 100,
   static: {
     armor: ARMOR.clothes,
-    meleeWeapon: WEAPONS.bayonete,
-    rangedWeapon: WEAPONS.springfieldRifledMusket,
+    meleeWeapon: BAYONETE,
+    rangedWeapon: SPRINGFIELD_RIFLED_MUSKET,
     experience: 50,
     leadership: 50,
     troopType: FOOT_TROOP,
@@ -38,8 +43,8 @@ export const FRESH_UNION_CAVALRY_REGIMENT = {
   energy: 100,
   static: {
     armor: ARMOR.clothes,
-    meleeWeapon: WEAPONS.bayonete,
-    rangedWeapon: WEAPONS.springfieldRifledMusket,
+    meleeWeapon: BAYONETE,
+    rangedWeapon: SPRINGFIELD_RIFLED_MUSKET,
     experience: 50,
     leadership: 50,
     troopType: CAVALRY_TROOP,
@@ -57,8 +62,8 @@ export const FRESH_UNION_ARTILLERY = {
   energy: 100,
   static: {
     armor: ARMOR.clothes,
-    meleeWeapon: WEAPONS.hands,
-    rangedWeapon: WEAPONS.cannon24PounderCivilWar,
+    meleeWeapon: NONE,
+    rangedWeapon: CANNON_24_POUNDER_CIVIL_WAR,
     experience: 70,
     leadership: 70,
     troopType: ARTILLERY_TROOP,
@@ -76,8 +81,8 @@ export const FRESH_CONFEDERATE_BRIGADE = {
   energy: 100,
   static: {
     armor: ARMOR.clothes,
-    meleeWeapon: WEAPONS.bayonete,
-    rangedWeapon: WEAPONS.confederateSmoothbore,
+    meleeWeapon: BAYONETE,
+    rangedWeapon: CONFEDERATE_SMOOTH_BORE,
     experience: 70,
     leadership: 70,
     troopType: FOOT_TROOP,
@@ -95,8 +100,8 @@ export const FRESH_CONFEDERATE_CAVALRY_REGIMENT = {
   energy: 100,
   static: {
     armor: ARMOR.clothes,
-    meleeWeapon: WEAPONS.bayonete,
-    rangedWeapon: WEAPONS.confederateSmoothbore,
+    meleeWeapon: BAYONETE,
+    rangedWeapon: CONFEDERATE_SMOOTH_BORE,
     experience: 70,
     leadership: 70,
     troopType: CAVALRY_TROOP,
@@ -114,8 +119,8 @@ export const FRESH_CONFEDERATE_ARTILLERY = {
   energy: 100,
   static: {
     armor: ARMOR.clothes,
-    meleeWeapon: WEAPONS.hands,
-    rangedWeapon: WEAPONS.cannon24PounderCivilWar,
+    meleeWeapon: NONE,
+    rangedWeapon: CANNON_24_POUNDER_CIVIL_WAR,
     experience: 70,
     leadership: 70,
     troopType: ARTILLERY_TROOP,
