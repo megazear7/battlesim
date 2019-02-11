@@ -28,16 +28,17 @@ class RulesView extends connect(store)(PageViewElement) {
     return html`
       <section>
         <h2>${this._ruleset.name}</h2>
-        ${repeat(this._ruleset.sections, ({heading, text, subsections}, index) => html`
+      </section>
+      ${repeat(this._ruleset.sections, ({heading, text, subsections}, index) => html`
+        <section>
           <h3>${index+1} ${heading}</h3>
           <p>${text}</p>
           ${repeat(subsections, ({heading, text}, subIndex) => html`
             <h5>${index+1}.${subIndex+1} ${heading}</h5>
             <p>${text}</p>
           `)}
-          <hr>
-        `)}
-      </section>
+        </section>
+      `)}
     `;
   }
 
