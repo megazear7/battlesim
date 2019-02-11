@@ -14,6 +14,7 @@ const INITIAL_STATE = {
   activeBattle: 0,
   battles: [
     {
+      ruleset: 0,
       activeUnit: 0,
       createdAt: new Date().getTime(),
       name: "Example Battle",
@@ -42,6 +43,7 @@ const INITIAL_STATE = {
   ],
   battleTemplates: [
     {
+      ruleset: 0,
       activeUnit: 0,
       name: "Generic Revolutionary War",
       armies: [
@@ -67,6 +69,7 @@ const INITIAL_STATE = {
       ]
     },
     {
+      ruleset: 0,
       activeUnit: 0,
       name: "Bunker Hill",
       armies: [
