@@ -1,5 +1,5 @@
 import ARMOR from './armor.js';
-import WEAPONS from './armor.js';
+import WEAPONS from './weapons.js';
 
 const UNION = 0;
 const CONFEDERATE = 1;
@@ -7,6 +7,9 @@ const UNION_BRIGADE_SIZE = 3000;
 const UNION_CAVALRY_REGIMENT_SIZE = 1000;
 const CONFEDERATE_BRIGADE_SIZE = 3000;
 const CONFEDERATE_CAVALRY_REGIMENT_SIZE = 1000;
+const FOOT_TROOP = 0;
+const CAVALRY_TROOP = 1;
+const ARTILLERY_TROOP = 2;
 
 export const FRESH_UNION_BRIGADE = {
   army: UNION,
@@ -20,6 +23,7 @@ export const FRESH_UNION_BRIGADE = {
     rangedWeapon: WEAPONS.springfieldRifledMusket,
     experience: 50,
     leadership: 50,
+    troopType: FOOT_TROOP,
     fullStrength: UNION_BRIGADE_SIZE,
     movementTime: 120,
     maneuverTime: 110,
@@ -38,6 +42,7 @@ export const FRESH_UNION_CAVALRY_REGIMENT = {
     rangedWeapon: WEAPONS.springfieldRifledMusket,
     experience: 50,
     leadership: 50,
+    troopType: CAVALRY_TROOP,
     fullStrength: UNION_CAVALRY_REGIMENT_SIZE,
     movementTime: 60,
     maneuverTime: 90,
@@ -56,6 +61,7 @@ export const FRESH_UNION_ARTILLERY = {
     rangedWeapon: WEAPONS.cannon24PounderCivilWar,
     experience: 70,
     leadership: 70,
+    troopType: ARTILLERY_TROOP,
     fullStrength: 50,
     movementTime: 340,
     maneuverTime: 220,
@@ -74,6 +80,7 @@ export const FRESH_CONFEDERATE_BRIGADE = {
     rangedWeapon: WEAPONS.confederateSmoothbore,
     experience: 70,
     leadership: 70,
+    troopType: FOOT_TROOP,
     fullStrength: CONFEDERATE_BRIGADE_SIZE,
     movementTime: 120,
     maneuverTime: 80,
@@ -92,6 +99,7 @@ export const FRESH_CONFEDERATE_CAVALRY_REGIMENT = {
     rangedWeapon: WEAPONS.confederateSmoothbore,
     experience: 70,
     leadership: 70,
+    troopType: CAVALRY_TROOP,
     fullStrength: CONFEDERATE_CAVALRY_REGIMENT_SIZE,
     movementTime: 60,
     maneuverTime: 70,
@@ -110,6 +118,7 @@ export const FRESH_CONFEDERATE_ARTILLERY = {
     rangedWeapon: WEAPONS.cannon24PounderCivilWar,
     experience: 70,
     leadership: 70,
+    troopType: ARTILLERY_TROOP,
     fullStrength: 50,
     movementTime: 360,
     maneuverTime: 200,

@@ -42,6 +42,7 @@ class FightView extends connect(store)(PageViewElement) {
   }
 
   render() {
+    console.log(this._activeUnit);
     return html`
       <section>
         <div>
@@ -49,15 +50,18 @@ class FightView extends connect(store)(PageViewElement) {
           <div id="army">Army: ${this._army.name}</div>
         </div>
         <h6>Unit Status</h6>
-        <p>TODO Show unit status textual description. This would be information
-        such as the moral and health of the unit. If they are visibly exhausted
-        or slow moving. If they have taken casualties, etc... The level of details
-        provided in this status increases with better leadership.</p>
+        <p>TODO Generate a textual description of these stats</p>
+        <div>${this._activeUnit.strength} Soldiers</div>
+        <div>${this._activeUnit.morale}% Morale</div>
+        <div>${this._activeUnit.energy}% Energy</div>
+
         <h6>Unit Description</h6>
-        <p>TODO Show unit description. This would be information that would
-        not change over the course of the game such as how experience the unit
-        is, what kind of training they have, what king of weaponry they have, if
-        they are mounted, skirmishers, line troops, artillary, etc..</p>
+        <p>TODO These stats are still being pulled in statically when the battle is created. We need to dynamically reference the weapons at all times instead of coping the data. Also update the experience and leadership to be textual descriptions.</p>
+        <div>${this._troopType}</div>
+        <div>${this._activeUnit.static.rangedWeapon.name}</div>
+        <div>${this._activeUnit.static.meleeWeapon.name}</div>
+        <div>${this._activeUnit.static.experience} experience</div>
+        <div>${this._activeUnit.static.leadership} leadership</div>
       </section>
       <section>
         <div id="actions">
@@ -100,6 +104,14 @@ class FightView extends connect(store)(PageViewElement) {
         </div>
       </section>
     `;
+  }
+
+  get _troopType() {
+    return {
+      0: "Foot troops",
+      1: "Cavalry",
+      2: "Artillery",
+    }[this._activeUnit.static.troopType];
   }
 
   get distanceElement() {
