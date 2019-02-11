@@ -84,12 +84,7 @@ class FightView extends connect(store)(PageViewElement) {
             <p class="error hidden">You must provide valid values for each field</p>
           </div>
           <div id="action-result">
-            <p>TODO After they take the action explain the result. Maybe they could
-            not move the full distance and got bogged down half way. Maybe they
-            refuse to charge or are low on amunition.
-            Explain the outcomes of any battles such as casualties or changes in morale
-            or if any follow up actions are needed such as a retreate or
-            picking up a destroyed unit.</p>
+            <p id="action-message"></p>
             <button @click="${this._progressToNextAction}">Next Action</button>
           </div>
         </section>
@@ -146,6 +141,12 @@ class FightView extends connect(store)(PageViewElement) {
     }
   }
 
+  get terrainModifier() {
+    return 0
+      + this.uphill ? 50 : 0
+      + this.terrain ? 50 : 0;
+  }
+
   get validSituation() {
     if (this._selectedAction === rest) {
       return true;
@@ -160,15 +161,38 @@ class FightView extends connect(store)(PageViewElement) {
     }
   }
 
+  get _actionMessageElement() {
+    return this.shadowRoot.getElementById('action-message');
+  }
+
   _progressToNextAction() {
     store.dispatch(this._selectedAction(this.situation));
     this.shadowRoot.getElementById('actions').style.display = 'block';
     this.shadowRoot.getElementById('take-action').style.display = 'block';
     this.shadowRoot.getElementById('action-result').style.display = 'none';
+    this._actionMessageElement.innerText = '';
   }
 
   _takeAction() {
     if (this.validSituation) {
+      if (this._selectedAction === rest) {
+        let actionResult = this._unit.rest();
+        this._actionMessageElement.innerText = actionResult.message;
+        // TODO We need to persist the updates to the unit to the redux store;
+      } else if (this._selectedAction === move) {
+        let actionResult = this._unit.move(this.distance, this.terrainModifier);
+        this._actionMessageElement.innerText = actionResult.message;
+        // TODO We need to persist the updates to the unit to the redux store;
+      } else if (this._selectedAction === charge) {
+        let actionResult = this._unit.charge();
+        this._actionMessageElement.innerText = actionResult.message;
+        // TODO We need to persist the updates to the unit to the redux store;
+      } else if (this._selectedAction === fire) {
+        let actionResult = this._unit.fire();
+        this._actionMessageElement.innerText = actionResult.message;
+        // TODO We need to persist the updates to the unit to the redux store;
+      }
+
       this._removeSelection();
       this.shadowRoot.getElementById('move').style.opacity = 1;
       this.shadowRoot.getElementById('charge').style.opacity = 1;

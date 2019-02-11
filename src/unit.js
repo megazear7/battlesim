@@ -1,6 +1,7 @@
 import { store } from './store.js';
 import { WEAPONS } from './weapons.js';
 import { ARMOR } from './armor.js';
+import { weightedRandom, numberWithCommas } from './math-utils.js';
 
 export default class Unit {
   constructor({
@@ -33,8 +34,64 @@ export default class Unit {
     this.leadership = leadership;
     this.troopType = troopType;
     this.fullStrength = fullStrength;
-    this.movementTime = movementTime;
+    this.movementTime = movementTime; // Time it takes to go 100 yards
     this.maneuverTime = maneuverTime;
+  }
+
+  rest() {
+    return {
+      message: "TODO"
+    };
+  }
+
+  /**
+   * @function move
+   * @param distance This is given in inches
+   * @param terrain This should be a number between 0 and 100
+   * @return
+   */
+  move(distance, terrain, manuevering = false) {
+    let time = distance
+      * this.movementTime
+      * (1 + (terrain/100))
+      * (1 + weightedRandom(5));
+
+    if (manuevering) {
+      time += this.maneuverTime;
+    }
+
+    const secondsInAnHour = 3600;
+
+    // If it would take more than 1 hour to perform the action then the movement
+    // is reduced to however far they could have gone in an hour.
+    let actualDistance;
+    let actualTime;
+    if (time > secondsInAnHour) {
+      let speed = distance / time;
+      actualTime = secondsInAnHour;
+      actualDistance = speed * actualTime ;
+    } else {
+      actualTime = time;
+      actualDistance = distance;
+    }
+
+    return {
+      distance: Math.floor(actualDistance),
+      time: Math.floor(actualTime),
+      message: `${this.name} travelled ${numberWithCommas(Math.floor(actualDistance * 100))} yards in ${Math.floor(actualTime / 60)} minutes.`
+    };
+  }
+
+  charge() {
+    return {
+      message: "TODO"
+    };
+  }
+
+  fire() {
+    return {
+      message: "TODO"
+    };
   }
 
   get targets() {
@@ -93,7 +150,7 @@ export default class Unit {
 
   get detailedMoraleDesc() {
     if (this.morale > 80) {
-      return 'Morale is great. They will do whatever you need.';
+      return 'Morale is great. They are willing to fight.';
     } else if (this.morale > 60) {
       return 'Morale is good. They have been shaken up but are ready for their orders.';
     } else if (this.morale > 40) {

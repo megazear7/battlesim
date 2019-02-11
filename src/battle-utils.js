@@ -1,3 +1,5 @@
+import { weightedRandom } from './math-utils.js';
+
 /** @function attack
  *  Make an attack against a unit. This assumes no environmental factors.
  *  @param strength: The number of soldiers in the attacking unit
@@ -57,17 +59,4 @@ function checkAttackParams(strength, volume, power, armor, attackSkill, defendSk
   if (strength <= 0) {
     console.error(`volume of less than or equal to 0 is invalid. volume was ${volume}`);
   }
-}
-
-/** @function weightedRandom
- *  A random number between 0 and 1 weighted towards the middle.
- *  @param bellFactor Increasing this number increases the weight towards the middle.
- */
-function weightedRandom(bellFactor) {
-  var max = 100;
-  var num = 0;
-  for (var i = 0; i < bellFactor; i++) {
-    num += Math.random() * (max/bellFactor);
-  }
-  return num / max;
 }
