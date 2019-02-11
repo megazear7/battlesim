@@ -1,8 +1,8 @@
-import ARMOR from './armor.js';
+import { NO_ARMOR } from './armor.js';
 import {
   BAYONETE,
   SPRINGFIELD_RIFLED_MUSKET,
-  NONE,
+  NO_WEAPON,
   CANNON_24_POUNDER_CIVIL_WAR,
   CONFEDERATE_SMOOTH_BORE } from './weapons.js';
 
@@ -18,12 +18,12 @@ const ARTILLERY_TROOP = 2;
 
 export const FRESH_UNION_BRIGADE = {
   army: UNION,
-  name: "Fresh Union Brigade",
+  name: 'Fresh Union Brigade',
   strength: UNION_BRIGADE_SIZE,
   morale: 90,
   energy: 100,
   static: {
-    armor: ARMOR.clothes,
+    armor: NO_ARMOR,
     meleeWeapon: BAYONETE,
     rangedWeapon: SPRINGFIELD_RIFLED_MUSKET,
     experience: 50,
@@ -37,12 +37,12 @@ export const FRESH_UNION_BRIGADE = {
 
 export const FRESH_UNION_CAVALRY_REGIMENT = {
   army: UNION,
-  name: "Fresh Union Cavalry Regiment",
+  name: 'Fresh Union Cavalry Regiment',
   strength: UNION_CAVALRY_REGIMENT_SIZE,
   morale: 90,
   energy: 100,
   static: {
-    armor: ARMOR.clothes,
+    armor: NO_ARMOR,
     meleeWeapon: BAYONETE,
     rangedWeapon: SPRINGFIELD_RIFLED_MUSKET,
     experience: 50,
@@ -56,13 +56,13 @@ export const FRESH_UNION_CAVALRY_REGIMENT = {
 
 export const FRESH_UNION_ARTILLERY = {
   army: CONFEDERATE,
-  name: "Fresh Union Artillery (50 Cannons)",
+  name: 'Fresh Union Artillery (50 Cannons)',
   strength: 50,
   morale: 90,
   energy: 100,
   static: {
-    armor: ARMOR.clothes,
-    meleeWeapon: NONE,
+    armor: NO_ARMOR,
+    meleeWeapon: NO_WEAPON,
     rangedWeapon: CANNON_24_POUNDER_CIVIL_WAR,
     experience: 70,
     leadership: 70,
@@ -75,12 +75,12 @@ export const FRESH_UNION_ARTILLERY = {
 
 export const FRESH_CONFEDERATE_BRIGADE = {
   army: CONFEDERATE,
-  name: "Fresh Confederate Brigade",
+  name: 'Fresh Confederate Brigade',
   strength: CONFEDERATE_BRIGADE_SIZE,
   morale: 90,
   energy: 100,
   static: {
-    armor: ARMOR.clothes,
+    armor: NO_ARMOR,
     meleeWeapon: BAYONETE,
     rangedWeapon: CONFEDERATE_SMOOTH_BORE,
     experience: 70,
@@ -94,12 +94,12 @@ export const FRESH_CONFEDERATE_BRIGADE = {
 
 export const FRESH_CONFEDERATE_CAVALRY_REGIMENT = {
   army: CONFEDERATE,
-  name: "Fresh Confederate Cavalry Regiment",
+  name: 'Fresh Confederate Cavalry Regiment',
   strength: CONFEDERATE_CAVALRY_REGIMENT_SIZE,
   morale: 90,
   energy: 100,
   static: {
-    armor: ARMOR.clothes,
+    armor: NO_ARMOR,
     meleeWeapon: BAYONETE,
     rangedWeapon: CONFEDERATE_SMOOTH_BORE,
     experience: 70,
@@ -113,13 +113,13 @@ export const FRESH_CONFEDERATE_CAVALRY_REGIMENT = {
 
 export const FRESH_CONFEDERATE_ARTILLERY = {
   army: CONFEDERATE,
-  name: "Fresh Confederate Artillery (50 Cannons)",
+  name: 'Fresh Confederate Artillery (50 Cannons)',
   strength: 50,
   morale: 90,
   energy: 100,
   static: {
-    armor: ARMOR.clothes,
-    meleeWeapon: NONE,
+    armor: NO_ARMOR,
+    meleeWeapon: NO_WEAPON,
     rangedWeapon: CANNON_24_POUNDER_CIVIL_WAR,
     experience: 70,
     leadership: 70,
@@ -133,21 +133,21 @@ export const FRESH_CONFEDERATE_ARTILLERY = {
 export const CIVIL_WAR_UNITS = [
   FRESH_UNION_BRIGADE,
   { ... FRESH_UNION_BRIGADE,
-    name: "Tired Union Brigade",
+    name: 'Tired Union Brigade',
     energy: 50,
   },
   { ... FRESH_UNION_BRIGADE,
-    name: "Battered Union Brigade",
+    name: 'Battered Union Brigade',
     strength: UNION_BRIGADE_SIZE * 0.7,
     energy: 80
   },
   FRESH_CONFEDERATE_BRIGADE,
   { ... FRESH_CONFEDERATE_BRIGADE,
-    name: "Tired Confederate Brigade",
+    name: 'Tired Confederate Brigade',
     energy: 50,
   },
   { ... FRESH_CONFEDERATE_BRIGADE,
-    name: "Battered Confederate Brigade",
+    name: 'Battered Confederate Brigade',
     strength: CONFEDERATE_BRIGADE_SIZE * 0.7,
     energy: 80
   },

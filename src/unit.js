@@ -1,6 +1,7 @@
 import { store } from './store.js';
 import battle from './reducers/battle.js';
 import { WEAPONS } from './weapons.js';
+import { ARMOR } from './armor.js';
 
 store.addReducers({
   battle
@@ -30,7 +31,7 @@ export default class Unit {
     this.strength = strength || fullStrength;
     this.morale = morale;
     this.energy = energy;
-    this.armor = armor;
+    this.armor = ARMOR[armor];
     this.meleeWeapon = WEAPONS[meleeWeapon];
     this.rangedWeapon = WEAPONS[rangedWeapon];
     this.experience = experience;
@@ -57,9 +58,9 @@ export default class Unit {
 
   get troopTypeName() {
     return {
-      0: "Foot troops",
-      1: "Cavalry",
-      2: "Artillery",
+      0: 'Foot troops',
+      1: 'Cavalry',
+      2: 'Artillery',
     }[this.troopType];
   }
 
