@@ -13,41 +13,14 @@ import {
 
 const INITIAL_STATE = {
   activeBattle: 0,
-  battles: [
-    {
-      ruleset: 0,
-      activeUnit: 0,
-      createdAt: new Date().getTime(),
-      name: "Example Battle",
-      armies: [
-        { name: "Brittish" },
-        { name: "Americans" },
-      ],
-      units: [
-        { army: 0, name: "15th Regiment (East Yorkshire)", hp: 100, speed: 50, energy: 100, },
-      ],
-      unitTemplates: [
-        { army: 0, name: "15th Regiment (East Yorkshire)", hp: 100, speed: 50, energy: 100, },
-        { army: 0, name: "16th Cavalry (The Queen's Lancers)", hp: 100, speed: 70, energy: 100, },
-        { army: 0, name: "9th Regiment (Royal Norfolk)", hp: 40, speed: 50, energy: 100, },
-        { army: 0, name: "Redcoats", hp: 30, speed: 60, energy: 100, },
-        { army: 0, name: "Brittish Cavalry", hp: 30, speed: 60, energy: 100, },
-        { army: 0, name: "Brittish Cannon", hp: 30, speed: 60, energy: 100, },
-        { army: 1, name: "3rd Regiment of Militia", hp: 30, speed: 60, energy: 100, },
-        { army: 1, name: "Bradley's Regiment", hp: 80, speed: 40, energy: 100, },
-        { army: 1, name: "Waterbury's Regiment", hp: 30, speed: 60, energy: 100, },
-        { army: 1, name: "Continental Line", hp: 30, speed: 60, energy: 100, },
-        { army: 1, name: "Continental Cavalry", hp: 30, speed: 60, energy: 100, },
-        { army: 1, name: "Continental Cannon", hp: 30, speed: 60, energy: 100, },
-      ],
-    }
-  ],
+  battles: [ { ...BATTLE_TEMPLATES[0] } ],
 };
 
 let initialState = JSON.parse(localStorage.getItem("battle"));
 
 if (! initialState) {
   initialState = INITIAL_STATE;
+  initialState.battles[0].createdAt = new Date().getTime();
 }
 
 const battle = (state = initialState, action) => {
