@@ -43,6 +43,14 @@ export const SharedStyles = css`
     font-weight: 400;
   }
 
+  h6 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: grey;
+    margin-top: 0rem;
+    margin-bottom: 0rem;
+  }
+
   .error {
     display: none;
     opacity: 0;

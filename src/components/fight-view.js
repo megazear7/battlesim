@@ -34,6 +34,9 @@ class FightView extends connect(store)(PageViewElement) {
           text-align: center;
           color: var(--app-muted-text-color);
         }
+        #action-result {
+          display: none;
+        }
       `
     ];
   }
@@ -45,16 +48,19 @@ class FightView extends connect(store)(PageViewElement) {
           <div id="unit">${this._activeUnit.name}</div>
           <div id="army">Army: ${this._army.name}</div>
         </div>
+        <h6>Unit Status</h6>
         <p>TODO Show unit status textual description. This would be information
         such as the moral and health of the unit. If they are visibly exhausted
-        or slow moving. If they have taken casualties, etc...</p>
+        or slow moving. If they have taken casualties, etc... The level of details
+        provided in this status increases with better leadership.</p>
+        <h6>Unit Description</h6>
         <p>TODO Show unit description. This would be information that would
         not change over the course of the game such as how experience the unit
         is, what kind of training they have, what king of weaponry they have, if
         they are mounted, skirmishers, line troops, artillary, etc..</p>
       </section>
       <section>
-        <div>
+        <div id="actions">
           <button @click="${this._rest}" id="rest">Rest</button>
           <button @click="${this._move}" id="move">Move</button>
           <button @click="${this._charge}" id="charge">Charge</button>
@@ -82,9 +88,15 @@ class FightView extends connect(store)(PageViewElement) {
         <div id="take-action" style="opacity: 0;">
           <button @click="${this._takeAction}">Take Action</button>
           <p class="error hidden">You must provide valid values for each field</p>
-          <p>TODO After they take the action explain the result. Explain if any follow up actions
-          are needed such as a retreate or picking up a unit before switching to the next unit.
-          Provide a "done" button to move to next unit.<p>
+        </div>
+        <div id="action-result">
+          <p>TODO After they take the action explain the result. Maybe they could
+          not move the full distance and got bogged down half way. Maybe they
+          refuse to charge or are low on amunition.
+          Explain the outcomes of any battles such as casualties or changes in morale
+          or if any follow up actions are needed such as a retreate or
+          picking up a destroyed unit.</p>
+          <button @click="${this._progressToNextAction}">Next Action</button>
         </div>
       </section>
     `;
@@ -149,6 +161,13 @@ class FightView extends connect(store)(PageViewElement) {
     }
   }
 
+  _progressToNextAction() {
+    store.dispatch(this._selectedAction(this.situation));
+    this.shadowRoot.getElementById('actions').style.display = 'block';
+    this.shadowRoot.getElementById('take-action').style.display = 'block';
+    this.shadowRoot.getElementById('action-result').style.display = 'none';
+  }
+
   _takeAction() {
     if (this.validSituation) {
       this._removeSelection();
@@ -163,7 +182,9 @@ class FightView extends connect(store)(PageViewElement) {
       this.terrainContainer.querySelector('input').checked = false;
       this.targetElement.value = '';
 
-      store.dispatch(this._selectedAction(this.situation));
+      this.shadowRoot.getElementById('take-action').style.display = 'none';
+      this.shadowRoot.getElementById('actions').style.display = 'none';
+      this.shadowRoot.getElementById('action-result').style.display = 'block';
     } else {
       this.errorElement.style.opacity = '1';
       this.errorElement.style.display = 'block';
