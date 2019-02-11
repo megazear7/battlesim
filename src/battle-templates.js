@@ -1,12 +1,4 @@
-const CIVIL_WAR_UNITS = [
-  {
-    army: 0,
-    name: "Fresh ",
-    hp: 100,
-    speed: 50,
-    energy: 100,
-  }
-];
+import CIVIL_WAR_UNITS from './civil-war-units.js';
 
 export default [
   {
@@ -31,15 +23,15 @@ export default [
       { name: "Confederate" },
     ],
     units: [
-      { army: 0, name: "Tyler's 1st Brigade", strength: 2000 },
-      { army: 0, name: "Tyler's 3rd Brigade (Cavalry)", strength: 1000 },
-      { army: 0, name: "Hunter's 1st Brigade", strength: 2000 },
-      { army: 0, name: "Hunter's 2nd Brigade", strength: 2000 },
-      { army: 0, name: "Blenker's Brigade", strength: 1000 },
-      { army: 0, name: "Franklin's Brigade", strength: 1000 },
-      { army: 1, name: "1st Potomac Brigade", strength: 1500 },
-      { army: 1, name: "2nd Potomac Brigade", strength: 1500 },
-      { army: 1, name: "3rd Potomac Brigade", strength: 1500 },
+      { army: 0, name: "Tyler's 1st Brigade", strength: 3000 },
+      { army: 0, name: "Tyler's 3rd Brigade (Cavalry)", strength: 750 },
+      { army: 0, name: "Hunter's 1st Brigade", strength: 3000 },
+      { army: 0, name: "Hunter's 2nd Brigade", strength: 3000 },
+      { army: 0, name: "Blenker's Brigade", strength: 2000 },
+      { army: 0, name: "Franklin's Brigade", strength: 2000 },
+      { army: 1, name: "1st Potomac Brigade", strength: 2000 },
+      { army: 1, name: "2nd Potomac Brigade", strength: 2000 },
+      { army: 1, name: "3rd Potomac Brigade", strength: 2000 },
       { army: 1, name: "1st Shenandoah Brigade", strength: 1500 },
       { army: 1, name: "Thirteenth Virginia Brigade (Cavalry)", strength: 642 },
       { army: 1, name: "Harrison's Battalion (Cavalry)", strength: 196 },
