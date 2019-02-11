@@ -15,6 +15,8 @@ class RulesView extends connect(store)(PageViewElement) {
   static get properties() {
     return {
       _ruleset: { type: Object },
+      _battleRules: { type: Object },
+      _battleName: { type: String },
     };
   }
 
@@ -26,6 +28,13 @@ class RulesView extends connect(store)(PageViewElement) {
 
   render() {
     return html`
+      <section>
+        <h3>${this._battleName}</h3>
+        ${repeat(this._battleRules, ({heading, text}, index) => html`
+          <h5>${index+1} ${heading}</h5>
+          <p>${text}</p>
+        `)}
+      </section>
       <section>
         <h2>${this._ruleset.name}</h2>
       </section>
@@ -44,6 +53,8 @@ class RulesView extends connect(store)(PageViewElement) {
 
   stateChanged(state) {
     let activeBattle = state.battle.battles[state.battle.activeBattle];
+    this._battleName = activeBattle.name;
+    this._battleRules = activeBattle.rules;
     this._ruleset= RULESETS[activeBattle.ruleset];
   }
 }

@@ -1,59 +1,56 @@
+const CIVIL_WAR_UNITS = [
+  {
+    army: 0,
+    name: "Fresh ",
+    hp: 100,
+    speed: 50,
+    energy: 100,
+  }
+];
+
 export default [
   {
     ruleset: 0,
     activeUnit: 0,
-    name: "Generic Revolutionary War",
+    name: "Generic Civil War",
     armies: [
-      { name: "Brittish" },
-      { name: "Americans" },
+      { name: "Union" },
+      { name: "Confederate" },
     ],
     units: [
       { army: 0, name: "15th Regiment (East Yorkshire)", hp: 100, speed: 50, energy: 100, },
     ],
-    unitTemplates: [
-      { army: 0, name: "15th Regiment (East Yorkshire)", hp: 100, speed: 50, energy: 100, },
-      { army: 0, name: "16th Cavalry (The Queen's Lancers)", hp: 100, speed: 70, energy: 100, },
-      { army: 0, name: "9th Regiment (Royal Norfolk)", hp: 40, speed: 50, energy: 100, },
-      { army: 0, name: "Redcoats", hp: 30, speed: 60, energy: 100, },
-      { army: 0, name: "Brittish Cavalry", hp: 30, speed: 60, energy: 100, },
-      { army: 0, name: "Brittish Cannon", hp: 30, speed: 60, energy: 100, },
-      { army: 1, name: "3rd Regiment of Militia", hp: 30, speed: 60, energy: 100, },
-      { army: 1, name: "Bradley's Regiment", hp: 80, speed: 40, energy: 100, },
-      { army: 1, name: "Waterbury's Regiment", hp: 30, speed: 60, energy: 100, },
-      { army: 1, name: "Continental Line", hp: 30, speed: 60, energy: 100, },
-      { army: 1, name: "Continental Cavalry", hp: 30, speed: 60, energy: 100, },
-      { army: 1, name: "Continental Cannon", hp: 30, speed: 60, energy: 100, },
-    ]
+    unitTemplates: CIVIL_WAR_UNITS
   },
   {
     ruleset: 0,
     activeUnit: 0,
-    name: "Bunker Hill",
+    name: "Bull Run",
     armies: [
-      { name: "Brittish" },
-      { name: "Americans" },
+      { name: "Union" },
+      { name: "Confederate" },
     ],
     units: [
-      { army: 0, name: "15th Regiment (East Yorkshire)", hp: 100, speed: 50, energy: 100, },
-      { army: 0, name: "16th Cavalry (The Queen's Lancers)", hp: 100, speed: 70, energy: 100, },
-      { army: 0, name: "9th Regiment (Royal Norfolk)", hp: 40, speed: 50, energy: 100, },
-      { army: 1, name: "3rd Regiment of Militia", hp: 30, speed: 60, energy: 100, },
-      { army: 1, name: "Bradley's Regiment", hp: 80, speed: 40, energy: 100, },
-      { army: 1, name: "Waterbury's Regiment", hp: 30, speed: 60, energy: 100, },
+      { army: 0, name: "Tyler's 1st Brigade", strength: 2000 },
+      { army: 0, name: "Tyler's 3rd Brigade (Cavalry)", strength: 1000 },
+      { army: 0, name: "Hunter's 1st Brigade", strength: 2000 },
+      { army: 0, name: "Hunter's 2nd Brigade", strength: 2000 },
+      { army: 0, name: "Blenker's Brigade", strength: 1000 },
+      { army: 0, name: "Franklin's Brigade", strength: 1000 },
+      { army: 1, name: "1st Potomac Brigade", strength: 1500 },
+      { army: 1, name: "2nd Potomac Brigade", strength: 1500 },
+      { army: 1, name: "3rd Potomac Brigade", strength: 1500 },
+      { army: 1, name: "1st Shenandoah Brigade", strength: 1500 },
+      { army: 1, name: "Thirteenth Virginia Brigade (Cavalry)", strength: 642 },
+      { army: 1, name: "Harrison's Battalion (Cavalry)", strength: 196 },
+      { army: 1, name: "Washington (Louisiana) Artillery", strength: 50 },
     ],
-    unitTemplates: [
-      { army: 0, name: "15th Regiment (East Yorkshire)", hp: 100, speed: 50, energy: 100, },
-      { army: 0, name: "16th Cavalry (The Queen's Lancers)", hp: 100, speed: 70, energy: 100, },
-      { army: 0, name: "9th Regiment (Royal Norfolk)", hp: 40, speed: 50, energy: 100, },
-      { army: 0, name: "Redcoats", hp: 30, speed: 60, energy: 100, },
-      { army: 0, name: "Brittish Cavalry", hp: 30, speed: 60, energy: 100, },
-      { army: 0, name: "Brittish Cannon", hp: 30, speed: 60, energy: 100, },
-      { army: 1, name: "3rd Regiment of Militia", hp: 30, speed: 60, energy: 100, },
-      { army: 1, name: "Bradley's Regiment", hp: 80, speed: 40, energy: 100, },
-      { army: 1, name: "Waterbury's Regiment", hp: 30, speed: 60, energy: 100, },
-      { army: 1, name: "Continental Line", hp: 30, speed: 60, energy: 100, },
-      { army: 1, name: "Continental Cavalry", hp: 30, speed: 60, energy: 100, },
-      { army: 1, name: "Continental Cannon", hp: 30, speed: 60, energy: 100, },
-    ],
+    unitTemplates: CIVIL_WAR_UNITS,
+    rules: [
+      {
+        heading: 'Command level',
+        text: 'The standard unit size is a brigade, consisting of eight stands. Harrisons battalion of cavalry and the Louisiana artillery both consist of only four stands.'
+      }
+    ]
   }
 ];
