@@ -39,4 +39,16 @@ export const ButtonSharedStyles = css`
     border: 0;
     color: var(--app-primary-color);
   }
+
+  button:disabled {
+    cursor: unset;
+    border-color: grey;
+    color: grey;
+  }
+
+  button:disabled:hover {
+    background: none;
+    border-color: grey;
+    color: grey;
+  }
 `;
