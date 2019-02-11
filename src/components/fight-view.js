@@ -7,6 +7,7 @@ import { rest, move, charge, fire } from '../actions/battle.js';
 import battle from '../reducers/battle.js';
 import { SharedStyles } from './shared-styles.js';
 import { ButtonSharedStyles } from './button-shared-styles.js';
+import Unit from '../unit.js';
 
 store.addReducers({
   battle
@@ -15,9 +16,7 @@ store.addReducers({
 class FightView extends connect(store)(PageViewElement) {
   static get properties() {
     return {
-      _targets: { type: Object },
-      _army: { type: Object },
-      _activeUnit: { type: Object },
+      _unit: { type: Object },
       _hasActiveBattle: { type: Boolean },
     };
   }
@@ -38,32 +37,27 @@ class FightView extends connect(store)(PageViewElement) {
         #action-result {
           display: none;
         }
+        h6 {
+          margin-bottom: 0;
+        }
       `
     ];
   }
 
   render() {
-    console.log(this._activeUnit);
     return html`
       ${this._hasActiveBattle ? html`
         <section>
           <div>
-            <div id="unit">${this._activeUnit.name}</div>
-            <div id="army">Army: ${this._army.name}</div>
+            <div id="unit">${this._unit.name}</div>
+            <div id="army">Army: ${this._unit.army.name}</div>
           </div>
           <h6>Unit Status</h6>
-          <p>TODO Generate a textual description of these stats</p>
-          <p>${this._activeUnit.strength} Soldiers / ${this._activeUnit.morale}% Morale / ${this._activeUnit.energy}% Energy</p>
+          <p>${this._unit.detailedStatus}</p>
 
           <h6>Unit Description</h6>
-          <p>TODO These stats are still being pulled in statically when the battle is created. We need to dynamically reference the weapons at all times instead of coping the data. Also update the experience and leadership to be textual descriptions.</p>
-          <p>
-            ${this._troopType}</div>
-            <br>
-            ${this._activeUnit.static.rangedWeapon.name} / ${this._activeUnit.static.meleeWeapon.name}
-            <br>
-            ${this._activeUnit.static.experience} experience / ${this._activeUnit.static.leadership} leadership
-          </p>
+          <p>${this._unit.desc}</p>
+          <p>TODO We need to dynamically reference weapon data instead of coping it when the battle is created.</p>
         </section>
         <section>
           <div id="actions">
@@ -78,7 +72,7 @@ class FightView extends connect(store)(PageViewElement) {
             <input id="distance" class="hidden" type="number" placeholder="Distance"></input>
             <select id="target" class="hidden">
               <option>Select Target</option>
-              ${repeat(this._targets, target => html`
+              ${repeat(this._unit.targets, target => html`
                 <option value="${target.id}">${target.unit.name}</option>
               `)}
             </select>
@@ -111,14 +105,6 @@ class FightView extends connect(store)(PageViewElement) {
         </section>
       `}
     `;
-  }
-
-  get _troopType() {
-    return {
-      0: "Foot troops",
-      1: "Cavalry",
-      2: "Artillery",
-    }[this._activeUnit.static.troopType];
   }
 
   get distanceElement() {
@@ -280,12 +266,8 @@ class FightView extends connect(store)(PageViewElement) {
   // This is called every time something is updated in the store.
   stateChanged(state) {
     if (state.battle.battles.length > state.battle.activeBattle) {
-      var activeBattle = state.battle.battles[state.battle.activeBattle];
-      this._activeUnit = activeBattle.units[activeBattle.activeUnit];
-      this._targets = activeBattle.units
-        .filter(unit => unit.army !== this._activeUnit.army)
-        .map((unit, index) => ({ id: index, unit: unit}));
-      this._army = activeBattle.armies[this._activeUnit.army];
+      let activeBattle = state.battle.battles[state.battle.activeBattle];
+      this._unit = new Unit(activeBattle.units[activeBattle.activeUnit]);
       this._hasActiveBattle = true;
     } else {
       this._hasActiveBattle = false;
