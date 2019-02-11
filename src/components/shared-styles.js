@@ -47,7 +47,11 @@ export const SharedStyles = css`
     font-size: 0.9rem;
     font-weight: 600;
     color: grey;
-    margin-bottom: 0rem;
+  }
+
+  p {
+    font-size: 1rem;
+    line-height: 1.75rem;
   }
 
   .error {

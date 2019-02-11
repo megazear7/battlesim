@@ -38,12 +38,12 @@ class BattleView extends connect(store)(PageViewElement) {
           color: red;
           transition: opacity 300ms;
         }
-        h5 {
-          margin-top: 0;
+        h4 {
+          margin-bottom: 0.5rem;
         }
         .unit {
           border-bottom: 1px solid black;
-          padding: 1rem 0;
+          padding-bottom: 1rem;
         }
         .unit:last-child {
           border-bottom: 0;
@@ -57,34 +57,27 @@ class BattleView extends connect(store)(PageViewElement) {
 
   render() {
     return html`
-      <section>
-        <div>
-          <h2>${this._army0Name}</h3>
-          ${repeat(this._army0Units, ({index, unit}) => html`
+      ${repeat(this.armies, ({name, units}) => html`
+        <section>
+          <h3>${name}</h3>
+          ${repeat(units, ({index, unit}) => html`
             <div class="unit" data-index="${index}">
-              <h5 class="unit-name">${unit.name}</h5>
+              <h4 class="unit-name">${unit.name}</h4>
               <button class="btn-link remove-unit" @click="${this._remove}">Remove</button>
+              <p>
+                ${unit.strength} Soldiers / ${unit.morale}% Morale / ${unit.energy}% Energy
+                <br>
+                ${unit.static.rangedWeapon.name} / ${unit.static.meleeWeapon.name}
+                <br>
+                ${unit.static.experience} experience / ${unit.static.leadership} leadership
+              </p>
             </div>
           `)}
-        </div>
-      </section>
+        </section>
+      `)}
       <section>
+        <h3>Add Unit</h3>
         <div>
-          <h2>${this._army1Name}</h3>
-          ${repeat(this._army1Units, ({index, unit}) => html`
-            <div class="unit" data-index="${index}">
-              <h5 class="unit-name">${unit.name}</h5>
-              <button class="btn-link remove-unit" @click="${this._remove}">Remove</button>
-            </div>
-          `)}
-        </div>
-      </section>
-      <section>
-        <h2>Add Unit</h2>
-        <div>
-          <p>TODO The unit templates that can be added to battles should come from a separate
-          reducer, the data of which is not saved to local storage. This is so that when the
-          app is updated these unit template lists get updated.</p>
           <select id="army" @change="${this._armyChanged}">
             <option value="0">${this._army0Name}</option>
             <option value="1">${this._army1Name}</option>
@@ -102,6 +95,19 @@ class BattleView extends connect(store)(PageViewElement) {
         </div>
       </section>
     `;
+  }
+
+  get armies() {
+    return [
+      {
+        name: this._army0Name,
+        units: this._army0Units,
+      },
+      {
+        name: this._army1Name,
+        units: this._army1Units,
+      }
+    ];
   }
 
   get armyElement() {

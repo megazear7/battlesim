@@ -51,17 +51,17 @@ class FightView extends connect(store)(PageViewElement) {
         </div>
         <h6>Unit Status</h6>
         <p>TODO Generate a textual description of these stats</p>
-        <div>${this._activeUnit.strength} Soldiers</div>
-        <div>${this._activeUnit.morale}% Morale</div>
-        <div>${this._activeUnit.energy}% Energy</div>
+        <p>${this._activeUnit.strength} Soldiers / ${this._activeUnit.morale}% Morale / ${this._activeUnit.energy}% Energy</p>
 
         <h6>Unit Description</h6>
         <p>TODO These stats are still being pulled in statically when the battle is created. We need to dynamically reference the weapons at all times instead of coping the data. Also update the experience and leadership to be textual descriptions.</p>
-        <div>${this._troopType}</div>
-        <div>${this._activeUnit.static.rangedWeapon.name}</div>
-        <div>${this._activeUnit.static.meleeWeapon.name}</div>
-        <div>${this._activeUnit.static.experience} experience</div>
-        <div>${this._activeUnit.static.leadership} leadership</div>
+        <p>
+          ${this._troopType}</div>
+          <br>
+          ${this._activeUnit.static.rangedWeapon.name} / ${this._activeUnit.static.meleeWeapon.name}
+          <br>
+          ${this._activeUnit.static.experience} experience / ${this._activeUnit.static.leadership} leadership
+        </p>
       </section>
       <section>
         <div id="actions">

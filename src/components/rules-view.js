@@ -16,7 +16,6 @@ class RulesView extends connect(store)(PageViewElement) {
     return {
       _ruleset: { type: Object },
       _battleRules: { type: Object },
-      _battleName: { type: String },
     };
   }
 
@@ -29,21 +28,21 @@ class RulesView extends connect(store)(PageViewElement) {
   render() {
     return html`
       <section>
-        <h3>${this._battleName}</h3>
+        <h3>Scenario Rules</h3>
         ${repeat(this._battleRules, ({heading, text}, index) => html`
           <h5>${index+1} ${heading}</h5>
           <p>${text}</p>
         `)}
       </section>
       <section>
-        <h2>${this._ruleset.name}</h2>
+        <h3>${this._ruleset.name}</h3>
       </section>
       ${repeat(this._ruleset.sections, ({heading, text, subsections}, index) => html`
         <section>
-          <h3>${index+1} ${heading}</h3>
+          <h4>${index+1} ${heading}</h3>
           <p>${text}</p>
           ${repeat(subsections, ({heading, text}, subIndex) => html`
-            <h5>${index+1}.${subIndex+1} ${heading}</h5>
+            <h6>${index+1}.${subIndex+1} ${heading}</h5>
             <p>${text}</p>
           `)}
         </section>
@@ -53,7 +52,6 @@ class RulesView extends connect(store)(PageViewElement) {
 
   stateChanged(state) {
     let activeBattle = state.battle.battles[state.battle.activeBattle];
-    this._battleName = activeBattle.name;
     this._battleRules = activeBattle.rules;
     this._ruleset= RULESETS[activeBattle.ruleset];
   }

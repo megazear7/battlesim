@@ -25,7 +25,8 @@ export default [
         strength: 2000
       },
     ],
-    unitTemplates: CIVIL_WAR_UNITS
+    unitTemplates: CIVIL_WAR_UNITS,
+    rules: [ ],
   },
   {
     ruleset: 0,
