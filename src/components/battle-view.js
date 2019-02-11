@@ -7,6 +7,7 @@ import { store } from '../store.js';
 import { SharedStyles } from './shared-styles.js';
 import { ButtonSharedStyles } from './button-shared-styles.js';
 import battle from '../reducers/battle.js';
+import Unit from '../unit.js';
 
 store.addReducers({
   battle
@@ -66,13 +67,8 @@ class BattleView extends connect(store)(PageViewElement) {
               <div class="unit" data-index="${index}">
                 <h4 class="unit-name">${unit.name}</h4>
                 <button class="btn-link remove-unit" @click="${this._remove}">Remove</button>
-                <p>
-                  ${unit.strength} Soldiers / ${unit.morale}% Morale / ${unit.energy}% Energy
-                  <br>
-                  ${unit.static.rangedWeapon.name} / ${unit.static.meleeWeapon.name}
-                  <br>
-                  ${unit.static.experience} experience / ${unit.static.leadership} leadership
-                </p>
+                <p>${unit.detailedStatus}</p>
+                <p>${unit.desc}</p>
               </div>
             `)}
           </section>
@@ -183,9 +179,9 @@ class BattleView extends connect(store)(PageViewElement) {
   stateChanged(state) {
     if (state.battle.battles.length > state.battle.activeBattle) {
       var activeBattle = state.battle.battles[state.battle.activeBattle];
-      let units = activeBattle.units.map((unit, index) => ({ index, unit }));
-      this._army0Units = units.filter(({unit}) => unit.army === 0);
-      this._army1Units = units.filter(({unit}) => unit.army === 1);
+      let units = activeBattle.units.map((unit, index) => ({ index, unit: new Unit(unit) }));
+      this._army0Units = units.filter(({unit}) => unit.armyIndex === 0);
+      this._army1Units = units.filter(({unit}) => unit.armyIndex === 1);
       this._army0Name = activeBattle.armies[0].name;
       this._army1Name = activeBattle.armies[1].name;
       this._allUnitTemplates = activeBattle.unitTemplates.map((unit, index) => ({ id: index, unit }));
