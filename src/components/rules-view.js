@@ -16,6 +16,7 @@ class RulesView extends connect(store)(PageViewElement) {
     return {
       _ruleset: { type: Object },
       _battleRules: { type: Object },
+      _hasActiveBattle: { type: Boolean },
     };
   }
 
@@ -27,33 +28,44 @@ class RulesView extends connect(store)(PageViewElement) {
 
   render() {
     return html`
-      <section>
-        <h3>Scenario Rules</h3>
-        ${repeat(this._battleRules, ({heading, text}, index) => html`
-          <h5>${index+1} ${heading}</h5>
-          <p>${text}</p>
-        `)}
-      </section>
-      <section>
-        <h3>${this._ruleset.name}</h3>
-      </section>
-      ${repeat(this._ruleset.sections, ({heading, text, subsections}, index) => html`
+      ${this._hasActiveBattle ? html`
         <section>
-          <h4>${index+1} ${heading}</h3>
-          <p>${text}</p>
-          ${repeat(subsections, ({heading, text}, subIndex) => html`
-            <h6>${index+1}.${subIndex+1} ${heading}</h5>
+          <h3>Scenario Rules</h3>
+          ${repeat(this._battleRules, ({heading, text}, index) => html`
+            <h5>${index+1} ${heading}</h5>
             <p>${text}</p>
           `)}
         </section>
-      `)}
+        <section>
+          <h3>${this._ruleset.name}</h3>
+        </section>
+        ${repeat(this._ruleset.sections, ({heading, text, subsections}, index) => html`
+          <section>
+            <h4>${index+1} ${heading}</h3>
+            <p>${text}</p>
+            ${repeat(subsections, ({heading, text}, subIndex) => html`
+              <h6>${index+1}.${subIndex+1} ${heading}</h5>
+              <p>${text}</p>
+            `)}
+          </section>
+        `)}
+      `:html`
+        <section>
+          <p>No active battle. Go to the war tab and either select a battle or create a new battle.</p>
+        </section>
+      `}
     `;
   }
 
   stateChanged(state) {
-    let activeBattle = state.battle.battles[state.battle.activeBattle];
-    this._battleRules = activeBattle.rules;
-    this._ruleset= RULESETS[activeBattle.ruleset];
+    if (state.battle.battles.length > state.battle.activeBattle) {
+      let activeBattle = state.battle.battles[state.battle.activeBattle];
+      this._battleRules = activeBattle.rules;
+      this._ruleset= RULESETS[activeBattle.ruleset];
+      this._hasActiveBattle = true;
+    } else {
+      this._hasActiveBattle = false;
+    }
   }
 }
 

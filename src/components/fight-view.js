@@ -17,7 +17,8 @@ class FightView extends connect(store)(PageViewElement) {
     return {
       _targets: { type: Object },
       _army: { type: Object },
-      _activeUnit: { type: Object }
+      _activeUnit: { type: Object },
+      _hasActiveBattle: { type: Boolean },
     };
   }
 
@@ -44,65 +45,71 @@ class FightView extends connect(store)(PageViewElement) {
   render() {
     console.log(this._activeUnit);
     return html`
-      <section>
-        <div>
-          <div id="unit">${this._activeUnit.name}</div>
-          <div id="army">Army: ${this._army.name}</div>
-        </div>
-        <h6>Unit Status</h6>
-        <p>TODO Generate a textual description of these stats</p>
-        <p>${this._activeUnit.strength} Soldiers / ${this._activeUnit.morale}% Morale / ${this._activeUnit.energy}% Energy</p>
+      ${this._hasActiveBattle ? html`
+        <section>
+          <div>
+            <div id="unit">${this._activeUnit.name}</div>
+            <div id="army">Army: ${this._army.name}</div>
+          </div>
+          <h6>Unit Status</h6>
+          <p>TODO Generate a textual description of these stats</p>
+          <p>${this._activeUnit.strength} Soldiers / ${this._activeUnit.morale}% Morale / ${this._activeUnit.energy}% Energy</p>
 
-        <h6>Unit Description</h6>
-        <p>TODO These stats are still being pulled in statically when the battle is created. We need to dynamically reference the weapons at all times instead of coping the data. Also update the experience and leadership to be textual descriptions.</p>
-        <p>
-          ${this._troopType}</div>
-          <br>
-          ${this._activeUnit.static.rangedWeapon.name} / ${this._activeUnit.static.meleeWeapon.name}
-          <br>
-          ${this._activeUnit.static.experience} experience / ${this._activeUnit.static.leadership} leadership
-        </p>
-      </section>
-      <section>
-        <div id="actions">
-          <button @click="${this._rest}" id="rest">Rest</button>
-          <button @click="${this._move}" id="move">Move</button>
-          <button @click="${this._charge}" id="charge">Charge</button>
-          <button @click="${this._fire}" id="fire">Fire</button>
-        </div>
-      </section>
-      <section>
-        <div>
-          <input id="distance" class="hidden" type="number" placeholder="Distance"></input>
-          <select id="target" class="hidden">
-            <option>Select Target</option>
-            ${repeat(this._targets, target => html`
-              <option value="${target.id}">${target.unit.name}</option>
-            `)}
-          </select>
-          <div id="uphill" class="hidden">
-            <input type="checkbox" id="uphill-checkbox"></input>
-            <label for="uphill-checkbox">Uphill</label>
+          <h6>Unit Description</h6>
+          <p>TODO These stats are still being pulled in statically when the battle is created. We need to dynamically reference the weapons at all times instead of coping the data. Also update the experience and leadership to be textual descriptions.</p>
+          <p>
+            ${this._troopType}</div>
+            <br>
+            ${this._activeUnit.static.rangedWeapon.name} / ${this._activeUnit.static.meleeWeapon.name}
+            <br>
+            ${this._activeUnit.static.experience} experience / ${this._activeUnit.static.leadership} leadership
+          </p>
+        </section>
+        <section>
+          <div id="actions">
+            <button @click="${this._rest}" id="rest">Rest</button>
+            <button @click="${this._move}" id="move">Move</button>
+            <button @click="${this._charge}" id="charge">Charge</button>
+            <button @click="${this._fire}" id="fire">Fire</button>
           </div>
-          <div id="terrain" class="hidden">
-            <input type="checkbox" id="terrain-checkbox"></input>
-            <label for="terrain-checkbox">Difficult Terrain</label>
+        </section>
+        <section>
+          <div>
+            <input id="distance" class="hidden" type="number" placeholder="Distance"></input>
+            <select id="target" class="hidden">
+              <option>Select Target</option>
+              ${repeat(this._targets, target => html`
+                <option value="${target.id}">${target.unit.name}</option>
+              `)}
+            </select>
+            <div id="uphill" class="hidden">
+              <input type="checkbox" id="uphill-checkbox"></input>
+              <label for="uphill-checkbox">Uphill</label>
+            </div>
+            <div id="terrain" class="hidden">
+              <input type="checkbox" id="terrain-checkbox"></input>
+              <label for="terrain-checkbox">Difficult Terrain</label>
+            </div>
+          <div>
+          <div id="take-action" style="opacity: 0;">
+            <button @click="${this._takeAction}">Take Action</button>
+            <p class="error hidden">You must provide valid values for each field</p>
           </div>
-        <div>
-        <div id="take-action" style="opacity: 0;">
-          <button @click="${this._takeAction}">Take Action</button>
-          <p class="error hidden">You must provide valid values for each field</p>
-        </div>
-        <div id="action-result">
-          <p>TODO After they take the action explain the result. Maybe they could
-          not move the full distance and got bogged down half way. Maybe they
-          refuse to charge or are low on amunition.
-          Explain the outcomes of any battles such as casualties or changes in morale
-          or if any follow up actions are needed such as a retreate or
-          picking up a destroyed unit.</p>
-          <button @click="${this._progressToNextAction}">Next Action</button>
-        </div>
-      </section>
+          <div id="action-result">
+            <p>TODO After they take the action explain the result. Maybe they could
+            not move the full distance and got bogged down half way. Maybe they
+            refuse to charge or are low on amunition.
+            Explain the outcomes of any battles such as casualties or changes in morale
+            or if any follow up actions are needed such as a retreate or
+            picking up a destroyed unit.</p>
+            <button @click="${this._progressToNextAction}">Next Action</button>
+          </div>
+        </section>
+      `:html`
+        <section>
+          <p>No active battle. Go to the war tab and either select a battle or create a new battle.</p>
+        </section>
+      `}
     `;
   }
 
@@ -272,12 +279,17 @@ class FightView extends connect(store)(PageViewElement) {
 
   // This is called every time something is updated in the store.
   stateChanged(state) {
-    var activeBattle = state.battle.battles[state.battle.activeBattle];
-    this._activeUnit = activeBattle.units[activeBattle.activeUnit];
-    this._targets = activeBattle.units
-      .filter(unit => unit.army !== this._activeUnit.army)
-      .map((unit, index) => ({ id: index, unit: unit}));
-    this._army = activeBattle.armies[this._activeUnit.army];
+    if (state.battle.battles.length > state.battle.activeBattle) {
+      var activeBattle = state.battle.battles[state.battle.activeBattle];
+      this._activeUnit = activeBattle.units[activeBattle.activeUnit];
+      this._targets = activeBattle.units
+        .filter(unit => unit.army !== this._activeUnit.army)
+        .map((unit, index) => ({ id: index, unit: unit}));
+      this._army = activeBattle.armies[this._activeUnit.army];
+      this._hasActiveBattle = true;
+    } else {
+      this._hasActiveBattle = false;
+    }
   }
 }
 

@@ -276,7 +276,11 @@ class BattleSim extends connect(store)(LitElement) {
   }
 
   stateChanged(state) {
-    this._title = state.battle.battles[state.battle.activeBattle].name;
+    if (state.battle.battles.length > state.battle.activeBattle) {
+      this._title = state.battle.battles[state.battle.activeBattle].name;
+    } else {
+      this._title = this.appTitle;
+    }
     this._page = state.app.page;
     this._offline = state.app.offline;
     this._snackbarOpened = state.app.snackbarOpened;

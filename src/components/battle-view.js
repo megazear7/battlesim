@@ -19,6 +19,7 @@ class BattleView extends connect(store)(PageViewElement) {
       _army1Units: { type: Object },
       _allUnitTemplates: { type: Object },
       _unitTemplates: { type: Object },
+      _hasActiveBattle: { type: Boolean },
     };
   }
 
@@ -57,43 +58,49 @@ class BattleView extends connect(store)(PageViewElement) {
 
   render() {
     return html`
-      ${repeat(this.armies, ({name, units}) => html`
-        <section>
-          <h3>${name}</h3>
-          ${repeat(units, ({index, unit}) => html`
-            <div class="unit" data-index="${index}">
-              <h4 class="unit-name">${unit.name}</h4>
-              <button class="btn-link remove-unit" @click="${this._remove}">Remove</button>
-              <p>
-                ${unit.strength} Soldiers / ${unit.morale}% Morale / ${unit.energy}% Energy
-                <br>
-                ${unit.static.rangedWeapon.name} / ${unit.static.meleeWeapon.name}
-                <br>
-                ${unit.static.experience} experience / ${unit.static.leadership} leadership
-              </p>
-            </div>
-          `)}
-        </section>
-      `)}
-      <section>
-        <h3>Add Unit</h3>
-        <div>
-          <select id="army" @change="${this._armyChanged}">
-            <option value="0">${this._army0Name}</option>
-            <option value="1">${this._army1Name}</option>
-          </select>
-          <select id="unit-template">
-            <option>Select Unit To Add</option>
-            ${repeat(this._unitTemplates, ({id, unit}) => html`
-              <option value="${id}">${unit.name}</option>
+      ${this._hasActiveBattle ? html`
+        ${repeat(this.armies, ({name, units}) => html`
+          <section>
+            <h3>${name}</h3>
+            ${repeat(units, ({index, unit}) => html`
+              <div class="unit" data-index="${index}">
+                <h4 class="unit-name">${unit.name}</h4>
+                <button class="btn-link remove-unit" @click="${this._remove}">Remove</button>
+                <p>
+                  ${unit.strength} Soldiers / ${unit.morale}% Morale / ${unit.energy}% Energy
+                  <br>
+                  ${unit.static.rangedWeapon.name} / ${unit.static.meleeWeapon.name}
+                  <br>
+                  ${unit.static.experience} experience / ${unit.static.leadership} leadership
+                </p>
+              </div>
             `)}
-          </select>
-          <input id="name" type="text" placeholder="Optionally Change the Units Name"></input>
-          <button @click="${this._add}">Add</button>
-          <p class="error">All fields need valid input.</p>
-          <p id="added-message">Unit Added!</p>
-        </div>
-      </section>
+          </section>
+        `)}
+        <section>
+          <h3>Add Unit</h3>
+          <div>
+            <select id="army" @change="${this._armyChanged}">
+              <option value="0">${this._army0Name}</option>
+              <option value="1">${this._army1Name}</option>
+            </select>
+            <select id="unit-template">
+              <option>Select Unit To Add</option>
+              ${repeat(this._unitTemplates, ({id, unit}) => html`
+                <option value="${id}">${unit.name}</option>
+              `)}
+            </select>
+            <input id="name" type="text" placeholder="Optionally Change the Units Name"></input>
+            <button @click="${this._add}">Add</button>
+            <p class="error">All fields need valid input.</p>
+            <p id="added-message">Unit Added!</p>
+          </div>
+        </section>
+      `:html`
+        <section>
+          <p>No active battle. Go to the war tab and either select a battle or create a new battle.</p>
+        </section>
+      `}
     `;
   }
 
@@ -174,14 +181,19 @@ class BattleView extends connect(store)(PageViewElement) {
   }
 
   stateChanged(state) {
-    var activeBattle = state.battle.battles[state.battle.activeBattle];
-    let units = activeBattle.units.map((unit, index) => ({ index, unit }));
-    this._army0Units = units.filter(({unit}) => unit.army === 0);
-    this._army1Units = units.filter(({unit}) => unit.army === 1);
-    this._army0Name = activeBattle.armies[0].name;
-    this._army1Name = activeBattle.armies[1].name;
-    this._allUnitTemplates = activeBattle.unitTemplates.map((unit, index) => ({ id: index, unit }));
-    this._unitTemplates = this._allUnitTemplates.filter(({unit}) => unit.army === this.army);
+    if (state.battle.battles.length > state.battle.activeBattle) {
+      var activeBattle = state.battle.battles[state.battle.activeBattle];
+      let units = activeBattle.units.map((unit, index) => ({ index, unit }));
+      this._army0Units = units.filter(({unit}) => unit.army === 0);
+      this._army1Units = units.filter(({unit}) => unit.army === 1);
+      this._army0Name = activeBattle.armies[0].name;
+      this._army1Name = activeBattle.armies[1].name;
+      this._allUnitTemplates = activeBattle.unitTemplates.map((unit, index) => ({ id: index, unit }));
+      this._unitTemplates = this._allUnitTemplates.filter(({unit}) => unit.army === this.army);
+      this._hasActiveBattle = true;
+    } else {
+      this._hasActiveBattle = false;
+    }
   }
 }
 

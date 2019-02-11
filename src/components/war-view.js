@@ -49,6 +49,11 @@ class WarView extends connect(store)(PageViewElement) {
           </div>
         </section>
       `)}
+      ${this._battles.length === 0 ? html`
+        <section>
+          <p>No battles exist. You can create one below.</p>
+        </section>
+      `: ``}
       <section>
         <div>
           <select id="battle-template">
