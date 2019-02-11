@@ -4,14 +4,9 @@ import { PageViewElement } from './page-view-element.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
 import { rest, move, charge, fire } from '../actions/battle.js';
-import battle from '../reducers/battle.js';
 import { SharedStyles } from './shared-styles.js';
 import { ButtonSharedStyles } from './button-shared-styles.js';
 import Unit from '../unit.js';
-
-store.addReducers({
-  battle
-});
 
 class FightView extends connect(store)(PageViewElement) {
   static get properties() {

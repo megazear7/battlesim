@@ -1,11 +1,6 @@
 import { store } from './store.js';
-import battle from './reducers/battle.js';
 import { WEAPONS } from './weapons.js';
 import { ARMOR } from './armor.js';
-
-store.addReducers({
-  battle
-});
 
 export default class Unit {
   constructor({

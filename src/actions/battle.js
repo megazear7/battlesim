@@ -4,7 +4,7 @@ export const CHARGE = 'CHARGE';
 export const FIRE = 'FIRE';
 export const ADD = 'ADD';
 export const REMOVE = 'REMOVE';
-export const CREATE_BATTLE = 'CREATE_BATTLE';
+export const CREATE_NEW_BATTLE = 'CREATE_NEW_BATTLE';
 export const SET_ACTIVE_BATTLE = 'SET_ACTIVE_BATTLE';
 export const REMOVE_BATTLE = 'REMOVE_BATTLE';
 
@@ -50,9 +50,9 @@ export const remove = (index) => {
   };
 };
 
-export const createBattle = (battleStats) => {
+export const createNewBattle = (battleStats) => {
   return {
-    type: CREATE_BATTLE,
+    type: CREATE_NEW_BATTLE,
     battleStats
   };
 };

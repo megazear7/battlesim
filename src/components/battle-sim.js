@@ -6,7 +6,6 @@ import { installOfflineWatcher } from 'pwa-helpers/network.js';
 import { installRouter } from 'pwa-helpers/router.js';
 import { updateMetadata } from 'pwa-helpers/metadata.js';
 import { store } from '../store.js';
-import battle from '../reducers/battle.js';
 import {
   navigate,
   updateOffline,
@@ -18,10 +17,6 @@ import '@polymer/app-layout/app-scroll-effects/effects/waterfall.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import { menuIcon } from './my-icons.js';
 import './snack-bar.js';
-
-store.addReducers({
-  battle
-});
 
 class BattleSim extends connect(store)(LitElement) {
   static get properties() {

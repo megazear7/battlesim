@@ -6,12 +6,7 @@ import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
 import { SharedStyles } from './shared-styles.js';
 import { ButtonSharedStyles } from './button-shared-styles.js';
-import battle from '../reducers/battle.js';
 import Unit from '../unit.js';
-
-store.addReducers({
-  battle
-});
 
 class BattleView extends connect(store)(PageViewElement) {
   static get properties() {

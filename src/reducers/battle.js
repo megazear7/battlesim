@@ -6,7 +6,7 @@ import {
   FIRE,
   ADD,
   REMOVE,
-  CREATE_BATTLE,
+  CREATE_NEW_BATTLE,
   SET_ACTIVE_BATTLE,
   REMOVE_BATTLE
 } from '../actions/battle.js';
@@ -24,37 +24,39 @@ if (! initialState) {
 }
 
 const battle = (state = initialState, action) => {
-  var newState = { ...state }
-  var activeBattle = newState.battles[newState.activeBattle];
-  if (action.type === REST) {
+  var newState = { ...state };
+  if (newState.battles.length-1 <= newState.activeBattle) {
+    var activeBattle = newState.battles[newState.activeBattle];
+  }
+  if (activeBattle && action.type === REST) {
     var oldActiveUnit = activeBattle.activeUnit;
     var newActiveUnit = oldActiveUnit >= activeBattle.units.length - 1 ? 0 : oldActiveUnit + 1;
     activeBattle.activeUnit = newActiveUnit;
     activeBattle.units[oldActiveUnit].energy += 10;
-  } else if (action.type === MOVE) {
+  } else if (activeBattle && action.type === MOVE) {
     var oldActiveUnit = activeBattle.activeUnit;
     var newActiveUnit = oldActiveUnit >= activeBattle.units.length - 1 ? 0 : oldActiveUnit + 1;
     activeBattle.activeUnit = newActiveUnit;
     activeBattle.units[oldActiveUnit].energy -= action.situation.distance;
-  } else if (action.type === CHARGE) {
+  } else if (activeBattle && action.type === CHARGE) {
     var oldActiveUnit = activeBattle.activeUnit;
     var newActiveUnit = oldActiveUnit >= activeBattle.units.length - 1 ? 0 : oldActiveUnit + 1;
     activeBattle.activeUnit = newActiveUnit;
     activeBattle.units[oldActiveUnit].energy -= action.situation.distance * 2;
-  } else if (action.type === FIRE) {
+  } else if (activeBattle && action.type === FIRE) {
     var oldActiveUnit = activeBattle.activeUnit;
     var newActiveUnit = oldActiveUnit >= activeBattle.units.length - 1 ? 0 : oldActiveUnit + 1;
     activeBattle.activeUnit = newActiveUnit;
     activeBattle.units[oldActiveUnit].energy -= 10;
-  } else if (action.type === ADD) {
+  } else if (activeBattle && action.type === ADD) {
     let newUnit = activeBattle.unitTemplates[action.unitTemplate];
     if (action.name) {
       newUnit.name = action.name;
     }
     activeBattle.units.push(newUnit);
-  } else if (action.type === REMOVE) {
+  } else if (activeBattle && action.type === REMOVE) {
     activeBattle.units.splice(action.index, 1);
-  } else if (action.type === CREATE_BATTLE) {
+  } else if (action.type === CREATE_NEW_BATTLE) {
     let newBattle = {
       ...BATTLE_TEMPLATES[action.battleStats.templateIndex],
       createdAt: new Date().getTime()

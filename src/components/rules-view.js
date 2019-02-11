@@ -3,13 +3,8 @@ import { PageViewElement } from './page-view-element.js';
 import { SharedStyles } from './shared-styles.js';
 import RULESETS from '../rulesets.js';
 import { repeat } from 'lit-html/directives/repeat';
-import battle from '../reducers/battle.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
-
-store.addReducers({
-  battle
-});
 
 class RulesView extends connect(store)(PageViewElement) {
   static get properties() {

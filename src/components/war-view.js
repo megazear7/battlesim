@@ -2,17 +2,12 @@ import { html, css } from 'lit-element';
 import { repeat } from 'lit-html/directives/repeat';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { PageViewElement } from './page-view-element.js';
-import { createBattle, setActiveBattle, removeBattle } from '../actions/battle.js';
+import { createNewBattle, setActiveBattle, removeBattle } from '../actions/battle.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
-import battle from '../reducers/battle.js';
 import { SharedStyles } from './shared-styles.js';
 import { ButtonSharedStyles } from './button-shared-styles.js';
 import BATTLE_TEMPLATES from '../battle-templates.js';
-
-store.addReducers({
-  battle
-});
 
 class WarView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -92,7 +87,7 @@ class WarView extends connect(store)(PageViewElement) {
   }
 
   _create() {
-    store.dispatch(createBattle(this.battleStats));
+    store.dispatch(createNewBattle(this.battleStats));
     this.newBattleName = '';
   }
 
