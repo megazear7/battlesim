@@ -8,6 +8,7 @@ import { store } from '../store.js';
 import battle from '../reducers/battle.js';
 import { SharedStyles } from './shared-styles.js';
 import { ButtonSharedStyles } from './button-shared-styles.js';
+import BATTLE_TEMPLATES from '../battle-templates.js';
 
 store.addReducers({
   battle
@@ -17,7 +18,6 @@ class WarView extends connect(store)(PageViewElement) {
   static get properties() {
     return {
       _battles: { type: Object },
-      _battleTemplates: { type: Object },
     };
   }
 
@@ -52,7 +52,7 @@ class WarView extends connect(store)(PageViewElement) {
           the data of which is not saved to local storage. This is so that when the
           app is updated these unit template lists get updated.</p>
           <select id="battle-template">
-            ${repeat(this._battleTemplates, ({battleTemplate, index }) => html`
+            ${repeat(BATTLE_TEMPLATES, (battleTemplate, index) => html`
               <option value="${index}">${battleTemplate.name}</option>
             `)}
           </select>
@@ -112,8 +112,6 @@ class WarView extends connect(store)(PageViewElement) {
         createdAt: createdAt.getMonth()+1 + '/' + createdAt.getDate() + '/' + createdAt.getFullYear()
       };
     });
-    this._battleTemplates = state.battle.battleTemplates
-      .map((battleTemplate, index) => ({ battleTemplate, index }));
   }
 }
 
