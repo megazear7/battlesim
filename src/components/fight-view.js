@@ -7,6 +7,7 @@ import { takeAction } from '../actions/battle.js';
 import { SharedStyles } from './shared-styles.js';
 import { ButtonSharedStyles } from './button-shared-styles.js';
 import Unit from '../unit.js';
+import { prettyDateTime } from '../math-utils.js';
 
 const REST = 'REST';
 const MOVE = 'MOVE';
@@ -57,7 +58,7 @@ class FightView extends connect(store)(PageViewElement) {
           <div>
             <div id="unit">${this._unit.name}</div>
             <div id="army">Army: ${this._unit.army.name}</div>
-            <div id="time-of-day">${this.prettyDateTime}</div>
+            <div id="time-of-day">${prettyDateTime(this._date)}</div>
           </div>
           <h6>Unit Status</h6>
           <p>${this._unit.detailedStatus}</p>
@@ -97,7 +98,7 @@ class FightView extends connect(store)(PageViewElement) {
           </div>
           <div id="action-result">
             ${repeat(this._actionMessages, message => html`
-              <p>${message}</option>
+              <p>${message}</p>
             `)}
             <p id="action-message"></p>
             <button @click="${this._progressToNextAction}">Next Action</button>
@@ -109,35 +110,6 @@ class FightView extends connect(store)(PageViewElement) {
         </section>
       `}
     `;
-  }
-
-  get prettyDateTime() {
-    var strArray=['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    var d = this._date.getDate();
-    var m = strArray[this._date.getMonth()];
-    var y = this._date.getFullYear();
-    var suf;
-    if (d === 1) {
-      suf = "st";
-    } else if (d === 2) {
-      suf = "nd";
-    } else if (d === 3) {
-      suf = "rd";
-    } else {
-      suf = "th"
-    }
-
-    var hour;
-    var hourSuf;
-    if (this._date.getHours() >= 12) {
-      hour = this._date.getHours() - 12;
-      hourSuf = 'pm';
-    } else {
-      hour = this._date.getHours();
-      hourSuf = 'am';
-    }
-    var minutes = this._date.getMinutes() > 9 ? "" + this._date.getMinutes(): "0" + this._date.getMinutes();
-    return `${hour}:${minutes} ${hourSuf} on ${m} ${d}${suf}, ${y}`;
   }
 
   get distanceElement() {

@@ -25,3 +25,32 @@ export function msSinceMidnight(date) {
   let previousMidnight = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0,0,0);
   return date.getTime() - previousMidnight.getTime();
 }
+
+export function prettyDateTime(date) {
+    var strArray=['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    var d = date.getDate();
+    var m = strArray[date.getMonth()];
+    var y = date.getFullYear();
+    var suf;
+    if (d === 1) {
+      suf = "st";
+    } else if (d === 2) {
+      suf = "nd";
+    } else if (d === 3) {
+      suf = "rd";
+    } else {
+      suf = "th"
+    }
+
+    var hour;
+    var hourSuf;
+    if (date.getHours() >= 12) {
+      hour = date.getHours() - 12;
+      hourSuf = 'pm';
+    } else {
+      hour = date.getHours();
+      hourSuf = 'am';
+    }
+    var minutes = date.getMinutes() > 9 ? "" + date.getMinutes(): "0" + date.getMinutes();
+    return `${hour}:${minutes} ${hourSuf} on ${m} ${d}${suf}, ${y}`;
+}
