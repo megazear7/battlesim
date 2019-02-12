@@ -12,7 +12,7 @@ export default [
     name: "Generic Civil War",
     ruleset: 0,
     second: 0,
-    startTime: Date.parse('11 May 1862 11:03:00 EST'),
+    startTime: Date.parse('11 May 1862 11:30:00 EST'),
     activeArmy: 0,
     activeUnit: 0,
     turnStarted: 0,
@@ -30,13 +30,26 @@ export default [
       },
     ],
     unitTemplates: CIVIL_WAR_UNITS,
-    rules: [ ],
+    rules: [
+      {
+        heading: 'The battle begins.',
+        text: 'The game clock starts at 11:30 am on 11th of May, 1862 '
+      },
+      {
+        heading: 'Setup',
+        text: 'Currently there are no setup instructions for this battle. Setup the terrain and units however you would like.'
+      },
+      {
+        heading: 'Night time actions',
+        text: 'During night time each unit that is within 12 inches of an enemy unit must move toward their table edge. The distance they move is 12 - X where X is the distance to the closest enemy unit. They may chose to move further than this.'
+      },
+    ]
   },
   {
     name: "Bull Run",
     ruleset: 0,
     second: 0,
-    startTime: Date.parse('11 May 1862 11:03:00 EST'),
+    startTime: Date.parse('11 May 1862 9:03:00 EST'),
     activeArmy: 0,
     activeUnit: 0,
     turnStarted: 0,
@@ -98,9 +111,17 @@ export default [
     unitTemplates: CIVIL_WAR_UNITS,
     rules: [
       {
-        heading: 'Command level',
-        text: 'The standard unit size is a brigade, consisting of eight stands. Harrisons battalion of cavalry and the Louisiana artillery both consist of only four stands.'
-      }
+        heading: 'The battle begins.',
+        text: 'The game clock starts at 9:03 am on 11th of May, 1862 '
+      },
+      {
+        heading: 'Setup',
+        text: 'Currently there are no setup instructions for this battle. Setup the terrain and units however you would like or try to base it off of the actual battle.'
+      },
+      {
+        heading: 'Night time actions',
+        text: 'During night time each unit that is within 12 inches of an enemy unit must move toward their table edge. The distance they move is 12 - X where X is the distance to the closest enemy unit. They may chose to move further than this.'
+      },
     ]
   }
 ];
