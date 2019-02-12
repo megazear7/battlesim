@@ -77,6 +77,9 @@ class FightView extends connect(store)(PageViewElement) {
         <section>
           <div>
             <input id="distance" class="hidden" type="number" placeholder="Distance (Leave blank to move as far as possible)"></input>
+            <input id="separation" class="hidden" type="number" placeholder="Distance to enemy unit"></input>
+            <input id="engaged-attackers" class="hidden" type="number" placeholder="Engaged Attacking Stands"></input>
+            <input id="engaged-defenders" class="hidden" type="number" placeholder="Engaged Defending Stands"></input>
             <select id="target" class="hidden">
               <option>Select Target</option>
               ${repeat(this._unit.targets, target => html`
@@ -116,6 +119,18 @@ class FightView extends connect(store)(PageViewElement) {
     return this.shadowRoot.getElementById('distance');
   }
 
+  get separationElement() {
+    return this.shadowRoot.getElementById('separation');
+  }
+
+  get engagedAttackingElement() {
+    return this.shadowRoot.getElementById('engaged-attackers');
+  }
+
+  get engagedDefendingElement() {
+    return this.shadowRoot.getElementById('engaged-defenders');
+  }
+
   get uphillContainer() {
     return this.shadowRoot.getElementById('uphill');
   }
@@ -136,6 +151,18 @@ class FightView extends connect(store)(PageViewElement) {
     return parseInt(this.distanceElement.value === '' ? 0 : this.distanceElement.value);
   }
 
+  get separation() {
+    return parseInt(this.separationElement.value === '' ? 0 : this.separationElement.value);
+  }
+
+  get engagedAttackers() {
+    return parseInt(this.engagedAttackingElement.value === '' ? 0 : this.engagedAttackingElement.value);
+  }
+
+  get engagedDefenders() {
+    return parseInt(this.engagedDefendingElement.value === '' ? 0 : this.engagedDefendingElement.value);
+  }
+
   get uphill() {
     return this.uphillContainer.querySelector('input').checked;
   }
@@ -146,15 +173,6 @@ class FightView extends connect(store)(PageViewElement) {
 
   get target() {
     return parseInt(this.targetElement.value);
-  }
-
-  get situation() {
-    return {
-      distance: this.distance,
-      uphill: this.uphill,
-      terrain: this.terrain,
-      target: this.target
-    }
   }
 
   get terrainModifier() {
@@ -175,9 +193,9 @@ class FightView extends connect(store)(PageViewElement) {
     } else if (this._selectedAction === MOVE) {
       return true;
     } else if (this._selectedAction === CHARGE) {
-      return this.distance > 0 && ! isNaN(this.target)
+      return ! isNaN(this.target)
     } else if (this._selectedAction === FIRE) {
-      return this.distance > 0 && ! isNaN(this.target)
+      return ! isNaN(this.target)
     } else {
       return false;
     }
@@ -204,7 +222,7 @@ class FightView extends connect(store)(PageViewElement) {
       } else if (this._selectedAction === MOVE) {
         actionResult = this._unit.move(this.distance * 100, this.terrainModifier);
       } else if (this._selectedAction === CHARGE) {
-        actionResult = this._unit.charge();
+        actionResult = this._unit.charge(this.separation);
       } else if (this._selectedAction === FIRE) {
         actionResult = this._unit.fire();
       }
@@ -219,6 +237,9 @@ class FightView extends connect(store)(PageViewElement) {
       this.shadowRoot.getElementById('take-action').style.opacity = 0;
 
       this.distanceElement.value = '';
+      this.separationElement.value = '';
+      this.engagedAttackingElement.value = '';
+      this.engagedDefendingElement.value = '';
       this.uphillContainer.querySelector('input').checked = false;
       this.terrainContainer.querySelector('input').checked = false;
       this.targetElement.value = '';
@@ -240,6 +261,9 @@ class FightView extends connect(store)(PageViewElement) {
     [...this.shadowRoot.querySelectorAll('button')]
     .forEach(button => button.classList.remove('selected'));
     this.distanceElement.classList.add('hidden');
+    this.separationElement.classList.add('hidden');
+    this.engagedAttackingElement.classList.add('hidden');
+    this.engagedDefendingElement.classList.add('hidden');
     this.uphillContainer.classList.add('hidden');
     this.terrainContainer.classList.add('hidden');
     this.targetElement.classList.add('hidden');
@@ -262,7 +286,9 @@ class FightView extends connect(store)(PageViewElement) {
   _charge(e) {
     this._removeSelection();
     e.target.classList.add('selected');
-    this.distanceElement.classList.remove('hidden');
+    this.separationElement.classList.remove('hidden');
+    this.engagedAttackingElement.classList.remove('hidden');
+    this.engagedDefendingElement.classList.remove('hidden');
     this.uphillContainer.classList.remove('hidden');
     this.terrainContainer.classList.remove('hidden');
     this.targetElement.classList.remove('hidden');
@@ -288,7 +314,10 @@ class FightView extends connect(store)(PageViewElement) {
   _fire(e) {
     this._removeSelection();
     e.target.classList.add('selected');
-    this.distanceElement.classList.remove('hidden');
+    this.separationElement.classList.remove('hidden');
+    this.engagedAttackingElement.classList.remove('hidden');
+    this.engagedDefendingElement.classList.remove('hidden');
+    this.uphillContainer.classList.remove('hidden');
     this.terrainContainer.classList.remove('hidden');
     this.targetElement.classList.remove('hidden');
     this.shadowRoot.getElementById('move').style.opacity = 0.5;
