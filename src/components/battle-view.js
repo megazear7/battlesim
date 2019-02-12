@@ -174,7 +174,7 @@ class BattleView extends connect(store)(PageViewElement) {
   stateChanged(state) {
     if (state.battle.battles.length > state.battle.activeBattle) {
       var activeBattle = state.battle.battles[state.battle.activeBattle];
-      let units = activeBattle.units.map((unit, index) => ({ index, unit: new Unit(unit) }));
+      let units = activeBattle.units.map((unit, index) => ({ index, unit: new Unit(unit, index) }));
       this._army0Units = units.filter(({unit}) => unit.armyIndex === 0);
       this._army1Units = units.filter(({unit}) => unit.armyIndex === 1);
       this._army0Name = activeBattle.armies[0].name;
