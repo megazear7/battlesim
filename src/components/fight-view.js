@@ -13,6 +13,7 @@ class FightView extends connect(store)(PageViewElement) {
     return {
       _unit: { type: Object },
       _hasActiveBattle: { type: Boolean },
+      _actionMessages: { type: Array },
     };
   }
 
@@ -63,7 +64,7 @@ class FightView extends connect(store)(PageViewElement) {
         </section>
         <section>
           <div>
-            <input id="distance" class="hidden" type="number" placeholder="Distance"></input>
+            <input id="distance" class="hidden" type="number" placeholder="Distance (Leave blank to move as far as possible)"></input>
             <select id="target" class="hidden">
               <option>Select Target</option>
               ${repeat(this._unit.targets, target => html`
@@ -84,6 +85,9 @@ class FightView extends connect(store)(PageViewElement) {
             <p class="error hidden">You must provide valid values for each field</p>
           </div>
           <div id="action-result">
+            ${repeat(this._actionMessages, message => html`
+              <p>${message}</option>
+            `)}
             <p id="action-message"></p>
             <button @click="${this._progressToNextAction}">Next Action</button>
           </div>
@@ -117,7 +121,7 @@ class FightView extends connect(store)(PageViewElement) {
   }
 
   get distance() {
-    return parseInt(this.distanceElement.value);
+    return parseInt(this.distanceElement.value === '' ? 0 : this.distanceElement.value);
   }
 
   get uphill() {
@@ -151,7 +155,7 @@ class FightView extends connect(store)(PageViewElement) {
     if (this._selectedAction === rest) {
       return true;
     } else if (this._selectedAction === move) {
-      return this.distance > 0;
+      return true;
     } else if (this._selectedAction === charge) {
       return this.distance > 0 && ! isNaN(this.target)
     } else if (this._selectedAction === fire) {
@@ -177,19 +181,19 @@ class FightView extends connect(store)(PageViewElement) {
     if (this.validSituation) {
       if (this._selectedAction === rest) {
         let actionResult = this._unit.rest();
-        this._actionMessageElement.innerText = actionResult.message;
+        this._actionMessages = actionResult.messages;
         // TODO We need to persist the updates to the unit to the redux store;
       } else if (this._selectedAction === move) {
         let actionResult = this._unit.move(this.distance, this.terrainModifier);
-        this._actionMessageElement.innerText = actionResult.message;
+        this._actionMessages = actionResult.messages;
         // TODO We need to persist the updates to the unit to the redux store;
       } else if (this._selectedAction === charge) {
         let actionResult = this._unit.charge();
-        this._actionMessageElement.innerText = actionResult.message;
+        this._actionMessages = actionResult.messages;
         // TODO We need to persist the updates to the unit to the redux store;
       } else if (this._selectedAction === fire) {
         let actionResult = this._unit.fire();
-        this._actionMessageElement.innerText = actionResult.message;
+        this._actionMessages = actionResult.messages;
         // TODO We need to persist the updates to the unit to the redux store;
       }
 
@@ -283,6 +287,7 @@ class FightView extends connect(store)(PageViewElement) {
 
   // This is called every time something is updated in the store.
   stateChanged(state) {
+    this._actionMessages = [];
     if (state.battle.battles.length > state.battle.activeBattle) {
       let activeBattle = state.battle.battles[state.battle.activeBattle];
       this._unit = new Unit(activeBattle.units[activeBattle.activeUnit]);

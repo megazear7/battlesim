@@ -51,16 +51,23 @@ export default class Unit {
    * @return
    */
   move(distance, terrain, manuevering = false) {
-    let time = distance
-      * this.movementTime
-      * (1 + (terrain/100))
-      * (1 + weightedRandom(5));
+    const secondsInAnHour = 3600;
+
+    let time;
+    let moveAsFarAsPossible = false;
+    if (distance === 0) {
+      moveAsFarAsPossible = true;
+      time = secondsInAnHour;
+      distance = secondsInAnHour / this.movementTime;
+    } else {
+      time = distance * this.movementTime;
+    }
+
+    time *= (1 + (terrain/100)) * (1 + weightedRandom(5));
 
     if (manuevering) {
       time += this.maneuverTime;
     }
-
-    const secondsInAnHour = 3600;
 
     // If it would take more than 1 hour to perform the action then the movement
     // is reduced to however far they could have gone in an hour.
@@ -69,16 +76,28 @@ export default class Unit {
     if (time > secondsInAnHour) {
       let speed = distance / time;
       actualTime = secondsInAnHour;
-      actualDistance = speed * actualTime ;
+      actualDistance = speed * actualTime;
     } else {
       actualTime = time;
       actualDistance = distance;
     }
 
+    let moveMessage;
+    if (moveAsFarAsPossible) {
+      moveMessage = `You move ${Math.floor(actualDistance)} inches.`;
+    } else if (actualDistance < distance) {
+      moveMessage = `You could only move ${Math.floor(actualDistance)} inches.`;
+    } else {
+      moveMessage = `You move the full ${Math.floor(actualDistance)} inches.`;
+    }
+
     return {
       distance: Math.floor(actualDistance),
       time: Math.floor(actualTime),
-      message: `${this.name} travelled ${numberWithCommas(Math.floor(actualDistance * 100))} yards in ${Math.floor(actualTime / 60)} minutes.`
+      messages: [
+        moveMessage,
+        `${this.name} travelled ${numberWithCommas(Math.floor(actualDistance * 100))} yards in ${Math.floor(actualTime / 60)} minutes.`,
+      ]
     };
   }
 
