@@ -1,37 +1,13 @@
-export const REST = 'REST';
-export const MOVE = 'MOVE';
-export const CHARGE = 'CHARGE';
-export const FIRE = 'FIRE';
+export const TAKE_ACTION = 'TAKE_ACTION';
 export const ADD = 'ADD';
 export const REMOVE = 'REMOVE';
 export const CREATE_NEW_BATTLE = 'CREATE_NEW_BATTLE';
 export const SET_ACTIVE_BATTLE = 'SET_ACTIVE_BATTLE';
 export const REMOVE_BATTLE = 'REMOVE_BATTLE';
 
-export const rest = (updates) => {
+export const takeAction = (updates) => {
   return {
-    type: REST,
-    updates
-  };
-};
-
-export const move = (updates) => {
-  return {
-    type: MOVE,
-    updates
-  };
-};
-
-export const charge = (updates) => {
-  return {
-    type: CHARGE,
-    updates
-  };
-};
-
-export const fire = (updates) => {
-  return {
-    type: FIRE,
+    type: TAKE_ACTION,
     updates
   };
 };

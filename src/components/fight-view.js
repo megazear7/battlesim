@@ -3,10 +3,15 @@ import { repeat } from 'lit-html/directives/repeat';
 import { PageViewElement } from './page-view-element.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
-import { rest, move, charge, fire } from '../actions/battle.js';
+import { takeAction } from '../actions/battle.js';
 import { SharedStyles } from './shared-styles.js';
 import { ButtonSharedStyles } from './button-shared-styles.js';
 import Unit from '../unit.js';
+
+const REST = 'REST';
+const MOVE = 'MOVE';
+const CHARGE = 'CHARGE';
+const FIRE = 'FIRE';
 
 class FightView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -158,13 +163,13 @@ class FightView extends connect(store)(PageViewElement) {
   }
 
   get validSituation() {
-    if (this._selectedAction === rest) {
+    if (this._selectedAction === REST) {
       return true;
-    } else if (this._selectedAction === move) {
+    } else if (this._selectedAction === MOVE) {
       return true;
-    } else if (this._selectedAction === charge) {
+    } else if (this._selectedAction === CHARGE) {
       return this.distance > 0 && ! isNaN(this.target)
-    } else if (this._selectedAction === fire) {
+    } else if (this._selectedAction === FIRE) {
       return this.distance > 0 && ! isNaN(this.target)
     } else {
       return false;
@@ -176,7 +181,7 @@ class FightView extends connect(store)(PageViewElement) {
   }
 
   _progressToNextAction() {
-    store.dispatch(this._selectedAction(this._actionUpdates));
+    store.dispatch(takeAction(this._actionUpdates));
     this._actionUpdate = {};
     this.shadowRoot.getElementById('actions').style.display = 'block';
     this.shadowRoot.getElementById('take-action').style.display = 'block';
@@ -187,13 +192,13 @@ class FightView extends connect(store)(PageViewElement) {
   _takeAction() {
     if (this.validSituation) {
       let actionResult;
-      if (this._selectedAction === rest) {
+      if (this._selectedAction === REST) {
         actionResult = this._unit.rest();
-      } else if (this._selectedAction === move) {
+      } else if (this._selectedAction === MOVE) {
         actionResult = this._unit.move(this.distance * 100, this.terrainModifier);
-      } else if (this._selectedAction === charge) {
+      } else if (this._selectedAction === CHARGE) {
         actionResult = this._unit.charge();
-      } else if (this._selectedAction === fire) {
+      } else if (this._selectedAction === FIRE) {
         actionResult = this._unit.fire();
       }
       this._actionMessages = actionResult.messages;
@@ -244,7 +249,7 @@ class FightView extends connect(store)(PageViewElement) {
     this.shadowRoot.getElementById('rest').style.opacity = 0.5;
     this.shadowRoot.getElementById('fire').style.opacity = 0.5;
     this.shadowRoot.getElementById('take-action').style.opacity = 1;
-    this._selectedAction = move;
+    this._selectedAction = MOVE;
   }
 
   _charge(e) {
@@ -259,7 +264,7 @@ class FightView extends connect(store)(PageViewElement) {
     this.shadowRoot.getElementById('rest').style.opacity = 0.5;
     this.shadowRoot.getElementById('fire').style.opacity = 0.5;
     this.shadowRoot.getElementById('take-action').style.opacity = 1;
-    this._selectedAction = charge;
+    this._selectedAction = CHARGE;
   }
 
   _rest(e) {
@@ -270,7 +275,7 @@ class FightView extends connect(store)(PageViewElement) {
     this.shadowRoot.getElementById('rest').style.opacity = 1;
     this.shadowRoot.getElementById('fire').style.opacity = 0.5;
     this.shadowRoot.getElementById('take-action').style.opacity = 1;
-    this._selectedAction = rest;
+    this._selectedAction = REST;
   }
 
   _fire(e) {
@@ -284,7 +289,7 @@ class FightView extends connect(store)(PageViewElement) {
     this.shadowRoot.getElementById('rest').style.opacity = 0.5;
     this.shadowRoot.getElementById('fire').style.opacity = 1;
     this.shadowRoot.getElementById('take-action').style.opacity = 1;
-    this._selectedAction = fire;
+    this._selectedAction = FIRE;
   }
 
   // This is called every time something is updated in the store.

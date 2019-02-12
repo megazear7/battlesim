@@ -1,9 +1,6 @@
 import BATTLE_TEMPLATES from '../battle-templates.js';
 import {
-  REST,
-  CHARGE,
-  MOVE,
-  FIRE,
+  TAKE_ACTION,
   ADD,
   REMOVE,
   CREATE_NEW_BATTLE,
@@ -28,25 +25,17 @@ const battle = (state = initialState, action) => {
   if (newState.battles.length-1 <= newState.activeBattle) {
     var activeBattle = newState.battles[newState.activeBattle];
   }
-  if (activeBattle && action.type === REST) {
+  if (activeBattle && action.type === TAKE_ACTION) {
     var oldActiveUnit = activeBattle.activeUnit;
     var newActiveUnit = oldActiveUnit >= activeBattle.units.length - 1 ? 0 : oldActiveUnit + 1;
     activeBattle.activeUnit = newActiveUnit;
-    activeBattle.units[oldActiveUnit].energy += 10;
-  } else if (activeBattle && action.type === MOVE) {
-    var oldActiveUnit = activeBattle.activeUnit;
-    var newActiveUnit = oldActiveUnit >= activeBattle.units.length - 1 ? 0 : oldActiveUnit + 1;
-    activeBattle.activeUnit = newActiveUnit;
-  } else if (activeBattle && action.type === CHARGE) {
-    var oldActiveUnit = activeBattle.activeUnit;
-    var newActiveUnit = oldActiveUnit >= activeBattle.units.length - 1 ? 0 : oldActiveUnit + 1;
-    activeBattle.activeUnit = newActiveUnit;
-    activeBattle.units[oldActiveUnit].energy -= action.situation.distance * 2;
-  } else if (activeBattle && action.type === FIRE) {
-    var oldActiveUnit = activeBattle.activeUnit;
-    var newActiveUnit = oldActiveUnit >= activeBattle.units.length - 1 ? 0 : oldActiveUnit + 1;
-    activeBattle.activeUnit = newActiveUnit;
-    activeBattle.units[oldActiveUnit].energy -= 10;
+
+    action.updates.forEach(update => {
+      let unit = activeBattle.units[update.id];
+      update.changes.forEach(change => {
+        unit[change.prop] = change.value;
+      });
+    });
   } else if (activeBattle && action.type === ADD) {
     let newUnit = activeBattle.unitTemplates[action.unitTemplate];
     if (action.name) {
@@ -75,15 +64,6 @@ const battle = (state = initialState, action) => {
     }
   } else if (action.type === SET_ACTIVE_BATTLE) {
     newState.activeBattle = action.index;
-  }
-
-  if (activeBattle && action.updates) {
-    action.updates.forEach(update => {
-      let unit = activeBattle.units[update.id];
-      update.changes.forEach(change => {
-        unit[change.prop] = change.value;
-      });
-    });
   }
 
   localStorage.setItem("battle", JSON.stringify(newState));
