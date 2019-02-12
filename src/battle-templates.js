@@ -273,7 +273,8 @@ export default [
     ],
     units: [
       { ...FRESH_UNION_BRIGADE,
-        name: "Tyler's 1st Brigade"
+        name: "Tyler's 1st Brigade",
+        morale: 50
       },
       { ...FRESH_CONFEDERATE_BRIGADE,
         name: "2nd Potomac Brigade",

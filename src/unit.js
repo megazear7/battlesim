@@ -216,6 +216,23 @@ export default class Unit {
     return changes;
   }
 
+  emptyChanges() {
+    return {
+      attacker: {
+        casualties: 0,
+        energy: 0,
+        morale: 0,
+        leadership: 0,
+      },
+      defender: {
+        casualties: 0,
+        energy: 0,
+        morale: 0,
+        leadership: 0,
+      }
+    };
+  }
+
   meleeCombat(timeSpent, separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender) {
     const attackerTimeToFight = timeSpent - this.secondsToIssueOrder - (terrainModifier / 100);
     const attackerPercentTimeFighting = attackerTimeToFight / timeSpent;
@@ -305,16 +322,43 @@ export default class Unit {
       engagedDefenders = defender.stands;
     }
 
+    let attackerMoraleCheck = (Math.random() * 100) < this.morale;
+    let defenderMoraleCheck = (Math.random() * 100) < defender.morale;
+
     let changes;
     let specificMessage;
+    let attackerMessage;
+    let defenderMessage;
     if (melee) {
-      changes = this.meleeCombat(timeSpent, separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender);
+      if (!attackerMoraleCheck) {
+        defenderMessage = `${defender.name} held strong.`;
+        attackerMessage = `${this.name} was unwilling to engage.`;
+        changes = this.emptyChanges();
+      } else if (!defenderMoraleCheck) {
+        defenderMessage = `${defender.name} runs away.`;
+        attackerMessage = `${this.name} was unable to persue the defender. TODO use the separation and unit movement rates to add variability to what this outcome can be.`;
+        changes = this.emptyChanges();
+      } else {
+        changes = this.meleeCombat(timeSpent, separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender);
+        attackerMessage = createCasualtyMessage(this, changes.attacker.casualties);
+        defenderMessage = createCasualtyMessage(defender, changes.defender.casualties);
+      }
     } else {
-      changes = this.rangedCombat(timeSpent ,separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender);
+      if (!attackerMoraleCheck) {
+        defenderMessage = `${defender.name} held strong.`;
+        attackerMessage = `${this.name} was unwilling to engage.`;
+        changes = this.emptyChanges();
+      } else if (!defenderMoraleCheck) {
+        defenderMessage = `${defender.name} runs away.`;
+        attackerMessage = `${this.name} was unable to persue the defender. TODO use the separation and unit movement rates to add variability to what this outcome can be.`;
+        changes = this.emptyChanges();
+      } else {
+        changes = this.meleeCombat(timeSpent, separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender);
+        attackerMessage = createCasualtyMessage(this, changes.attacker.casualties);
+        defenderMessage = createCasualtyMessage(defender, changes.defender.casualties);
+      }
     }
 
-    let attackerMessage = createCasualtyMessage(this, changes.attacker.casualties);
-    let defenderMessage = createCasualtyMessage(defender, changes.defender.casualties);
 
     return {
       messages: [ attackerMessage, this.detailedStatus, "---", defenderMessage, defender.detailedStatus ],
