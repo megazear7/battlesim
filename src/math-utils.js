@@ -1,3 +1,5 @@
+export const SECONDS_IN_AN_HOUR = 3600;
+
 /** @function weightedRandom
  *  A random number between 0 and 1 weighted towards the middle.
  *  @param bellFactor Increasing this number increases the weight towards the middle.

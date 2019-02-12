@@ -9,9 +9,12 @@ import {
 
 export default [
   {
-    ruleset: 0,
-    activeUnit: 0,
     name: "Generic Civil War",
+    ruleset: 0,
+    second: 0,
+    activeArmy: 0,
+    activeUnit: 0,
+    turnStarted: 0,
     armies: [
       { name: "Union" },
       { name: "Confederate" },
@@ -29,9 +32,12 @@ export default [
     rules: [ ],
   },
   {
-    ruleset: 0,
-    activeUnit: 0,
     name: "Bull Run",
+    ruleset: 0,
+    second: 0,
+    activeArmy: 0,
+    activeUnit: 0,
+    turnStarted: 0,
     armies: [
       { name: "Union" },
       { name: "Confederate" },

@@ -1,9 +1,7 @@
 import { store } from './store.js';
 import { WEAPONS } from './weapons.js';
 import { ARMOR } from './armor.js';
-import { weightedRandom, numberWithCommas, nearest100 } from './math-utils.js';
-
-const SECONDS_IN_AN_HOUR = 3600;
+import { weightedRandom, numberWithCommas, nearest100, SECONDS_IN_AN_HOUR } from './math-utils.js';
 
 export default class Unit {
   constructor({
@@ -12,6 +10,7 @@ export default class Unit {
                 strength,
                 morale = 90,
                 energy = 100,
+                nextAction = 0,
                 static: {
                   armor,
                   meleeWeapon,
@@ -30,6 +29,7 @@ export default class Unit {
     this.strength = strength || fullStrength;
     this.morale = morale;
     this.energy = energy;
+    this.nextAction = nextAction;
     this.armor = ARMOR[armor];
     this.meleeWeapon = WEAPONS[meleeWeapon];
     this.rangedWeapon = WEAPONS[rangedWeapon];
@@ -77,7 +77,11 @@ export default class Unit {
             {
               prop: 'energy',
               value: Math.min(this.energy + energyRecovered, 100),
-            }
+            },
+            {
+              prop: 'nextAction',
+              value: this.nextAction + time,
+            },
           ]
         }
       ]
@@ -149,7 +153,11 @@ export default class Unit {
             {
               prop: "energy",
               value: this.energy - energyCost,
-            }
+            },
+            {
+              prop: 'nextAction',
+              value: this.nextAction + totalSecondsSpent,
+            },
           ],
         }
       ]
