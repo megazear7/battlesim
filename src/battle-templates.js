@@ -6,13 +6,16 @@ import {
   FRESH_CONFEDERATE_BRIGADE,
   FRESH_CONFEDERATE_CAVALRY_REGIMENT,
   FRESH_CONFEDERATE_ARTILLERY, } from './civil-war-units.js';
+import { msSinceMidnight } from './math-utils.js';
 
 export default [
   {
     name: "Generic Civil War",
     ruleset: 0,
     second: 0,
-    startTime: Date.parse('11 May 1862 11:30:00 EST'),
+    startTime: Date.parse('20 June 1862 9:03:00 EST'),
+    sunSet: msSinceMidnight(new Date(Date.parse('20 June 1862 21:04:00 EST'))),
+    sunRise: msSinceMidnight(new Date(Date.parse('20 June 1862 6:03:00 EST'))),
     activeArmy: 0,
     activeUnit: 0,
     turnStarted: 0,
@@ -49,7 +52,9 @@ export default [
     name: "Bull Run",
     ruleset: 0,
     second: 0,
-    startTime: Date.parse('11 May 1862 9:03:00 EST'),
+    startTime: Date.parse('11 May 1862 11:30:00 EST'),
+    sunSet: msSinceMidnight(new Date(Date.parse('11 May 1862 20:36:00 EST'))),
+    sunRise: msSinceMidnight(new Date(Date.parse('11 May 1862 6:21:00 EST'))),
     activeArmy: 0,
     activeUnit: 0,
     turnStarted: 0,

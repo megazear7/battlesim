@@ -20,3 +20,8 @@ export function numberWithCommas(x) {
 export function nearest100(x) {
   return Math.floor(x/100)*100
 }
+
+export function msSinceMidnight(date) {
+  let previousMidnight = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0,0,0);
+  return date.getTime() - previousMidnight.getTime();
+}
