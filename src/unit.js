@@ -3,6 +3,8 @@ import { WEAPONS } from './weapons.js';
 import { ARMOR } from './armor.js';
 import { weightedRandom, numberWithCommas } from './math-utils.js';
 
+const SECONDS_IN_AN_HOUR = 3600;
+
 export default class Unit {
   constructor({
                 army = 0,
@@ -44,60 +46,42 @@ export default class Unit {
     };
   }
 
-  /**
-   * @function move
-   * @param distance This is given in inches
-   * @param terrain This should be a number between 0 and 100
-   * @return
-   */
-  move(distance, terrain, manuevering = false) {
-    const secondsInAnHour = 3600;
+  get secondsToIssueOrder() {
+    return (this.leadership * 3) + (this.experience * 2);
+  }
 
-    let time;
-    let moveAsFarAsPossible = false;
-    if (distance === 0) {
-      moveAsFarAsPossible = true;
-      time = secondsInAnHour;
-      distance = secondsInAnHour / this.movementTime;
+  move(distanceInYards, terrain, manuevering = false) {
+    const secondsAvailableToMove = SECONDS_IN_AN_HOUR - this.secondsToIssueOrder;
+    const terrainModifier = 2 + ((terrain / 100) * 5) + Math.random();
+    const secondsToMove100Yards = this.movementTime * terrainModifier;
+    const maxYardsTravelled = (secondsAvailableToMove / secondsToMove100Yards) * 100;
+    const yardsTravelled = Math.min(distanceInYards === 0 ? Number.MAX_SAFE_INTEGER : distanceInYards, maxYardsTravelled);
+    const secondsSpentMoving = (yardsTravelled / 100) * secondsToMove100Yards;
+    const energyCost = (secondsSpentMoving / SECONDS_IN_AN_HOUR) * terrainModifier;
+    const totalSecondsSpent = secondsSpentMoving + this.secondsToIssueOrder;
+
+    console.debug('secondsAvailableToMove', secondsAvailableToMove, '\nterrainModifier', terrainModifier, '\nsecondsToMove100Yards', secondsToMove100Yards, '\nmaxYardsTravelled', maxYardsTravelled, '\nyardsTravelled', yardsTravelled, '\nsecondsSpentMoving', secondsSpentMoving, '\nenergyCost', energyCost, '\ntotalSecondsSpent', totalSecondsSpent);
+
+    let moveDesc;
+    if (distanceInYards === 0) {
+      moveDesc = `You move ${Math.floor(yardsTravelled / 100)} inches.`;
+    } else if (yardsTravelled < distanceInYards) {
+      moveDesc = `You could only move ${Math.floor(yardsTravelled / 100)} inches.`;
     } else {
-      time = distance * this.movementTime;
+      moveDesc = `You move the full ${Math.floor(yardsTravelled / 100)} inches.`;
     }
 
-    time *= (1 + (terrain/100)) * (1 + weightedRandom(5));
-
-    if (manuevering) {
-      time += this.maneuverTime;
-    }
-
-    // If it would take more than 1 hour to perform the action then the movement
-    // is reduced to however far they could have gone in an hour.
-    let actualDistance;
-    let actualTime;
-    if (time > secondsInAnHour) {
-      let speed = distance / time;
-      actualTime = secondsInAnHour;
-      actualDistance = speed * actualTime;
-    } else {
-      actualTime = time;
-      actualDistance = distance;
-    }
-
-    let moveMessage;
-    if (moveAsFarAsPossible) {
-      moveMessage = `You move ${Math.floor(actualDistance)} inches.`;
-    } else if (actualDistance < distance) {
-      moveMessage = `You could only move ${Math.floor(actualDistance)} inches.`;
-    } else {
-      moveMessage = `You move the full ${Math.floor(actualDistance)} inches.`;
-    }
+    let battlefieldDesc = `${this.name} travelled ${numberWithCommas(Math.floor(yardsTravelled))} yards in ${Math.floor(totalSecondsSpent / 60)} minutes.`;
+    let energyCostDesc = `Energy cost: ${energyCost}`;
 
     return {
-      distance: Math.floor(actualDistance),
-      time: Math.floor(actualTime),
-      messages: [
-        moveMessage,
-        `${this.name} travelled ${numberWithCommas(Math.floor(actualDistance * 100))} yards in ${Math.floor(actualTime / 60)} minutes.`,
-      ]
+      distance: Math.floor(yardsTravelled),
+      time: Math.floor((secondsSpentMoving + this.secondsToIssueOrder) / 60),
+      energyCost: energyCost,
+      messages: [ moveDesc, battlefieldDesc, energyCostDesc ],
+      update: {
+        energy: this.energy - energyCost,
+      }
     };
   }
 

@@ -125,11 +125,11 @@ class FightView extends connect(store)(PageViewElement) {
   }
 
   get uphill() {
-    return this.uphillContainer.querySelector('input').value === 'on';
+    return this.uphillContainer.querySelector('input').checked;
   }
 
   get terrain() {
-    return this.terrainContainer.querySelector('input').value === 'on';
+    return this.terrainContainer.querySelector('input').checked;
   }
 
   get target() {
@@ -146,9 +146,15 @@ class FightView extends connect(store)(PageViewElement) {
   }
 
   get terrainModifier() {
-    return 0
-      + this.uphill ? 50 : 0
-      + this.terrain ? 50 : 0;
+    if (this.uphill && this.terrain) {
+      return 60;
+    } else if (this.uphill) {
+      return 40;
+    } else if (this.terrain) {
+      return 20;
+    } else {
+      return 0;
+    }
   }
 
   get validSituation() {
@@ -184,7 +190,8 @@ class FightView extends connect(store)(PageViewElement) {
         this._actionMessages = actionResult.messages;
         // TODO We need to persist the updates to the unit to the redux store;
       } else if (this._selectedAction === move) {
-        let actionResult = this._unit.move(this.distance, this.terrainModifier);
+        console.log(this.terrainModifier);
+        let actionResult = this._unit.move(this.distance * 100, this.terrainModifier);
         this._actionMessages = actionResult.messages;
         // TODO We need to persist the updates to the unit to the redux store;
       } else if (this._selectedAction === charge) {
