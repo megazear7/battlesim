@@ -13,7 +13,7 @@ import { weightedRandom } from './math-utils.js';
  *  @return The number of casualties the defener takes.
  */
 export function attack(strength, volume, power, armor, attackSkill, defendSkill, attackEnergy, defendEnergy) {
-  checkAttackParams(strength, volume, armor, power, attackSkill, defendSkill);
+  checkAttackParams(strength, volume, armor, power, attackSkill, defendSkill, attackEnergy, defendEnergy);
   let affectiveArmor = Math.min(armor - power, 0);
   let explosivePower = 1 + Math.min(power - armor, 0);
 
@@ -39,21 +39,17 @@ function checkAttackParams(strength, volume, power, armor, attackSkill, defendSk
    { name: 'attackEnergy', param: attackEnergy },
    { name: 'defendEnergy', param: defendEnergy },
  ].forEach(({name, param}) => {
-    if (param < 1) {
+    if (param < 0) {
       console.error(`${name} of less than 1 is invalid. ${name} was ${param}`);
     }
-    if (param > 99) {
+    if (param > 100) {
       console.error(`${name} of greater than 99 is invalid. ${name} was ${param}`);
     }
   });
 
   // Power can be over 1 and that would be for things like cannons or area affects.
-  if (power < 1) {
+  if (power < 0) {
     console.error(`power of less than 1 is invalid. power was ${power}`);
-  }
-
-  if (strength < 1) {
-    console.error(`strength of less than 1 is invalid. strength was ${strength}`);
   }
 
   if (strength <= 0) {

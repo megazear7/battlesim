@@ -2,6 +2,7 @@ import { store } from './store.js';
 import { WEAPONS } from './weapons.js';
 import { ARMOR } from './armor.js';
 import { weightedRandom, numberWithCommas, nearest100, SECONDS_IN_AN_HOUR } from './math-utils.js';
+import { attack } from './battle-utils.js';
 
 export default class Unit {
   constructor({
@@ -15,6 +16,8 @@ export default class Unit {
                 armor,
                 meleeWeapon,
                 rangedWeapon,
+                meleeSkill = 50,
+                rangedSkill = 50,
                 experience = 50,
                 leadership = 50,
                 troopType = 0,
@@ -29,6 +32,8 @@ export default class Unit {
     this.strength = strength || fullStrength;
     this.morale = morale;
     this.energy = energy;
+    this.meleeSkill = meleeSkill;
+    this.rangedSkill = rangedSkill;
     this.nextAction = nextAction;
     this.armor = ARMOR[armor];
     this.meleeWeapon = WEAPONS[meleeWeapon];
@@ -164,42 +169,100 @@ export default class Unit {
     };
   }
 
-  meleeCombat(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender) {
-    // TODO calculate melee combat updates.
+  baseCombat(separation, terrainModifier, engagedAttackers, engagedDefenders, general, subcommander, attackersPowerMod, defendersPowerMod, defender) {
+    console.debug('Input', '\nseparation', separation, '\nterrainModifier', terrainModifier, '\nengagedAttackers', engagedAttackers, '\nengagedDefenders', engagedDefenders, '\ngeneral', general, '\nsubcommaner', subcommander, '\nattackersPowerMod', attackersPowerMod, '\ndefendersPowerMod', defendersPowerMod, '\ndefender', defender);
 
-    return {
+    // TODO we are always just doing melee. We need to use the ranged stats for ranged combat.
+    // TODO we need to modify strength based upon the number of engaged stands.
+    // TODO we need to modify energy expendature based upon the terrain.
+    // TODO We need to modify the volume by the separation. The further apart they are the less time they have to attack each other.
+    let attackersCasualties = attack(
+      defender.strength,
+      this.meleeWeapon.volume,
+      defender.meleeWeapon.powerVsFoot * defendersPowerMod,
+      defender.armor.defense,
+      defender.meleeSkill,
+      this.meleeSkill,
+      defender.energy,
+      this.energy);
+
+    let defendersCasualties = attack(
+      this.strength,
+      this.meleeWeapon.volume,
+      this.meleeWeapon.powerVsFoot * attackersPowerMod,
+      this.armor.defense,
+      this.meleeSkill,
+      defender.meleeSkill,
+      this.energy,
+      defender.energy);
+
+    let attackerPercentLoss = attackersCasualties / this.strength;
+    let defenderPercentLoss = defendersCasualties / defender.strength;
+
+    let attackerEnergyLoss = attackerPercentLoss * 2 * 100 * Math.random();
+    let defenderEnergyLoss = defenderPercentLoss * 2 * 100 * Math.random();
+
+    let attackerMoraleMod = (this.experience / 100) + 1;
+    let defenderMoraleMod = (defender.experience / 100) + 1;
+
+    let attackerMoraleLoss = attackerPercentLoss * attackerMoraleMod * 100 * Math.random();
+    let defenderMoraleLoss = defenderPercentLoss * defenderMoraleMod * 100 * Math.random();
+
+    let attackerLeadershipLoss;
+    if (Math.random() > 0.95) {
+      attackerLeadershipLoss = Math.random() * 50;
+    } else {
+      attackerLeadershipLoss = 0;
+    }
+
+    let defenderLeadershipLoss;
+    if (Math.random() > 0.95) {
+      defenderLeadershipLoss = Math.random() * 50;
+    } else {
+      defenderLeadershipLoss = 0;
+    }
+
+    let changes = {
       attacker: {
-        casualties: 0,
-        energy: 0,
-        morale: 0,
-        leadership: 0,
+        casualties: attackersCasualties,
+        energy: attackerEnergyLoss,
+        morale: attackerMoraleLoss,
+        leadership: attackerLeadershipLoss,
       },
       defender: {
-        casualties: 0,
-        energy: 0,
-        morale: 0,
-        leadership: 0,
+        casualties: defendersCasualties,
+        energy: defenderEnergyLoss,
+        morale: defenderMoraleLoss,
+        leadership: defenderLeadershipLoss,
       }
+    };
+
+    console.debug('Output', changes);
+
+    return changes;
+  }
+
+  meleeCombat(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender) {
+    let attackersPowerMod = 1;
+    let defendersPowerMod = 1;
+    if (uphill) {
+      attackersPowerMod -= 0.25;
+      defendersPowerMod += 0.25;
     }
+    if (downhill) {
+      attackersPowerMod -= 0.25;
+      defendersPowerMod += 0.25;
+    }
+
+    return this.baseCombat(separation, terrainModifier, engagedAttackers, engagedDefenders, general, subcommander, attackersPowerMod, defendersPowerMod, defender);
   }
 
   rangedCombat(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender) {
-    // TODO calculate ranged combat updates.
+    return this.baseCombat(separation, terrainModifier, engagedAttackers, engagedDefenders, general, subcommander, 1, 1, defender);
+  }
 
-    return {
-      attacker: {
-        casualties: 0,
-        energy: 0,
-        morale: 0,
-        leadership: 0,
-      },
-      defender: {
-        casualties: 0,
-        energy: 0,
-        morale: 0,
-        leadership: 0,
-      }
-    }
+  createMessage({ casualties = 0, energy = 0 , morale = 0, leadership = 0, }) {
+    return `${this.name} sustained the following affects: casualties: ${Math.floor(casualties * 100) / 100}, energy: ${Math.floor(energy) / 100}, morale: ${Math.floor(morale) / 100}, leadership: ${Math.floor(leadership) / 100}`;
   }
 
   combat(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender, melee) {
@@ -211,24 +274,22 @@ export default class Unit {
       engagedDefenders = defender.stands;
     }
 
-    console.debug('Input', '\nseparation', separation, '\nterrainModifier', terrainModifier, '\nuphill', uphill, '\ndownhill', downhill, '\nengagedAttackers', engagedAttackers, '\nengagedDefenders', engagedDefenders, '\ngeneral', general, '\nsubcommaner', subcommander, '\ndefender', defender, '\nmelee', melee);
-
     let changes;
     let specificMessage;
     if (melee) {
-      changes = this.meleeCombat(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, defender);
+      changes = this.meleeCombat(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender);
       specificMessage = 'TODO melee specific message';
     } else {
-      changes = this.rangedCombat(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, defender);
+      changes = this.rangedCombat(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender);
       specificMessage = 'TODO ranged specific message';
     }
 
+    let attackerMessage = this.createMessage(changes.attacker);
+    let defenderMessage = defender.createMessage(changes.defender);
     let genericMessage = 'TODO generic message';
 
-    console.debug('Output', '\nattackerChanges', changes.attacker, '\ndefenderChanges', changes.defender);
-
     return {
-      messages: [ specificMessage, genericMessage ],
+      messages: [ specificMessage, genericMessage, attackerMessage, defenderMessage ],
       updates: [
         {
           id: this.id,
@@ -248,6 +309,10 @@ export default class Unit {
             {
               prop: "leadership",
               value: this.leadership - changes.attacker.leadership
+            },
+            {
+              prop: 'nextAction',
+              value: this.nextAction + (SECONDS_IN_AN_HOUR * ((Math.random() / 2) + 0.5)),
             }
           ]
         },
@@ -269,6 +334,10 @@ export default class Unit {
             {
               prop: "leadership",
               value: defender.leadership - changes.defender.leadership
+            },
+            {
+              prop: 'nextAction',
+              value: defender.nextAction + (SECONDS_IN_AN_HOUR * ((Math.random() / 2) + 0.5)),
             }
           ]
         }
@@ -288,8 +357,8 @@ export default class Unit {
     let state = store.getState()
     let activeBattle = state.battle.battles[state.battle.activeBattle];
     return activeBattle.units
-        .filter(unit => unit.army !== this.armyIndex)
-        .map((unit, index) => ({ id: index, unit: unit}));
+        .map((unit, index) => ({ id: index, unit: unit}))
+        .filter(target => target.unit.army !== this.armyIndex);
   }
 
   get army() {
