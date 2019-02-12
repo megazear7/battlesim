@@ -8,6 +8,7 @@ import { SharedStyles } from './shared-styles.js';
 import { ButtonSharedStyles } from './button-shared-styles.js';
 import Unit from '../unit.js';
 import { prettyDateTime } from '../math-utils.js';
+import { getRadioVal } from '../dom-utils.js';
 
 const REST = 'REST';
 const MOVE = 'MOVE';
@@ -75,7 +76,7 @@ class FightView extends connect(store)(PageViewElement) {
           </div>
         </section>
         <section>
-          <div>
+          <div id="input-container">
             <input id="distance" class="hidden" type="number" placeholder="Distance (Leave blank to move as far as possible)"></input>
             <input id="separation" class="hidden" type="number" placeholder="Distance to enemy unit"></input>
             <input id="engaged-attackers" class="hidden" type="number" placeholder="Engaged Attacking Stands (Leave blank for all)"></input>
@@ -86,9 +87,21 @@ class FightView extends connect(store)(PageViewElement) {
                 <option value="${target.id}">${target.unit.name}</option>
               `)}
             </select>
-            <div id="uphill" class="hidden">
-              <input type="checkbox" id="uphill-checkbox"></input>
-              <label for="uphill-checkbox">Uphill</label>
+            <br>
+            <br>
+            <div id="hill" class="hidden">
+              <radiogroup>
+                <input type="radio" name="hill" value="up"> Uphill<br>
+                <input type="radio" name="hill" value="down"> Downhill<br>
+                <input type="radio" name="hill" value="neither"> Neither<br><br>
+              </radiogroup>
+            </div>
+            <div id="leader" class="hidden">
+              <radiogroup>
+                <input type="radio" name="leader" value="general"> General<br>
+                <input type="radio" name="leader" value="subcommander"> Subcommander<br>
+                <input type="radio" name="leader" value="neither"> None<br><br>
+              </radiogroup>
             </div>
             <div id="terrain" class="hidden">
               <input type="checkbox" id="terrain-checkbox"></input>
@@ -131,8 +144,12 @@ class FightView extends connect(store)(PageViewElement) {
     return this.shadowRoot.getElementById('engaged-defenders');
   }
 
-  get uphillContainer() {
-    return this.shadowRoot.getElementById('uphill');
+  get hillContainer() {
+    return this.shadowRoot.getElementById('hill');
+  }
+
+  get leaderContainer() {
+    return this.shadowRoot.getElementById('leader');
   }
 
   get terrainContainer() {
@@ -152,7 +169,7 @@ class FightView extends connect(store)(PageViewElement) {
   }
 
   get separation() {
-    return parseInt(this.separationElement.value === '' ? 0 : this.separationElement.value);
+    return parseInt(this.separationElement.value ? this.separationElement.value : 0);
   }
 
   get engagedAttackers() {
@@ -164,7 +181,15 @@ class FightView extends connect(store)(PageViewElement) {
   }
 
   get uphill() {
-    return this.uphillContainer.querySelector('input').checked;
+    return getRadioVal(this.shadowRoot.getElementById('input-container'), 'hill') === 'up';
+  }
+
+  get generalNearby() {
+    return getRadioVal(this.shadowRoot.getElementById('input-container'), 'leader') === 'general';
+  }
+
+  get subcommanderNearby() {
+    return getRadioVal(this.shadowRoot.getElementById('input-container'), 'leader') === 'subcommander';
   }
 
   get terrain() {
@@ -222,9 +247,11 @@ class FightView extends connect(store)(PageViewElement) {
       } else if (this._selectedAction === MOVE) {
         actionResult = this._unit.move(this.distance * 100, this.terrainModifier);
       } else if (this._selectedAction === CHARGE) {
-        actionResult = this._unit.charge(this.separation);
+        let defender = new Unit(this._activeBattle.units[this.target], this.target);
+        actionResult = this._unit.charge(this.separation, this.terrainModifier, this.uphill, this.downhill, this.engagedAttackers, this.engagedDefenders, this.general, this.subcommander, defender);
       } else if (this._selectedAction === FIRE) {
-        actionResult = this._unit.fire();
+        let defender = new Unit(this._activeBattle.units[this.target], this.target);
+        actionResult = this._unit.fire(this.separation, this.terrainModifier, this.uphill, this.downhill, this.engagedAttackers, this.engagedDefenders, this.general, this.subcommander, defender);
       }
       this._actionMessages = actionResult.messages;
       this._actionUpdates = actionResult.updates;
@@ -240,7 +267,8 @@ class FightView extends connect(store)(PageViewElement) {
       this.separationElement.value = '';
       this.engagedAttackingElement.value = '';
       this.engagedDefendingElement.value = '';
-      this.uphillContainer.querySelector('input').checked = false;
+      this.hillContainer.querySelectorAll('input').forEach(input => input.checked = false);
+      this.leaderContainer.querySelectorAll('input').forEach(input => input.checked = false);
       this.terrainContainer.querySelector('input').checked = false;
       this.targetElement.value = '';
 
@@ -264,7 +292,8 @@ class FightView extends connect(store)(PageViewElement) {
     this.separationElement.classList.add('hidden');
     this.engagedAttackingElement.classList.add('hidden');
     this.engagedDefendingElement.classList.add('hidden');
-    this.uphillContainer.classList.add('hidden');
+    this.hillContainer.classList.add('hidden');
+    this.leaderContainer.classList.add('hidden');
     this.terrainContainer.classList.add('hidden');
     this.targetElement.classList.add('hidden');
   }
@@ -273,7 +302,8 @@ class FightView extends connect(store)(PageViewElement) {
     this._removeSelection();
     e.target.classList.add('selected');
     this.distanceElement.classList.remove('hidden');
-    this.uphillContainer.classList.remove('hidden');
+    this.hillContainer.classList.remove('hidden');
+    this.leaderContainer.classList.remove('hidden');
     this.terrainContainer.classList.remove('hidden');
     this.shadowRoot.getElementById('move').style.opacity = 1;
     this.shadowRoot.getElementById('charge').style.opacity = 0.5;
@@ -289,7 +319,8 @@ class FightView extends connect(store)(PageViewElement) {
     this.separationElement.classList.remove('hidden');
     this.engagedAttackingElement.classList.remove('hidden');
     this.engagedDefendingElement.classList.remove('hidden');
-    this.uphillContainer.classList.remove('hidden');
+    this.hillContainer.classList.remove('hidden');
+    this.leaderContainer.classList.remove('hidden');
     this.terrainContainer.classList.remove('hidden');
     this.targetElement.classList.remove('hidden');
     this.shadowRoot.getElementById('move').style.opacity = 0.5;
@@ -317,7 +348,8 @@ class FightView extends connect(store)(PageViewElement) {
     this.separationElement.classList.remove('hidden');
     this.engagedAttackingElement.classList.remove('hidden');
     this.engagedDefendingElement.classList.remove('hidden');
-    this.uphillContainer.classList.remove('hidden');
+    this.hillContainer.classList.remove('hidden');
+    this.leaderContainer.classList.remove('hidden');
     this.terrainContainer.classList.remove('hidden');
     this.targetElement.classList.remove('hidden');
     this.shadowRoot.getElementById('move').style.opacity = 0.5;
@@ -332,9 +364,9 @@ class FightView extends connect(store)(PageViewElement) {
   stateChanged(state) {
     this._actionMessages = [];
     if (state.battle.battles.length > state.battle.activeBattle) {
-      let activeBattle = state.battle.battles[state.battle.activeBattle];
-      this._unit = new Unit(activeBattle.units[activeBattle.activeUnit], activeBattle.activeUnit);
-      this._date = new Date(activeBattle.startTime + (activeBattle.second * 1000));
+      this._activeBattle = state.battle.battles[state.battle.activeBattle];
+      this._unit = new Unit(this._activeBattle.units[this._activeBattle.activeUnit], this._activeBattle.activeUnit);
+      this._date = new Date(this._activeBattle.startTime + (this._activeBattle.second * 1000));
       this._hasActiveBattle = true;
     } else {
       this._hasActiveBattle = false;

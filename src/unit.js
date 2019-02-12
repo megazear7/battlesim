@@ -164,18 +164,124 @@ export default class Unit {
     };
   }
 
-  charge() {
+  meleeCombat(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender) {
+    // TODO calculate melee combat updates.
+
     return {
-      messages: [ "TODO" ],
-      updates: [ ],
+      attacker: {
+        casualties: 0,
+        energy: 0,
+        morale: 0,
+        leadership: 0,
+      },
+      defender: {
+        casualties: 0,
+        energy: 0,
+        morale: 0,
+        leadership: 0,
+      }
+    }
+  }
+
+  rangedCombat(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender) {
+    // TODO calculate ranged combat updates.
+
+    return {
+      attacker: {
+        casualties: 0,
+        energy: 0,
+        morale: 0,
+        leadership: 0,
+      },
+      defender: {
+        casualties: 0,
+        energy: 0,
+        morale: 0,
+        leadership: 0,
+      }
+    }
+  }
+
+  combat(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender, melee) {
+    if (engagedAttackers === 0) {
+      engagedAttackers = this.stands;
+    }
+
+    if (engagedDefenders === 0) {
+      engagedDefenders = defender.stands;
+    }
+
+    console.debug('Input', '\nseparation', separation, '\nterrainModifier', terrainModifier, '\nuphill', uphill, '\ndownhill', downhill, '\nengagedAttackers', engagedAttackers, '\nengagedDefenders', engagedDefenders, '\ngeneral', general, '\nsubcommaner', subcommander, '\ndefender', defender, '\nmelee', melee);
+
+    let changes;
+    let specificMessage;
+    if (melee) {
+      changes = this.meleeCombat(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, defender);
+      specificMessage = 'TODO melee specific message';
+    } else {
+      changes = this.rangedCombat(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, defender);
+      specificMessage = 'TODO ranged specific message';
+    }
+
+    let genericMessage = 'TODO generic message';
+
+    console.debug('Output', '\nattackerChanges', changes.attacker, '\ndefenderChanges', changes.defender);
+
+    return {
+      messages: [ specificMessage, genericMessage ],
+      updates: [
+        {
+          id: this.id,
+          changes: [
+            {
+              prop: "strength",
+              value: this.strength - changes.attacker.casualties
+            },
+            {
+              prop: "energy",
+              value: this.energy - changes.attacker.energy
+            },
+            {
+              prop: "morale",
+              value: this.morale - changes.attacker.morale
+            },
+            {
+              prop: "leadership",
+              value: this.leadership - changes.attacker.leadership
+            }
+          ]
+        },
+        {
+          id: defender.id,
+          changes: [
+            {
+              prop: "strength",
+              value: defender.strength - changes.defender.casualties
+            },
+            {
+              prop: "energy",
+              value: defender.energy - changes.defender.energy
+            },
+            {
+              prop: "morale",
+              value: defender.morale - changes.defender.morale
+            },
+            {
+              prop: "leadership",
+              value: defender.leadership - changes.defender.leadership
+            }
+          ]
+        }
+      ],
     };
   }
 
-  fire() {
-    return {
-      messages: [ "TODO" ],
-      updates: [ ],
-    };
+  charge(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender) {
+    return this.combat(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender, true);
+  }
+
+  fire(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender) {
+    return this.combat(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender, false);
   }
 
   get targets() {

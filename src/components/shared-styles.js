@@ -86,6 +86,13 @@ export const SharedStyles = css`
     margin-bottom: 1rem;
   }
 
+  radiogroup {
+  }
+
+  radio {
+    -webkit-appearance: radio;
+  }
+
   @media (min-width: 460px) {
     h2 {
       font-size: 36px;
