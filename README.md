@@ -16,6 +16,8 @@
 1. Allow units to have a point cost and add a "usesPoints" flag to battles. If this flag is true then the battle page will display the point cost of each unit and the aggregate point cost of the army.
 1. Update the mobile nav to be a bottom based navigation instead of a drawer.
 1. Update the app favicon.
+1. Show a different quality of status depending on the leadership of the unit.
+1. Add more variability to the various descriptions. Try to carve up each 0-100 scale into as many descriptive ranges as possible.
 
 ### Deployment
 
