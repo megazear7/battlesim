@@ -195,7 +195,6 @@ class BattleSim extends connect(store)(LitElement) {
       <app-header condenses reveals effects="waterfall">
         <app-toolbar class="toolbar-top">
           <button class="menu-btn" title="Menu" @click="${this._menuButtonClicked}">${menuIcon}</button>
-          <!--  TODO replace title with active battle -->
           <div main-title>${this._title}</div>
         </app-toolbar>
 

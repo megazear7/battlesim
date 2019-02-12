@@ -4,7 +4,6 @@ import { ARMOR } from './armor.js';
 import { weightedRandom, numberWithCommas, nearest100, SECONDS_IN_AN_HOUR } from './math-utils.js';
 import { attack } from './battle-utils.js';
 
-
 export default class Unit {
   constructor({
                 army = 0,
@@ -212,6 +211,8 @@ export default class Unit {
       }
     };
 
+    console.debug(changes.attacker.casualties, changes.defender.casualties);
+
     return changes;
   }
 
@@ -263,7 +264,7 @@ export default class Unit {
       defender.rangedWeapon.volume * defender.percentageEngaged(engagedDefenders) * defenderPercentTimeFighting,
       defender.rangedWeapon.powerVsFoot,
       defender.armor.defense,
-      defender.rangedSkill - defenderDistanceMod,
+      defender.rangedSkill * defenderDistanceMod,
       this.rangedSkill,
       defender.energy,
       this.energy);
@@ -273,7 +274,7 @@ export default class Unit {
       this.rangedWeapon.volume * this.percentageEngaged(engagedAttackers) * attackerPercentTimeFighting,
       this.rangedWeapon.powerVsFoot,
       this.armor.defense,
-      this.rangedSkill - attackerDistanceMod,
+      this.rangedSkill * attackerDistanceMod,
       defender.rangedSkill,
       this.energy,
       defender.energy);
@@ -302,10 +303,8 @@ export default class Unit {
     let specificMessage;
     if (melee) {
       changes = this.meleeCombat(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender);
-      specificMessage = 'TODO melee specific message';
     } else {
       changes = this.rangedCombat(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender);
-      specificMessage = 'TODO ranged specific message';
     }
 
     let attackerMessage = createCasualtyMessage(this, changes.attacker.casualties);
