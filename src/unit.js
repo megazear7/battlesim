@@ -7,25 +7,25 @@ export default class Unit {
   constructor({
                 army = 0,
                 name,
+                stands = 8,
                 strength,
                 morale = 90,
                 energy = 100,
                 nextAction = 0,
-                static: {
-                  armor,
-                  meleeWeapon,
-                  rangedWeapon,
-                  experience = 50,
-                  leadership = 50,
-                  troopType = 0,
-                  fullStrength,
-                  movementTime = 100,
-                  maneuverTime = 100,
-                }
+                armor,
+                meleeWeapon,
+                rangedWeapon,
+                experience = 50,
+                leadership = 50,
+                troopType = 0,
+                fullStrength,
+                movementTime = 100,
+                maneuverTime = 100,
               }, id) {
     this.armyIndex = army;
     this.id = id;
     this.name = name;
+    this.stands = stands;
     this.strength = strength || fullStrength;
     this.morale = morale;
     this.energy = energy;
@@ -203,30 +203,50 @@ export default class Unit {
   }
 
   get experienceDesc() {
-    if (this.experience > 80) {
-      return 'elite';
+    if (this.experience > 90) {
+      return 'Elite';
+    } else if (this.experience > 80) {
+      return 'Veteran';
+    } else if (this.experience > 70) {
+      return 'Experienced';
     } else if (this.experience > 60) {
-      return 'experienced';
+      return 'Well trained';
+    } else if (this.experience > 50) {
+      return 'Trained';
     } else if (this.experience > 40) {
-      return 'trained';
+      return 'Poorly trained';
+    } else if (this.experience > 30) {
+      return 'Untrained';
     } else if (this.experience > 20) {
-      return 'inexperienced';
+      return 'Somewhat inexperienced';
+    } else if (this.experience > 10) {
+      return 'Inexperienced';
     } else {
-      return 'untrained';
+      return 'Totally inexperienced';
     }
   }
 
   get leaderDesc() {
-    if (this.leadership > 80) {
+    if (this.leadership > 90) {
+      return 'outstanding';
+    } else if (this.leadership > 80) {
+      return 'amazing';
+    } else if (this.leadership > 70) {
       return 'great';
     } else if (this.leadership > 60) {
-      return 'good';
-    } else if (this.leadership > 40) {
+      return 'very good';
+    } else if (this.leadership > 50) {
       return 'average';
-    } else if (this.leadership > 20) {
+    } else if (this.leadership > 40) {
+      return 'below average';
+    } else if (this.leadership > 30) {
       return 'poor';
-    } else {
+    } else if (this.leadership > 20) {
+      return 'very poor';
+    } else if (this.leadership > 10) {
       return 'terrible';
+    } else {
+      return 'horrendous';
     }
   }
 
@@ -292,7 +312,7 @@ export default class Unit {
   }
 
   get desc() {
-    return `${upperCaseFirst(this.experienceDesc)} ${this.troopTypeName.toLocaleLowerCase()} weilding ${this.rangedWeapon.name.toLocaleLowerCase()} and ${this.meleeWeapon.name.toLocaleLowerCase()} with ${this.leaderDesc.toLocaleLowerCase()} leaders.`;
+    return `${upperCaseFirst(this.experienceDesc)} ${this.troopTypeName.toLocaleLowerCase()} weilding ${this.rangedWeapon.name.toLocaleLowerCase()} and ${this.meleeWeapon.name.toLocaleLowerCase()} with ${this.leaderDesc.toLocaleLowerCase()} leaders consisting of ${this.stands} stands.`;
   }
 
 }

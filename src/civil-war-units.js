@@ -22,17 +22,16 @@ export const FRESH_UNION_BRIGADE = {
   strength: UNION_BRIGADE_SIZE,
   morale: 90,
   energy: 100,
-  static: {
-    armor: NO_ARMOR,
-    meleeWeapon: BAYONETE,
-    rangedWeapon: SPRINGFIELD_RIFLED_MUSKET,
-    experience: 50,
-    leadership: 50,
-    troopType: FOOT_TROOP,
-    fullStrength: UNION_BRIGADE_SIZE,
-    movementTime: 120,
-    maneuverTime: 110,
-  }
+  stands: 8,
+  armor: NO_ARMOR,
+  meleeWeapon: BAYONETE,
+  rangedWeapon: SPRINGFIELD_RIFLED_MUSKET,
+  experience: 50,
+  leadership: 50,
+  troopType: FOOT_TROOP,
+  fullStrength: UNION_BRIGADE_SIZE,
+  movementTime: 120,
+  maneuverTime: 110,
 };
 
 export const FRESH_UNION_CAVALRY_REGIMENT = {
@@ -41,17 +40,16 @@ export const FRESH_UNION_CAVALRY_REGIMENT = {
   strength: UNION_CAVALRY_REGIMENT_SIZE,
   morale: 90,
   energy: 100,
-  static: {
-    armor: NO_ARMOR,
-    meleeWeapon: BAYONETE,
-    rangedWeapon: SPRINGFIELD_RIFLED_MUSKET,
-    experience: 50,
-    leadership: 50,
-    troopType: CAVALRY_TROOP,
-    fullStrength: UNION_CAVALRY_REGIMENT_SIZE,
-    movementTime: 60,
-    maneuverTime: 90,
-  }
+  stands: 6,
+  armor: NO_ARMOR,
+  meleeWeapon: BAYONETE,
+  rangedWeapon: SPRINGFIELD_RIFLED_MUSKET,
+  experience: 50,
+  leadership: 50,
+  troopType: CAVALRY_TROOP,
+  fullStrength: UNION_CAVALRY_REGIMENT_SIZE,
+  movementTime: 60,
+  maneuverTime: 90,
 };
 
 export const FRESH_UNION_ARTILLERY = {
@@ -60,17 +58,16 @@ export const FRESH_UNION_ARTILLERY = {
   strength: 50,
   morale: 90,
   energy: 100,
-  static: {
-    armor: NO_ARMOR,
-    meleeWeapon: NO_WEAPON,
-    rangedWeapon: CANNON_24_POUNDER_CIVIL_WAR,
-    experience: 70,
-    leadership: 70,
-    troopType: ARTILLERY_TROOP,
-    fullStrength: 50,
-    movementTime: 340,
-    maneuverTime: 220,
-  }
+  stands: 2,
+  armor: NO_ARMOR,
+  meleeWeapon: NO_WEAPON,
+  rangedWeapon: CANNON_24_POUNDER_CIVIL_WAR,
+  experience: 70,
+  leadership: 70,
+  troopType: ARTILLERY_TROOP,
+  fullStrength: 50,
+  movementTime: 340,
+  maneuverTime: 220,
 };
 
 export const FRESH_CONFEDERATE_BRIGADE = {
@@ -79,17 +76,16 @@ export const FRESH_CONFEDERATE_BRIGADE = {
   strength: CONFEDERATE_BRIGADE_SIZE,
   morale: 90,
   energy: 100,
-  static: {
-    armor: NO_ARMOR,
-    meleeWeapon: BAYONETE,
-    rangedWeapon: CONFEDERATE_SMOOTH_BORE,
-    experience: 70,
-    leadership: 70,
-    troopType: FOOT_TROOP,
-    fullStrength: CONFEDERATE_BRIGADE_SIZE,
-    movementTime: 120,
-    maneuverTime: 80,
-  }
+  stands: 8,
+  armor: NO_ARMOR,
+  meleeWeapon: BAYONETE,
+  rangedWeapon: CONFEDERATE_SMOOTH_BORE,
+  experience: 70,
+  leadership: 70,
+  troopType: FOOT_TROOP,
+  fullStrength: CONFEDERATE_BRIGADE_SIZE,
+  movementTime: 120,
+  maneuverTime: 80,
 };
 
 export const FRESH_CONFEDERATE_CAVALRY_REGIMENT = {
@@ -98,17 +94,16 @@ export const FRESH_CONFEDERATE_CAVALRY_REGIMENT = {
   strength: CONFEDERATE_CAVALRY_REGIMENT_SIZE,
   morale: 90,
   energy: 100,
-  static: {
-    armor: NO_ARMOR,
-    meleeWeapon: BAYONETE,
-    rangedWeapon: CONFEDERATE_SMOOTH_BORE,
-    experience: 70,
-    leadership: 70,
-    troopType: CAVALRY_TROOP,
-    fullStrength: CONFEDERATE_CAVALRY_REGIMENT_SIZE,
-    movementTime: 60,
-    maneuverTime: 70,
-  }
+  stands: 6,
+  armor: NO_ARMOR,
+  meleeWeapon: BAYONETE,
+  rangedWeapon: CONFEDERATE_SMOOTH_BORE,
+  experience: 70,
+  leadership: 70,
+  troopType: CAVALRY_TROOP,
+  fullStrength: CONFEDERATE_CAVALRY_REGIMENT_SIZE,
+  movementTime: 60,
+  maneuverTime: 70,
 };
 
 export const FRESH_CONFEDERATE_ARTILLERY = {
@@ -117,17 +112,16 @@ export const FRESH_CONFEDERATE_ARTILLERY = {
   strength: 50,
   morale: 90,
   energy: 100,
-  static: {
-    armor: NO_ARMOR,
-    meleeWeapon: NO_WEAPON,
-    rangedWeapon: CANNON_24_POUNDER_CIVIL_WAR,
-    experience: 70,
-    leadership: 70,
-    troopType: ARTILLERY_TROOP,
-    fullStrength: 50,
-    movementTime: 360,
-    maneuverTime: 200,
-  }
+  stands: 2,
+  armor: NO_ARMOR,
+  meleeWeapon: NO_WEAPON,
+  rangedWeapon: CANNON_24_POUNDER_CIVIL_WAR,
+  experience: 70,
+  leadership: 70,
+  troopType: ARTILLERY_TROOP,
+  fullStrength: 50,
+  movementTime: 360,
+  maneuverTime: 200,
 };
 
 export const CIVIL_WAR_UNITS = [
