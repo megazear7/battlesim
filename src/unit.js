@@ -4,6 +4,7 @@ import { ARMOR } from './armor.js';
 import { weightedRandom, numberWithCommas, nearest100, SECONDS_IN_AN_HOUR } from './math-utils.js';
 import { attack } from './battle-utils.js';
 
+
 export default class Unit {
   constructor({
                 army = 0,
@@ -307,12 +308,11 @@ export default class Unit {
       specificMessage = 'TODO ranged specific message';
     }
 
-    let attackerMessage = this.createMessage(changes.attacker);
-    let defenderMessage = defender.createMessage(changes.defender);
-    let genericMessage = 'TODO generic message';
+    let attackerMessage = createCasualtyMessage(this, changes.attacker.casualties);
+    let defenderMessage = createCasualtyMessage(defender, changes.defender.casualties);
 
     return {
-      messages: [ specificMessage, genericMessage, attackerMessage, defenderMessage ],
+      messages: [ attackerMessage, this.detailedStatus, "---", defenderMessage, defender.detailedStatus ],
       updates: [
         {
           id: this.id,
@@ -519,4 +519,30 @@ export default class Unit {
 
 function upperCaseFirst(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function createCasualtyMessage(unit, casualties) {
+  if (casualties > unit.strength) {
+    return `${unit.name} was totally destroyed.`;
+  } else if (casualties > unit.strength * 0.75) {
+    return `${unit.name} sustained terrible casualties. Almost the whole unit was destroyed.`;
+  } else if (casualties > unit.strength * 0.50) {
+    return `${unit.name} sustained terrible casualties. Over half the unit is destroyed.`;
+  } else if (casualties > unit.strength * 0.40) {
+    return `${unit.name} sustained terrible casualties.`;
+  } else if (casualties > unit.strength * 0.30) {
+    return `${unit.name} sustained grave casualties.`;
+  } else if (casualties > unit.strength * 0.20) {
+    return `${unit.name} sustained massive casualties.`;
+  } else if (casualties > unit.strength * 0.15) {
+    return `${unit.name} sustained major casualties.`;
+  } else if (casualties > unit.strength * 0.10) {
+    return `${unit.name} sustained significant casualties.`;
+  } else if (casualties > unit.strength * 0.5) {
+    return `${unit.name} sustained noticable casualties.`;
+  } else if (casualties > unit.strength * 0.2) {
+    return `${unit.name} sustained minor casualties.`;
+  } else {
+    return `${unit.name} sustained almost no casualties.`;
+  }
 }
