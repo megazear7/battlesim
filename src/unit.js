@@ -166,13 +166,15 @@ export default class Unit {
 
   charge() {
     return {
-      message: "TODO"
+      messages: [ "TODO" ],
+      updates: [ ],
     };
   }
 
   fire() {
     return {
-      message: "TODO"
+      messages: [ "TODO" ],
+      updates: [ ],
     };
   }
 

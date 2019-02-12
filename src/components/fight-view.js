@@ -78,10 +78,10 @@ class FightView extends connect(store)(PageViewElement) {
           <div>
             <input id="distance" class="hidden" type="number" placeholder="Distance (Leave blank to move as far as possible)"></input>
             <input id="separation" class="hidden" type="number" placeholder="Distance to enemy unit"></input>
-            <input id="engaged-attackers" class="hidden" type="number" placeholder="Engaged Attacking Stands"></input>
-            <input id="engaged-defenders" class="hidden" type="number" placeholder="Engaged Defending Stands"></input>
+            <input id="engaged-attackers" class="hidden" type="number" placeholder="Engaged Attacking Stands (Leave blank for all)"></input>
+            <input id="engaged-defenders" class="hidden" type="number" placeholder="Engaged Defending Stands (Leave blank for all)"></input>
             <select id="target" class="hidden">
-              <option>Select Target</option>
+              <option value="">Select Target</option>
               ${repeat(this._unit.targets, target => html`
                 <option value="${target.id}">${target.unit.name}</option>
               `)}
