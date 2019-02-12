@@ -169,33 +169,7 @@ export default class Unit {
     };
   }
 
-  baseCombat(separation, terrainModifier, engagedAttackers, engagedDefenders, general, subcommander, attackersPowerMod, defendersPowerMod, defender) {
-    console.debug('Input', '\nseparation', separation, '\nterrainModifier', terrainModifier, '\nengagedAttackers', engagedAttackers, '\nengagedDefenders', engagedDefenders, '\ngeneral', general, '\nsubcommaner', subcommander, '\nattackersPowerMod', attackersPowerMod, '\ndefendersPowerMod', defendersPowerMod, '\ndefender', defender);
-
-    // TODO we are always just doing melee. We need to use the ranged stats for ranged combat.
-    // TODO we need to modify strength based upon the number of engaged stands.
-    // TODO we need to modify energy expendature based upon the terrain.
-    // TODO We need to modify the volume by the separation. The further apart they are the less time they have to attack each other.
-    let attackersCasualties = attack(
-      defender.strength,
-      this.meleeWeapon.volume,
-      defender.meleeWeapon.powerVsFoot * defendersPowerMod,
-      defender.armor.defense,
-      defender.meleeSkill,
-      this.meleeSkill,
-      defender.energy,
-      this.energy);
-
-    let defendersCasualties = attack(
-      this.strength,
-      this.meleeWeapon.volume,
-      this.meleeWeapon.powerVsFoot * attackersPowerMod,
-      this.armor.defense,
-      this.meleeSkill,
-      defender.meleeSkill,
-      this.energy,
-      defender.energy);
-
+  baseCombat(separation, attackersCasualties, defendersCasualties, terrainModifier, general, subcommander, defender) {
     let attackerPercentLoss = attackersCasualties / this.strength;
     let defenderPercentLoss = defendersCasualties / defender.strength;
 
@@ -237,8 +211,6 @@ export default class Unit {
       }
     };
 
-    console.debug('Output', changes);
-
     return changes;
   }
 
@@ -250,15 +222,64 @@ export default class Unit {
       defendersPowerMod += 0.25;
     }
     if (downhill) {
-      attackersPowerMod -= 0.25;
-      defendersPowerMod += 0.25;
+      attackersPowerMod += 0.25;
+      defendersPowerMod -= 0.25;
     }
 
-    return this.baseCombat(separation, terrainModifier, engagedAttackers, engagedDefenders, general, subcommander, attackersPowerMod, defendersPowerMod, defender);
+    let attackersCasualties = attack(
+      defender.strength,
+      defender.meleeWeapon.volume * defender.percentageEngaged(engagedDefenders),
+      defender.meleeWeapon.powerVsFoot * defendersPowerMod,
+      defender.armor.defense,
+      defender.meleeSkill,
+      this.meleeSkill,
+      defender.energy,
+      this.energy);
+
+    let defendersCasualties = attack(
+      this.strength,
+      this.meleeWeapon.volume * defender.percentageEngaged(engagedAttackers),
+      this.meleeWeapon.powerVsFoot * attackersPowerMod,
+      this.armor.defense,
+      this.meleeSkill,
+      defender.meleeSkill,
+      this.energy,
+      defender.energy);
+
+
+    return this.baseCombat(separation, attackersCasualties, defendersCasualties, terrainModifier, general, subcommander, defender);
   }
 
   rangedCombat(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender) {
-    return this.baseCombat(separation, terrainModifier, engagedAttackers, engagedDefenders, general, subcommander, 1, 1, defender);
+
+    // TODO we need to modify energy expendature based upon the terrain.
+    // TODO We need to modify the volume by the separation. The further apart they are the less time they have to attack each other.
+
+    let attackersCasualties = attack(
+      defender.strength,
+      defender.rangedWeapon.volume * defender.percentageEngaged(engagedDefenders),
+      defender.rangedWeapon.powerVsFoot,
+      defender.armor.defense,
+      defender.meleeSkill,
+      this.meleeSkill,
+      defender.energy,
+      this.energy);
+
+    let defendersCasualties = attack(
+      this.strength,
+      this.rangedWeapon.volume * this.percentageEngaged(engagedAttackers),
+      this.rangedWeapon.powerVsFoot,
+      this.armor.defense,
+      this.meleeSkill,
+      defender.meleeSkill,
+      this.energy,
+      defender.energy);
+
+    return this.baseCombat(separation, attackersCasualties, defendersCasualties, terrainModifier, general, subcommander, defender);
+  }
+
+  percentageEngaged(engagedStands) {
+    return Math.min(engagedStands / this.stands, 100);
   }
 
   createMessage({ casualties = 0, energy = 0 , morale = 0, leadership = 0, }) {
