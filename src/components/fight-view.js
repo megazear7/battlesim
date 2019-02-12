@@ -19,6 +19,7 @@ class FightView extends connect(store)(PageViewElement) {
       _unit: { type: Object },
       _hasActiveBattle: { type: Boolean },
       _actionMessages: { type: Array },
+      _date: { type: Object },
     };
   }
 
@@ -32,6 +33,10 @@ class FightView extends connect(store)(PageViewElement) {
           font-size: 2rem;
         }
         #army {
+          text-align: center;
+          color: var(--app-muted-text-color);
+        }
+        #time-of-day {
           text-align: center;
           color: var(--app-muted-text-color);
         }
@@ -52,6 +57,7 @@ class FightView extends connect(store)(PageViewElement) {
           <div>
             <div id="unit">${this._unit.name}</div>
             <div id="army">Army: ${this._unit.army.name}</div>
+            <div id="time-of-day">${this.prettyDateTime}</div>
           </div>
           <h6>Unit Status</h6>
           <p>${this._unit.detailedStatus}</p>
@@ -103,6 +109,35 @@ class FightView extends connect(store)(PageViewElement) {
         </section>
       `}
     `;
+  }
+
+  get prettyDateTime() {
+    var strArray=['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    var d = this._date.getDate();
+    var m = strArray[this._date.getMonth()];
+    var y = this._date.getFullYear();
+    var suf;
+    if (d === 1) {
+      suf = "st";
+    } else if (d === 2) {
+      suf = "nd";
+    } else if (d === 3) {
+      suf = "rd";
+    } else {
+      suf = "th"
+    }
+
+    var hour;
+    var hourSuf;
+    if (this._date.getHours() >= 12) {
+      hour = this._date.getHours() - 12;
+      hourSuf = 'pm';
+    } else {
+      hour = this._date.getHours();
+      hourSuf = 'am';
+    }
+    var minutes = this._date.getMinutes() > 9 ? "" + this._date.getMinutes(): "0" + this._date.getMinutes();
+    return `${hour}:${minutes} ${hourSuf} on ${m} ${d}${suf}, ${y}`;
   }
 
   get distanceElement() {
@@ -298,6 +333,7 @@ class FightView extends connect(store)(PageViewElement) {
     if (state.battle.battles.length > state.battle.activeBattle) {
       let activeBattle = state.battle.battles[state.battle.activeBattle];
       this._unit = new Unit(activeBattle.units[activeBattle.activeUnit], activeBattle.activeUnit);
+      this._date = new Date(activeBattle.startTime + (activeBattle.second * 1000));
       this._hasActiveBattle = true;
     } else {
       this._hasActiveBattle = false;
