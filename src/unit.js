@@ -169,12 +169,12 @@ export default class Unit {
     };
   }
 
-  baseCombat(separation, attackersCasualties, defendersCasualties, terrainModifier, general, subcommander, defender) {
+  baseCombat(timeSpent, separation, attackersCasualties, defendersCasualties, terrainModifier, general, subcommander, defender) {
     let attackerPercentLoss = attackersCasualties / this.strength;
     let defenderPercentLoss = defendersCasualties / defender.strength;
 
-    let attackerEnergyLoss = attackerPercentLoss * 2 * 100 * Math.random();
-    let defenderEnergyLoss = defenderPercentLoss * 2 * 100 * Math.random();
+    let attackerEnergyLoss = attackerPercentLoss * 2 * 100 * (timeSpent / SECONDS_IN_AN_HOUR);
+    let defenderEnergyLoss = defenderPercentLoss * 2 * 100 * (timeSpent / SECONDS_IN_AN_HOUR);
 
     let attackerMoraleMod = (this.experience / 100) + 1;
     let defenderMoraleMod = (defender.experience / 100) + 1;
@@ -216,7 +216,12 @@ export default class Unit {
     return changes;
   }
 
-  meleeCombat(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender) {
+  meleeCombat(timeSpent, separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender) {
+    const attackerTimeToFight = timeSpent - this.secondsToIssueOrder - (terrainModifier / 100);
+    const attackerPercentTimeFighting = attackerTimeToFight / timeSpent;
+    const defenderTimeToFight = timeSpent - defender.secondsToIssueOrder - (terrainModifier / 100);
+    const defenderPercentTimeFighting = defenderTimeToFight / timeSpent;
+
     let attackersPowerMod = 1;
     let defendersPowerMod = 1;
     if (uphill) {
@@ -230,7 +235,7 @@ export default class Unit {
 
     let attackersCasualties = attack(
       defender.strength,
-      defender.meleeWeapon.volume * defender.percentageEngaged(engagedDefenders),
+      defender.meleeWeapon.volume * defender.percentageEngaged(engagedDefenders) * defenderPercentTimeFighting,
       defender.meleeWeapon.powerVsFoot * defendersPowerMod,
       defender.armor.defense,
       defender.meleeSkill,
@@ -240,7 +245,7 @@ export default class Unit {
 
     let defendersCasualties = attack(
       this.strength,
-      this.meleeWeapon.volume * defender.percentageEngaged(engagedAttackers),
+      this.meleeWeapon.volume * defender.percentageEngaged(engagedAttackers) * attackerPercentTimeFighting,
       this.meleeWeapon.powerVsFoot * attackersPowerMod,
       this.armor.defense,
       this.meleeSkill,
@@ -248,14 +253,14 @@ export default class Unit {
       this.energy,
       defender.energy);
 
-    return this.baseCombat(separation, attackersCasualties, defendersCasualties, terrainModifier, general, subcommander, defender);
+    return this.baseCombat(timeSpent, separation, attackersCasualties, defendersCasualties, terrainModifier, general, subcommander, defender);
   }
 
-  rangedCombat(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender) {
-    const attackerTimeToFight = SECONDS_IN_AN_HOUR - this.secondsToIssueOrder - (terrainModifier / 100);
-    const attackerPercentTimeFighting = attackerTimeToFight / SECONDS_IN_AN_HOUR;
-    const defenderTimeToFight = SECONDS_IN_AN_HOUR - defender.secondsToIssueOrder - (terrainModifier / 100);
-    const defenderPercentTimeFighting = defenderTimeToFight / SECONDS_IN_AN_HOUR;
+  rangedCombat(timeSpent, separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender) {
+    const attackerTimeToFight = timeSpent - this.secondsToIssueOrder - (terrainModifier / 100);
+    const attackerPercentTimeFighting = attackerTimeToFight / timeSpent;
+    const defenderTimeToFight = timeSpent - defender.secondsToIssueOrder - (terrainModifier / 100);
+    const defenderPercentTimeFighting = defenderTimeToFight / timeSpent;
     const attackerDistanceMod = Math.max((this.rangedWeapon.range - separation) / this.rangedWeapon.range, 0);
     const defenderDistanceMod = Math.max((defender.rangedWeapon.range - separation) / defender.rangedWeapon.range, 0);
 
@@ -279,7 +284,7 @@ export default class Unit {
       this.energy,
       defender.energy);
 
-    return this.baseCombat(separation, attackersCasualties, defendersCasualties, terrainModifier, general, subcommander, defender);
+    return this.baseCombat(timeSpent, separation, attackersCasualties, defendersCasualties, terrainModifier, general, subcommander, defender);
   }
 
   percentageEngaged(engagedStands) {
@@ -291,6 +296,7 @@ export default class Unit {
   }
 
   combat(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender, melee) {
+    let timeSpent = SECONDS_IN_AN_HOUR * ((Math.random() * 0.5) + 0.5);
     if (engagedAttackers === 0) {
       engagedAttackers = this.stands;
     }
@@ -302,9 +308,9 @@ export default class Unit {
     let changes;
     let specificMessage;
     if (melee) {
-      changes = this.meleeCombat(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender);
+      changes = this.meleeCombat(timeSpent, separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender);
     } else {
-      changes = this.rangedCombat(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender);
+      changes = this.rangedCombat(timeSpent ,separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender);
     }
 
     let attackerMessage = createCasualtyMessage(this, changes.attacker.casualties);
