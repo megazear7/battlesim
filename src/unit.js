@@ -324,19 +324,19 @@ export default class Unit {
           changes: [
             {
               prop: "strength",
-              value: this.strength - changes.attacker.casualties
+              value: Math.max(this.strength - changes.attacker.casualties, 0),
             },
             {
               prop: "energy",
-              value: this.energy - changes.attacker.energy
+              value: Math.max(this.energy - changes.attacker.energy, 0),
             },
             {
               prop: "morale",
-              value: this.morale - changes.attacker.morale
+              value: Math.max(this.morale - changes.attacker.morale, 0),
             },
             {
               prop: "leadership",
-              value: this.leadership - changes.attacker.leadership
+              value: Math.max(this.leadership - changes.attacker.leadership, 0),
             },
             {
               prop: 'nextAction',
@@ -349,19 +349,19 @@ export default class Unit {
           changes: [
             {
               prop: "strength",
-              value: defender.strength - changes.defender.casualties
+              value: Math.max(defender.strength - changes.defender.casualties, 0),
             },
             {
               prop: "energy",
-              value: defender.energy - changes.defender.energy
+              value: Math.max(defender.energy - changes.defender.energy, 0),
             },
             {
               prop: "morale",
-              value: defender.morale - changes.defender.morale
+              value: Math.max(defender.morale - changes.defender.morale, 0),
             },
             {
               prop: "leadership",
-              value: defender.leadership - changes.defender.leadership
+              value: Math.max(defender.leadership - changes.defender.leadership, 0),
             },
             {
               prop: 'nextAction',

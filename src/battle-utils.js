@@ -1,9 +1,9 @@
 import { weightedRandom } from './math-utils.js';
 
-export function attack(strength, volume, power, armor, attackSkill, defendSkill, attackEnergy, defendEnergy) {
-  const MAX_ENERGY = 100;
-  const DEADLYNESS = 0.25;
+const MAX_ENERGY = 100;
+const DEADLYNESS = 0.01;
 
+export function attack(strength, volume, power, armor, attackSkill, defendSkill, attackEnergy, defendEnergy) {
   let hits = 0;
   let totalAttacks = strength * volume * (attackEnergy / MAX_ENERGY);
   for (let i = 0; i < totalAttacks; i++) {

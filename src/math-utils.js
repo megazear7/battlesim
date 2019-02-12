@@ -44,8 +44,11 @@ export function prettyDateTime(date) {
 
     var hour;
     var hourSuf;
-    if (date.getHours() >= 12) {
+    if (date.getHours() >= 13) {
       hour = date.getHours() - 12;
+      hourSuf = 'pm';
+    } else if (date.getHours() === 12) {
+      hour = date.getHours();
       hourSuf = 'pm';
     } else {
       hour = date.getHours();
