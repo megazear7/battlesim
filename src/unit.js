@@ -246,32 +246,34 @@ export default class Unit {
       this.energy,
       defender.energy);
 
-
     return this.baseCombat(separation, attackersCasualties, defendersCasualties, terrainModifier, general, subcommander, defender);
   }
 
   rangedCombat(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender) {
-
-    // TODO we need to modify energy expendature based upon the terrain.
-    // TODO We need to modify the volume by the separation. The further apart they are the less time they have to attack each other.
+    const attackerTimeToFight = SECONDS_IN_AN_HOUR - this.secondsToIssueOrder - (terrainModifier / 100);
+    const attackerPercentTimeFighting = attackerTimeToFight / SECONDS_IN_AN_HOUR;
+    const defenderTimeToFight = SECONDS_IN_AN_HOUR - defender.secondsToIssueOrder - (terrainModifier / 100);
+    const defenderPercentTimeFighting = defenderTimeToFight / SECONDS_IN_AN_HOUR;
+    const attackerDistanceMod = Math.max((this.rangedWeapon.range - separation) / this.rangedWeapon.range, 0);
+    const defenderDistanceMod = Math.max((defender.rangedWeapon.range - separation) / defender.rangedWeapon.range, 0);
 
     let attackersCasualties = attack(
       defender.strength,
-      defender.rangedWeapon.volume * defender.percentageEngaged(engagedDefenders),
+      defender.rangedWeapon.volume * defender.percentageEngaged(engagedDefenders) * defenderPercentTimeFighting,
       defender.rangedWeapon.powerVsFoot,
       defender.armor.defense,
-      defender.meleeSkill,
-      this.meleeSkill,
+      defender.rangedSkill - defenderDistanceMod,
+      this.rangedSkill,
       defender.energy,
       this.energy);
 
     let defendersCasualties = attack(
       this.strength,
-      this.rangedWeapon.volume * this.percentageEngaged(engagedAttackers),
+      this.rangedWeapon.volume * this.percentageEngaged(engagedAttackers) * attackerPercentTimeFighting,
       this.rangedWeapon.powerVsFoot,
       this.armor.defense,
-      this.meleeSkill,
-      defender.meleeSkill,
+      this.rangedSkill - attackerDistanceMod,
+      defender.rangedSkill,
       this.energy,
       defender.energy);
 

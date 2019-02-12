@@ -17,6 +17,7 @@ export const WEAPONS = {
     powerVsMounted: 5,
     volume: 1,
     weight: 0,
+    range: 0,
   },
   [SWORD]: {
     name: 'Sword',
@@ -24,6 +25,7 @@ export const WEAPONS = {
     powerVsMounted: 20,
     volume: 4,
     weight: 5,
+    range: 0,
   },
   [SPEAR]: {
     name: 'Spear',
@@ -31,6 +33,7 @@ export const WEAPONS = {
     powerVsMounted: 30,
     volume: 3,
     weight: 5,
+    range: 0,
   },
   [PIKE]: {
     name: 'Pike',
@@ -38,6 +41,7 @@ export const WEAPONS = {
     powerVsMounted: 40,
     volume: 2,
     weight: 7,
+    range: 0,
   },
   [LONGBOW]: {
     name: 'Longbow',
@@ -45,6 +49,7 @@ export const WEAPONS = {
     powerVsMounted: 30,
     volume: 1,
     weight: 3,
+    range: 0,
   },
   [BAYONETE]: {
     name: 'Bayonete',
@@ -52,6 +57,7 @@ export const WEAPONS = {
     powerVsMounted: 15,
     volume: 1,
     weight: 1,
+    range: 0,
   },
   [BROWN_BESS_SMOOTH_BORE]: { // Standard revolutionary war rifle
     name: 'Brown Bess Smooth Bore',
@@ -59,6 +65,7 @@ export const WEAPONS = {
     powerVsMounted: 60,
     volume: 3,
     weight: 3,
+    range: 500,
   },
   [CONFEDERATE_SMOOTH_BORE]: { // Standard union civil war rifle
     name: 'Smoothbore Musket',
@@ -66,6 +73,7 @@ export const WEAPONS = {
     powerVsMounted: 60,
     volume: 4,
     weight: 3,
+    range: 800,
   },
   [SPRINGFIELD_RIFLED_MUSKET]: { // Standard union civil war rifle
     name: 'Springfield Rifled Musket',
@@ -73,6 +81,7 @@ export const WEAPONS = {
     powerVsMounted: 70,
     volume: 4,
     weight: 3,
+    range: 1200,
   },
   [CANNON_24_POUNDER_CIVIL_WAR]: { // Standard civil war cannon
     name: '24 Pounder',
@@ -80,6 +89,7 @@ export const WEAPONS = {
     powerVsMounted: 500,
     volume: 1,
     weight: 10,
+    range: 2200,
   },
   [LEE_ENFIELD_303]: { // Standard ww1 rifle
     name: 'Lee Enfield 303',
@@ -87,5 +97,6 @@ export const WEAPONS = {
     powerVsMounted: 75,
     volume: 5,
     weight: 3,
+    range: 1800,
   }
 };
