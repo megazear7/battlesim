@@ -8,30 +8,31 @@ export const CREATE_NEW_BATTLE = 'CREATE_NEW_BATTLE';
 export const SET_ACTIVE_BATTLE = 'SET_ACTIVE_BATTLE';
 export const REMOVE_BATTLE = 'REMOVE_BATTLE';
 
-export const rest = () => {
+export const rest = (updates) => {
   return {
-    type: REST
+    type: REST,
+    updates
   };
 };
 
-export const move = (situation) => {
+export const move = (updates) => {
   return {
     type: MOVE,
-    situation
+    updates
   };
 };
 
-export const charge = (situation) => {
+export const charge = (updates) => {
   return {
     type: CHARGE,
-    situation
+    updates
   };
 };
 
-export const fire = (situation) => {
+export const fire = (updates) => {
   return {
     type: FIRE,
-    situation
+    updates
   };
 };
 

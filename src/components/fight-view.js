@@ -176,7 +176,8 @@ class FightView extends connect(store)(PageViewElement) {
   }
 
   _progressToNextAction() {
-    store.dispatch(this._selectedAction(this.situation));
+    store.dispatch(this._selectedAction(this._actionUpdates));
+    this._actionUpdate = {};
     this.shadowRoot.getElementById('actions').style.display = 'block';
     this.shadowRoot.getElementById('take-action').style.display = 'block';
     this.shadowRoot.getElementById('action-result').style.display = 'none';
@@ -188,20 +189,24 @@ class FightView extends connect(store)(PageViewElement) {
       if (this._selectedAction === rest) {
         let actionResult = this._unit.rest();
         this._actionMessages = actionResult.messages;
+        this._actionUpdates = actionResult.updates;
         // TODO We need to persist the updates to the unit to the redux store;
       } else if (this._selectedAction === move) {
-        console.log(this.terrainModifier);
         let actionResult = this._unit.move(this.distance * 100, this.terrainModifier);
         this._actionMessages = actionResult.messages;
-        // TODO We need to persist the updates to the unit to the redux store;
+        this._actionUpdates = actionResult.updates;
       } else if (this._selectedAction === charge) {
         let actionResult = this._unit.charge();
         this._actionMessages = actionResult.messages;
+        this._actionUpdates = actionResult.updates;
         // TODO We need to persist the updates to the unit to the redux store;
       } else if (this._selectedAction === fire) {
         let actionResult = this._unit.fire();
         this._actionMessages = actionResult.messages;
+        this._actionUpdates = actionResult.updates;
         // TODO We need to persist the updates to the unit to the redux store;
+      } else {
+        actionUpdate = {};
       }
 
       this._removeSelection();
@@ -297,7 +302,7 @@ class FightView extends connect(store)(PageViewElement) {
     this._actionMessages = [];
     if (state.battle.battles.length > state.battle.activeBattle) {
       let activeBattle = state.battle.battles[state.battle.activeBattle];
-      this._unit = new Unit(activeBattle.units[activeBattle.activeUnit]);
+      this._unit = new Unit(activeBattle.units[activeBattle.activeUnit], activeBattle.activeUnit);
       this._hasActiveBattle = true;
     } else {
       this._hasActiveBattle = false;

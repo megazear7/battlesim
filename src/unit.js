@@ -1,7 +1,7 @@
 import { store } from './store.js';
 import { WEAPONS } from './weapons.js';
 import { ARMOR } from './armor.js';
-import { weightedRandom, numberWithCommas } from './math-utils.js';
+import { weightedRandom, numberWithCommas, nearest100 } from './math-utils.js';
 
 const SECONDS_IN_AN_HOUR = 3600;
 
@@ -23,8 +23,9 @@ export default class Unit {
                   movementTime = 100,
                   maneuverTime = 100,
                 }
-              }) {
+              }, id) {
     this.armyIndex = army;
+    this.id = id;
     this.name = name;
     this.strength = strength || fullStrength;
     this.morale = morale;
@@ -50,6 +51,42 @@ export default class Unit {
     return (this.leadership * 3) + (this.experience * 2);
   }
 
+  energyDesc(energyCost) {
+    if (energyCost > 100) {
+      return `This took last ounce of strength they had.`;
+    } else if (energyCost > 80) {
+      return `This took nearly every ounce of strength they had.`;
+    } else if (energyCost > 30) {
+      return `This was a really tough assignment. They are feeling exhaustion creep in.`;
+    } else if (energyCost > 20) {
+      return `This was a tough job. It took a lot out of them.`;
+    } else if (energyCost > 8) {
+      return `They put in a lot of work.`;
+    } else if (energyCost > 4) {
+      return `They put in some real work.`;
+    } else if (energyCost > 2) {
+      return `They put in a bit of work.`;
+    } else if (energyCost > 1) {
+      return `This didn't take much effort`;
+    } else {
+      return `This took no effort at all`;
+    }
+  }
+
+  moveDesc(expectedDistance, actualDistance) {
+    if (expectedDistance === 0) {
+      return `You move ${Math.floor(actualDistance / 100)} inches.`;
+    } else if (actualDistance < expectedDistance) {
+      return `You could only move ${Math.floor(actualDistance / 100)} inches.`;
+    } else {
+      return `You move the full ${Math.floor(actualDistance / 100)} inches.`;
+    }
+  }
+
+  battlefieldMoveDesc(yardsTravelled, secondsSpent) {
+    return `${this.name} travelled ${numberWithCommas(nearest100(yardsTravelled))} yards in ${Math.floor(secondsSpent / 60)} minutes.`;
+  }
+
   move(distanceInYards, terrain, manuevering = false) {
     const secondsAvailableToMove = SECONDS_IN_AN_HOUR - this.secondsToIssueOrder;
     const terrainModifier = 2 + ((terrain / 100) * 5) + Math.random();
@@ -62,26 +99,23 @@ export default class Unit {
 
     console.debug('secondsAvailableToMove', secondsAvailableToMove, '\nterrainModifier', terrainModifier, '\nsecondsToMove100Yards', secondsToMove100Yards, '\nmaxYardsTravelled', maxYardsTravelled, '\nyardsTravelled', yardsTravelled, '\nsecondsSpentMoving', secondsSpentMoving, '\nenergyCost', energyCost, '\ntotalSecondsSpent', totalSecondsSpent);
 
-    let moveDesc;
-    if (distanceInYards === 0) {
-      moveDesc = `You move ${Math.floor(yardsTravelled / 100)} inches.`;
-    } else if (yardsTravelled < distanceInYards) {
-      moveDesc = `You could only move ${Math.floor(yardsTravelled / 100)} inches.`;
-    } else {
-      moveDesc = `You move the full ${Math.floor(yardsTravelled / 100)} inches.`;
-    }
-
-    let battlefieldDesc = `${this.name} travelled ${numberWithCommas(Math.floor(yardsTravelled))} yards in ${Math.floor(totalSecondsSpent / 60)} minutes.`;
-    let energyCostDesc = `Energy cost: ${energyCost}`;
-
     return {
-      distance: Math.floor(yardsTravelled),
-      time: Math.floor((secondsSpentMoving + this.secondsToIssueOrder) / 60),
-      energyCost: energyCost,
-      messages: [ moveDesc, battlefieldDesc, energyCostDesc ],
-      update: {
-        energy: this.energy - energyCost,
-      }
+      messages: [
+        this.moveDesc(distanceInYards, yardsTravelled),
+        this.battlefieldMoveDesc(yardsTravelled, totalSecondsSpent),
+        this.energyDesc(energyCost),
+      ],
+      updates: [
+        {
+          id: this.id,
+          changes: [
+            {
+              prop: "energy",
+              value: this.energy - energyCost,
+            }
+          ],
+        }
+      ]
     };
   }
 
