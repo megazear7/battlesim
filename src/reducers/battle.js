@@ -31,30 +31,20 @@ const battle = (state = initialState, action) => {
   if (activeBattle && action.type === REST) {
     var oldActiveUnit = activeBattle.activeUnit;
     var newActiveUnit = oldActiveUnit >= activeBattle.units.length - 1 ? 0 : oldActiveUnit + 1;
-    // TODO use action.update
     activeBattle.activeUnit = newActiveUnit;
     activeBattle.units[oldActiveUnit].energy += 10;
   } else if (activeBattle && action.type === MOVE) {
     var oldActiveUnit = activeBattle.activeUnit;
     var newActiveUnit = oldActiveUnit >= activeBattle.units.length - 1 ? 0 : oldActiveUnit + 1;
     activeBattle.activeUnit = newActiveUnit;
-
-    action.updates.forEach(update => {
-      let unit = activeBattle.units[update.id];
-      update.changes.forEach(change => {
-        unit[change.prop] = change.value;
-      });
-    });
   } else if (activeBattle && action.type === CHARGE) {
     var oldActiveUnit = activeBattle.activeUnit;
     var newActiveUnit = oldActiveUnit >= activeBattle.units.length - 1 ? 0 : oldActiveUnit + 1;
-    // TODO use action.update
     activeBattle.activeUnit = newActiveUnit;
     activeBattle.units[oldActiveUnit].energy -= action.situation.distance * 2;
   } else if (activeBattle && action.type === FIRE) {
     var oldActiveUnit = activeBattle.activeUnit;
     var newActiveUnit = oldActiveUnit >= activeBattle.units.length - 1 ? 0 : oldActiveUnit + 1;
-    // TODO use action.update
     activeBattle.activeUnit = newActiveUnit;
     activeBattle.units[oldActiveUnit].energy -= 10;
   } else if (activeBattle && action.type === ADD) {
@@ -86,6 +76,16 @@ const battle = (state = initialState, action) => {
   } else if (action.type === SET_ACTIVE_BATTLE) {
     newState.activeBattle = action.index;
   }
+
+  if (activeBattle && action.updates) {
+    action.updates.forEach(update => {
+      let unit = activeBattle.units[update.id];
+      update.changes.forEach(change => {
+        unit[change.prop] = change.value;
+      });
+    });
+  }
+
   localStorage.setItem("battle", JSON.stringify(newState));
   return newState
 };

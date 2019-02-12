@@ -186,28 +186,18 @@ class FightView extends connect(store)(PageViewElement) {
 
   _takeAction() {
     if (this.validSituation) {
+      let actionResult;
       if (this._selectedAction === rest) {
-        let actionResult = this._unit.rest();
-        this._actionMessages = actionResult.messages;
-        this._actionUpdates = actionResult.updates;
-        // TODO We need to persist the updates to the unit to the redux store;
+        actionResult = this._unit.rest();
       } else if (this._selectedAction === move) {
-        let actionResult = this._unit.move(this.distance * 100, this.terrainModifier);
-        this._actionMessages = actionResult.messages;
-        this._actionUpdates = actionResult.updates;
+        actionResult = this._unit.move(this.distance * 100, this.terrainModifier);
       } else if (this._selectedAction === charge) {
-        let actionResult = this._unit.charge();
-        this._actionMessages = actionResult.messages;
-        this._actionUpdates = actionResult.updates;
-        // TODO We need to persist the updates to the unit to the redux store;
+        actionResult = this._unit.charge();
       } else if (this._selectedAction === fire) {
-        let actionResult = this._unit.fire();
-        this._actionMessages = actionResult.messages;
-        this._actionUpdates = actionResult.updates;
-        // TODO We need to persist the updates to the unit to the redux store;
-      } else {
-        actionUpdate = {};
+        actionResult = this._unit.fire();
       }
+      this._actionMessages = actionResult.messages;
+      this._actionUpdates = actionResult.updates;
 
       this._removeSelection();
       this.shadowRoot.getElementById('move').style.opacity = 1;

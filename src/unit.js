@@ -41,9 +41,46 @@ export default class Unit {
     this.maneuverTime = maneuverTime;
   }
 
-  rest() {
+  energyRecoveredDesc(energyRecovered) {
+    if (energyRecovered > 80) {
+      return `They got back all of there energy.`;
+    } else if (energyRecovered > 60) {
+      return `They recovered almost all of their strength.`;
+    } else if (energyRecovered > 40) {
+      return `They made a great recovery. The rest was very helpful.`;
+    } else if (energyRecovered > 20) {
+      return `They recovered a lot of their strength`;
+    } else if (energyRecovered > 15) {
+      return `They recovered much of their strength`;
+    } else if (energyRecovered > 9) {
+      return `They recovered some of their strength`;
+    } else if (energyRecovered > 6) {
+      return `They recovered a bit of their strength.`;
+    } else if (energyRecovered > 3) {
+      return `The rest was worth it but they only recovered a little bit.`;
+    } else {
+      return `The rest was hardly worth it.`;
+    }
+  }
+
+  rest(time = SECONDS_IN_AN_HOUR) {
+    let percentageOfAnHourSpentResting = (time / SECONDS_IN_AN_HOUR) * 100;
+    let maxEnergyRecovered = (percentageOfAnHourSpentResting / 100) * 20 * Math.random();
+    let energyRecovered = Math.min(100 - this.energy, maxEnergyRecovered);
+
     return {
-      message: "TODO"
+      messages: [ this.energyRecoveredDesc(energyRecovered) ],
+      updates: [
+        {
+          id: this.id,
+          changes: [
+            {
+              prop: 'energy',
+              value: Math.min(this.energy + energyRecovered, 100),
+            }
+          ]
+        }
+      ]
     };
   }
 
