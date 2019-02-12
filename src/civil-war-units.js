@@ -57,7 +57,7 @@ export const FRESH_UNION_CAVALRY_REGIMENT = {
 };
 
 export const FRESH_UNION_ARTILLERY = {
-  army: CONFEDERATE,
+  army: UNION,
   name: 'Fresh Union Artillery (50 Cannons)',
   strength: 50,
   morale: 100,

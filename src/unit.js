@@ -456,27 +456,41 @@ export default class Unit {
   }
 
   get detailedMoraleDesc() {
-    if (this.morale > 80) {
-      return 'Morale is great. They are willing to fight.';
-    } else if (this.morale > 60) {
+    if (this.morale > 90) {
+      return 'Morale is great.';
+    } else if (this.morale > 80) {
       return 'Morale is good. They have been shaken up but are ready for their orders.';
-    } else if (this.morale > 40) {
+    } else if (this.morale > 70) {
+      return 'Morale is okay. They have been shaken up quite a bit.';
+    } else if (this.morale > 60) {
       return 'Morale is declining. They are nervous to engage in combat but are still in the fight';
+    } else if (this.morale > 50) {
+      return 'Morale is not good. They are timid.';
     } else if (this.morale > 40) {
       return 'Morale is poor. They are afraid to fight any further.';
-    } else if (this.morale > 40) {
-      return 'Morale is terrible. They could flee at any time.';
+    } else if (this.morale > 30) {
+      return 'Morale is terrible. They are afraid to fight any further.';
+    } else if (this.morale > 20) {
+      return 'Morale is horrendous. They will likely not take any further orders.';
+    } else if (this.morale > 10) {
+      return 'Morale is absolutely terrible. They could flee at any time.';
     } else {
-      return 'They are refusing to fight or take orders.';
+      return 'They are refusing to fight or take orders and could flee at any time.';
     }
   }
 
   get detailedStrengthDesc() {
-    if (this.strengthPercentage > 95) {
-      return 'They are close to full strength.';
-    } else if (this.strengthPercentage > 85) {
+    if (this.strengthPercentage > 97) {
+      return 'They are at full strength and have taken no casualties.';
+    } else if (this.strengthPercentage > 93) {
+      return 'They are close to full strength but have take some casualties.';
+    } else if (this.strengthPercentage > 90) {
       return 'They have taken some casualties but remain strong.';
-    } else if (this.strengthPercentage > 70) {
+    } else if (this.strengthPercentage > 85) {
+      return 'They have taken noticable casualties.';
+    } else if (this.strengthPercentage > 80) {
+      return 'They have taken significant casualties.';
+    } else if (this.strengthPercentage > 75) {
       return 'They have taken a lot of casualties.';
     } else if (this.strengthPercentage > 60) {
       return 'They have taken severe casualties.';
@@ -493,15 +507,23 @@ export default class Unit {
 
   get detailedEnergyDesc() {
     if (this.energy > 90) {
+      return 'They have lots of energy.';
+    } else if (this.energy > 80) {
       return 'They are well rested.';
     } else if (this.energy > 70) {
       return 'They have put in some work but are still fresh.';
-    } else if (this.energy > 50) {
+    } else if (this.energy > 60) {
       return 'They are beginning to slow down.';
-    } else if (this.energy > 30) {
+    } else if (this.energy > 50) {
+      return 'They are showing signs of exhaustion.';
+    } else if (this.energy > 40) {
       return 'They are exhausted.';
+    } else if (this.energy > 30) {
+      return 'They are completely exhausted.';
+    } else if (this.energy > 20) {
+      return 'They are utterly spent.';
     } else if (this.energy > 10) {
-      return 'They are spent and have little energy left.';
+      return 'They have no energy left.';
     } else {
       return 'They have given it all that they have. They are totally spent.';
     }
