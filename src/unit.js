@@ -249,22 +249,22 @@ export default class Unit {
     const attackerPower = defender.unitType === FOOT_TROOP ? this.meleeWeapon.powerVsFoot : this.meleeWeapon.powerVsMounted;
     const defenderPower = this.unitType === FOOT_TROOP ? defender.meleeWeapon.powerVsFoot : defender.meleeWeapon.powerVsMounted;
 
-    let attackerTerrainMod = terrainModifier;
-    if (this.unitType === CAVALRY_TROOP) {
-      attackerTerrainMod *= 2;
-    } else if (this.unitType === ARTILLERY_TROOP) {
-      attackerTerrainMod *= 3;
+    let attackerModifiedStrength = this.strength * Math.min((100 - terrainModifier) + this.openness, 100) / 100;
+    let defenderModifiedStrength = defender.strength * Math.min((100 - terrainModifier) + defender.openness, 100) / 100;
+
+    if (this.unitType === CAVALRY_TROOP || this.unitType === ARTILLERY_TROOP) {
+      attackerModifiedStrength *= this.strength * Math.min((100 - terrainModifier) + this.openness, 100) / 100;
+    }
+    if (this.unitType === ARTILLERY_TROOP) {
+      attackerModifiedStrength *= this.strength * Math.min((100 - terrainModifier) + this.openness, 100) / 100;
     }
 
-    let defenderTerrainMod = terrainModifier;
-    if (defender.unitType === CAVALRY_TROOP) {
-      defenderTerrainMod *= 2;
-    } else if (defender.unitType === ARTILLERY_TROOP) {
-      defenderTerrainMod *= 3;
+    if (defender.unitType === CAVALRY_TROOP || defender.unitType === ARTILLERY_TROOP) {
+      defenderModifiedStrength *= defender.strength * Math.min((100 - terrainModifier) + defender.openness, 100) / 100;
     }
-
-    const attackerModifiedStrength = this.strength * Math.min(attackerTerrainMod - this.openness, 100) / 100;
-    const defenderModifiedStrength = defender.strength * Math.min(defenderTerrainMod - defender.openness, 100) / 100;
+    if (defender.unitType === ARTILLERY_TROOP) {
+      defenderModifiedStrength *= defender.strength * Math.min((100 - terrainModifier) + defender.openness, 100) / 100;
+    }
 
     let attackersPowerMod = 1;
     let defendersPowerMod = 1;
@@ -310,22 +310,24 @@ export default class Unit {
     const attackerPower = defender.unitType === FOOT_TROOP ? this.rangedWeapon.powerVsFoot : this.rangedWeapon.powerVsMounted;
     const defenderPower = this.unitType === FOOT_TROOP ? defender.rangedWeapon.powerVsFoot : defender.rangedWeapon.powerVsMounted;
 
-    let attackerTerrainMod = terrainModifier;
-    if (this.unitType === CAVALRY_TROOP) {
-      attackerTerrainMod *= 2;
-    } else if (this.unitType === ARTILLERY_TROOP) {
-      attackerTerrainMod *= 3;
+    console.log('a', this.strength);
+    let attackerModifiedStrength = this.strength * Math.min((100 - terrainModifier) + this.openness, 100) / 100;
+    console.log('b', attackerModifiedStrength);
+    let defenderModifiedStrength = defender.strength * Math.min((100 - terrainModifier) + defender.openness, 100) / 100;
+
+    if (this.unitType === CAVALRY_TROOP || this.unitType === ARTILLERY_TROOP) {
+      attackerModifiedStrength *= this.strength * Math.min((100 - terrainModifier) + this.openness, 100) / 100;
+    }
+    if (this.unitType === ARTILLERY_TROOP) {
+      attackerModifiedStrength *= this.strength * Math.min((100 - terrainModifier) + this.openness, 100) / 100;
     }
 
-    let defenderTerrainMod = terrainModifier;
-    if (defender.unitType === CAVALRY_TROOP) {
-      defenderTerrainMod *= 2;
-    } else if (defender.unitType === ARTILLERY_TROOP) {
-      defenderTerrainMod *= 3;
+    if (defender.unitType === CAVALRY_TROOP || defender.unitType === ARTILLERY_TROOP) {
+      defenderModifiedStrength *= defender.strength * Math.min((100 - terrainModifier) + defender.openness, 100) / 100;
     }
-
-    const attackerModifiedStrength = this.strength * Math.min(attackerTerrainMod - this.openness, 100) / 100;
-    const defenderModifiedStrength = defender.strength * Math.min(defenderTerrainMod - defender.openness, 100) / 100;
+    if (defender.unitType === ARTILLERY_TROOP) {
+      defenderModifiedStrength *= defender.strength * Math.min((100 - terrainModifier) + defender.openness, 100) / 100;
+    }
 
     let attackersCasualties = attack(
       defenderModifiedStrength,
@@ -399,15 +401,14 @@ export default class Unit {
         attackerMessage = `${this.name} was unable to persue the defender. TODO use the separation and unit movement rates to add variability to what this outcome can be.`;
         changes = this.emptyChanges();
       } else {
-        changes = this.meleeCombat(timeSpent, separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender);
+        changes = this.rangedCombat(timeSpent, separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender);
         attackerMessage = createCasualtyMessage(this, changes.attacker.casualties);
         defenderMessage = createCasualtyMessage(defender, changes.defender.casualties);
       }
     }
 
-
     return {
-      messages: [ attackerMessage, this.detailedStatus, "---", defenderMessage, defender.detailedStatus ],
+      messages: [ defenderMessage, attackerMessage ],
       updates: [
         {
           id: this.id,
@@ -654,9 +655,9 @@ function createCasualtyMessage(unit, casualties) {
     return `${unit.name} sustained major casualties.`;
   } else if (casualties > unit.strength * 0.10) {
     return `${unit.name} sustained significant casualties.`;
-  } else if (casualties > unit.strength * 0.5) {
+  } else if (casualties > unit.strength * 0.05) {
     return `${unit.name} sustained noticable casualties.`;
-  } else if (casualties > unit.strength * 0.2) {
+  } else if (casualties > unit.strength * 0.02) {
     return `${unit.name} sustained minor casualties.`;
   } else {
     return `${unit.name} sustained almost no casualties.`;

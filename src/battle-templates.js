@@ -8,6 +8,7 @@ import {
   FRESH_CONFEDERATE_ARTILLERY, } from './civil-war-units.js';
 import { msSinceMidnight } from './math-utils.js';
 import {
+  LONGBOW,
   CANNON_6_POUNDER_CIVIL_WAR,
   CANNON_12_POUNDER_CIVIL_WAR, } from './weapons.js';
 
@@ -276,12 +277,11 @@ export default [
     ],
     units: [
       { ...FRESH_UNION_BRIGADE,
-        name: "Tyler's 1st Brigade",
-        morale: 50
+        name: "Guns",
       },
       { ...FRESH_CONFEDERATE_BRIGADE,
-        name: "2nd Potomac Brigade",
-        strength: 2000
+        name: "Bows",
+        rangedWeapon: LONGBOW
       },
     ],
     unitTemplates: CIVIL_WAR_UNITS,

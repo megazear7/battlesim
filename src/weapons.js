@@ -51,7 +51,7 @@ export const WEAPONS = {
     powerVsMounted: 50,
     volume: 2,
     weight: 3,
-    range: 0,
+    range: 400,
   },
   [BAYONETE]: {
     name: 'Bayonete',
