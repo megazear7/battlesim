@@ -177,18 +177,22 @@ export default class Unit {
     };
   }
 
+  get carriedWeight() {
+    return this.meleeWeapon.weight + this.rangedWeapon.weight + this.armor.weight;
+  }
+
   baseCombat(timeSpent, separation, attackersCasualties, defendersCasualties, terrainModifier, general, subcommander, defender) {
     let attackerPercentLoss = attackersCasualties / this.strength;
     let defenderPercentLoss = defendersCasualties / defender.strength;
 
-    let attackerEnergyLoss = attackerPercentLoss * 2 * 100 * (timeSpent / SECONDS_IN_AN_HOUR);
-    let defenderEnergyLoss = defenderPercentLoss * 2 * 100 * (timeSpent / SECONDS_IN_AN_HOUR);
+    let attackerEnergyLoss = this.carriedWeight + attackerPercentLoss * 2 * 100 * (timeSpent / SECONDS_IN_AN_HOUR);
+    let defenderEnergyLoss = defender.carriedWeight + defenderPercentLoss * 2 * 100 * (timeSpent / SECONDS_IN_AN_HOUR);
 
     let attackerMoraleMod = (this.experience / 100) + 1;
     let defenderMoraleMod = (defender.experience / 100) + 1;
 
-    let attackerMoraleLoss = attackerPercentLoss * attackerMoraleMod * 100 * Math.random();
-    let defenderMoraleLoss = defenderPercentLoss * defenderMoraleMod * 100 * Math.random();
+    let attackerMoraleLoss = attackerPercentLoss * attackerMoraleMod * ((1.2 - this.experience) / 100) * 100 * Math.random();
+    let defenderMoraleLoss = defenderPercentLoss * defenderMoraleMod * ((1.2 - defender.experience) / 100) * 100 * Math.random();
 
     let attackerLeadershipLoss;
     if (Math.random() > 0.95) {
@@ -242,9 +246,9 @@ export default class Unit {
   }
 
   meleeCombat(timeSpent, separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender) {
-    const attackerTimeToFight = timeSpent - this.secondsToIssueOrder - (terrainModifier / 100);
+    const attackerTimeToFight = timeSpent - this.secondsToIssueOrder;
     const attackerPercentTimeFighting = attackerTimeToFight / timeSpent;
-    const defenderTimeToFight = timeSpent - defender.secondsToIssueOrder - (terrainModifier / 100);
+    const defenderTimeToFight = timeSpent - defender.secondsToIssueOrder;
     const defenderPercentTimeFighting = defenderTimeToFight / timeSpent;
     const attackerPower = defender.unitType === FOOT_TROOP ? this.meleeWeapon.powerVsFoot : this.meleeWeapon.powerVsMounted;
     const defenderPower = this.unitType === FOOT_TROOP ? defender.meleeWeapon.powerVsFoot : defender.meleeWeapon.powerVsMounted;
@@ -301,9 +305,9 @@ export default class Unit {
   }
 
   rangedCombat(timeSpent, separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender) {
-    const attackerTimeToFight = timeSpent - this.secondsToIssueOrder - (terrainModifier / 100);
+    const attackerTimeToFight = timeSpent - this.secondsToIssueOrder;
     const attackerPercentTimeFighting = attackerTimeToFight / timeSpent;
-    const defenderTimeToFight = timeSpent - defender.secondsToIssueOrder - (terrainModifier / 100);
+    const defenderTimeToFight = timeSpent - defender.secondsToIssueOrder;
     const defenderPercentTimeFighting = defenderTimeToFight / timeSpent;
     const attackerDistanceMod = Math.max((this.rangedWeapon.range - separation) / this.rangedWeapon.range, 0);
     const defenderDistanceMod = Math.max((defender.rangedWeapon.range - separation) / defender.rangedWeapon.range, 0);
@@ -419,19 +423,19 @@ export default class Unit {
             },
             {
               prop: "energy",
-              value: Math.max(this.energy - changes.attacker.energy, 0),
+              value: Math.max(this.energy - changes.attacker.energy, 1),
             },
             {
               prop: "morale",
-              value: Math.max(this.morale - changes.attacker.morale, 0),
+              value: Math.max(this.morale - changes.attacker.morale, 1),
             },
             {
               prop: "leadership",
-              value: Math.max(this.leadership - changes.attacker.leadership, 0),
+              value: Math.max(this.leadership - changes.attacker.leadership, 1),
             },
             {
               prop: 'nextAction',
-              value: this.nextAction + (SECONDS_IN_AN_HOUR * ((Math.random() / 2) + 0.5)),
+              value: this.nextAction + timeSpent + (Math.random() * 1000),
             }
           ]
         },
@@ -444,19 +448,19 @@ export default class Unit {
             },
             {
               prop: "energy",
-              value: Math.max(defender.energy - changes.defender.energy, 0),
+              value: Math.max(defender.energy - changes.defender.energy, 1),
             },
             {
               prop: "morale",
-              value: Math.max(defender.morale - changes.defender.morale, 0),
+              value: Math.max(defender.morale - changes.defender.morale, 1),
             },
             {
               prop: "leadership",
-              value: Math.max(defender.leadership - changes.defender.leadership, 0),
+              value: Math.max(defender.leadership - changes.defender.leadership, 1),
             },
             {
               prop: 'nextAction',
-              value: defender.nextAction + (SECONDS_IN_AN_HOUR * ((Math.random() / 2) + 0.5)),
+              value: defender.nextAction + timeSpent + (Math.random() * 500),
             }
           ]
         }
@@ -645,19 +649,19 @@ function createCasualtyMessage(unit, casualties) {
     return `${unit.name} sustained terrible casualties. Almost the whole unit was destroyed.`;
   } else if (casualties > unit.strength * 0.50) {
     return `${unit.name} sustained terrible casualties. Over half the unit is destroyed.`;
-  } else if (casualties > unit.strength * 0.40) {
-    return `${unit.name} sustained terrible casualties.`;
   } else if (casualties > unit.strength * 0.30) {
-    return `${unit.name} sustained grave casualties.`;
+    return `${unit.name} sustained terrible casualties.`;
   } else if (casualties > unit.strength * 0.20) {
-    return `${unit.name} sustained massive casualties.`;
+    return `${unit.name} sustained grave casualties.`;
   } else if (casualties > unit.strength * 0.15) {
-    return `${unit.name} sustained major casualties.`;
+    return `${unit.name} sustained massive casualties.`;
   } else if (casualties > unit.strength * 0.10) {
+    return `${unit.name} sustained major casualties.`;
+  } else if (casualties > unit.strength * 0.5) {
     return `${unit.name} sustained significant casualties.`;
-  } else if (casualties > unit.strength * 0.05) {
+  } else if (casualties > unit.strength * 0.03) {
     return `${unit.name} sustained noticable casualties.`;
-  } else if (casualties > unit.strength * 0.02) {
+  } else if (casualties > unit.strength * 0.01) {
     return `${unit.name} sustained minor casualties.`;
   } else {
     return `${unit.name} sustained almost no casualties.`;
