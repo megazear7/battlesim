@@ -18,8 +18,16 @@ export default [
     ruleset: 0,
     second: 0,
     startTime: Date.parse('11 May 1862 11:30:00 EST'),
-    sunSet: msSinceMidnight(new Date(Date.parse('11 May 1862 20:36:00 EST'))),
-    sunRise: msSinceMidnight(new Date(Date.parse('11 May 1862 6:21:00 EST'))),
+    events: [ // TODO Implement the events feature.
+      {
+        time: msSinceMidnight(new Date(Date.parse('11 May 1862 20:36:00 EST'))),
+        title: 'Sun Set',
+        descripton: 'The sun has set. It might be clear as to which army won the battle. If it is not then you may proceed to the next morning and continue the engagment. Each unit withdraws at least 6 inches and at most 18 inches.',
+        provideArmyOverview: true,
+        proceedClock: 10000, // TODO this needs to be the seconds between sunset and sunrise.
+      }
+    ],
+    deadliness: 1, // TODO Use this in combat calculations.
     activeArmy: 0,
     activeUnit: 0,
     turnStarted: 0,
