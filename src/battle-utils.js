@@ -1,29 +1,21 @@
-import { weightedRandom } from './math-utils.js';
+import { weightedRandom, SECONDS_IN_AN_HOUR } from './math-utils.js';
+import { MAX_ENERGY, DEADLYNESS } from './game.js';
 
-const MAX_ENERGY = 100;
-const DEADLYNESS = 0.1;
-
-export function attack(strength, volume, power, armor, attackSkill, defendSkill, attackEnergy, defendEnergy) {
-  console.debug('[attack]', '\nstrength', strength, '\nvolume', volume, '\npower', power, '\narmor', armor, '\nattackSkill', attackSkill, '\ndefendSkill', defendSkill, '\nattackEnergy', attackEnergy, '\ndefendEnergy', defendEnergy);
-
+export function attack(attacker, defender, duration) {
+  const totalAttacks = attacker.strength * attacker.volume * (attacker.energy / MAX_ENERGY) * (duration / SECONDS_IN_AN_HOUR);
   let hits = 0;
-  let totalAttacks = strength * volume * (attackEnergy / MAX_ENERGY);
   for (let i = 0; i < totalAttacks; i++) {
-    if (Math.random() * attackSkill * DEADLYNESS > Math.random() * defendSkill * (defendEnergy / MAX_ENERGY)) {
+    if (Math.random() * attacker.skill * DEADLYNESS > Math.random() * defender.skill * (defend.energy / MAX_ENERGY)) {
       hits += 1;
     }
   }
 
-  console.debug('[attack] hits', hits);
-
   let casualties = 0;
   for (let i = 0; i < hits; i++) {
-    if (Math.random() * power > Math.random() * armor) {
+    if (Math.random() * attacker.power > Math.random() * attacker.armor) {
       casualties += 1;
     }
   }
-
-  console.debug('[attack] casualties', casualties);
 
   return casualties;
 }

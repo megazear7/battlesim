@@ -13,7 +13,6 @@ import {
   SLOPE_UP,
   SLOPE_DOWN,
   SLOPE_NONE } from '../terrain.js';
-import Combatant from '../combatant.js';
 import Encounter from '../encounter.js';
 
 const REST = 'REST';
@@ -256,22 +255,15 @@ class FightView extends connect(store)(PageViewElement) {
       } else {
         // FIRE or CHARGE
         let defendingUnit = new Unit(this._activeBattle.units[this.target], this.target);
-
-        let attacker = new Combatant({
-          unit: this._unit,
-          armyLeadership: 0,
-          terrainDefense: 0,
-          engagedStands: this.engagedAttackers });
-
-        let defender = new Combatant({
-          unit: defendingUnit,
-          armyLeadership: 0,
-          terrainDefense: 0,
-          engagedStands: this.engagedDefenders });
-
         let encounter = new Encounter({
-          attacker,
-          defender,
+          attacker: this._unit,
+          attackerTerrainDefense: 0,
+          attackerArmyLeadership: 0,
+          attackerEngagedStands: this.engagedAttackers,
+          defender: defendingUnit,
+          defenderTerrainDefense: 0,
+          defenderArmyLeadership: 0,
+          defenderEngagedStands: this.engagedAttackers,
           melee: this._selectedAction === CHARGE,
           separation: this.separation,
           terrain: this.terrainModifier,

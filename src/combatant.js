@@ -5,15 +5,16 @@ import { weightedRandom } from './math-utils.js';
 
 export default class Combatant {
     constructor({ unit,
+                  encounter,
                   armyLeadership = 0,
                   terrainDefense = 0,
                   engagedStands = -1,
                   status = MORALE_SUCCESS }) {
     this.unit = unit;
+    this.encounter = encounter;
     this.armyLeadership = armyLeadership;
     this.terrainDefense = terrainDefense;
     this.engagedStands = engagedStands <= -1 || engagedStands > unit.stands ? unit.stands : engagedStands;
-    // TODO Could we calculate the status ourself instead of it being controlled from the outside?
     this.status = status;
     this.casualties = 0;
     this.energyLoss = 0;
@@ -35,6 +36,22 @@ export default class Combatant {
 
   get leadership() {
     return Math.max(this.unit.leadership - this.leadershipLoss, 0)
+  }
+
+  get volume() {
+    return this.encounter.melee ? this.unit.meleeWeapon.volume : this.unit.rangedWeapon.volume;
+  }
+
+  get volume() {
+    return this.encounter.melee ? this.unit.meleeWeapon.power : this.unit.rangedWeapon.power;
+  }
+
+  get skill() {
+    return this.encounter.melee ? this.unit.meleeSkill : this.unit.rangedSkill;
+  }
+
+  get armor() {
+    return this.unit.armor.defense;
   }
 
   // Warning: Performing multiple morale checks will do a new roll and might switch the status.

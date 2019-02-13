@@ -3,6 +3,7 @@ import { WEAPONS } from './weapons.js';
 import { ARMOR } from './armor.js';
 import { randomMinutesBetween, SECONDS_IN_AN_MINUTE } from './math-utils.js';
 import { attack } from './battle-utils.js';
+import Combatant from './combatant.js';
 import {
   FOOT_TROOP,
   CAVALRY_TROOP,
@@ -20,65 +21,85 @@ import {
 
 export default class Encounter {
   constructor({ attacker,
+                attackerTerrainDefense = 0,
+                attackerArmyLeadership = 0,
+                attackerEngagedStands = -1,
                 defender,
+                defenderTerrainDefense = 0,
+                defenderArmyLeadership = 0,
+                defenderEngagedStands = -1,
                 melee = true,
                 separation = 0,
                 terrain = 0,
                 slope = SLOPE_NONE }) {
-    this.attacker = attacker;
-    this.defender = defender;
     this.melee = melee;
     this.separation = separation;
     this.terrain = terrain;
     this.slope = slope;
+
+    this.attacker = new Combatant({
+      unit: attacker,
+      encounter: this,
+      attackerTerrainDefense,
+      attackerArmyLeadership,
+      attackerEngagedStands});
+
+    this.defender = new Combatant({
+      unit: defender,
+      encounter: this,
+      defenderTerrainDefense,
+      defenderArmyLeadership,
+      defenderEngagedStands});
   }
 
-  meleeFight() {
-    // TODO update attacker and defender.
+  attackerEngaged() {
+    if (this.attacker.status === MORALE_SUCCESS) {
+      this.attacker.casualties = attack(this.attacker, this.defender, this.secondsSpentFighting);
+    }
+    if (this.attacker.status === MORALE_SUCCESS) {
+      this.defender.casualties = attack(this.defender, this.attacker, this.secondsSpentFighting);
+    }
+
+    if (this.inchesDefenderFled > 1) {
+      return `${this.defender.unit.name} fell back ${this.inchesDefenderFled} inches but was then caught by ${this.attacker.unit.name}. ${this.timeEngagedMessage}`;
+    } else if (this.defenderFled) {
+      return `${this.defender.unit.name} attempted to fall back but was quickly caught by ${this.attacker.unit.name}. ${this.timeEngagedMessage}`;
+    } else {
+      return `${this.defender.unit.name} held it's ground against ${this.attacker.unit.name}. ${this.timeEngagedMessage}`;
+    }
   }
 
-  rangedFight() {
-    // TODO update attacker and defender.
+  defenderRunsAway() {
+    if (this.defenderFled) {
+      return `${this.defender.unit.name} fell back ${this.inchesDefenderFled} inches and ${this.attacker.unit.name} could not reach it's target but is now ${this.inchesOfSeparationAfter} inches behind.`;
+    } else {
+      return `${this.attacker.unit.name} could not reach ${this.defender.unit.name} but made it a distance of ${this.inchesAttackerTravelled} inches towards it's target.`;
+    }
   }
 
   fight() {
     this.attacker.performMoraleCheck();
     this.defender.performMoraleCheck();
 
-    let actionMessage;
-    if (this.attackerReachedDefender) {
-      this.melee ? this.meleeFight() : this.rangedFight();
-      if (this.inchesDefenderFled > 1) {
-        actionMessage = `${this.defender.unit.name} fell back ${this.inchesDefenderFled} inches but was then caught by ${this.attacker.unit.name}.`;
-      } else if (this.defenderFled) {
-        actionMessage = `${this.defender.unit.name} attempted to fall back but was quickly caught by ${this.attacker.unit.name}.`;
-      } else {
-        actionMessage = `${this.defender.unit.name} held it's ground against ${this.attacker.unit.name}.`;
-      }
-    } else {
-      if (this.defenderFled) {
-        actionMessage = `${this.defender.unit.name} fell back ${this.inchesDefenderFled} inches and ${this.attacker.unit.name} could not reach it's target but is now ${this.inchesOfSeparationAfter} inches behind.`;
-      } else {
-        actionMessage = `${this.attacker.unit.name} could not reach ${this.defender.unit.name} but made it a distance of ${this.inchesAttackerTravelled} inches towards it's target.`;
-      }
-    }
+    let actionMessage = this.attackerReachedDefender ? this.attackerEngaged() : this.defenderRanAway();
+    let fullMessage = `${actionMessage} ${this.defender.battleReport()} ${this.attacker.battleReport()}`;
 
-    let allDetails = `${this.minutesSpentFighting} minutes spent fighting. ${this.defender.unit.name} fled ${this.yardsDefenderFled} yards. ${this.defender.unit.name} charged ${this.yardsAttackerTravelled} yards.`;
+    // Use this for testing:
+    //let allDetails = `${this.minutesSpentFighting} minutes spent fighting. ${this.defender.unit.name} fled ${this.yardsDefenderFled} yards. ${this.defender.unit.name} charged ${this.yardsAttackerTravelled} yards.`;
 
     return {
       messages: [
-        allDetails,
-        actionMessage,
-        this.defender.battleReport(),
-        //this.defender.exactBattleReport(),
-        this.attacker.battleReport(),
-        //this.attacker.exactBattleReport(),
+        fullMessage,
       ],
       updates: [
         this.defender.updates(this.defender.unit.nextAction + SECONDS_PER_TURN),
         this.attacker.updates(this.defender.unit.nextAction + SECONDS_PER_TURN + randomMinutesBetween(5, 10))
       ]
     };
+  }
+
+  get timeEngagedMessage() {
+    return `They were engaged for ${this.minutesSpentFighting} minutes.`;
   }
 
   get yardsOfSeparation() {
