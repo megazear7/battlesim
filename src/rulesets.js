@@ -23,6 +23,10 @@ export default [
           {
             heading: 'Taking casualties',
             text: 'As units take casualties you will not pick up stands. Rather you will be able to know the status of the unit based upon the status that the units leaders provide to you. While the number of stands will remain consistant as they take casualties, you will need to keep in mind that there might be less soldiers in the unit.'
+          },
+          {
+            heading: 'Unit Formation',
+            text: 'Stands in closed order units must be in contact with another stand from the unit at all times. Stands in open order units must remain within 3 inches of another stand from its own unit at all times.'
           }
         ]
       },
@@ -68,6 +72,10 @@ export default [
             heading: 'Reform',
             text: 'A reform movement allows each stand to move entirely independantly. This allows you to change formation or perform complex movements. This movement takes the longest amount of time.',
           },
+          {
+            heading: 'Open and closed order',
+            text: 'Open order units may pass through friendly units of any type. Closed order units may never pass through any other unit.',
+          }
         ]
       },
       {

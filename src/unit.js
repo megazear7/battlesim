@@ -12,6 +12,8 @@ export default class Unit {
   constructor({
                 army = 0,
                 name,
+                unitType = FOOT_TROOP,
+                openness = 20,
                 stands = 8,
                 strength,
                 morale = 90,
@@ -32,6 +34,8 @@ export default class Unit {
     this.armyIndex = army;
     this.id = id;
     this.name = name;
+    this.unitType = unitType;
+    this.openness = openness;
     this.stands = stands;
     this.strength = strength || fullStrength;
     this.morale = morale;
@@ -242,8 +246,25 @@ export default class Unit {
     const attackerPercentTimeFighting = attackerTimeToFight / timeSpent;
     const defenderTimeToFight = timeSpent - defender.secondsToIssueOrder - (terrainModifier / 100);
     const defenderPercentTimeFighting = defenderTimeToFight / timeSpent;
-    const attackerPower = defender.unitType == FOOT_TROOP ? this.meleeWeapon.powerVsFoot : this.meleeWeapon.powerVsMounted;
-    const defenderPower = this.unitType == FOOT_TROOP ? defender.meleeWeapon.powerVsFoot : defender.meleeWeapon.powerVsMounted;
+    const attackerPower = defender.unitType === FOOT_TROOP ? this.meleeWeapon.powerVsFoot : this.meleeWeapon.powerVsMounted;
+    const defenderPower = this.unitType === FOOT_TROOP ? defender.meleeWeapon.powerVsFoot : defender.meleeWeapon.powerVsMounted;
+
+    let attackerTerrainMod = terrainModifier;
+    if (this.unitType === CAVALRY_TROOP) {
+      attackerTerrainMod *= 2;
+    } else if (this.unitType === ARTILLERY_TROOP) {
+      attackerTerrainMod *= 3;
+    }
+
+    let defenderTerrainMod = terrainModifier;
+    if (defender.unitType === CAVALRY_TROOP) {
+      defenderTerrainMod *= 2;
+    } else if (defender.unitType === ARTILLERY_TROOP) {
+      defenderTerrainMod *= 3;
+    }
+
+    const attackerModifiedStrength = this.strength * Math.min(attackerTerrainMod - this.openness, 100) / 100;
+    const defenderModifiedStrength = defender.strength * Math.min(defenderTerrainMod - defender.openness, 100) / 100;
 
     let attackersPowerMod = 1;
     let defendersPowerMod = 1;
@@ -257,7 +278,7 @@ export default class Unit {
     }
 
     let attackersCasualties = attack(
-      defender.strength,
+      defenderModifiedStrength,
       defender.meleeWeapon.volume * defender.percentageEngaged(engagedDefenders) * defenderPercentTimeFighting,
       defenderPower * defendersPowerMod,
       defender.armor.defense,
@@ -267,7 +288,7 @@ export default class Unit {
       this.energy);
 
     let defendersCasualties = attack(
-      this.strength,
+      attackerModifiedStrength,
       this.meleeWeapon.volume * defender.percentageEngaged(engagedAttackers) * attackerPercentTimeFighting,
       attackerPower * attackersPowerMod,
       this.armor.defense,
@@ -286,11 +307,28 @@ export default class Unit {
     const defenderPercentTimeFighting = defenderTimeToFight / timeSpent;
     const attackerDistanceMod = Math.max((this.rangedWeapon.range - separation) / this.rangedWeapon.range, 0);
     const defenderDistanceMod = Math.max((defender.rangedWeapon.range - separation) / defender.rangedWeapon.range, 0);
-    const attackerPower = defender.unitType == FOOT_TROOP ? this.rangedWeapon.powerVsFoot : this.rangedWeapon.powerVsMounted;
-    const defenderPower = this.unitType == FOOT_TROOP ? defender.rangedWeapon.powerVsFoot : defender.rangedWeapon.powerVsMounted;
+    const attackerPower = defender.unitType === FOOT_TROOP ? this.rangedWeapon.powerVsFoot : this.rangedWeapon.powerVsMounted;
+    const defenderPower = this.unitType === FOOT_TROOP ? defender.rangedWeapon.powerVsFoot : defender.rangedWeapon.powerVsMounted;
+
+    let attackerTerrainMod = terrainModifier;
+    if (this.unitType === CAVALRY_TROOP) {
+      attackerTerrainMod *= 2;
+    } else if (this.unitType === ARTILLERY_TROOP) {
+      attackerTerrainMod *= 3;
+    }
+
+    let defenderTerrainMod = terrainModifier;
+    if (defender.unitType === CAVALRY_TROOP) {
+      defenderTerrainMod *= 2;
+    } else if (defender.unitType === ARTILLERY_TROOP) {
+      defenderTerrainMod *= 3;
+    }
+
+    const attackerModifiedStrength = this.strength * Math.min(attackerTerrainMod - this.openness, 100) / 100;
+    const defenderModifiedStrength = defender.strength * Math.min(defenderTerrainMod - defender.openness, 100) / 100;
 
     let attackersCasualties = attack(
-      defender.strength,
+      defenderModifiedStrength,
       defender.rangedWeapon.volume * defender.percentageEngaged(engagedDefenders) * defenderPercentTimeFighting,
       defenderPower,
       defender.armor.defense,
@@ -300,7 +338,7 @@ export default class Unit {
       this.energy);
 
     let defendersCasualties = attack(
-      this.strength,
+      attackerModifiedStrength,
       this.rangedWeapon.volume * this.percentageEngaged(engagedAttackers) * attackerPercentTimeFighting,
       attackerPower,
       this.armor.defense,
@@ -586,12 +624,11 @@ export default class Unit {
   }
 
   get detailedStatus() {
-    //3000 Soldiers / 90% Morale / 100% Energy
     return `${this.detailedStrengthDesc} ${this.detailedMoraleDesc} ${this.detailedEnergyDesc}`;
   }
 
   get desc() {
-    return `${upperCaseFirst(this.experienceDesc)} ${this.troopTypeName.toLocaleLowerCase()} weilding ${this.rangedWeapon.name.toLocaleLowerCase()} and ${this.meleeWeapon.name.toLocaleLowerCase()} with ${this.leaderDesc.toLocaleLowerCase()} leaders consisting of ${this.stands} stands.`;
+    return `${upperCaseFirst(this.experienceDesc)} ${this.troopTypeName.toLocaleLowerCase()} weilding ${this.rangedWeapon.name.toLocaleLowerCase()} and ${this.meleeWeapon.name.toLocaleLowerCase()} with ${this.leaderDesc.toLocaleLowerCase()} leaders consisting of ${this.stands} stands fighting in ${this.openness > 50 ? 'open' : 'closed'} order.`;
   }
 
 }
