@@ -1,7 +1,7 @@
 import { store } from './store.js';
 import { WEAPONS } from './weapons.js';
 import { ARMOR } from './armor.js';
-import { randomMinutesBetween } from './math-utils.js';
+import { randomMinutesBetween, SECONDS_IN_AN_MINUTE } from './math-utils.js';
 import { attack } from './battle-utils.js';
 import {
   FOOT_TROOP,
@@ -63,7 +63,7 @@ export default class Encounter {
       }
     }
 
-    let allDetails = `timeSpentFighting: ${this.timeSpentFighting}, yardsDefenderFled: ${this.yardsDefenderFled}, yardsAttackerTravelled: ${this.yardsAttackerTravelled}`;
+    let allDetails = `${this.minutesSpentFighting} minutes spent fighting. ${this.defender.unit.name} fled ${this.yardsDefenderFled} yards. ${this.defender.unit.name} charged ${this.yardsAttackerTravelled} yards.`;
 
     return {
       messages: [
@@ -110,31 +110,26 @@ export default class Encounter {
 
   get yardsAttackerTravelled() {
     if (this.melee) {
-      if (this.attackerReachedDefender) {
-        return this.attacker.unit.speed(this.terrain) * this.secondsToReachDefenderOrMax;
-      } else {
-        return this.attacker.unit.speed(this.terrain) * this.secondsAvailableAfterOrder;
-      }
+      return this.attacker.unit.speed(this.terrain) * this.secondsToReachDefenderOrMax;
     } else {
       return 0;
     }
   }
 
   get inchesAttackerTravelled() {
-    return this.yardsAttackerTravelled / YARDS_PER_INCH;
+    return Math.floor(this.yardsAttackerTravelled / YARDS_PER_INCH);
   }
 
   get secondsAvailableAfterOrder() {
     return SECONDS_PER_TURN - this.attacker.unit.secondsToIssueOrder;
   }
 
-  get secondsAvailableAfterMove() {
-    const secondsSpentMoving = this.yardsOfSeparation * secondsToMove100Yards(this.terrain);
-    return this.secondsAvailableAfterOrder - secondsSpentMoving;
-  }
-
   get secondsToReachDefender() {
-    return this.yardsOfSeparation / (this.attacker.unit.speed(this.terrain) - this.defender.unit.backwardsSpeed(this.terrain))
+    if (this.defender.status === MORALE_FAILURE) {
+      return this.yardsOfSeparation / (this.attacker.unit.speed(this.terrain) - this.defender.unit.backwardsSpeed(this.terrain));
+    } else {
+      return this.yardsOfSeparation / this.attacker.unit.speed(this.terrain);
+    }
   }
 
   get secondsToReachDefenderOrMax() {
@@ -142,7 +137,7 @@ export default class Encounter {
   }
 
   get attackerReachedDefender() {
-    return this.timeSpentFighting > 0;
+    return this.secondsSpentFighting > 0;
   }
 
   get defenderFled() {
@@ -150,11 +145,15 @@ export default class Encounter {
   }
 
   // Warning: this could be negative in which case that means the defender outran the attacker.
-  get timeSpentFighting() {
+  get secondsSpentFighting() {
     if (this.melee) {
       return this.secondsAvailableAfterOrder - this.secondsToReachDefender;
     } else {
       return this.secondsAvailableAfterOrder;
     }
+  }
+
+  get minutesSpentFighting() {
+    return Math.ceil(this.secondsSpentFighting / SECONDS_IN_AN_MINUTE);
   }
 }
