@@ -1,7 +1,12 @@
+import { weightedRandom, SECONDS_IN_AN_HOUR } from './math-utils.js';
+import {
+  SLOPE_UP,
+  SLOPE_DOWN,
+  SLOPE_NONE } from './terrain.js';
+import { MAX_ENERGY } from './game.js';
+
 export const MORALE_SUCCESS = 'MORALE_SUCCESS';
 export const MORALE_FAILURE = 'STATUS_FALL_BACK';
-
-import { weightedRandom } from './math-utils.js';
 
 export default class Combatant {
     constructor({ unit,
@@ -9,13 +14,15 @@ export default class Combatant {
                   armyLeadership = 0,
                   terrainDefense = 0,
                   engagedStands = -1,
-                  status = MORALE_SUCCESS }) {
+                  status = MORALE_SUCCESS,
+                  slope = SLOPE_NONE }) {
     this.unit = unit;
     this.encounter = encounter;
     this.armyLeadership = armyLeadership;
     this.terrainDefense = terrainDefense;
     this.engagedStands = engagedStands <= -1 || engagedStands > unit.stands ? unit.stands : engagedStands;
     this.status = status;
+    this.slope = slope;
     this.casualties = 0;
     this.energyLoss = 0;
     this.moraleLoss = 0;
@@ -39,11 +46,19 @@ export default class Combatant {
   }
 
   get volume() {
-    return this.encounter.melee ? this.unit.meleeWeapon.volume : this.unit.rangedWeapon.volume;
+    return this.encounter.melee ? this.unit.meleeWeapon.power : this.unit.rangedWeapon.power;
   }
 
-  get volume() {
+  get modifiedVolume() {
+    return this.volume * this.volumeModifier;
+  }
+
+  get power() {
     return this.encounter.melee ? this.unit.meleeWeapon.power : this.unit.rangedWeapon.power;
+  }
+
+  get modifiedPower() {
+    return this.power * this.powerModifier;
   }
 
   get skill() {
@@ -52,6 +67,32 @@ export default class Combatant {
 
   get armor() {
     return this.unit.armor.defense;
+  }
+
+  get volumeModifier() {
+    // TODO this should be based upon this.unit.openness, this.unit.unitType, and this.encounter.terrain
+    return (this.energy / MAX_ENERGY);
+  }
+
+  get powerModifier() {
+    // TODO this should be based upon this.encounter.slope and SLOPE_UP, SLOPE_DOWN, and SLOPE_NONE
+    return 1;
+  }
+
+  get skillRoll() {
+    return Math.random() * this.skill * (this.energy / MAX_ENERGY);
+  }
+
+  get powerRoll() {
+    return Math.random() * this.modifiedPower;
+  }
+
+  get armorRoll() {
+    return Math.random() * this.armor;
+  }
+
+  attacksForTime(duration) {
+    return this.strength * this.modifiedVolume * (duration / SECONDS_IN_AN_HOUR);
   }
 
   // Warning: Performing multiple morale checks will do a new roll and might switch the status.

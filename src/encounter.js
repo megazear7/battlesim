@@ -1,9 +1,11 @@
-import { store } from './store.js';
+import Combatant from './combatant.js';
 import { WEAPONS } from './weapons.js';
 import { ARMOR } from './armor.js';
-import { randomMinutesBetween, SECONDS_IN_AN_MINUTE } from './math-utils.js';
+import { store } from './store.js';
 import { attack } from './battle-utils.js';
-import Combatant from './combatant.js';
+import {
+  randomMinutesBetween,
+  SECONDS_IN_AN_MINUTE } from './math-utils.js';
 import {
   FOOT_TROOP,
   CAVALRY_TROOP,
@@ -42,26 +44,48 @@ export default class Encounter {
       encounter: this,
       attackerTerrainDefense,
       attackerArmyLeadership,
-      attackerEngagedStands});
+      attackerEngagedStands,
+      slope: this.attackerSlope });
 
     this.defender = new Combatant({
       unit: defender,
       encounter: this,
       defenderTerrainDefense,
       defenderArmyLeadership,
-      defenderEngagedStands});
+      defenderEngagedStands,
+      slope: this.defenderSlope });
+  }
+
+  attackerAttacks() {
+    if (this.attacker.status === MORALE_SUCCESS) {
+      this.attacker.casualties = attack({
+        attacker: this.attacker,
+        defender: this.defender,
+        duration: this.secondsSpentFighting });
+      return ``;
+    } else {
+      return `${this.attacker.name} refused to attack.`;
+    }
+  }
+
+  defenderAttacks() {
+    if (this.attacker.status === MORALE_SUCCESS) {
+      this.defender.casualties = attack({
+        attacker: this.defender,
+        defender: this.attacker,
+        duration: this.secondsSpentFighting });
+      return ``;
+    } else {
+      return `${this.defender.name} refused to stand and defend.`;
+    }
   }
 
   attackerEngaged() {
-    if (this.attacker.status === MORALE_SUCCESS) {
-      this.attacker.casualties = attack(this.attacker, this.defender, this.secondsSpentFighting);
-    }
-    if (this.attacker.status === MORALE_SUCCESS) {
-      this.defender.casualties = attack(this.defender, this.attacker, this.secondsSpentFighting);
-    }
+    const attackerMessage = this.attackerAttacks();
+    const defenderMessage = this.defenderAttacks();
 
     if (this.inchesDefenderFled > 1) {
-      return `${this.defender.unit.name} fell back ${this.inchesDefenderFled} inches but was then caught by ${this.attacker.unit.name}. ${this.timeEngagedMessage}`;
+      return `${attackerMessage} ${this.defender.unit.name} fell back ${this.inchesDefenderFled} inches but was then caught by ${this.attacker.unit.name}. ${this.timeEngagedMessage}`;
     } else if (this.defenderFled) {
       return `${this.defender.unit.name} attempted to fall back but was quickly caught by ${this.attacker.unit.name}. ${this.timeEngagedMessage}`;
     } else {
@@ -100,6 +124,20 @@ export default class Encounter {
 
   get timeEngagedMessage() {
     return `They were engaged for ${this.minutesSpentFighting} minutes.`;
+  }
+
+  get attackerSlope() {
+    return this.slope;
+  }
+
+  get defenderSlope() {
+    if (this.slope === SLOPE_UP) {
+      return SLOPE_DOWN;
+    } else if (this.slope === SLOPE_DOWN) {
+      return SLOPE_UP;
+    } else {
+      return SLOPE_NONE;
+    }
   }
 
   get yardsOfSeparation() {
