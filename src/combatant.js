@@ -4,7 +4,9 @@ import {
   SLOPE_DOWN,
   SLOPE_NONE,
   MAX_TERRAIN } from './terrain.js';
-import { statModFor } from './game.js';
+import {
+  statModFor,
+  MAX_EQUIPMENT_WEIGHT } from './game.js';
 
 export const MORALE_SUCCESS = 'MORALE_SUCCESS';
 export const MORALE_FAILURE = 'STATUS_FALL_BACK';
@@ -35,8 +37,7 @@ export default class Combatant {
   }
 
   get equipmentSpeedMod() {
-    // TODO
-    return 1;
+    return (MAX_EQUIPMENT_WEIGHT - this.unit.carriedWeight) / MAX_EQUIPMENT_WEIGHT;
   }
 
   get speed() {

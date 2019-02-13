@@ -6,7 +6,7 @@ import {
   FRESH_CONFEDERATE_BRIGADE,
   FRESH_CONFEDERATE_CAVALRY_REGIMENT,
   FRESH_CONFEDERATE_ARTILLERY, } from './civil-war-units.js';
-import { msSinceMidnight } from './math-utils.js';
+import { msSinceMidnight, SECONDS_IN_AN_HOUR } from './math-utils.js';
 import {
   LONGBOW,
   CANNON_6_POUNDER_CIVIL_WAR,
@@ -28,6 +28,7 @@ export default [
       }
     ],
     deadliness: 1, // TODO Use this in combat calculations.
+    turnDuration: SECONDS_IN_AN_HOUR, // TODO use this value here throughout instead of the constant.
     activeArmy: 0,
     activeUnit: 0,
     turnStarted: 0,
