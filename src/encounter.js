@@ -70,7 +70,9 @@ export default class Encounter {
         allDetails,
         actionMessage,
         this.defender.battleReport(),
+        //this.defender.exactBattleReport(),
         this.attacker.battleReport(),
+        //this.attacker.exactBattleReport(),
       ],
       updates: [
         this.defender.updates(this.defender.unit.nextAction + SECONDS_PER_TURN),

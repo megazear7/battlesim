@@ -51,14 +51,7 @@ export default class Combatant {
   }
 
   battleReport() {
-    // TODO generate custom report based upon the status.
-    if (this.status === MORALE_SUCCESS) {
-    } else if (this.status === MORALE_FAILURE) {
-    } else {
-      throw new Error('Undefined status');
-    }
-
-    return this.exactBattleReport();
+    return `${this.casualtyMessage}`;
   }
 
   exactBattleReport() {
@@ -90,5 +83,31 @@ export default class Combatant {
         value: nextAction
       }
     ];
+  }
+
+  get casualtyMessage() {
+    if (this.casualties > this.unit.strength) {
+      return `${this.unit.name} was totally destroyed.`;
+    } else if (this.casualties > this.unit.strength * 0.75) {
+      return `${this.unit.name} sustained terrible casualties. Almost the whole unit was destroyed.`;
+    } else if (this.casualties > this.unit.strength * 0.50) {
+      return `${this.unit.name} sustained terrible casualties. Over half the unit is destroyed.`;
+    } else if (this.casualties > this.unit.strength * 0.30) {
+      return `${this.unit.name} sustained terrible casualties.`;
+    } else if (this.casualties > this.unit.strength * 0.20) {
+      return `${this.unit.name} sustained grave casualties.`;
+    } else if (this.casualties > this.unit.strength * 0.15) {
+      return `${this.unit.name} sustained massive casualties.`;
+    } else if (this.casualties > this.unit.strength * 0.10) {
+      return `${this.unit.name} sustained major casualties.`;
+    } else if (this.casualties > this.unit.strength * 0.5) {
+      return `${this.unit.name} sustained significant casualties.`;
+    } else if (this.casualties > this.unit.strength * 0.03) {
+      return `${this.unit.name} sustained noticable casualties.`;
+    } else if (this.casualties > this.unit.strength * 0.01) {
+      return `${this.unit.name} sustained minor casualties.`;
+    } else {
+      return `${this.unit.name} sustained almost no casualties.`;
+    }
   }
 }

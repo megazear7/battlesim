@@ -8,6 +8,7 @@ import {
   CAVALRY_TROOP,
   ARTILLERY_TROOP } from './units.js';
 import { MAX_TERRAIN } from './terrain.js';
+import { upperCaseFirst } from './string-utils.js';
 
 export default class Unit {
   constructor({
@@ -242,23 +243,6 @@ export default class Unit {
     return changes;
   }
 
-  emptyChanges() {
-    return {
-      attacker: {
-        casualties: 0,
-        energy: 0,
-        morale: 0,
-        leadership: 0,
-      },
-      defender: {
-        casualties: 0,
-        energy: 0,
-        morale: 0,
-        leadership: 0,
-      }
-    };
-  }
-
   meleeCombat(timeSpent, separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender) {
     const attackerTimeToFight = timeSpent - this.secondsToIssueOrder;
     const attackerPercentTimeFighting = attackerTimeToFight / timeSpent;
@@ -374,17 +358,6 @@ export default class Unit {
     return Math.min(engagedStands / this.stands, 100);
   }
 
-  createMessage({ casualties = 0, energy = 0 , morale = 0, leadership = 0, }) {
-    return `${this.name} sustained the following affects: casualties: ${Math.floor(casualties * 100) / 100}, energy: ${Math.floor(energy) / 100}, morale: ${Math.floor(morale) / 100}, leadership: ${Math.floor(leadership) / 100}`;
-  }
-
-  charge(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender) {
-    return this.combat(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender, true);
-  }
-
-  fire(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender) {
-    return this.combat(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender, false);
-  }
 
   get targets() {
     let state = store.getState()
@@ -402,9 +375,9 @@ export default class Unit {
 
   get troopTypeName() {
     return {
-      0: 'Foot troops',
-      1: 'Cavalry',
-      2: 'Artillery',
+      [FOOT_TROOP]: 'Foot troops',
+      [CAVALRY_TROOP]: 'Cavalry',
+      [ARTILLERY_TROOP]: 'Artillery',
     }[this.troopType];
   }
 
@@ -543,37 +516,6 @@ export default class Unit {
   }
 
   get desc() {
-    return `${upperCaseFirst(this.experienceDesc)} ${this.troopTypeName.toLocaleLowerCase()} weilding ${this.rangedWeapon.name.toLocaleLowerCase()} and ${this.meleeWeapon.name.toLocaleLowerCase()} with ${this.leaderDesc.toLocaleLowerCase()} leaders consisting of ${this.stands} stands fighting in ${this.openness > 50 ? 'open' : 'closed'} order.`;
-  }
-
-}
-
-function upperCaseFirst(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-function createCasualtyMessage(unit, casualties) {
-  if (casualties > unit.strength) {
-    return `${unit.name} was totally destroyed.`;
-  } else if (casualties > unit.strength * 0.75) {
-    return `${unit.name} sustained terrible casualties. Almost the whole unit was destroyed.`;
-  } else if (casualties > unit.strength * 0.50) {
-    return `${unit.name} sustained terrible casualties. Over half the unit is destroyed.`;
-  } else if (casualties > unit.strength * 0.30) {
-    return `${unit.name} sustained terrible casualties.`;
-  } else if (casualties > unit.strength * 0.20) {
-    return `${unit.name} sustained grave casualties.`;
-  } else if (casualties > unit.strength * 0.15) {
-    return `${unit.name} sustained massive casualties.`;
-  } else if (casualties > unit.strength * 0.10) {
-    return `${unit.name} sustained major casualties.`;
-  } else if (casualties > unit.strength * 0.5) {
-    return `${unit.name} sustained significant casualties.`;
-  } else if (casualties > unit.strength * 0.03) {
-    return `${unit.name} sustained noticable casualties.`;
-  } else if (casualties > unit.strength * 0.01) {
-    return `${unit.name} sustained minor casualties.`;
-  } else {
-    return `${unit.name} sustained almost no casualties.`;
+    return `${upperCaseFirst(this.experienceDesc)} ${this.troopTypeName.toLowerCase()} weilding ${this.rangedWeapon.name.toLowerCase()} and ${this.meleeWeapon.name.toLowerCase()} with ${this.leaderDesc.toLowerCase()} leaders consisting of ${this.stands} stands fighting in ${this.openness > 50 ? 'open' : 'closed'} order.`;
   }
 }
