@@ -3,6 +3,10 @@ import { WEAPONS } from './weapons.js';
 import { ARMOR } from './armor.js';
 import { weightedRandom, numberWithCommas, nearest100, SECONDS_IN_AN_HOUR } from './math-utils.js';
 import { attack } from './battle-utils.js';
+import {
+  FOOT_TROOP,
+  CAVALRY_TROOP,
+  ARTILLERY_TROOP } from './units.js';
 
 export default class Unit {
   constructor({
@@ -238,6 +242,8 @@ export default class Unit {
     const attackerPercentTimeFighting = attackerTimeToFight / timeSpent;
     const defenderTimeToFight = timeSpent - defender.secondsToIssueOrder - (terrainModifier / 100);
     const defenderPercentTimeFighting = defenderTimeToFight / timeSpent;
+    const attackerPower = defender.unitType == FOOT_TROOP ? this.meleeWeapon.powerVsFoot : this.meleeWeapon.powerVsMounted;
+    const defenderPower = this.unitType == FOOT_TROOP ? defender.meleeWeapon.powerVsFoot : defender.meleeWeapon.powerVsMounted;
 
     let attackersPowerMod = 1;
     let defendersPowerMod = 1;
@@ -253,7 +259,7 @@ export default class Unit {
     let attackersCasualties = attack(
       defender.strength,
       defender.meleeWeapon.volume * defender.percentageEngaged(engagedDefenders) * defenderPercentTimeFighting,
-      defender.meleeWeapon.powerVsFoot * defendersPowerMod,
+      defenderPower * defendersPowerMod,
       defender.armor.defense,
       defender.meleeSkill,
       this.meleeSkill,
@@ -263,7 +269,7 @@ export default class Unit {
     let defendersCasualties = attack(
       this.strength,
       this.meleeWeapon.volume * defender.percentageEngaged(engagedAttackers) * attackerPercentTimeFighting,
-      this.meleeWeapon.powerVsFoot * attackersPowerMod,
+      attackerPower * attackersPowerMod,
       this.armor.defense,
       this.meleeSkill,
       defender.meleeSkill,
@@ -280,11 +286,13 @@ export default class Unit {
     const defenderPercentTimeFighting = defenderTimeToFight / timeSpent;
     const attackerDistanceMod = Math.max((this.rangedWeapon.range - separation) / this.rangedWeapon.range, 0);
     const defenderDistanceMod = Math.max((defender.rangedWeapon.range - separation) / defender.rangedWeapon.range, 0);
+    const attackerPower = defender.unitType == FOOT_TROOP ? this.rangedWeapon.powerVsFoot : this.rangedWeapon.powerVsMounted;
+    const defenderPower = this.unitType == FOOT_TROOP ? defender.rangedWeapon.powerVsFoot : defender.rangedWeapon.powerVsMounted;
 
     let attackersCasualties = attack(
       defender.strength,
       defender.rangedWeapon.volume * defender.percentageEngaged(engagedDefenders) * defenderPercentTimeFighting,
-      defender.rangedWeapon.powerVsFoot,
+      defenderPower,
       defender.armor.defense,
       defender.rangedSkill * defenderDistanceMod,
       this.rangedSkill,
@@ -294,7 +302,7 @@ export default class Unit {
     let defendersCasualties = attack(
       this.strength,
       this.rangedWeapon.volume * this.percentageEngaged(engagedAttackers) * attackerPercentTimeFighting,
-      this.rangedWeapon.powerVsFoot,
+      attackerPower,
       this.armor.defense,
       this.rangedSkill * attackerDistanceMod,
       defender.rangedSkill,
@@ -529,7 +537,7 @@ export default class Unit {
     } else if (this.strengthPercentage > 93) {
       return 'They are close to full strength but have take some casualties.';
     } else if (this.strengthPercentage > 90) {
-      return 'They have taken some casualties but remain strong.';
+      return 'They have taken some casualties.';
     } else if (this.strengthPercentage > 85) {
       return 'They have taken noticable casualties.';
     } else if (this.strengthPercentage > 80) {
