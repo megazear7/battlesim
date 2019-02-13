@@ -7,6 +7,7 @@ import {
   FOOT_TROOP,
   CAVALRY_TROOP,
   ARTILLERY_TROOP } from './units.js';
+import { MAX_TERRAIN } from './terrain.js';
 
 export default class Unit {
   constructor({
@@ -28,7 +29,8 @@ export default class Unit {
                 leadership = 50,
                 troopType = 0,
                 fullStrength,
-                movementTime = 100,
+                baseSpeed = 1,
+                baseBackwardSpeed = 0.5,
                 maneuverTime = 100,
               }, id) {
     this.armyIndex = army;
@@ -50,8 +52,17 @@ export default class Unit {
     this.leadership = leadership;
     this.troopType = troopType;
     this.fullStrength = fullStrength;
-    this.movementTime = movementTime; // Time it takes to go 100 yards
+    this.baseSpeed = baseSpeed; // Given in yards per second. TODO set this in the unit configs and remove the movementTime
+    this.baseBackwardSpeed = baseBackwardSpeed; // Given in yards per second. TODO set this in the unit configs and remove the movementTime
     this.maneuverTime = maneuverTime;
+  }
+
+  speed(terrain = 0) {
+    return this.baseSpeed * ((MAX_TERRAIN - terrain) / MAX_TERRAIN);
+  }
+
+  backwardsSpeed(terrain = 0) {
+    return this.baseBackwardSpeed * ((MAX_TERRAIN - terrain) / MAX_TERRAIN);
   }
 
   energyRecoveredDesc(energyRecovered) {
@@ -141,13 +152,16 @@ export default class Unit {
     return `${this.name} travelled ${numberWithCommas(nearest100(yardsTravelled))} yards in ${Math.floor(secondsSpent / 60)} minutes.`;
   }
 
-  move(distanceInYards, terrain, manuevering = false) {
+  secondsToMove100Yards(terrain) {
     const secondsAvailableToMove = SECONDS_IN_AN_HOUR - this.secondsToIssueOrder;
     const terrainModifier = 2 + ((terrain / 100) * 5) + Math.random();
-    const secondsToMove100Yards = this.movementTime * terrainModifier;
-    const maxYardsTravelled = (secondsAvailableToMove / secondsToMove100Yards) * 100;
+    return this.movementTime * terrainModifier;
+  }
+
+  move(distanceInYards, terrain, manuevering = false) {
+    const maxYardsTravelled = (secondsAvailableToMove / secondsToMove100Yards(terrain)) * 100;
     const yardsTravelled = Math.min(distanceInYards === 0 ? Number.MAX_SAFE_INTEGER : distanceInYards, maxYardsTravelled);
-    const secondsSpentMoving = (yardsTravelled / 100) * secondsToMove100Yards;
+    const secondsSpentMoving = (yardsTravelled / 100) * secondsToMove100Yards(terrain);
     const energyCost = (secondsSpentMoving / SECONDS_IN_AN_HOUR) * terrainModifier;
     const totalSecondsSpent = secondsSpentMoving + this.secondsToIssueOrder;
 
@@ -362,110 +376,6 @@ export default class Unit {
 
   createMessage({ casualties = 0, energy = 0 , morale = 0, leadership = 0, }) {
     return `${this.name} sustained the following affects: casualties: ${Math.floor(casualties * 100) / 100}, energy: ${Math.floor(energy) / 100}, morale: ${Math.floor(morale) / 100}, leadership: ${Math.floor(leadership) / 100}`;
-  }
-
-  combat(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender, melee) {
-    let timeSpent = SECONDS_IN_AN_HOUR * ((Math.random() * 0.5) + 0.5);
-    if (engagedAttackers === 0) {
-      engagedAttackers = this.stands;
-    }
-
-    if (engagedDefenders === 0) {
-      engagedDefenders = defender.stands;
-    }
-
-    let attackerMoraleCheck = (Math.random() * 100) < this.morale;
-    let defenderMoraleCheck = (Math.random() * 100) < defender.morale;
-
-    let changes;
-    let specificMessage;
-    let attackerMessage;
-    let defenderMessage;
-    if (melee) {
-      if (!attackerMoraleCheck) {
-        defenderMessage = `${defender.name} held strong.`;
-        attackerMessage = `${this.name} was unwilling to engage.`;
-        changes = this.emptyChanges();
-      } else if (!defenderMoraleCheck) {
-        defenderMessage = `${defender.name} runs away.`;
-        attackerMessage = `${this.name} was unable to persue the defender. TODO use the separation and unit movement rates to add variability to what this outcome can be.`;
-        changes = this.emptyChanges();
-      } else {
-        changes = this.meleeCombat(timeSpent, separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender);
-        attackerMessage = createCasualtyMessage(this, changes.attacker.casualties);
-        defenderMessage = createCasualtyMessage(defender, changes.defender.casualties);
-      }
-    } else {
-      if (!attackerMoraleCheck) {
-        defenderMessage = `${defender.name} held strong.`;
-        attackerMessage = `${this.name} was unwilling to engage.`;
-        changes = this.emptyChanges();
-      } else if (!defenderMoraleCheck) {
-        defenderMessage = `${defender.name} runs away.`;
-        attackerMessage = `${this.name} was unable to persue the defender. TODO use the separation and unit movement rates to add variability to what this outcome can be.`;
-        changes = this.emptyChanges();
-      } else {
-        changes = this.rangedCombat(timeSpent, separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender);
-        attackerMessage = createCasualtyMessage(this, changes.attacker.casualties);
-        defenderMessage = createCasualtyMessage(defender, changes.defender.casualties);
-      }
-    }
-
-    return {
-      messages: [ defenderMessage, attackerMessage ],
-      updates: [
-        {
-          id: this.id,
-          changes: [
-            {
-              prop: "strength",
-              value: Math.max(this.strength - changes.attacker.casualties, 0),
-            },
-            {
-              prop: "energy",
-              value: Math.max(this.energy - changes.attacker.energy, 1),
-            },
-            {
-              prop: "morale",
-              value: Math.max(this.morale - changes.attacker.morale, 1),
-            },
-            {
-              prop: "leadership",
-              value: Math.max(this.leadership - changes.attacker.leadership, 1),
-            },
-            {
-              prop: 'nextAction',
-              value: this.nextAction + timeSpent + (Math.random() * 1000),
-            }
-          ]
-        },
-        {
-          id: defender.id,
-          changes: [
-            {
-              prop: "strength",
-              value: Math.max(defender.strength - changes.defender.casualties, 0),
-            },
-            {
-              prop: "energy",
-              value: Math.max(defender.energy - changes.defender.energy, 1),
-            },
-            {
-              prop: "morale",
-              value: Math.max(defender.morale - changes.defender.morale, 1),
-            },
-            {
-              prop: "leadership",
-              value: Math.max(defender.leadership - changes.defender.leadership, 1),
-            },
-            {
-              prop: 'nextAction',
-              value: defender.nextAction + timeSpent + (Math.random() * 500),
-            }
-          ]
-        }
-      ],
-    };
   }
 
   charge(separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender) {

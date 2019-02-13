@@ -1,4 +1,5 @@
-export const SECONDS_IN_AN_HOUR = 3600;
+export const SECONDS_IN_AN_MINUTE = 60;
+export const SECONDS_IN_AN_HOUR = SECONDS_IN_AN_MINUTE * 60;
 
 /** @function weightedRandom
  *  A random number between 0 and 1 weighted towards the middle.
@@ -11,6 +12,26 @@ export function weightedRandom(bellFactor) {
     num += Math.random() * (max/bellFactor);
   }
   return num / max;
+}
+
+/** @function randomMinutesBetween
+ *  Returns a random amount of time given in seconds betwee x minutes and y minutes.
+ */
+export function randomMinutesBetween(x, y) {
+  return SECONDS_IN_AN_MINUTE * getRandomInt(x, y);
+}
+
+/**
+ * Returns a random integer between min (inclusive) and max (inclusive).
+ * The value is no lower than min (or the next integer greater than min
+ * if min isn't an integer) and no greater than max (or the next integer
+ * lower than max if max isn't an integer).
+ * Using Math.round() will give you a non-uniform distribution!
+ */
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 export function numberWithCommas(x) {

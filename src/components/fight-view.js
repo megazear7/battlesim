@@ -9,6 +9,12 @@ import { ButtonSharedStyles } from './button-shared-styles.js';
 import Unit from '../unit.js';
 import { prettyDateTime } from '../math-utils.js';
 import { getRadioVal } from '../dom-utils.js';
+import {
+  SLOPE_UP,
+  SLOPE_DOWN,
+  SLOPE_NONE } from '../terrain.js';
+import Combatant from '../combatant.js';
+import Encounter from '../encounter.js';
 
 const REST = 'REST';
 const MOVE = 'MOVE';
@@ -91,9 +97,9 @@ class FightView extends connect(store)(PageViewElement) {
             <br>
             <div id="hill" class="hidden">
               <radiogroup>
-                <input type="radio" name="hill" value="up"> Uphill<br>
-                <input type="radio" name="hill" value="down"> Downhill<br>
-                <input type="radio" name="hill" value="neither"> Neither<br><br>
+                <input type="radio" name="hill" value="${SLOPE_UP}"> Uphill<br>
+                <input type="radio" name="hill" value="${SLOPE_DOWN}"> Downhill<br>
+                <input type="radio" name="hill" value="${SLOPE_NONE}"> Neither<br><br>
               </radiogroup>
             </div>
             <div id="leader" class="hidden">
@@ -180,8 +186,9 @@ class FightView extends connect(store)(PageViewElement) {
     return parseInt(this.engagedDefendingElement.value === '' ? 0 : this.engagedDefendingElement.value);
   }
 
-  get uphill() {
-    return getRadioVal(this.shadowRoot.getElementById('input-container'), 'hill') === 'up';
+  get slope() {
+    const radioVal = getRadioVal(this.shadowRoot.getElementById('input-container'), 'hill');
+    return radioVal ? radioVal : SLOPE_NONE;
   }
 
   get generalNearby() {
@@ -246,13 +253,33 @@ class FightView extends connect(store)(PageViewElement) {
         actionResult = this._unit.rest();
       } else if (this._selectedAction === MOVE) {
         actionResult = this._unit.move(this.distance * 100, this.terrainModifier);
-      } else if (this._selectedAction === CHARGE) {
-        let defender = new Unit(this._activeBattle.units[this.target], this.target);
-        actionResult = this._unit.charge(this.separation, this.terrainModifier, this.uphill, this.downhill, this.engagedAttackers, this.engagedDefenders, this.general, this.subcommander, defender);
-      } else if (this._selectedAction === FIRE) {
-        let defender = new Unit(this._activeBattle.units[this.target], this.target);
-        actionResult = this._unit.fire(this.separation, this.terrainModifier, this.uphill, this.downhill, this.engagedAttackers, this.engagedDefenders, this.general, this.subcommander, defender);
+      } else {
+        // FIRE or CHARGE
+        let defendingUnit = new Unit(this._activeBattle.units[this.target], this.target);
+
+        let attacker = new Combatant({
+          unit: this._unit,
+          armyLeadership: 0,
+          terrainDefense: 0,
+          engagedStands: this.engagedAttackers });
+
+        let defender = new Combatant({
+          unit: defendingUnit,
+          armyLeadership: 0,
+          terrainDefense: 0,
+          engagedStands: this.engagedDefenders });
+
+        let encounter = new Encounter({
+          attacker,
+          defender,
+          melee: this._selectedAction === CHARGE,
+          separation: this.separation,
+          terrain: this.terrainModifier,
+          slope: this.slope});
+
+        actionResult = encounter.fight();
       }
+
       this._actionMessages = actionResult.messages;
       this._actionUpdates = actionResult.updates;
 
