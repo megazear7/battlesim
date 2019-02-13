@@ -8,5 +8,5 @@ export const MAX_STAT = 100;
 export const DEADLYNESS = 0.1;
 
 export function statModFor(stat) {
-  return weightedRandomTowards(20, 80, stat, 2);
+  return weightedRandomTowards(20, 80, stat, 2) / 100;
 }

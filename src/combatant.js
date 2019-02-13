@@ -34,12 +34,17 @@ export default class Combatant {
     return ((MAX_TERRAIN - this.encounter.terrain) / MAX_TERRAIN);
   }
 
+  get equipmentSpeedMod() {
+    // TODO
+    return 1;
+  }
+
   get speed() {
-    return this.unit.baseSpeed * this.terrainSpeedMod * statModFor(this.energy);
+    return this.unit.baseSpeed * this.terrainSpeedMod * statModFor(this.energy) * this.equipmentSpeedMod;
   }
 
   get backwardsSpeed() {
-    return this.unit.baseBackwardSpeed * this.terrainSpeedMod * statModFor(this.energy);
+    return this.unit.baseBackwardSpeed * this.terrainSpeedMod * statModFor(this.energy) * this.equipmentSpeedMod;
   }
 
   get strength() {
@@ -133,14 +138,14 @@ export default class Combatant {
     return `${this.unit.name} -- ${this.status} -- Casualties: ${this.casualties} -- Energy Loss: ${this.energyLoss} -- Morale Loss: ${this.moraleLoss} -- Leadership Loss: ${this.leadershipLoss}`;
   }
 
-  updates(nextAction) {
+  updates(delay) {
     return {
       id: this.unit.id,
-      changes: this.changes(nextAction)
+      changes: this.changes(delay)
     };
   }
 
-  changes(nextAction) {
+  changes(delay) {
     return [
       { prop: "strength",
         value: this.strength
@@ -155,7 +160,7 @@ export default class Combatant {
         value: this.leadership
       }, {
         prop: 'nextAction',
-        value: nextAction
+        value: this.unit.nextAction + delay
       }
     ];
   }

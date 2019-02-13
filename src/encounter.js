@@ -84,6 +84,11 @@ export default class Encounter {
     const attackerMessage = this.attackerAttacks();
     const defenderMessage = this.defenderAttacks();
 
+    // TODO update energyLoss, moraleLoss, and leadershipLoss based upon the casualties taken.
+    // TODO Base the odds that a leader dies based upon the number of casualties / the strength aka, the odds that the leader was one of the casualties.
+    // TODO energyLoss should be based upon the time spent fighting and the weight of the equipment.
+    // TODO moraleLoss should be based upon the number of casualties taken.
+
     if (this.inchesDefenderFled > 1) {
       return `${attackerMessage} ${this.defender.unit.name} fell back ${this.inchesDefenderFled} inches but was then caught by ${this.attacker.unit.name}. ${this.timeEngagedMessage}`;
     } else if (this.defenderFled) {
@@ -116,8 +121,8 @@ export default class Encounter {
         fullMessage,
       ],
       updates: [
-        this.defender.updates(this.defender.unit.nextAction + SECONDS_PER_TURN),
-        this.attacker.updates(this.defender.unit.nextAction + SECONDS_PER_TURN + randomMinutesBetween(5, 10))
+        this.defender.updates(SECONDS_PER_TURN),
+        this.attacker.updates(SECONDS_PER_TURN + randomMinutesBetween(5, 10))
       ]
     };
   }
