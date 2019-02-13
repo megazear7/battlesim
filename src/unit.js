@@ -3,11 +3,11 @@ import { WEAPONS } from './weapons.js';
 import { ARMOR } from './armor.js';
 import { weightedRandom, numberWithCommas, nearest100, SECONDS_IN_AN_HOUR } from './math-utils.js';
 import { attack } from './battle-utils.js';
+import { statModFor } from './game.js';
 import {
   FOOT_TROOP,
   CAVALRY_TROOP,
   ARTILLERY_TROOP } from './units.js';
-import { MAX_TERRAIN } from './terrain.js';
 import { upperCaseFirst } from './string-utils.js';
 
 export default class Unit {
@@ -58,37 +58,9 @@ export default class Unit {
     this.maneuverTime = maneuverTime;
   }
 
-  speed(terrain = 0) {
-    return this.baseSpeed * ((MAX_TERRAIN - terrain) / MAX_TERRAIN);
-  }
-
-  backwardsSpeed(terrain = 0) {
-    return this.baseBackwardSpeed * ((MAX_TERRAIN - terrain) / MAX_TERRAIN);
-  }
-
-  energyRecoveredDesc(energyRecovered) {
-    if (energyRecovered > 80) {
-      return `They got back all of there energy.`;
-    } else if (energyRecovered > 60) {
-      return `They recovered almost all of their strength.`;
-    } else if (energyRecovered > 40) {
-      return `They made a great recovery. The rest was very helpful.`;
-    } else if (energyRecovered > 20) {
-      return `They recovered a lot of their strength`;
-    } else if (energyRecovered > 15) {
-      return `They recovered much of their strength`;
-    } else if (energyRecovered > 9) {
-      return `They recovered some of their strength`;
-    } else if (energyRecovered > 6) {
-      return `They recovered a bit of their strength.`;
-    } else if (energyRecovered > 3) {
-      return `The rest was worth it but they only recovered a little bit.`;
-    } else {
-      return `The rest was hardly worth it.`;
-    }
-  }
 
   rest(time = SECONDS_IN_AN_HOUR) {
+    // TODO reimplement this in similiar fashion to how we did the more complex attack
     let percentageOfAnHourSpentResting = (time / SECONDS_IN_AN_HOUR) * 100;
     let maxEnergyRecovered = (percentageOfAnHourSpentResting / 100) * 20 * Math.random();
     let energyRecovered = Math.min(100 - this.energy, maxEnergyRecovered);
@@ -113,53 +85,31 @@ export default class Unit {
     };
   }
 
-  get secondsToIssueOrder() {
-    return (this.leadership * 3) + (this.experience * 2);
-  }
-
-  energyDesc(energyCost) {
-    if (energyCost > 100) {
-      return `This took last ounce of strength they had.`;
-    } else if (energyCost > 80) {
-      return `This took nearly every ounce of strength they had.`;
-    } else if (energyCost > 30) {
-      return `This was a really tough assignment. They are feeling exhaustion creep in.`;
-    } else if (energyCost > 20) {
-      return `This was a tough job. It took a lot out of them.`;
-    } else if (energyCost > 8) {
-      return `They put in a lot of work.`;
-    } else if (energyCost > 4) {
-      return `They put in some real work.`;
-    } else if (energyCost > 2) {
-      return `They put in a bit of work.`;
-    } else if (energyCost > 1) {
-      return `This didn't take much effort`;
+  energyRecoveredDesc(energyRecovered) {
+    // TODO this needs moved after we refactor the rest action.
+    if (energyRecovered > 80) {
+      return `They got back all of there energy.`;
+    } else if (energyRecovered > 60) {
+      return `They recovered almost all of their strength.`;
+    } else if (energyRecovered > 40) {
+      return `They made a great recovery. The rest was very helpful.`;
+    } else if (energyRecovered > 20) {
+      return `They recovered a lot of their strength`;
+    } else if (energyRecovered > 15) {
+      return `They recovered much of their strength`;
+    } else if (energyRecovered > 9) {
+      return `They recovered some of their strength`;
+    } else if (energyRecovered > 6) {
+      return `They recovered a bit of their strength.`;
+    } else if (energyRecovered > 3) {
+      return `The rest was worth it but they only recovered a little bit.`;
     } else {
-      return `This took no effort at all`;
+      return `The rest was hardly worth it.`;
     }
-  }
-
-  moveDesc(expectedDistance, actualDistance) {
-    if (expectedDistance === 0) {
-      return `You move ${Math.floor(actualDistance / 100)} inches.`;
-    } else if (actualDistance < expectedDistance) {
-      return `You could only move ${Math.floor(actualDistance / 100)} inches.`;
-    } else {
-      return `You move the full ${Math.floor(actualDistance / 100)} inches.`;
-    }
-  }
-
-  battlefieldMoveDesc(yardsTravelled, secondsSpent) {
-    return `${this.name} travelled ${numberWithCommas(nearest100(yardsTravelled))} yards in ${Math.floor(secondsSpent / 60)} minutes.`;
-  }
-
-  secondsToMove100Yards(terrain) {
-    const secondsAvailableToMove = SECONDS_IN_AN_HOUR - this.secondsToIssueOrder;
-    const terrainModifier = 2 + ((terrain / 100) * 5) + Math.random();
-    return this.movementTime * terrainModifier;
   }
 
   move(distanceInYards, terrain, manuevering = false) {
+    // TODO reimplement this in similiar fashion to how we did the more complex attack
     const maxYardsTravelled = (secondsAvailableToMove / secondsToMove100Yards(terrain)) * 100;
     const yardsTravelled = Math.min(distanceInYards === 0 ? Number.MAX_SAFE_INTEGER : distanceInYards, maxYardsTravelled);
     const secondsSpentMoving = (yardsTravelled / 100) * secondsToMove100Yards(terrain);
@@ -192,172 +142,58 @@ export default class Unit {
     };
   }
 
+  secondsToMove100Yards(terrain) {
+    // TODO this needs moved after we refactor the move action
+    const secondsAvailableToMove = SECONDS_IN_AN_HOUR - this.secondsToIssueOrder;
+    const terrainModifier = 2 + ((terrain / 100) * 5) + Math.random();
+    return this.movementTime * terrainModifier;
+  }
+
+  battlefieldMoveDesc(yardsTravelled, secondsSpent) {
+    // TODO this needs moved after we refactor the move action
+    return `${this.name} travelled ${numberWithCommas(nearest100(yardsTravelled))} yards in ${Math.floor(secondsSpent / 60)} minutes.`;
+  }
+
+  moveDesc(expectedDistance, actualDistance) {
+    if (expectedDistance === 0) {
+      return `You move ${Math.floor(actualDistance / 100)} inches.`;
+    } else if (actualDistance < expectedDistance) {
+      return `You could only move ${Math.floor(actualDistance / 100)} inches.`;
+    } else {
+      return `You move the full ${Math.floor(actualDistance / 100)} inches.`;
+    }
+  }
+
+  energyDesc(energyCost) {
+    // TODO this needs moved after we refactor the move action
+    if (energyCost > 100) {
+      return `This took last ounce of strength they had.`;
+    } else if (energyCost > 80) {
+      return `This took nearly every ounce of strength they had.`;
+    } else if (energyCost > 30) {
+      return `This was a really tough assignment. They are feeling exhaustion creep in.`;
+    } else if (energyCost > 20) {
+      return `This was a tough job. It took a lot out of them.`;
+    } else if (energyCost > 8) {
+      return `They put in a lot of work.`;
+    } else if (energyCost > 4) {
+      return `They put in some real work.`;
+    } else if (energyCost > 2) {
+      return `They put in a bit of work.`;
+    } else if (energyCost > 1) {
+      return `This didn't take much effort`;
+    } else {
+      return `This took no effort at all`;
+    }
+  }
+
+  get secondsToIssueOrder() {
+    return (this.leadership * 3) + (this.experience * 2);
+  }
+
   get carriedWeight() {
     return this.meleeWeapon.weight + this.rangedWeapon.weight + this.armor.weight;
   }
-
-  baseCombat(timeSpent, separation, attackersCasualties, defendersCasualties, terrainModifier, general, subcommander, defender) {
-    let attackerPercentLoss = attackersCasualties / this.strength;
-    let defenderPercentLoss = defendersCasualties / defender.strength;
-
-    let attackerEnergyLoss = this.carriedWeight + attackerPercentLoss * 2 * 100 * (timeSpent / SECONDS_IN_AN_HOUR);
-    let defenderEnergyLoss = defender.carriedWeight + defenderPercentLoss * 2 * 100 * (timeSpent / SECONDS_IN_AN_HOUR);
-
-    let attackerMoraleMod = (this.experience / 100) + 1;
-    let defenderMoraleMod = (defender.experience / 100) + 1;
-
-    let attackerMoraleLoss = attackerPercentLoss * attackerMoraleMod * ((1.2 - this.experience) / 100) * 100 * Math.random();
-    let defenderMoraleLoss = defenderPercentLoss * defenderMoraleMod * ((1.2 - defender.experience) / 100) * 100 * Math.random();
-
-    let attackerLeadershipLoss;
-    if (Math.random() > 0.95) {
-      attackerLeadershipLoss = Math.random() * 50;
-    } else {
-      attackerLeadershipLoss = 0;
-    }
-
-    let defenderLeadershipLoss;
-    if (Math.random() > 0.95) {
-      defenderLeadershipLoss = Math.random() * 50;
-    } else {
-      defenderLeadershipLoss = 0;
-    }
-
-    let changes = {
-      attacker: {
-        casualties: attackersCasualties,
-        energy: attackerEnergyLoss,
-        morale: attackerMoraleLoss,
-        leadership: attackerLeadershipLoss,
-      },
-      defender: {
-        casualties: defendersCasualties,
-        energy: defenderEnergyLoss,
-        morale: defenderMoraleLoss,
-        leadership: defenderLeadershipLoss,
-      }
-    };
-
-    console.debug(changes.attacker.casualties, changes.defender.casualties);
-
-    return changes;
-  }
-
-  meleeCombat(timeSpent, separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender) {
-    const attackerTimeToFight = timeSpent - this.secondsToIssueOrder;
-    const attackerPercentTimeFighting = attackerTimeToFight / timeSpent;
-    const defenderTimeToFight = timeSpent - defender.secondsToIssueOrder;
-    const defenderPercentTimeFighting = defenderTimeToFight / timeSpent;
-    const attackerPower = defender.unitType === FOOT_TROOP ? this.meleeWeapon.powerVsFoot : this.meleeWeapon.powerVsMounted;
-    const defenderPower = this.unitType === FOOT_TROOP ? defender.meleeWeapon.powerVsFoot : defender.meleeWeapon.powerVsMounted;
-
-    let attackerModifiedStrength = this.strength * Math.min((100 - terrainModifier) + this.openness, 100) / 100;
-    let defenderModifiedStrength = defender.strength * Math.min((100 - terrainModifier) + defender.openness, 100) / 100;
-
-    if (this.unitType === CAVALRY_TROOP || this.unitType === ARTILLERY_TROOP) {
-      attackerModifiedStrength *= this.strength * Math.min((100 - terrainModifier) + this.openness, 100) / 100;
-    }
-    if (this.unitType === ARTILLERY_TROOP) {
-      attackerModifiedStrength *= this.strength * Math.min((100 - terrainModifier) + this.openness, 100) / 100;
-    }
-
-    if (defender.unitType === CAVALRY_TROOP || defender.unitType === ARTILLERY_TROOP) {
-      defenderModifiedStrength *= defender.strength * Math.min((100 - terrainModifier) + defender.openness, 100) / 100;
-    }
-    if (defender.unitType === ARTILLERY_TROOP) {
-      defenderModifiedStrength *= defender.strength * Math.min((100 - terrainModifier) + defender.openness, 100) / 100;
-    }
-
-    let attackersPowerMod = 1;
-    let defendersPowerMod = 1;
-    if (uphill) {
-      attackersPowerMod -= 0.25;
-      defendersPowerMod += 0.25;
-    }
-    if (downhill) {
-      attackersPowerMod += 0.25;
-      defendersPowerMod -= 0.25;
-    }
-
-    let attackersCasualties = attack(
-      defenderModifiedStrength,
-      defender.meleeWeapon.volume * defender.percentageEngaged(engagedDefenders) * defenderPercentTimeFighting,
-      defenderPower * defendersPowerMod,
-      defender.armor.defense,
-      defender.meleeSkill,
-      this.meleeSkill,
-      defender.energy,
-      this.energy);
-
-    let defendersCasualties = attack(
-      attackerModifiedStrength,
-      this.meleeWeapon.volume * defender.percentageEngaged(engagedAttackers) * attackerPercentTimeFighting,
-      attackerPower * attackersPowerMod,
-      this.armor.defense,
-      this.meleeSkill,
-      defender.meleeSkill,
-      this.energy,
-      defender.energy);
-
-    return this.baseCombat(timeSpent, separation, attackersCasualties, defendersCasualties, terrainModifier, general, subcommander, defender);
-  }
-
-  rangedCombat(timeSpent, separation, terrainModifier, uphill, downhill, engagedAttackers, engagedDefenders, general, subcommander, defender) {
-    const attackerTimeToFight = timeSpent - this.secondsToIssueOrder;
-    const attackerPercentTimeFighting = attackerTimeToFight / timeSpent;
-    const defenderTimeToFight = timeSpent - defender.secondsToIssueOrder;
-    const defenderPercentTimeFighting = defenderTimeToFight / timeSpent;
-    const attackerDistanceMod = Math.max((this.rangedWeapon.range - separation) / this.rangedWeapon.range, 0);
-    const defenderDistanceMod = Math.max((defender.rangedWeapon.range - separation) / defender.rangedWeapon.range, 0);
-    const attackerPower = defender.unitType === FOOT_TROOP ? this.rangedWeapon.powerVsFoot : this.rangedWeapon.powerVsMounted;
-    const defenderPower = this.unitType === FOOT_TROOP ? defender.rangedWeapon.powerVsFoot : defender.rangedWeapon.powerVsMounted;
-
-    console.log('a', this.strength);
-    let attackerModifiedStrength = this.strength * Math.min((100 - terrainModifier) + this.openness, 100) / 100;
-    console.log('b', attackerModifiedStrength);
-    let defenderModifiedStrength = defender.strength * Math.min((100 - terrainModifier) + defender.openness, 100) / 100;
-
-    if (this.unitType === CAVALRY_TROOP || this.unitType === ARTILLERY_TROOP) {
-      attackerModifiedStrength *= this.strength * Math.min((100 - terrainModifier) + this.openness, 100) / 100;
-    }
-    if (this.unitType === ARTILLERY_TROOP) {
-      attackerModifiedStrength *= this.strength * Math.min((100 - terrainModifier) + this.openness, 100) / 100;
-    }
-
-    if (defender.unitType === CAVALRY_TROOP || defender.unitType === ARTILLERY_TROOP) {
-      defenderModifiedStrength *= defender.strength * Math.min((100 - terrainModifier) + defender.openness, 100) / 100;
-    }
-    if (defender.unitType === ARTILLERY_TROOP) {
-      defenderModifiedStrength *= defender.strength * Math.min((100 - terrainModifier) + defender.openness, 100) / 100;
-    }
-
-    let attackersCasualties = attack(
-      defenderModifiedStrength,
-      defender.rangedWeapon.volume * defender.percentageEngaged(engagedDefenders) * defenderPercentTimeFighting,
-      defenderPower,
-      defender.armor.defense,
-      defender.rangedSkill * defenderDistanceMod,
-      this.rangedSkill,
-      defender.energy,
-      this.energy);
-
-    let defendersCasualties = attack(
-      attackerModifiedStrength,
-      this.rangedWeapon.volume * this.percentageEngaged(engagedAttackers) * attackerPercentTimeFighting,
-      attackerPower,
-      this.armor.defense,
-      this.rangedSkill * attackerDistanceMod,
-      defender.rangedSkill,
-      this.energy,
-      defender.energy);
-
-    return this.baseCombat(timeSpent, separation, attackersCasualties, defendersCasualties, terrainModifier, general, subcommander, defender);
-  }
-
-  percentageEngaged(engagedStands) {
-    return Math.min(engagedStands / this.stands, 100);
-  }
-
 
   get targets() {
     let state = store.getState()
@@ -383,6 +219,18 @@ export default class Unit {
 
   get strengthPercentage() {
     return (this.strength / this.fullStrength) * 100;
+  }
+
+  get perfectStatus() {
+    return `${this.strength} soldiers remaining of the original ${this.fullStrength}. Morale is at ${this.morale}% of their maximum. There energy level is at ${this.energy}% of their maximum.`;
+  }
+
+  get detailedStatus() {
+    return `${this.detailedStrengthDesc} ${this.detailedMoraleDesc} ${this.detailedEnergyDesc}`;
+  }
+
+  get desc() {
+    return `${upperCaseFirst(this.experienceDesc)} ${this.troopTypeName.toLowerCase()} weilding ${this.rangedWeapon.name.toLowerCase()} and ${this.meleeWeapon.name.toLowerCase()} with ${this.leaderDesc.toLowerCase()} leaders consisting of ${this.stands} stands fighting in ${this.openness > 50 ? 'open' : 'closed'} order.`;
   }
 
   get experienceDesc() {
@@ -505,17 +353,5 @@ export default class Unit {
     } else {
       return 'They have given it all that they have. They are totally spent.';
     }
-  }
-
-  get perfectStatus() {
-    return `${this.strength} soldiers remaining of the original ${this.fullStrength}. Morale is at ${this.morale}% of their maximum. There energy level is at ${this.energy}% of their maximum.`;
-  }
-
-  get detailedStatus() {
-    return `${this.detailedStrengthDesc} ${this.detailedMoraleDesc} ${this.detailedEnergyDesc}`;
-  }
-
-  get desc() {
-    return `${upperCaseFirst(this.experienceDesc)} ${this.troopTypeName.toLowerCase()} weilding ${this.rangedWeapon.name.toLowerCase()} and ${this.meleeWeapon.name.toLowerCase()} with ${this.leaderDesc.toLowerCase()} leaders consisting of ${this.stands} stands fighting in ${this.openness > 50 ? 'open' : 'closed'} order.`;
   }
 }

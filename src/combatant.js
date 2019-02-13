@@ -2,8 +2,9 @@ import { weightedRandom, SECONDS_IN_AN_HOUR } from './math-utils.js';
 import {
   SLOPE_UP,
   SLOPE_DOWN,
-  SLOPE_NONE } from './terrain.js';
-import { MAX_ENERGY } from './game.js';
+  SLOPE_NONE,
+  MAX_TERRAIN } from './terrain.js';
+import { statModFor } from './game.js';
 
 export const MORALE_SUCCESS = 'MORALE_SUCCESS';
 export const MORALE_FAILURE = 'STATUS_FALL_BACK';
@@ -27,6 +28,18 @@ export default class Combatant {
     this.energyLoss = 0;
     this.moraleLoss = 0;
     this.leadershipLoss = 0;
+  }
+
+  get terrainSpeedMod() {
+    return ((MAX_TERRAIN - this.encounter.terrain) / MAX_TERRAIN);
+  }
+
+  get speed() {
+    return this.unit.baseSpeed * this.terrainSpeedMod * statModFor(this.energy);
+  }
+
+  get backwardsSpeed() {
+    return this.unit.baseBackwardSpeed * this.terrainSpeedMod * statModFor(this.energy);
   }
 
   get strength() {
@@ -69,9 +82,13 @@ export default class Combatant {
     return this.unit.armor.defense;
   }
 
+  get engagedFactor() {
+    return this.engagedStands / this.unit.stands;
+  }
+
   get volumeModifier() {
     // TODO this should be based upon this.unit.openness, this.unit.unitType, and this.encounter.terrain
-    return (this.energy / MAX_ENERGY);
+    return statModFor(this.energy) * this.engagedFactor;
   }
 
   get powerModifier() {
@@ -80,7 +97,7 @@ export default class Combatant {
   }
 
   get skillRoll() {
-    return Math.random() * this.skill * (this.energy / MAX_ENERGY);
+    return Math.random() * this.skill * statModFor(this.energy);
   }
 
   get powerRoll() {

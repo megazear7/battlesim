@@ -21,6 +21,13 @@ export function randomMinutesBetween(x, y) {
   return SECONDS_IN_AN_MINUTE * getRandomInt(x, y);
 }
 
+/** @function weightedRandomTowards
+ *  @returns A random number between x and y weight towards z with a weight as given.
+ */
+export function weightedRandomTowards(x, y, z, weight) {
+  return (getRandomInt(x, y) + (z * weight)) / (weight + 1);
+}
+
 /**
  * Returns a random integer between min (inclusive) and max (inclusive).
  * The value is no lower than min (or the next integer greater than min

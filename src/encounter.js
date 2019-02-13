@@ -80,7 +80,7 @@ export default class Encounter {
     }
   }
 
-  attackerEngaged() {
+  attackerEngages() {
     const attackerMessage = this.attackerAttacks();
     const defenderMessage = this.defenderAttacks();
 
@@ -105,7 +105,7 @@ export default class Encounter {
     this.attacker.performMoraleCheck();
     this.defender.performMoraleCheck();
 
-    let actionMessage = this.attackerReachedDefender ? this.attackerEngaged() : this.defenderRanAway();
+    let actionMessage = this.attackerReachedDefender ? this.attackerEngages() : this.defenderRunsAway();
     let fullMessage = `${actionMessage} ${this.defender.battleReport()} ${this.attacker.battleReport()}`;
 
     // Use this for testing:
@@ -148,7 +148,7 @@ export default class Encounter {
     if (this.secondsToReachDefender > 0) {
       return 0;
     } else {
-      return (this.separation + this.defender.unit.backwardsSpeed(this.terrain) * this.secondsAvailableAfterOrder) - this.attacker.unit.speed(this.terrain) * this.secondsAvailableAfterOrder;
+      return (this.separation + this.defender.backwardsSpeed * this.secondsAvailableAfterOrder) - this.attacker.speed * this.secondsAvailableAfterOrder;
     }
   }
 
@@ -158,8 +158,8 @@ export default class Encounter {
 
   get yardsDefenderFled() {
     if (this.defender.status === MORALE_FAILURE) {
-      const timeAvailableToFlee = this.secondsAvailableAfterOrder - ((0.5 * this.separation) / this.attacker.unit.speed(this.terrain));
-      return timeAvailableToFlee * this.unit.backwardsSpeed(this.terrain);
+      const timeAvailableToFlee = this.secondsAvailableAfterOrder - ((0.5 * this.separation) / this.attacker.speed);
+      return timeAvailableToFlee * this.backwardsSpeed;
     } else {
       return 0;
     }
@@ -171,7 +171,7 @@ export default class Encounter {
 
   get yardsAttackerTravelled() {
     if (this.melee) {
-      return this.attacker.unit.speed(this.terrain) * this.secondsToReachDefenderOrMax;
+      return this.attacker.speed * this.secondsToReachDefenderOrMax;
     } else {
       return 0;
     }
@@ -187,9 +187,9 @@ export default class Encounter {
 
   get secondsToReachDefender() {
     if (this.defender.status === MORALE_FAILURE) {
-      return this.yardsOfSeparation / (this.attacker.unit.speed(this.terrain) - this.defender.unit.backwardsSpeed(this.terrain));
+      return this.yardsOfSeparation / (this.attacker.speed - this.defender.backwardsSpeed);
     } else {
-      return this.yardsOfSeparation / this.attacker.unit.speed(this.terrain);
+      return this.yardsOfSeparation / this.attacker.speed;
     }
   }
 
