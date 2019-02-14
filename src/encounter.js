@@ -60,7 +60,7 @@ export default class Encounter {
 
   attackerAttacks() {
     if (this.attacker.status === MORALE_SUCCESS) {
-      this.attacker.casualties = attack({
+      this.defender.casualties = attack({
         attacker: this.attacker,
         defender: this.defender,
         duration: this.secondsSpentFighting });
@@ -72,7 +72,7 @@ export default class Encounter {
 
   defenderAttacks() {
     if (this.attacker.status === MORALE_SUCCESS) {
-      this.defender.casualties = attack({
+      this.attacker.casualties = attack({
         attacker: this.defender,
         defender: this.attacker,
         duration: this.secondsSpentFighting });
@@ -112,7 +112,7 @@ export default class Encounter {
 
     return {
       messages: [
-        //`Attacker casualties: ${this.attacker.casualties}. Attacker energy loss: ${this.attacker.energyLoss}. Attacker morale loss: ${this.attacker.moraleLoss}. Attacker leadership loss: ${this.attacker.leadershipLoss}. Defender casualties: ${this.defender.casualties}. Defender energy loss: ${this.defender.energyLoss}. Defender morale loss: ${this.defender.moraleLoss}. Defender leadership loss: ${this.defender.leadershipLoss}.`,
+        `Attacker casualties: ${this.attacker.casualties}. Attacker energy loss: ${this.attacker.energyLoss}. Attacker morale loss: ${this.attacker.moraleLoss}. Attacker leadership loss: ${this.attacker.leadershipLoss}. Defender casualties: ${this.defender.casualties}. Defender energy loss: ${this.defender.energyLoss}. Defender morale loss: ${this.defender.moraleLoss}. Defender leadership loss: ${this.defender.leadershipLoss}.`,
         fullMessage,
       ],
       updates: [

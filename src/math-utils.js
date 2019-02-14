@@ -14,6 +14,15 @@ export function weightedRandom(bellFactor) {
   return num / max;
 }
 
+/** @function modVolume
+ *  This function takes a volumne, a weapon range, and a current distance
+ *  and then returns a modified volume. This returned value will be betwee 0
+ *  and volume, the closer range gets to distance the quicker volume decreases.
+ */
+export function modVolume(volume, range, distance) {
+  return Math.max(Math.min(volume * (- Math.pow(distance / range, 2) + 1), volume), 0);
+}
+
 /** @function randomMinutesBetween
  *  Returns a random amount of time given in seconds betwee x minutes and y minutes.
  */

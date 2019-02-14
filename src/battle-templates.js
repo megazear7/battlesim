@@ -29,6 +29,8 @@ export default [
     ],
     deadliness: 1, // TODO Use this in combat calculations.
     turnDuration: SECONDS_IN_AN_HOUR, // TODO use this value here throughout instead of the constant.
+    roundStrength: 100, // TODO Use this and round the number of reported
+    roundCasualties: 10, // TODO Use this and round the number of reported casualties to this number
     activeArmy: 0,
     activeUnit: 0,
     turnStarted: 0,
@@ -286,6 +288,8 @@ export default [
     ],
     deadliness: 1,
     turnDuration: SECONDS_IN_AN_HOUR,
+    roundStrength: 100, // TODO Use this and round the number of reported
+    roundCasualties: 10, // TODO Use this and round the number of reported casualties to this number
     activeArmy: 0,
     activeUnit: 0,
     turnStarted: 0,

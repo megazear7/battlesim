@@ -77,7 +77,7 @@ export const WEAPONS = {
     [POWER_VS_MOUNTED]: 160,
     volume: 3,
     weight: 3,
-    range: 800,
+    range: 1000,
   },
   [SPRINGFIELD_RIFLED_MUSKET]: { // Standard union civil war rifle
     name: 'Springfield Rifled Musket',

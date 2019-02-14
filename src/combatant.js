@@ -1,4 +1,8 @@
-import { weightedRandom, SECONDS_IN_AN_HOUR } from './math-utils.js';
+import {
+  weightedRandom,
+  weightedRandomTowards,
+  modVolume,
+  SECONDS_IN_AN_HOUR } from './math-utils.js';
 import {
   SLOPE_UP,
   SLOPE_DOWN,
@@ -7,7 +11,8 @@ import {
 import {
   statModFor,
   MAX_EQUIPMENT_WEIGHT,
-  SECONDS_PER_TURN } from './game.js';
+  SECONDS_PER_TURN,
+  MAX_STAT} from './game.js';
 import {
   FOOT_TROOP,
   CAVALRY_TROOP,
@@ -43,11 +48,23 @@ export default class Combatant {
   }
 
   get energyLoss() {
-    return (this.encounter.secondsSpentFighting / SECONDS_PER_TURN) * this.unit.carriedWeight;
+    return Math.floor(weightedRandomTowards(
+      0,
+      100,
+      (this.encounter.melee ? 100 : 30) * (this.encounter.secondsSpentFighting / SECONDS_PER_TURN) * (this.unit.carriedWeight / MAX_EQUIPMENT_WEIGHT),
+      5));
+  }
+
+  get hardinessMod() {
+    return (MAX_STAT - this.unit.experience) / MAX_STAT;
   }
 
   get moraleLoss() {
-    return (this.casualties / this.unit.strength) * 5;
+    return Math.floor(weightedRandomTowards(
+      0,
+      100,
+      100 * this.hardinessMod * (this.casualties / this.unit.strength),
+      5));
   }
 
   get leadershipLoss() {
@@ -71,8 +88,18 @@ export default class Combatant {
     return this.unit.baseBackwardSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod;
   }
 
+  get modifiedMeleeVolume() {
+    return this.unit.meleeWeapon.volume;
+  }
+
+  get modifiedRangedVolume() {
+    return modVolume(this.unit.rangedWeapon.volume, this.unit.rangedWeapon.range, this.encounter.yardsOfSeparation);
+  }
+
   get volume() {
-    return this.encounter.melee ? this.unit.meleeWeapon.volume : this.unit.rangedWeapon.volume;
+    return this.encounter.melee
+      ? this.modifiedMeleeVolume
+      : this.modifiedRangedVolume;
   }
 
   get modifiedVolume() {
@@ -218,10 +245,12 @@ export default class Combatant {
       return `${this.unit.name} sustained significant casualties.`;
     } else if (this.casualties > this.unit.strength * 0.03) {
       return `${this.unit.name} sustained noticable casualties.`;
-    } else if (this.casualties > this.unit.strength * 0.01) {
+    } else if (this.casualties > this.unit.strength * 0.02) {
       return `${this.unit.name} sustained minor casualties.`;
-    } else {
+    } else if (this.casualties > 0) {
       return `${this.unit.name} sustained almost no casualties.`;
+    } else {
+      return `${this.unit.name} sustained no casualties.`;
     }
   }
 }
