@@ -36,6 +36,10 @@ class FightView extends connect(store)(PageViewElement) {
       SharedStyles,
       ButtonSharedStyles,
       css`
+        input.stands {
+          width: calc(50% - 3px);
+          box-sizing: border-box;
+        }
         #unit {
           text-align: center;
           font-size: 2rem;
@@ -53,6 +57,11 @@ class FightView extends connect(store)(PageViewElement) {
         }
         h6 {
           margin-bottom: 0;
+        }
+        #hill, #leader {
+          width: calc(50% - 3px);
+          box-sizing: border-box;
+          display: inline-block;
         }
       `
     ];
@@ -84,29 +93,41 @@ class FightView extends connect(store)(PageViewElement) {
         <section>
           <div id="input-container">
             <input id="distance" class="hidden" type="number" placeholder="Distance (Leave blank to move as far as possible)"></input>
-            <input id="separation" class="hidden" type="number" placeholder="Distance to enemy unit"></input>
-            <input id="engaged-attackers" class="hidden" type="number" placeholder="Engaged Attacking Stands (Leave blank for all)"></input>
-            <input id="engaged-defenders" class="hidden" type="number" placeholder="Engaged Defending Stands (Leave blank for all)"></input>
+            <input id="separation" class="hidden" type="number" placeholder="Distance (Required)"></input>
             <select id="target" class="hidden">
-              <option value="">Select Target</option>
+              <option value="">Select Target (Required)</option>
               ${repeat(this._unit.targets, target => html`
                 <option value="${target.id}">${target.unit.name}</option>
               `)}
             </select>
+            <input id="engaged-attackers" class="hidden stands" type="number" placeholder="Attacking Stands"></input>
+            <input id="engaged-defenders" class="hidden stands" type="number" placeholder="Defending Stands"></input>
             <br>
             <br>
             <div id="hill" class="hidden">
               <radiogroup>
-                <input type="radio" name="hill" value="${SLOPE_UP}"> Uphill<br>
-                <input type="radio" name="hill" value="${SLOPE_DOWN}"> Downhill<br>
-                <input type="radio" name="hill" value="${SLOPE_NONE}"> Neither<br><br>
+                <input type="radio" name="hill" id="${SLOPE_UP}" value="${SLOPE_UP}">
+                <label for="${SLOPE_UP}">Uphill</label>
+                <br>
+                <input type="radio" name="hill" id="${SLOPE_DOWN}" value="${SLOPE_DOWN}">
+                <label for="${SLOPE_DOWN}">Downhill</label>
+                <br>
+                <input type="radio" name="hill" id="${SLOPE_NONE}" value="${SLOPE_NONE}">
+                <label for="${SLOPE_NONE}">Neither</label>
+                <br><br>
               </radiogroup>
             </div>
             <div id="leader" class="hidden">
               <radiogroup>
-                <input type="radio" name="leader" value="general"> General<br>
-                <input type="radio" name="leader" value="subcommander"> Subcommander<br>
-                <input type="radio" name="leader" value="neither"> None<br><br>
+                <input type="radio" name="leader" id="general" value="general">
+                <label for="general">General</label>
+                <br>
+                <input type="radio" name="leader" id="subcommander" value="subcommander">
+                <label for="subcommander">Subcommander</label>
+                <br>
+                <input type="radio" name="leader" id="neither" value="neither">
+                <label for="neither">Neither</label>
+                <br><br>
               </radiogroup>
             </div>
             <div id="terrain" class="hidden">
@@ -116,7 +137,7 @@ class FightView extends connect(store)(PageViewElement) {
           <div>
           <div id="take-action" style="opacity: 0;">
             <button @click="${this._takeAction}">Take Action</button>
-            <p class="error hidden">You must provide valid values for each field</p>
+            <p class="error hidden">You must provide valid values for each required field.</p>
           </div>
           <div id="action-result">
             ${repeat(this._actionMessages, message => html`
@@ -300,11 +321,9 @@ class FightView extends connect(store)(PageViewElement) {
       this.shadowRoot.getElementById('actions').style.display = 'none';
       this.shadowRoot.getElementById('action-result').style.display = 'block';
     } else {
-      this.errorElement.style.opacity = '1';
-      this.errorElement.style.display = 'block';
+      this.errorElement.classList.remove('hidden');
       setTimeout(() => {
-        this.errorElement.style.opacity = '0';
-        this.errorElement.style.display = 'none';
+        this.errorElement.classList.add('hidden');
       }, 3000);
     }
   }

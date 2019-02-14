@@ -55,8 +55,6 @@ export const SharedStyles = css`
   }
 
   .error {
-    display: none;
-    opacity: 0;
     color: orange;
     font-weight: 600;
   }
@@ -113,6 +111,6 @@ export const SharedStyles = css`
   }
 
   .hidden {
-    display: none;
+    display: none !important;
   }
 `;

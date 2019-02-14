@@ -193,7 +193,7 @@ export default class Combatant extends ActingUnit {
     } else if (this.leadershipLoss > 0) {
       return `${this.unit.name} lost some of their sergeant's during the fight.`;
     } else {
-      return `${this.unit.name} .`;
+      return ``;
     }
   }
 }

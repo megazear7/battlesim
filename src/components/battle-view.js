@@ -30,11 +30,6 @@ class BattleView extends connect(store)(PageViewElement) {
           color: green;
           transition: opacity 300ms;
         }
-        #error {
-          opacity: 0;
-          color: red;
-          transition: opacity 300ms;
-        }
         h4 {
           margin-bottom: 0.5rem;
         }
@@ -76,14 +71,14 @@ class BattleView extends connect(store)(PageViewElement) {
               <option value="1">${this._army1Name}</option>
             </select>
             <select id="unit-template">
-              <option>Select Unit To Add</option>
+              <option>Select Unit To Add (Required)</option>
               ${repeat(this._unitTemplates, ({id, unit}) => html`
                 <option value="${id}">${unit.name}</option>
               `)}
             </select>
             <input id="name" type="text" placeholder="Optionally Change the Units Name"></input>
             <button @click="${this._add}">Add</button>
-            <p class="error">All fields need valid input.</p>
+            <p class="error hidden">You must select a type of unit to add.</p>
             <p id="added-message">Unit Added!</p>
           </div>
         </section>
@@ -162,11 +157,9 @@ class BattleView extends connect(store)(PageViewElement) {
         addedMessage.style.display = 'none';
       }, 3000);
     } else {
-      this.shadowRoot.querySelector('.error').style.opacity = '1';
-      this.shadowRoot.querySelector('.error').style.display = 'block';
+      this.shadowRoot.querySelector('.error').classList.remove('hidden');
       setTimeout(() => {
-        this.shadowRoot.querySelector('.error').style.opacity = '0';
-        this.shadowRoot.querySelector('.error').style.display = 'none';
+        this.shadowRoot.querySelector('.error').classList.add('hidden');
       }, 3000);
     }
   }
