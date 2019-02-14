@@ -3,24 +3,14 @@ import { WEAPONS } from './weapons.js';
 import { ARMOR } from './armor.js';
 import { store } from './store.js';
 import { attack } from './battle-utils.js';
-import {
-  randomMinutesBetween,
-  SECONDS_IN_AN_MINUTE } from './math-utils.js';
-import {
-  FOOT_TROOP,
-  CAVALRY_TROOP,
-  ARTILLERY_TROOP } from './units.js';
-import {
-  SLOPE_UP,
-  SLOPE_DOWN,
-  SLOPE_NONE } from './terrain.js';
-import {
-  MORALE_SUCCESS,
-  MORALE_FAILURE } from './combatant.js'
-import {
-  SECONDS_PER_TURN,
-  YARDS_PER_INCH } from './game.js';
+import { randomMinutesBetween, SECONDS_IN_AN_MINUTE } from './math-utils.js';
+import { FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP } from './units.js';
+import { SLOPE_UP, SLOPE_DOWN, SLOPE_NONE } from './terrain.js';
+import { MORALE_SUCCESS, MORALE_FAILURE } from './acting-unit.js'
+import { SECONDS_PER_TURN, YARDS_PER_INCH } from './game.js';
 
+/** @class Situation
+ *  This represents the encounter of two units on the battle field. */
 export default class Encounter {
   constructor({ attacker,
                 attackerTerrainDefense = 0,

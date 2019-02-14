@@ -1,32 +1,13 @@
-import {
-  weightedRandom,
-  weightedRandomTowards,
-  modVolume,
-  SECONDS_IN_AN_HOUR } from './math-utils.js';
-import {
-  SLOPE_UP,
-  SLOPE_DOWN,
-  SLOPE_NONE,
-  MAX_TERRAIN } from './terrain.js';
-import {
-  statModFor,
-  MAX_EQUIPMENT_WEIGHT,
-  SECONDS_PER_TURN,
-  MAX_STAT} from './game.js';
-import {
-  FOOT_TROOP,
-  CAVALRY_TROOP,
-  ARTILLERY_TROOP,
-  MELEE_WEAPON,
-  RANGED_WEAPON } from './units.js';
-import {
-  POWER_VS_FOOT,
-  POWER_VS_MOUNTED } from './weapons.js';
+import { weightedRandomTowards, modVolume, SECONDS_IN_AN_HOUR } from './math-utils.js';
+import { SLOPE_NONE } from './terrain.js';
+import { statModFor, MAX_STAT, SECONDS_PER_TURN } from './game.js';
+import { FOOT_TROOP, MELEE_WEAPON, RANGED_WEAPON } from './units.js';
+import { POWER_VS_FOOT, POWER_VS_MOUNTED } from './weapons.js';
+import ActingUnit, { MORALE_SUCCESS, MORALE_FAILURE } from './acting-unit.js';
 
-export const MORALE_SUCCESS = 'MORALE_SUCCESS';
-export const MORALE_FAILURE = 'STATUS_FALL_BACK';
-
-export default class Combatant {
+/** @class Situation
+ *  This represents a unit in combat with another unit. */
+export default class Combatant extends ActingUnit {
     constructor({ unit,
                   encounter,
                   target,
@@ -35,6 +16,7 @@ export default class Combatant {
                   engagedStands = -1,
                   status = MORALE_SUCCESS,
                   slope = SLOPE_NONE }) {
+    super({ unit, environment: encounter, armyLeadership });
     this.unit = unit;
     this.encounter = encounter;
     this.target = target;
@@ -45,13 +27,13 @@ export default class Combatant {
     this.slope = slope;
     this.casualties = 0;
     this.leaderSurviveRoll = Math.random();
-    this.energyRoll = weightedRandomTowards(0, 100, 10, 4);
-    this.moraleRoll = weightedRandomTowards(0, 100, 10, 4);
+    this.energyModRoll = weightedRandomTowards(0, 100, 10, 4);
+    this.moraleModRoll = weightedRandomTowards(0, 100, 10, 4);
   }
 
   get energyLoss() {
     return Math.floor(
-      (this.energyRoll + this.unit.carriedWeight) *
+      (this.energyModRoll + this.unit.carriedWeight) *
       (this.encounter.melee ? 1 : 0.5) *
       (this.encounter.secondsSpentFighting / SECONDS_PER_TURN));
   }
@@ -62,7 +44,7 @@ export default class Combatant {
 
   get moraleLoss() {
     return Math.floor(
-      (this.moraleRoll) *
+      (this.moraleModRoll) *
       (this.hardinessMod) *
       (1 + (this.casualties / this.unit.strength)) *
       (1 + (this.unit.strength / this.unit.fullStrength)));
@@ -70,22 +52,6 @@ export default class Combatant {
 
   get leadershipLoss() {
     return this.casualties / this.unit.strength > this.leaderSurviveRoll ? Math.min(30, this.unit.leadership) : 0;
-  }
-
-  get terrainSpeedMod() {
-    return ((MAX_TERRAIN - this.encounter.terrain) / MAX_TERRAIN);
-  }
-
-  get equipmentMod() {
-    return (MAX_EQUIPMENT_WEIGHT - this.unit.carriedWeight) / MAX_EQUIPMENT_WEIGHT;
-  }
-
-  get speed() {
-    return this.unit.baseSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod;
-  }
-
-  get backwardsSpeed() {
-    return this.unit.baseBackwardSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod;
   }
 
   get modifiedMeleeVolume() {
@@ -130,32 +96,8 @@ export default class Combatant {
     return this.encounter.melee ? this.unit.meleeSkill : this.unit.rangedSkill;
   }
 
-  get armor() {
-    return this.unit.armor.defense;
-  }
-
   get engagedMod() {
     return this.engagedStands / this.unit.stands;
-  }
-
-  get unitTypeTerrainMod() {
-    return {
-      [FOOT_TROOP]: 1,
-      [CAVALRY_TROOP]: 0.5,
-      [ARTILLERY_TROOP]: 0.25
-    }[this.unit.unitType];
-  }
-
-  get terrainMod() {
-    return ((MAX_TERRAIN - this.encounter.terrain) / MAX_TERRAIN) * statModFor(this.unit.openness) * this.unitTypeTerrainMod;
-  }
-
-  get slopeMod() {
-    return {
-      [SLOPE_UP]: 0.75,
-      [SLOPE_DOWN]: 1.25,
-      [SLOPE_NONE]: 1,
-    }[this.slope];
   }
 
   get powerModifier() {
@@ -176,19 +118,6 @@ export default class Combatant {
 
   attacksForTime(duration) {
     return this.unit.strength * this.modifiedVolume * (duration / SECONDS_IN_AN_HOUR);
-  }
-
-  // Warning: Performing multiple morale checks will do a new roll and might switch the status.
-  // This should only be done when the game rules require it, not simply to "get the status" of the combatant.
-  performMoraleCheck() {
-    const roll = weightedRandom(3) * 100;
-    const modifiedMorale = this.unit.morale - roll;
-
-    if (modifiedMorale > 0) {
-      this.status = MORALE_SUCCESS;
-    } else {
-      this.status = MORALE_FAILURE;
-    }
   }
 
   battleReport() {
