@@ -285,21 +285,21 @@ export default class Unit {
     if (this.morale > 90) {
       return 'Morale is great.';
     } else if (this.morale > 80) {
-      return 'Morale is good. They have been shaken up but are ready for their orders.';
+      return 'They have been shaken up but are ready for their orders.';
     } else if (this.morale > 70) {
-      return 'Morale is okay. They have been shaken up quite a bit.';
+      return 'They have been shaken up quite a bit.';
     } else if (this.morale > 60) {
-      return 'Morale is declining. They are nervous to engage in combat but are still in the fight';
+      return 'They are nervous to engage in combat but are still in the fight.';
     } else if (this.morale > 50) {
-      return 'Morale is not good. They are timid.';
+      return 'They are timid.';
     } else if (this.morale > 40) {
-      return 'Morale is poor. They are afraid to fight any further.';
+      return 'They are afraid to fight any further.';
     } else if (this.morale > 30) {
-      return 'Morale is terrible. They are afraid to fight any further.';
+      return 'They are afraid to fight any further.';
     } else if (this.morale > 20) {
-      return 'Morale is horrendous. They will likely not take any further orders.';
+      return 'They will likely not take any further orders.';
     } else if (this.morale > 10) {
-      return 'Morale is absolutely terrible. They could flee at any time.';
+      return 'They could flee at any time.';
     } else {
       return 'They are refusing to fight or take orders and could flee at any time.';
     }

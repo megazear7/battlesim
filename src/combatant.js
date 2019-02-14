@@ -45,14 +45,15 @@ export default class Combatant {
     this.slope = slope;
     this.casualties = 0;
     this.leaderSurviveRoll = Math.random();
+    this.energyRoll = weightedRandomTowards(0, 100, 10, 4);
+    this.moraleRoll = weightedRandomTowards(0, 100, 10, 4);
   }
 
   get energyLoss() {
-    return Math.floor(weightedRandomTowards(
-      0,
-      100,
-      (this.encounter.melee ? 100 : 30) * (this.encounter.secondsSpentFighting / SECONDS_PER_TURN) * (this.unit.carriedWeight / MAX_EQUIPMENT_WEIGHT),
-      5));
+    return Math.floor(
+      (this.energyRoll + this.unit.carriedWeight) *
+      (this.encounter.melee ? 1 : 0.5) *
+      (this.encounter.secondsSpentFighting / SECONDS_PER_TURN));
   }
 
   get hardinessMod() {
@@ -60,15 +61,14 @@ export default class Combatant {
   }
 
   get moraleLoss() {
-    return Math.floor(weightedRandomTowards(
-      0,
-      100,
-      100 * this.hardinessMod * (this.casualties / this.unit.strength),
-      5));
+    return Math.floor(
+      (this.moraleRoll) *
+      (this.hardinessMod) *
+      (1 + (this.casualties / this.unit.strength)) *
+      (1 + (this.unit.strength / this.unit.fullStrength)));
   }
 
   get leadershipLoss() {
-    // TODO Provide message to user
     return this.casualties / this.unit.strength > this.leaderSurviveRoll ? Math.min(30, this.unit.leadership) : 0;
   }
 
@@ -192,7 +192,7 @@ export default class Combatant {
   }
 
   battleReport() {
-    return `${this.casualtyMessage}`;
+    return `${this.casualtyMessage} ${this.leadershipMessage}`;
   }
 
   exactBattleReport() {
@@ -251,6 +251,20 @@ export default class Combatant {
       return `${this.unit.name} sustained almost no casualties.`;
     } else {
       return `${this.unit.name} sustained no casualties.`;
+    }
+  }
+
+  get leadershipMessage() {
+    if (this.leadershipLoss > this.unit.leadership) {
+      return `${this.unit.name} lost all of their leaders during the fight. They have no one to command them.`;
+    } else if (this.leadershipLoss > this.unit.leadership * 0.5) {
+      return `${this.unit.name} lost their captain during the fight.`;
+    } else if (this.leadershipLoss > this.unit.leadership * 0.25) {
+      return `${this.unit.name} lost a lieutenant during the fight.`;
+    } else if (this.leadershipLoss > 0) {
+      return `${this.unit.name} lost some of their sergeant's during the fight.`;
+    } else {
+      return `${this.unit.name} .`;
     }
   }
 }
