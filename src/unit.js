@@ -58,56 +58,6 @@ export default class Unit {
     this.maneuverTime = maneuverTime;
   }
 
-
-  rest(time = SECONDS_IN_AN_HOUR) {
-    // TODO reimplement this in similiar fashion to how we did the more complex attack
-    let percentageOfAnHourSpentResting = (time / SECONDS_IN_AN_HOUR) * 100;
-    let maxEnergyRecovered = (percentageOfAnHourSpentResting / 100) * 20 * Math.random();
-    let energyRecovered = Math.min(100 - this.energy, maxEnergyRecovered);
-
-    return {
-      messages: [ this.energyRecoveredDesc(energyRecovered) ],
-      updates: [
-        {
-          id: this.id,
-          changes: [
-            {
-              prop: 'energy',
-              value: Math.min(this.energy + energyRecovered, 100),
-            },
-            {
-              prop: 'nextAction',
-              value: this.nextAction + time,
-            },
-          ]
-        }
-      ]
-    };
-  }
-
-  energyRecoveredDesc(energyRecovered) {
-    // TODO this needs moved after we refactor the rest action.
-    if (energyRecovered > 80) {
-      return `They got back all of there energy.`;
-    } else if (energyRecovered > 60) {
-      return `They recovered almost all of their strength.`;
-    } else if (energyRecovered > 40) {
-      return `They made a great recovery. The rest was very helpful.`;
-    } else if (energyRecovered > 20) {
-      return `They recovered a lot of their strength`;
-    } else if (energyRecovered > 15) {
-      return `They recovered much of their strength`;
-    } else if (energyRecovered > 9) {
-      return `They recovered some of their strength`;
-    } else if (energyRecovered > 6) {
-      return `They recovered a bit of their strength.`;
-    } else if (energyRecovered > 3) {
-      return `The rest was worth it but they only recovered a little bit.`;
-    } else {
-      return `The rest was hardly worth it.`;
-    }
-  }
-
   move(distanceInYards, terrain, manuevering = false) {
     // TODO reimplement this in similiar fashion to how we did the more complex attack
     const maxYardsTravelled = (secondsAvailableToMove / secondsToMove100Yards(terrain)) * 100;
@@ -161,29 +111,6 @@ export default class Unit {
       return `You could only move ${Math.floor(actualDistance / 100)} inches.`;
     } else {
       return `You move the full ${Math.floor(actualDistance / 100)} inches.`;
-    }
-  }
-
-  energyDesc(energyCost) {
-    // TODO this needs moved after we refactor the move action
-    if (energyCost > 100) {
-      return `This took last ounce of strength they had.`;
-    } else if (energyCost > 80) {
-      return `This took nearly every ounce of strength they had.`;
-    } else if (energyCost > 30) {
-      return `This was a really tough assignment. They are feeling exhaustion creep in.`;
-    } else if (energyCost > 20) {
-      return `This was a tough job. It took a lot out of them.`;
-    } else if (energyCost > 8) {
-      return `They put in a lot of work.`;
-    } else if (energyCost > 4) {
-      return `They put in some real work.`;
-    } else if (energyCost > 2) {
-      return `They put in a bit of work.`;
-    } else if (energyCost > 1) {
-      return `This didn't take much effort`;
-    } else {
-      return `This took no effort at all`;
     }
   }
 

@@ -29,12 +29,12 @@ export default class SoloUnit extends ActingUnit {
   }
 
   get maxMoraleRecovered() {
-    return 20 * this.moraleModRoll *
+    return this.moraleModRoll *
       (this.situation.percentageOfATurnSpentResting / 100);
   }
 
   get maxEnergyRecovered() {
-    return 20 * this.energyModRoll *
+    return this.energyModRoll *
       (this.situation.percentageOfATurnSpentResting / 100) *
       ((100 - this.situation.percentageOfATurnSpentMoving) / 100);
   }
@@ -62,6 +62,28 @@ export default class SoloUnit extends ActingUnit {
   }
 
   get desc() {
-    return `Energy recovered: ${this.energyGain}. Morale recovered: ${this.moraleGain}`;
+    return `${this.energyRecoveredDesc}. ${this.energyGain} Morale recovered: ${this.moraleGain}`;
+  }
+
+  get energyRecoveredDesc() {
+    if (this.energyGain > 80) {
+      return `They got back all of there energy.`;
+    } else if (this.energyGain > 60) {
+      return `They recovered almost all of their strength.`;
+    } else if (this.energyGain > 40) {
+      return `They made a great recovery. The rest was very helpful.`;
+    } else if (this.energyGain > 20) {
+      return `They recovered a lot of their strength`;
+    } else if (this.energyGain > 15) {
+      return `They recovered much of their strength`;
+    } else if (this.energyGain > 9) {
+      return `They recovered some of their strength`;
+    } else if (this.energyGain > 6) {
+      return `They recovered a bit of their strength.`;
+    } else if (this.energyGain > 3) {
+      return `The rest was worth it but they only recovered a little bit.`;
+    } else {
+      return `The rest was hardly worth it.`;
+    }
   }
 }
