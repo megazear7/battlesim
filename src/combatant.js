@@ -6,7 +6,8 @@ import {
   MAX_TERRAIN } from './terrain.js';
 import {
   statModFor,
-  MAX_EQUIPMENT_WEIGHT } from './game.js';
+  MAX_EQUIPMENT_WEIGHT,
+  SECONDS_PER_TURN } from './game.js';
 import {
   FOOT_TROOP,
   CAVALRY_TROOP,
@@ -31,41 +32,60 @@ export default class Combatant {
     this.status = status;
     this.slope = slope;
     this.casualties = 0;
-    this.energyLoss = 0;
-    this.moraleLoss = 0;
-    this.leadershipLoss = 0;
+    this.leaderSurviveRoll = Math.random();
+  }
+
+  get energyLoss() {
+    return (this.encounter.secondsSpentFighting / SECONDS_PER_TURN) * this.unit.carriedWeight;
+  }
+
+  get moraleLoss() {
+    return (this.casualties / this.unit.strength) * 5;
+  }
+
+  get leadershipLoss() {
+    if (this.casualties / this.unit.strength > this.leaderSurviveRoll) {
+      // TODO Provide message to user
+      return Math.min(30, this.unit.leadership);
+    } else {
+      return 0;
+    }
   }
 
   get terrainSpeedMod() {
     return ((MAX_TERRAIN - this.encounter.terrain) / MAX_TERRAIN);
   }
 
-  get equipmentSpeedMod() {
+  get equipmentMod() {
     return (MAX_EQUIPMENT_WEIGHT - this.unit.carriedWeight) / MAX_EQUIPMENT_WEIGHT;
   }
 
   get speed() {
-    return this.unit.baseSpeed * this.terrainSpeedMod * statModFor(this.energy) * this.equipmentSpeedMod;
+    return this.unit.baseSpeed * this.terrainSpeedMod * statModFor(this.energy) * this.equipmentMod;
   }
 
   get backwardsSpeed() {
-    return this.unit.baseBackwardSpeed * this.terrainSpeedMod * statModFor(this.energy) * this.equipmentSpeedMod;
+    return this.unit.baseBackwardSpeed * this.terrainSpeedMod * statModFor(this.energy) * this.equipmentMod;
   }
 
   get strength() {
-    return Math.max(this.unit.strength - this.strengthLoss, 0)
+    // Warning: Do not account for this.strengthLoss in this method.
+    return this.unit.strength;
   }
 
   get energy() {
-    return Math.max(this.unit.energy - this.energyLoss, 0)
+    // Warning: Do not account for this.energyLoss in this method.
+    return this.unit.energy;
   }
 
   get morale() {
-    return Math.max(this.unit.morale - this.moraleLoss, 0)
+    // Warning: Do not account for this.moraleLoss in this method.
+    return this.unit.morale;
   }
 
   get leadership() {
-    return Math.max(this.unit.leadership - this.leadershipLoss, 0)
+    // Warning: Do not account for this.leadershipLoss in this method.
+    return this.unit.leadership;
   }
 
   get volume() {
@@ -171,16 +191,16 @@ export default class Combatant {
   changes(delay) {
     return [
       { prop: "strength",
-        value: this.strength
+        value: this.strength - this.casualties
       }, {
         prop: "energy",
-        value: this.energy
+        value: this.energy - this.energyLoss
       }, {
         prop: "morale",
-        value: this.morale,
+        value: this.morale - this.moraleLoss
       }, {
         prop: "leadership",
-        value: this.leadership
+        value: this.leadership - this.leadershipLoss
       }, {
         prop: 'nextAction',
         value: this.unit.nextAction + delay
