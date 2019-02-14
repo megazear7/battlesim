@@ -7,6 +7,10 @@ import {
 import {
   statModFor,
   MAX_EQUIPMENT_WEIGHT } from './game.js';
+import {
+  FOOT_TROOP,
+  CAVALRY_TROOP,
+  ARTILLERY_TROOP } from './units.js';
 
 export const MORALE_SUCCESS = 'MORALE_SUCCESS';
 export const MORALE_FAILURE = 'STATUS_FALL_BACK';
@@ -88,13 +92,24 @@ export default class Combatant {
     return this.unit.armor.defense;
   }
 
-  get engagedFactor() {
+  get engagedMod() {
     return this.engagedStands / this.unit.stands;
   }
 
+  get unitTypeTerrainMod() {
+    return {
+      [FOOT_TROOP]: 1,
+      [CAVALRY_TROOP]: 0.5,
+      [ARTILLERY_TROOP]: 0.25
+    }[this.unit.unitType];
+  }
+
+  get terrainMod() {
+    return this.encounter.terrain * statModFor(this.unit.openness) * this.unitTypeTerrainMod;
+  }
+
   get volumeModifier() {
-    // TODO this should be based upon this.unit.openness, this.unit.unitType, and this.encounter.terrain
-    return statModFor(this.energy) * this.engagedFactor;
+    return statModFor(this.energy) * this.engagedMod * this.terrainMod;
   }
 
   get powerModifier() {
