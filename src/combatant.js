@@ -112,9 +112,16 @@ export default class Combatant {
     return statModFor(this.energy) * this.engagedMod * this.terrainMod;
   }
 
+  get slopeMod() {
+    return {
+      [SLOPE_UP]: 0.75,
+      [SLOPE_DOWN]: 1.25,
+      [SLOPE_NONE]: 1,
+    }[this.slope];
+  }
+
   get powerModifier() {
-    // TODO this should be based upon this.encounter.slope and SLOPE_UP, SLOPE_DOWN, and SLOPE_NONE
-    return 1;
+    return this.slopeMod;
   }
 
   get skillRoll() {
