@@ -42,6 +42,7 @@ export default class Encounter {
     this.attacker = new Combatant({
       unit: attacker,
       encounter: this,
+      target: defender,
       attackerTerrainDefense,
       attackerArmyLeadership,
       attackerEngagedStands,
@@ -50,6 +51,7 @@ export default class Encounter {
     this.defender = new Combatant({
       unit: defender,
       encounter: this,
+      target: attacker,
       defenderTerrainDefense,
       defenderArmyLeadership,
       defenderEngagedStands,
@@ -110,7 +112,7 @@ export default class Encounter {
 
     return {
       messages: [
-        `Attacker casualties: ${this.attacker.casualties}. Attacker energy loss: ${this.attacker.energyLoss}. Attacker morale loss: ${this.attacker.moraleLoss}. Attacker leadership loss: ${this.attacker.leadershipLoss}. Defender casualties: ${this.defender.casualties}. Defender energy loss: ${this.defender.energyLoss}. Defender morale loss: ${this.defender.moraleLoss}. Defender leadership loss: ${this.defender.leadershipLoss}.`,
+        //`Attacker casualties: ${this.attacker.casualties}. Attacker energy loss: ${this.attacker.energyLoss}. Attacker morale loss: ${this.attacker.moraleLoss}. Attacker leadership loss: ${this.attacker.leadershipLoss}. Defender casualties: ${this.defender.casualties}. Defender energy loss: ${this.defender.energyLoss}. Defender morale loss: ${this.defender.moraleLoss}. Defender leadership loss: ${this.defender.leadershipLoss}.`,
         fullMessage,
       ],
       updates: [

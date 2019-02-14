@@ -11,7 +11,12 @@ import {
 import {
   FOOT_TROOP,
   CAVALRY_TROOP,
-  ARTILLERY_TROOP } from './units.js';
+  ARTILLERY_TROOP,
+  MELEE_WEAPON,
+  RANGED_WEAPON } from './units.js';
+import {
+  POWER_VS_FOOT,
+  POWER_VS_MOUNTED } from './weapons.js';
 
 export const MORALE_SUCCESS = 'MORALE_SUCCESS';
 export const MORALE_FAILURE = 'STATUS_FALL_BACK';
@@ -19,6 +24,7 @@ export const MORALE_FAILURE = 'STATUS_FALL_BACK';
 export default class Combatant {
     constructor({ unit,
                   encounter,
+                  target,
                   armyLeadership = 0,
                   terrainDefense = 0,
                   engagedStands = -1,
@@ -26,6 +32,7 @@ export default class Combatant {
                   slope = SLOPE_NONE }) {
     this.unit = unit;
     this.encounter = encounter;
+    this.target = target;
     this.armyLeadership = armyLeadership;
     this.terrainDefense = terrainDefense;
     this.engagedStands = engagedStands <= -1 || engagedStands > unit.stands ? unit.stands : engagedStands;
@@ -44,12 +51,8 @@ export default class Combatant {
   }
 
   get leadershipLoss() {
-    if (this.casualties / this.unit.strength > this.leaderSurviveRoll) {
-      // TODO Provide message to user
-      return Math.min(30, this.unit.leadership);
-    } else {
-      return 0;
-    }
+    // TODO Provide message to user
+    return this.casualties / this.unit.strength > this.leaderSurviveRoll ? Math.min(30, this.unit.leadership) : 0;
   }
 
   get terrainSpeedMod() {
@@ -61,31 +64,11 @@ export default class Combatant {
   }
 
   get speed() {
-    return this.unit.baseSpeed * this.terrainSpeedMod * statModFor(this.energy) * this.equipmentMod;
+    return this.unit.baseSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod;
   }
 
   get backwardsSpeed() {
-    return this.unit.baseBackwardSpeed * this.terrainSpeedMod * statModFor(this.energy) * this.equipmentMod;
-  }
-
-  get strength() {
-    // Warning: Do not account for this.strengthLoss in this method.
-    return this.unit.strength;
-  }
-
-  get energy() {
-    // Warning: Do not account for this.energyLoss in this method.
-    return this.unit.energy;
-  }
-
-  get morale() {
-    // Warning: Do not account for this.moraleLoss in this method.
-    return this.unit.morale;
-  }
-
-  get leadership() {
-    // Warning: Do not account for this.leadershipLoss in this method.
-    return this.unit.leadership;
+    return this.unit.baseBackwardSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod;
   }
 
   get volume() {
@@ -97,12 +80,19 @@ export default class Combatant {
   }
 
   get volumeModifier() {
-    return statModFor(this.energy) * this.engagedMod * this.terrainMod;
+    return statModFor(this.unit.energy) * this.engagedMod * this.terrainMod;
+  }
+
+  get targetTroopType() {
+    return this.target.unitType === FOOT_TROOP ? POWER_VS_FOOT : POWER_VS_MOUNTED;
+  }
+
+  get weaponTypeForEncounter() {
+    return this.encounter.melee ? MELEE_WEAPON : RANGED_WEAPON;
   }
 
   get power() {
-    // TODO use power vs foot or vs mounted depending on the target.
-    return this.encounter.melee ? this.unit.meleeWeapon.powerVsFoot : this.unit.rangedWeapon.powerVsFoot;
+    return this.unit[this.weaponTypeForEncounter][this.targetTroopType];
   }
 
   get modifiedPower() {
@@ -146,7 +136,7 @@ export default class Combatant {
   }
 
   get skillRoll() {
-    return Math.random() * this.skill * statModFor(this.energy);
+    return Math.random() * this.skill * statModFor(this.unit.energy);
   }
 
   get powerRoll() {
@@ -158,14 +148,14 @@ export default class Combatant {
   }
 
   attacksForTime(duration) {
-    return this.strength * this.modifiedVolume * (duration / SECONDS_IN_AN_HOUR);
+    return this.unit.strength * this.modifiedVolume * (duration / SECONDS_IN_AN_HOUR);
   }
 
   // Warning: Performing multiple morale checks will do a new roll and might switch the status.
   // This should only be done when the game rules require it, not simply to "get the status" of the combatant.
   performMoraleCheck() {
     const roll = weightedRandom(3) * 100;
-    const modifiedMorale = this.morale - roll;
+    const modifiedMorale = this.unit.morale - roll;
 
     if (modifiedMorale > 0) {
       this.status = MORALE_SUCCESS;
@@ -192,16 +182,16 @@ export default class Combatant {
   changes(delay) {
     return [
       { prop: "strength",
-        value: this.strength - this.casualties
+        value: this.unit.strength - this.casualties
       }, {
         prop: "energy",
-        value: this.energy - this.energyLoss
+        value: this.unit.energy - this.energyLoss
       }, {
         prop: "morale",
-        value: this.morale - this.moraleLoss
+        value: this.unit.morale - this.moraleLoss
       }, {
         prop: "leadership",
-        value: this.leadership - this.leadershipLoss
+        value: this.unit.leadership - this.leadershipLoss
       }, {
         prop: 'nextAction',
         value: this.unit.nextAction + delay
