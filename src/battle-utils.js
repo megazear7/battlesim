@@ -10,7 +10,7 @@ export function attack({attacker, defender, duration = SECONDS_PER_TURN}) {
 
   let casualties = 0;
   for (let i = 0; i < hits; i++) {
-    if (attacker.powerRoll * DEADLYNESS > this.armorRoll) {
+    if (attacker.powerRoll * DEADLYNESS > defender.armorRoll) {
       casualties += 1;
     }
   }

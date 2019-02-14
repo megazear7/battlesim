@@ -89,15 +89,20 @@ export default class Combatant {
   }
 
   get volume() {
-    return this.encounter.melee ? this.unit.meleeWeapon.power : this.unit.rangedWeapon.power;
+    return this.encounter.melee ? this.unit.meleeWeapon.volume : this.unit.rangedWeapon.volume;
   }
 
   get modifiedVolume() {
     return this.volume * this.volumeModifier;
   }
 
+  get volumeModifier() {
+    return statModFor(this.energy) * this.engagedMod * this.terrainMod;
+  }
+
   get power() {
-    return this.encounter.melee ? this.unit.meleeWeapon.power : this.unit.rangedWeapon.power;
+    // TODO use power vs foot or vs mounted depending on the target.
+    return this.encounter.melee ? this.unit.meleeWeapon.powerVsFoot : this.unit.rangedWeapon.powerVsFoot;
   }
 
   get modifiedPower() {
@@ -125,11 +130,7 @@ export default class Combatant {
   }
 
   get terrainMod() {
-    return this.encounter.terrain * statModFor(this.unit.openness) * this.unitTypeTerrainMod;
-  }
-
-  get volumeModifier() {
-    return statModFor(this.energy) * this.engagedMod * this.terrainMod;
+    return ((MAX_TERRAIN - this.encounter.terrain) / MAX_TERRAIN) * statModFor(this.unit.openness) * this.unitTypeTerrainMod;
   }
 
   get slopeMod() {
