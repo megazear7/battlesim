@@ -14,6 +14,7 @@ import {
   SLOPE_DOWN,
   SLOPE_NONE } from '../terrain.js';
 import Encounter from '../encounter.js';
+import Situation from '../situation.js';
 
 const REST = 'REST';
 const MOVE = 'MOVE';
@@ -248,10 +249,14 @@ class FightView extends connect(store)(PageViewElement) {
   _takeAction() {
     if (this.validSituation) {
       let actionResult;
-      if (this._selectedAction === REST) {
-        actionResult = this._unit.rest();
-      } else if (this._selectedAction === MOVE) {
-        actionResult = this._unit.move(this.distance * 100, this.terrainModifier);
+      if (this._selectedAction === REST || this._selectedAction === MOVE) {
+        let sitation = new Situation({
+          unit: this._unit,
+          armyLeadership: 0,
+          terrain: this.terrainModifier,
+          slope: this.slope });
+
+        actionResult = this._selectedAction === REST ? sitation.rest() : sitation.move(this.distance * 100)
       } else {
         // FIRE or CHARGE
         let defendingUnit = new Unit(this._activeBattle.units[this.target], this.target);
@@ -267,7 +272,7 @@ class FightView extends connect(store)(PageViewElement) {
           melee: this._selectedAction === CHARGE,
           separation: this.separation,
           terrain: this.terrainModifier,
-          slope: this.slope});
+          slope: this.slope });
 
         actionResult = encounter.fight();
       }
