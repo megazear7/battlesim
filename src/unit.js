@@ -1,13 +1,7 @@
 import { store } from './store.js';
 import { WEAPONS } from './weapons.js';
 import { ARMOR } from './armor.js';
-import { weightedRandom, numberWithCommas, nearest100, SECONDS_IN_AN_HOUR } from './math-utils.js';
-import { attack } from './battle-utils.js';
-import { statModFor } from './game.js';
-import {
-  FOOT_TROOP,
-  CAVALRY_TROOP,
-  ARTILLERY_TROOP } from './units.js';
+import { FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP } from './units.js';
 import { upperCaseFirst } from './string-utils.js';
 
 export default class Unit {
@@ -53,65 +47,9 @@ export default class Unit {
     this.leadership = leadership;
     this.troopType = troopType;
     this.fullStrength = fullStrength;
-    this.baseSpeed = baseSpeed; // Given in yards per second. TODO set this in the unit configs and remove the movementTime
-    this.baseBackwardSpeed = baseBackwardSpeed; // Given in yards per second. TODO set this in the unit configs and remove the movementTime
+    this.baseSpeed = baseSpeed;
+    this.baseBackwardSpeed = baseBackwardSpeed;
     this.maneuverTime = maneuverTime;
-  }
-
-  move(distanceInYards, terrain, manuevering = false) {
-    // TODO reimplement this in similiar fashion to how we did the more complex attack
-    const maxYardsTravelled = (secondsAvailableToMove / secondsToMove100Yards(terrain)) * 100;
-    const yardsTravelled = Math.min(distanceInYards === 0 ? Number.MAX_SAFE_INTEGER : distanceInYards, maxYardsTravelled);
-    const secondsSpentMoving = (yardsTravelled / 100) * secondsToMove100Yards(terrain);
-    const energyCost = (secondsSpentMoving / SECONDS_IN_AN_HOUR) * terrainModifier;
-    const totalSecondsSpent = secondsSpentMoving + this.secondsToIssueOrder;
-
-    console.debug('secondsAvailableToMove', secondsAvailableToMove, '\nterrainModifier', terrainModifier, '\nsecondsToMove100Yards', secondsToMove100Yards, '\nmaxYardsTravelled', maxYardsTravelled, '\nyardsTravelled', yardsTravelled, '\nsecondsSpentMoving', secondsSpentMoving, '\nenergyCost', energyCost, '\ntotalSecondsSpent', totalSecondsSpent);
-
-    return {
-      messages: [
-        this.moveDesc(distanceInYards, yardsTravelled),
-        this.battlefieldMoveDesc(yardsTravelled, totalSecondsSpent),
-        this.energyDesc(energyCost),
-      ],
-      updates: [
-        {
-          id: this.id,
-          changes: [
-            {
-              prop: "energy",
-              value: this.energy - energyCost,
-            },
-            {
-              prop: 'nextAction',
-              value: this.nextAction + totalSecondsSpent,
-            },
-          ],
-        }
-      ]
-    };
-  }
-
-  secondsToMove100Yards(terrain) {
-    // TODO this needs moved after we refactor the move action
-    const secondsAvailableToMove = SECONDS_IN_AN_HOUR - this.secondsToIssueOrder;
-    const terrainModifier = 2 + ((terrain / 100) * 5) + Math.random();
-    return this.movementTime * terrainModifier;
-  }
-
-  battlefieldMoveDesc(yardsTravelled, secondsSpent) {
-    // TODO this needs moved after we refactor the move action
-    return `${this.name} travelled ${numberWithCommas(nearest100(yardsTravelled))} yards in ${Math.floor(secondsSpent / 60)} minutes.`;
-  }
-
-  moveDesc(expectedDistance, actualDistance) {
-    if (expectedDistance === 0) {
-      return `You move ${Math.floor(actualDistance / 100)} inches.`;
-    } else if (actualDistance < expectedDistance) {
-      return `You could only move ${Math.floor(actualDistance / 100)} inches.`;
-    } else {
-      return `You move the full ${Math.floor(actualDistance / 100)} inches.`;
-    }
   }
 
   get secondsToIssueOrder() {

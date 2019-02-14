@@ -1,5 +1,5 @@
-import { weightedRandomTowards, } from './math-utils.js';
-import { MAX_STAT } from './game.js';
+import { weightedRandomTowards, numberWithCommas, nearest100, SECONDS_IN_AN_MINUTE } from './math-utils.js';
+import { MAX_STAT, YARDS_PER_INCH } from './game.js';
 import ActingUnit, { MORALE_SUCCESS, MORALE_FAILURE } from './acting-unit.js';
 
 /** @class Situation
@@ -62,7 +62,21 @@ export default class SoloUnit extends ActingUnit {
   }
 
   get desc() {
-    return `${this.energyRecoveredDesc}. ${this.energyGain} Morale recovered: ${this.moraleGain}`;
+    return `${this.situation.yardsTravelled ? this.moveDesc : ''} ${this.situation.yardsTravelled ? this.battlefieldMoveDesc : ''} ${this.energyGain > 0 ? this.energyRecoveredDesc : ''}`;
+  }
+
+  get battlefieldMoveDesc() {
+    return `${this.unit.name} travelled ${numberWithCommas(nearest100(this.situation.yardsTravelled))} yards in ${Math.floor(this.situation.secondsSpentMoving / SECONDS_IN_AN_MINUTE)} minutes.`;
+  }
+
+  get moveDesc() {
+    if (this.situation.distanceInYards === 0) {
+      return `You move ${Math.floor(this.situation.yardsTravelled / YARDS_PER_INCH)} inches.`;
+    } else if (this.situation.yardsTravelled < this.situation.distanceInYards) {
+      return `You could only move ${Math.floor(this.situation.yardsTravelled / YARDS_PER_INCH)} inches.`;
+    } else {
+      return `You move the full ${Math.floor(this.situation.yardsTravelled / YARDS_PER_INCH)} inches.`;
+    }
   }
 
   get energyRecoveredDesc() {

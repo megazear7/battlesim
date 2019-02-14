@@ -171,7 +171,7 @@ class FightView extends connect(store)(PageViewElement) {
   }
 
   get distance() {
-    return parseInt(this.distanceElement.value === '' ? 0 : this.distanceElement.value);
+    return parseInt(this.distanceElement.value === '' ? -1 : this.distanceElement.value);
   }
 
   get separation() {
@@ -256,7 +256,7 @@ class FightView extends connect(store)(PageViewElement) {
           terrain: this.terrainModifier,
           slope: this.slope });
 
-        actionResult = this._selectedAction === REST ? sitation.rest() : sitation.move(this.distance * 100)
+        actionResult = this._selectedAction === REST ? sitation.rest() : sitation.move(this.distance)
       } else {
         // FIRE or CHARGE
         let defendingUnit = new Unit(this._activeBattle.units[this.target], this.target);

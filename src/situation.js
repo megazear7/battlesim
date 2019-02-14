@@ -19,18 +19,18 @@ export default class Situation {
       slope: this.slope });
   }
 
-  rest(timeSpent = SECONDS_PER_TURN) {
-    this.timeSpentMoving = 0;
-    this.timeSpentResting = timeSpent;
+  rest(secondsSpent = SECONDS_PER_TURN) {
+    this.distance = 0;
+    this.secondsSpentMoving = 0;
+    this.secondsSpentResting = secondsSpent;
 
     return this.actionResult;
   }
 
-
   move(distance) {
-    // TODO calculate time spent moving based upon the distance
-    this.timeSpentMoving = 0;
-    this.timeSpentResting = 0;
+    this.distance = distance === -1 ? Number.MAX_SAFE_INTEGER : distance;
+    this.secondsSpentMoving = this.yardsTravelled / this.soloUnit.speed;
+    this.secondsSpentResting = 0;
 
     return this.actionResult;
   }
@@ -46,11 +46,31 @@ export default class Situation {
     };
   }
 
+  get maxYardsTravelled() {
+    return this.secondsAvailableToMove * this.soloUnit.speed;
+  }
+
+  get secondsAvailableToMove() {
+    return SECONDS_PER_TURN - this.soloUnit.unit.secondsToIssueOrder;
+  }
+
+  get yardsTravelled() {
+    return Math.min(this.distanceInYards, this.maxYardsTravelled);
+  }
+
+  get distanceInYards() {
+    return this.distance * YARDS_PER_INCH;
+  }
+
+  get totalSecondsSpent() {
+    return this.secondsSpentMoving + this.secondsToIssueOrder;
+  }
+
   get percentageOfATurnSpentMoving() {
-    return (this.timeSpentMoving / SECONDS_PER_TURN) * 100;
+    return (this.secondsSpentMoving / SECONDS_PER_TURN) * 100;
   }
 
   get percentageOfATurnSpentResting() {
-    return (this.timeSpentResting / SECONDS_PER_TURN) * 100;
+    return (this.secondsSpentResting / SECONDS_PER_TURN) * 100;
   }
 }
