@@ -34,6 +34,10 @@ export default class SoloUnit {
     return this.unit.baseSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod;
   }
 
+  distanceMovedPer(seconds) {
+    return this.speed * seconds;
+  }
+
   get backwardsSpeed() {
     return this.unit.baseBackwardSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod;
   }
@@ -66,12 +70,8 @@ export default class SoloUnit {
     return weightedRandom(3) * 100;
   }
 
-  // Warning: Performing multiple morale checks will do a new roll and might switch the status.
-  // This should only be done when the game rules require it, not simply to "get the status" of the combatant.
   performMoraleCheck() {
     const roll = weightedRandom(3) * 100;
     const modifiedMorale = this.unit.morale - roll;
-
-
   }
 }

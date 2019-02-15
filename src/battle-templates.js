@@ -29,14 +29,22 @@ export default [
     ],
     deadliness: 1, // TODO Use this in combat calculations.
     turnDuration: SECONDS_IN_AN_HOUR, // TODO use this value here throughout instead of the constant.
-    roundStrength: 100, // TODO Use this and round the number of reported
-    roundCasualties: 10, // TODO Use this and round the number of reported casualties to this number
+    roundStrength: 100, // TODO Use this and round the number of reported strength based on this number
+    roundCasualties: 10, // TODO Use this and round the number of reported casualties based on this number
     activeArmy: 0,
     activeUnit: 0,
     turnStarted: 0,
     armies: [
-      { name: "Union" },
-      { name: "Confederate" },
+      {
+        name: "Union",
+        armyActionTitle: "Union Army Actions.",
+        armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches."
+      },
+      {
+        name: "Confederate",
+        armyActionTitle: "Confederate Army Actions.",
+        armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches."
+      },
     ],
     units: [
       { ...FRESH_UNION_BRIGADE,
@@ -294,17 +302,27 @@ export default [
     activeUnit: 0,
     turnStarted: 0,
     armies: [
-      { name: "Union" },
-      { name: "Confederate" },
+      {
+        name: "Union",
+        armyActionTitle: "Union Army Actions.",
+        armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches."
+      },
+      {
+        name: "Confederate",
+        armyActionTitle: "Confederate Army Actions.",
+        armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches."
+      },
     ],
     units: [
       {
         ...FRESH_UNION_BRIGADE,
-        name: "Tyler's 3rd Brigade"
+        name: "Tyler's 3rd Brigade",
+        fallback: 5,
       },
       {
         ...FRESH_CONFEDERATE_BRIGADE,
         name: "1st Potomac Brigade",
+        fallback: 5,
       },
     ],
     unitTemplates: CIVIL_WAR_UNITS,

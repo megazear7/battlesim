@@ -49,7 +49,21 @@ export default [
           {
             heading: 'Combat',
             text: 'You might notice that you can only ever engage a single unit in combat with a single other unit. This might make you feel difficult to swarm a single enemy unit with multiple of your own units. While this is intentional, keep in mind that you can engage an enemy stand with multiple units as your units turns come up. The combat effectiveness of the enemy unit will dramatically worsen as it has to repeatedly engage in combat after combat. On the battlefield these sequential combats might in reality have been a single enagement where you sent multiple units into combat with a single unit, but on the tabletop you will see this type of event play out as separate and sequential combats. Keep the game clock in mind. You might notice that both your attacks happened within a few minutes of game time. This obviouslly means that while you took individual turns for each unit, both engagements actually happened simultaneouslly.'
-          }
+          },
+          {
+            heading: 'Army actions',
+            text: 'You will be notified to take army actions. This will allow you to move generals, commanders, and supply wagons. If a general or commander is touching a friendly unit while that unit performs a move the general or commander may move with the unit.'
+          },
+        ]
+      },
+      {
+        heading: 'Rest',
+        text: 'Units can rest to recover energy and morale.',
+        subsections: [
+          {
+            heading: 'Resupply',
+            text: 'While taking army actions you can move your supply wagons. If one of these supply wagons is touching a unit while that unit is taking actions you can choose to resupply that unit while resting. This will recover their ammunition. When you do this you pick up the supply wagon from the game.',
+          },
         ]
       },
       {

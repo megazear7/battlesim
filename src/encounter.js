@@ -2,7 +2,7 @@ import Combatant from './combatant.js';
 import { WEAPONS } from './weapons.js';
 import { ARMOR } from './armor.js';
 import { store } from './store.js';
-import { attack } from './battle-utils.js';
+import { combat, YARDS_TO_FIGHT } from './battle-utils.js';
 import { randomMinutesBetween, SECONDS_IN_AN_MINUTE } from './math-utils.js';
 import { FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP } from './units.js';
 import { SLOPE_UP, SLOPE_DOWN, SLOPE_NONE } from './terrain.js';
@@ -48,45 +48,40 @@ export default class Encounter {
       slope: this.defenderSlope });
   }
 
-  attackerAttacks() {
-    if (this.attacker.status === MORALE_SUCCESS) {
-      this.defender.casualties = attack({
-        attacker: this.attacker,
-        defender: this.defender,
-        duration: this.secondsSpentFighting });
-      return ``;
-    } else {
-      return `${this.attacker.name} refused to attack.`;
-    }
-  }
-
-  defenderAttacks() {
-    if (this.attacker.status === MORALE_SUCCESS) {
-      this.attacker.casualties = attack({
-        attacker: this.defender,
-        defender: this.attacker,
-        duration: this.secondsSpentFighting });
-      return ``;
-    } else {
-      return `${this.defender.name} refused to stand and defend.`;
-    }
-  }
-
   attackerEngages() {
-    const attackerMessage = this.attackerAttacks();
-    const defenderMessage = this.defenderAttacks();
+    let secondsOfCombat = combat(this.attacker, this.defender, SECONDS_PER_TURN);
+
+    let actionMessage = ``;
+    if (this.attacker.fallingback && this.attacker.inchesFallenback >= 1) {
+      actionMessage += `${this.attacker.unit.name} fell back ${this.defender.inchesFallenback} inch. `;
+
+      if (this.defender.persueing && this.defender.inchesPersued >= 2) {
+        actionMessage += `${this.defender.unit.name} persued ${this.defender.inchesPersued} inch. `;
+      }
+    }
+
+    if (this.defender.fallingback && this.defender.inchesFallenback >= 1) {
+      actionMessage += `${this.defender.unit.name} fell back ${this.defender.inchesFallenback} inch.`;
+
+      if (this.attacker.persueing && this.attacker.inchesPersued >= 2) {
+        actionMessage += `${this.attacker.unit.name} persued ${this.attacker.inchesPersued} inch.`;
+      }
+    }
+
+    console.log(this.attacker, this.defender);
 
     if (this.inchesDefenderFled > 1) {
-      return `${attackerMessage} ${this.defender.unit.name} fell back ${this.inchesDefenderFled} inches but was then caught by ${this.attacker.unit.name}. ${this.timeEngagedMessage}`;
+      return `${actionMessage} ${attackerMessage} ${this.defender.unit.name} fell back ${this.inchesDefenderFled} inches but was then caught by ${this.attacker.unit.name}. ${this.timeEngagedMessage(secondsOfCombat)}`;
     } else if (this.defenderFled) {
-      return `${this.defender.unit.name} attempted to fall back but was quickly caught by ${this.attacker.unit.name}. ${this.timeEngagedMessage}`;
+      return `${actionMessage} ${this.defender.unit.name} attempted to fall back but was quickly caught by ${this.attacker.unit.name}. ${this.timeEngagedMessage(secondsOfCombat)}`;
     } else {
-      return `${this.defender.unit.name} held it's ground against ${this.attacker.unit.name}. ${this.timeEngagedMessage}`;
+      return `${actionMessage} ${this.defender.unit.name} held it's ground against ${this.attacker.unit.name}. ${this.timeEngagedMessage(secondsOfCombat)}`;
     }
   }
 
   defenderRunsAway() {
     if (this.defenderFled) {
+      // This is a "flee". Update the message to the user so they understand how to apply the rule.
       return `${this.defender.unit.name} fell back ${this.inchesDefenderFled} inches and ${this.attacker.unit.name} could not reach it's target but is now ${this.inchesOfSeparationAfter} inches behind.`;
     } else {
       return `${this.attacker.unit.name} could not reach ${this.defender.unit.name} but made it a distance of ${this.inchesAttackerTravelled} inches towards it's target.`;
@@ -112,8 +107,8 @@ export default class Encounter {
     };
   }
 
-  get timeEngagedMessage() {
-    return `They were engaged for ${this.minutesSpentFighting} minutes.`;
+  timeEngagedMessage(seconds) {
+    return `They were engaged for ${seconds / SECONDS_IN_AN_MINUTE} minutes.`;
   }
 
   get attackerSlope() {
@@ -127,6 +122,18 @@ export default class Encounter {
       return SLOPE_UP;
     } else {
       return SLOPE_NONE;
+    }
+  }
+
+  get closeEnoughToFight() {
+    if (this.attacker.fallingback && this.defender.fallingback) {
+      return false;
+    } else if (this.attacker.fallingback) {
+      return this.attacker.fallBackDistance - this.defender.persuitDistance > YARDS_TO_FIGHT;
+    } else if (this.defender.fallingback) {
+      return this.defender.fallBackDistance - this.attacker.persuitDistance > YARDS_TO_FIGHT;
+    } else {
+      return true;
     }
   }
 

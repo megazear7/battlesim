@@ -134,6 +134,10 @@ class FightView extends connect(store)(PageViewElement) {
               <input type="checkbox" id="terrain-checkbox"></input>
               <label for="terrain-checkbox">Difficult Terrain</label>
             </div>
+            <div id="resupply" class="hidden">
+              <input type="checkbox" id="resupply-checkbox"></input>
+              <label for="resupply-checkbox">Resupply</label>
+            </div>
           <div>
           <div id="take-action" style="opacity: 0;">
             <button @click="${this._takeAction}">Take Action</button>
@@ -153,109 +157,6 @@ class FightView extends connect(store)(PageViewElement) {
         </section>
       `}
     `;
-  }
-
-  get distanceElement() {
-    return this.shadowRoot.getElementById('distance');
-  }
-
-  get separationElement() {
-    return this.shadowRoot.getElementById('separation');
-  }
-
-  get engagedAttackingElement() {
-    return this.shadowRoot.getElementById('engaged-attackers');
-  }
-
-  get engagedDefendingElement() {
-    return this.shadowRoot.getElementById('engaged-defenders');
-  }
-
-  get hillContainer() {
-    return this.shadowRoot.getElementById('hill');
-  }
-
-  get leaderContainer() {
-    return this.shadowRoot.getElementById('leader');
-  }
-
-  get terrainContainer() {
-    return this.shadowRoot.getElementById('terrain');
-  }
-
-  get targetElement() {
-    return this.shadowRoot.getElementById('target');
-  }
-
-  get errorElement() {
-    return this.shadowRoot.querySelector('.error');
-  }
-
-  get distance() {
-    return parseInt(this.distanceElement.value === '' ? -1 : this.distanceElement.value);
-  }
-
-  get separation() {
-    return parseInt(this.separationElement.value ? this.separationElement.value : 0);
-  }
-
-  get engagedAttackers() {
-    return parseInt(this.engagedAttackingElement.value === '' ? 0 : this.engagedAttackingElement.value);
-  }
-
-  get engagedDefenders() {
-    return parseInt(this.engagedDefendingElement.value === '' ? 0 : this.engagedDefendingElement.value);
-  }
-
-  get slope() {
-    const radioVal = getRadioVal(this.shadowRoot.getElementById('input-container'), 'hill');
-    return radioVal ? radioVal : SLOPE_NONE;
-  }
-
-  get generalNearby() {
-    return getRadioVal(this.shadowRoot.getElementById('input-container'), 'leader') === 'general';
-  }
-
-  get subcommanderNearby() {
-    return getRadioVal(this.shadowRoot.getElementById('input-container'), 'leader') === 'subcommander';
-  }
-
-  get terrain() {
-    return this.terrainContainer.querySelector('input').checked;
-  }
-
-  get target() {
-    return parseInt(this.targetElement.value);
-  }
-
-  get terrainModifier() {
-    if (this.uphill && this.terrain) {
-      return 60;
-    } else if (this.uphill) {
-      return 40;
-    } else if (this.terrain) {
-      return 20;
-    } else {
-      return 0;
-    }
-  }
-
-  get validSituation() {
-    if (this._selectedAction === REST) {
-      return true;
-    } else if (this._selectedAction === MOVE) {
-      return true;
-    } else if (this._selectedAction === CHARGE) {
-      return ! isNaN(this.target)
-    } else if (this._selectedAction === FIRE) {
-      return ! isNaN(this.target)
-    } else {
-      return false;
-    }
-  }
-
-  get _actionMessageElement() {
-    return this.shadowRoot.getElementById('action-message');
   }
 
   _progressToNextAction() {
@@ -295,7 +196,32 @@ class FightView extends connect(store)(PageViewElement) {
           terrain: this.terrainModifier,
           slope: this.slope });
 
-        actionResult = encounter.fight();
+        if (this._selectedAction === FIRE) {
+          actionResult = encounter.fight();
+        } else {
+          actionResult = encounter.fight();
+
+          // TODO Show the action message to the user
+          // TODO Reveal the "Perform Combat" button
+          /*
+          actionMessage = encounter.charge();
+
+
+          // TODO Only show the action results whe nthe perfrom combat button is clicked
+          // After it is clicked show the action results and show the next action button.
+          // Something like this:
+          this.performCombatButton.click(() => {
+            if (encounter.attackerReachedDefender && encounter.inchesDefenderFled === 0) {
+              actionResult = encounter.fight();
+            } else if (encounter.attackerReachedDefender && encounter.inchesDefenderFled > 0) {
+              actionResult = encounter.fight();
+            } else {
+              // TODO noFight should return an action result with a message and with energy and time updates.
+              actionResult = encounter.noFight();
+            }
+          });
+          */
+        }
       }
 
       this._actionMessages = actionResult.messages;
@@ -315,6 +241,7 @@ class FightView extends connect(store)(PageViewElement) {
       this.hillContainer.querySelectorAll('input').forEach(input => input.checked = false);
       this.leaderContainer.querySelectorAll('input').forEach(input => input.checked = false);
       this.terrainContainer.querySelector('input').checked = false;
+      this.resupplyContainer.querySelector('input').checked = false;
       this.targetElement.value = '';
 
       this.shadowRoot.getElementById('take-action').style.display = 'none';
@@ -338,6 +265,7 @@ class FightView extends connect(store)(PageViewElement) {
     this.hillContainer.classList.add('hidden');
     this.leaderContainer.classList.add('hidden');
     this.terrainContainer.classList.add('hidden');
+    this.resupplyContainer.classList.add('hidden');
     this.targetElement.classList.add('hidden');
   }
 
@@ -382,6 +310,7 @@ class FightView extends connect(store)(PageViewElement) {
     this.shadowRoot.getElementById('rest').style.opacity = 1;
     this.shadowRoot.getElementById('fire').style.opacity = 0.5;
     this.shadowRoot.getElementById('take-action').style.opacity = 1;
+    this.resupplyContainer.classList.remove('hidden');
     this._selectedAction = REST;
   }
 
@@ -414,6 +343,117 @@ class FightView extends connect(store)(PageViewElement) {
     } else {
       this._hasActiveBattle = false;
     }
+  }
+
+  get distanceElement() {
+    return this.shadowRoot.getElementById('distance');
+  }
+
+  get separationElement() {
+    return this.shadowRoot.getElementById('separation');
+  }
+
+  get engagedAttackingElement() {
+    return this.shadowRoot.getElementById('engaged-attackers');
+  }
+
+  get engagedDefendingElement() {
+    return this.shadowRoot.getElementById('engaged-defenders');
+  }
+
+  get hillContainer() {
+    return this.shadowRoot.getElementById('hill');
+  }
+
+  get leaderContainer() {
+    return this.shadowRoot.getElementById('leader');
+  }
+
+  get terrainContainer() {
+    return this.shadowRoot.getElementById('terrain');
+  }
+
+  get resupplyContainer() {
+    return this.shadowRoot.getElementById('resupply');
+  }
+
+  get targetElement() {
+    return this.shadowRoot.getElementById('target');
+  }
+
+  get errorElement() {
+    return this.shadowRoot.querySelector('.error');
+  }
+
+  get distance() {
+    return parseInt(this.distanceElement.value === '' ? -1 : this.distanceElement.value);
+  }
+
+  get separation() {
+    return parseInt(this.separationElement.value ? this.separationElement.value : 0);
+  }
+
+  get engagedAttackers() {
+    return parseInt(this.engagedAttackingElement.value === '' ? 0 : this.engagedAttackingElement.value);
+  }
+
+  get engagedDefenders() {
+    return parseInt(this.engagedDefendingElement.value === '' ? 0 : this.engagedDefendingElement.value);
+  }
+
+  get slope() {
+    const radioVal = getRadioVal(this.shadowRoot.getElementById('input-container'), 'hill');
+    return radioVal ? radioVal : SLOPE_NONE;
+  }
+
+  get generalNearby() {
+    return getRadioVal(this.shadowRoot.getElementById('input-container'), 'leader') === 'general';
+  }
+
+  get subcommanderNearby() {
+    return getRadioVal(this.shadowRoot.getElementById('input-container'), 'leader') === 'subcommander';
+  }
+
+  get terrain() {
+    return this.terrainContainer.querySelector('input').checked;
+  }
+
+  get resupply() {
+    return this.resupplyContainer.querySelector('input').checked;
+  }
+
+  get target() {
+    return parseInt(this.targetElement.value);
+  }
+
+  get terrainModifier() {
+    if (this.uphill && this.terrain) {
+      return 60;
+    } else if (this.uphill) {
+      return 40;
+    } else if (this.terrain) {
+      return 20;
+    } else {
+      return 0;
+    }
+  }
+
+  get validSituation() {
+    if (this._selectedAction === REST) {
+      return true;
+    } else if (this._selectedAction === MOVE) {
+      return true;
+    } else if (this._selectedAction === CHARGE) {
+      return ! isNaN(this.target)
+    } else if (this._selectedAction === FIRE) {
+      return ! isNaN(this.target)
+    } else {
+      return false;
+    }
+  }
+
+  get _actionMessageElement() {
+    return this.shadowRoot.getElementById('action-message');
   }
 }
 

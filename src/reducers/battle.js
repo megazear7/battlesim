@@ -31,6 +31,10 @@ const battle = (state = initialState, action) => {
         unit[change.prop] = change.value;
       });
     });
+    // TODO When the active army switches the new active army should take "Generals actions".
+    // This will basically just be a message given to the user based upon the battle template
+    // and can be specific to each army. This could include things like moving generals and commanders
+    // and moving supply wagons.
 
     updateTime(activeBattle);
   } else if (activeBattle && action.type === ADD) {

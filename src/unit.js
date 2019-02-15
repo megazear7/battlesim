@@ -10,6 +10,8 @@ export default class Unit {
                 name,
                 unitType = FOOT_TROOP,
                 openness = 20,
+                fallback = 10,
+                ammunition = 0,
                 stands = 8,
                 strength,
                 morale = 90,
@@ -33,6 +35,8 @@ export default class Unit {
     this.name = name;
     this.unitType = unitType;
     this.openness = openness;
+    this.fallback = fallback;
+    this.ammunition = ammunition;
     this.stands = stands;
     this.strength = strength || fullStrength;
     this.morale = morale;

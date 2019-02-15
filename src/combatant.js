@@ -1,6 +1,6 @@
 import { weightedRandomTowards, modVolume, SECONDS_IN_AN_HOUR } from './math-utils.js';
 import { SLOPE_NONE } from './terrain.js';
-import { statModFor, MAX_STAT, SECONDS_PER_TURN } from './game.js';
+import { statModFor, MAX_STAT, SECONDS_PER_TURN, YARDS_PER_INCH } from './game.js';
 import { FOOT_TROOP, MELEE_WEAPON, RANGED_WEAPON } from './units.js';
 import { POWER_VS_FOOT, POWER_VS_MOUNTED } from './weapons.js';
 import ActingUnit, { MORALE_SUCCESS, MORALE_FAILURE } from './acting-unit.js';
@@ -26,23 +26,24 @@ export default class Combatant extends ActingUnit {
     this.status = status;
     this.slope = slope;
     this.casualties = 0;
+    this.ammunitionUsed = 0;
+    this.yardsFallenback = 0;
+    this.yardsPersued = 0;
     this.leaderSurviveRoll = Math.random();
     this.energyModRoll = weightedRandomTowards(0, 100, 10, 4);
     this.moraleModRoll = weightedRandomTowards(0, 100, 10, 4);
   }
 
   get energyLoss() {
+    // TODO Average these values together instead of multipling them.
     return Math.floor(
       (this.energyModRoll + this.unit.carriedWeight) *
       (this.encounter.melee ? 1 : 0.5) *
       (this.encounter.secondsSpentFighting / SECONDS_PER_TURN));
   }
 
-  get hardinessMod() {
-    return (MAX_STAT - this.unit.experience) / MAX_STAT;
-  }
-
   get moraleLoss() {
+    // TODO Average these values together instead of multipling them.
     return Math.floor(
       (this.moraleModRoll) *
       (this.hardinessMod) *
@@ -50,8 +51,36 @@ export default class Combatant extends ActingUnit {
       (1 + (this.unit.strength / this.unit.fullStrength)));
   }
 
+  get attacksRequireAmmunition() {
+    return ! this.encounter.melee;
+  }
+
+  get fallingback() {
+    return this.casualties > this.fallbackCasualtyCount;
+  }
+
+  get persueing() {
+    return ! this.fallingback && this.yardsPersued > 0;
+  }
+
+  get fallbackCasualtyCount() {
+    return this.unit.strength * (this.unit.fallback / 100);
+  }
+
   get leadershipLoss() {
     return this.casualties / this.unit.strength > this.leaderSurviveRoll ? Math.min(30, this.unit.leadership) : 0;
+  }
+
+  get hardinessMod() {
+    return (MAX_STAT - this.unit.experience) / MAX_STAT;
+  }
+
+  get inchesPersued() {
+    return Math.ceil(this.yardsPersued / YARDS_PER_INCH);
+  }
+
+  get inchesFallenback() {
+    return Math.ceil(this.yardsFallenback / YARDS_PER_INCH);
   }
 
   get modifiedMeleeVolume() {
@@ -114,6 +143,10 @@ export default class Combatant extends ActingUnit {
 
   get armorRoll() {
     return Math.random() * this.armor;
+  }
+
+  get secondsPerAttack() {
+    return (this.unit.strength * this.modifiedVolume) / SECONDS_IN_AN_HOUR;
   }
 
   attacksForTime(duration) {

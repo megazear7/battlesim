@@ -27,6 +27,8 @@ export const FRESH_UNION_BRIGADE = {
   energy: 100,
   stands: 8,
   openness: 20,
+  fallback: 10, // Percentage losses at which point the unit will fallback during combat.
+  ammunition: UNION_BRIGADE_SIZE * 20,
   armor: NO_ARMOR,
   [MELEE_WEAPON]: BAYONETE,
   [RANGED_WEAPON]: SPRINGFIELD_RIFLED_MUSKET,
@@ -50,6 +52,8 @@ export const FRESH_UNION_CAVALRY_REGIMENT = {
   energy: 100,
   stands: 6,
   openness: 20,
+  fallback: 10, // Percentage losses at which point the unit will fallback during combat.
+  ammunition: UNION_CAVALRY_REGIMENT_SIZE * 20,
   armor: NO_ARMOR,
   [MELEE_WEAPON]: BAYONETE,
   [RANGED_WEAPON]: SPRINGFIELD_RIFLED_MUSKET,
@@ -73,6 +77,8 @@ export const FRESH_UNION_ARTILLERY = {
   energy: 100,
   stands: 2,
   openness: 0,
+  fallback: 10, // Percentage losses at which point the unit will fallback during combat.
+  ammunition: 50 * 100,
   armor: NO_ARMOR,
   [MELEE_WEAPON]: NO_WEAPON,
   [RANGED_WEAPON]: CANNON_24_POUNDER_CIVIL_WAR,
@@ -96,6 +102,8 @@ export const FRESH_CONFEDERATE_BRIGADE = {
   energy: 100,
   stands: 8,
   openness: 20,
+  fallback: 10, // Percentage losses at which point the unit will fallback during combat.
+  ammunition: CONFEDERATE_BRIGADE_SIZE * 20,
   armor: NO_ARMOR,
   [MELEE_WEAPON]: BAYONETE,
   [RANGED_WEAPON]: CONFEDERATE_SMOOTH_BORE,
@@ -119,6 +127,8 @@ export const FRESH_CONFEDERATE_CAVALRY_REGIMENT = {
   energy: 100,
   stands: 6,
   openness: 20,
+  fallback: 10, // Percentage losses at which point the unit will fallback during combat.
+  ammunition: CONFEDERATE_CAVALRY_REGIMENT_SIZE * 20,
   armor: NO_ARMOR,
   [MELEE_WEAPON]: BAYONETE,
   [RANGED_WEAPON]: CONFEDERATE_SMOOTH_BORE,
@@ -142,6 +152,8 @@ export const FRESH_CONFEDERATE_ARTILLERY = {
   energy: 100,
   stands: 2,
   openness: 0,
+  fallback: 10, // Percentage losses at which point the unit will fallback during combat.
+  ammunition: 50 * 100,
   armor: NO_ARMOR,
   [MELEE_WEAPON]: NO_WEAPON,
   [RANGED_WEAPON]: CANNON_24_POUNDER_CIVIL_WAR,
