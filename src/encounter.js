@@ -68,31 +68,48 @@ export default class Encounter {
       }
     }
 
-    console.log(this.attacker, this.defender);
-
     if (this.inchesDefenderFled > 1) {
-      return `${actionMessage} ${attackerMessage} ${this.defender.unit.name} fell back ${this.inchesDefenderFled} inches but was then caught by ${this.attacker.unit.name}. ${this.timeEngagedMessage(secondsOfCombat)}`;
+      return `${actionMessage} ${attackerMessage} ${this.defender.unit.name} fled ${this.inchesDefenderFled} inches but was then caught by ${this.attacker.unit.name}. ${this.timeEngagedMessage(secondsOfCombat)}`;
     } else if (this.defenderFled) {
       return `${actionMessage} ${this.defender.unit.name} attempted to fall back but was quickly caught by ${this.attacker.unit.name}. ${this.timeEngagedMessage(secondsOfCombat)}`;
     } else {
-      return `${actionMessage} ${this.defender.unit.name} held it's ground against ${this.attacker.unit.name}. ${this.timeEngagedMessage(secondsOfCombat)}`;
+      return `${actionMessage} ${this.timeEngagedMessage(secondsOfCombat)}`;
     }
   }
 
-  defenderRunsAway() {
+  get couldNotReachTargetMessage() {
     if (this.defenderFled) {
-      // This is a "flee". Update the message to the user so they understand how to apply the rule.
-      return `${this.defender.unit.name} fell back ${this.inchesDefenderFled} inches and ${this.attacker.unit.name} could not reach it's target but is now ${this.inchesOfSeparationAfter} inches behind.`;
+      return `${this.defender.unit.name} fled ${this.inchesDefenderFled} inches and ${this.attacker.unit.name} could not reach it's target but may persue up to ${this.inchesOfSeparationAfter} inches.`;
     } else {
-      return `${this.attacker.unit.name} could not reach ${this.defender.unit.name} but made it a distance of ${this.inchesAttackerTravelled} inches towards it's target.`;
+      return `${this.attacker.unit.name} could not reach ${this.defender.unit.name} but moved ${this.inchesAttackerTravelled} inches towards it's target.`;
     }
+  }
+
+  get chargeMovementMessage() {
+    return `${this.attacker.unit.name} may move his stands ${this.attackerMovementInches} inches in order to make it into combat. Then the defender may follow this by moving his unengaged stands ${this.defenderMovementInches} inches.`;
+  }
+
+  get attackerMovementInches() {
+    return Math.ceil((this.attacker.yardsMovedPer(this.graceWindow) + this.yardsAttackerTravelled) / YARDS_PER_INCH);
+  }
+
+  get defenderMovementInches() {
+    return Math.ceil(this.defender.yardsMovedPer(this.graceWindow) / YARDS_PER_INCH);
+  }
+
+  get chargeMessage() {
+    return this.attackerReachedDefender ? this.chargeMovementMessage : this.couldNotReachTargetMessage;
+  }
+
+  get graceWindow() {
+    return this.secondsSpentFighting * 0.5; // Stands that could have made it in time to partake in half of the combat are allowed to be counted.
   }
 
   fight() {
     this.attacker.performMoraleCheck();
     this.defender.performMoraleCheck();
 
-    const actionMessage = this.attackerReachedDefender ? this.attackerEngages() : this.defenderRunsAway();
+    const actionMessage = this.attackerReachedDefender ? this.attackerEngages() : ``;
     const fullMessage = `${actionMessage} ${this.defender.battleReport()} ${this.attacker.battleReport()}`;
 
     return {

@@ -28,6 +28,7 @@ class FightView extends connect(store)(PageViewElement) {
       _hasActiveBattle: { type: Boolean },
       _actionMessages: { type: Array },
       _date: { type: Object },
+      _chargeMessage: { type: String },
     };
   }
 
@@ -100,8 +101,6 @@ class FightView extends connect(store)(PageViewElement) {
                 <option value="${target.id}">${target.unit.name}</option>
               `)}
             </select>
-            <input id="engaged-attackers" class="hidden stands" type="number" placeholder="Attacking Stands"></input>
-            <input id="engaged-defenders" class="hidden stands" type="number" placeholder="Defending Stands"></input>
             <br>
             <br>
             <div id="hill" class="hidden">
@@ -138,11 +137,17 @@ class FightView extends connect(store)(PageViewElement) {
               <input type="checkbox" id="resupply-checkbox"></input>
               <label for="resupply-checkbox">Resupply</label>
             </div>
+            <p id="charge-message" class="hidden">${this._chargeMessage}</p>
+            <input id="engaged-attackers" class="hidden stands" type="number" placeholder="Attacking Stands"></input>
+            <input id="engaged-defenders" class="hidden stands" type="number" placeholder="Defending Stands"></input>
           <div>
-          <div id="take-action" style="opacity: 0;">
-            <button @click="${this._takeAction}">Take Action</button>
-            <p class="error hidden">You must provide valid values for each required field.</p>
+          <div id="do-combat" class="hidden">
+            <button @click="${this._doCombat}">Do Combat</button>
           </div>
+          <div id="take-action" class="hidden">
+            <button @click="${this._takeAction}">Take Action</button>
+          </div>
+          <p class="error hidden">You must provide valid values for each required field.</p>
           <div id="action-result">
             ${repeat(this._actionMessages, message => html`
               <p>${message}</p>
@@ -168,60 +173,36 @@ class FightView extends connect(store)(PageViewElement) {
     this._actionMessageElement.innerText = '';
   }
 
+  _doCombat() {
+    if (this.validSituation) {
+      this._hideInputs();
+      let encounter = this._createEncounter();
+
+      this._chargeMessage = encounter.chargeMessage;
+      this.chargeMessageElement.classList.remove('hidden');
+
+      if (encounter.attackerReachedDefender) {
+        this.engagedAttackingElement.classList.remove('hidden');
+        this.engagedDefendingElement.classList.remove('hidden');
+      }
+
+      this.shadowRoot.getElementById('take-action').classList.remove('hidden');
+    } else {
+      this._showError();
+    }
+  }
+
   _takeAction() {
     if (this.validSituation) {
       let actionResult;
+      let skipResults = false;
       if (this._selectedAction === REST || this._selectedAction === MOVE) {
-        let sitation = new Situation({
-          unit: this._unit,
-          armyLeadership: 0,
-          terrain: this.terrainModifier,
-          slope: this.slope });
-
+        let sitation = this._createSituation();
         actionResult = this._selectedAction === REST ? sitation.rest() : sitation.move(this.distance)
       } else {
-        // FIRE or CHARGE
-        let defendingUnit = new Unit(this._activeBattle.units[this.target], this.target);
-        let encounter = new Encounter({
-          attacker: this._unit,
-          attackerTerrainDefense: 0,
-          attackerArmyLeadership: 0,
-          attackerEngagedStands: this.engagedAttackers,
-          defender: defendingUnit,
-          defenderTerrainDefense: 0,
-          defenderArmyLeadership: 0,
-          defenderEngagedStands: this.engagedAttackers,
-          melee: this._selectedAction === CHARGE,
-          separation: this.separation,
-          terrain: this.terrainModifier,
-          slope: this.slope });
-
-        if (this._selectedAction === FIRE) {
-          actionResult = encounter.fight();
-        } else {
-          actionResult = encounter.fight();
-
-          // TODO Show the action message to the user
-          // TODO Reveal the "Perform Combat" button
-          /*
-          actionMessage = encounter.charge();
-
-
-          // TODO Only show the action results whe nthe perfrom combat button is clicked
-          // After it is clicked show the action results and show the next action button.
-          // Something like this:
-          this.performCombatButton.click(() => {
-            if (encounter.attackerReachedDefender && encounter.inchesDefenderFled === 0) {
-              actionResult = encounter.fight();
-            } else if (encounter.attackerReachedDefender && encounter.inchesDefenderFled > 0) {
-              actionResult = encounter.fight();
-            } else {
-              // TODO noFight should return an action result with a message and with energy and time updates.
-              actionResult = encounter.noFight();
-            }
-          });
-          */
-        }
+        let encounter = this._createEncounter();
+        actionResult = encounter.fight();
+        skipResults = this._selectedAction === CHARGE && ! encounter.attackerReachedDefender;
       }
 
       this._actionMessages = actionResult.messages;
@@ -232,8 +213,6 @@ class FightView extends connect(store)(PageViewElement) {
       this.shadowRoot.getElementById('charge').style.opacity = 1;
       this.shadowRoot.getElementById('rest').style.opacity = 1;
       this.shadowRoot.getElementById('fire').style.opacity = 1;
-      this.shadowRoot.getElementById('take-action').style.opacity = 0;
-
       this.distanceElement.value = '';
       this.separationElement.value = '';
       this.engagedAttackingElement.value = '';
@@ -243,21 +222,58 @@ class FightView extends connect(store)(PageViewElement) {
       this.terrainContainer.querySelector('input').checked = false;
       this.resupplyContainer.querySelector('input').checked = false;
       this.targetElement.value = '';
-
       this.shadowRoot.getElementById('take-action').style.display = 'none';
       this.shadowRoot.getElementById('actions').style.display = 'none';
-      this.shadowRoot.getElementById('action-result').style.display = 'block';
+
+      if (skipResults) {
+        this._removeSelection();
+        this._progressToNextAction();
+      } else {
+        this.shadowRoot.getElementById('action-result').style.display = 'block';
+      }
     } else {
-      this.errorElement.classList.remove('hidden');
-      setTimeout(() => {
-        this.errorElement.classList.add('hidden');
-      }, 3000);
+      this._showError();
     }
+  }
+
+  _createEncounter() {
+    return new Encounter({
+      attacker: this._unit,
+      attackerTerrainDefense: 0,
+      attackerArmyLeadership: 0,
+      attackerEngagedStands: this.engagedAttackers,
+      defender: new Unit(this._activeBattle.units[this.target], this.target),
+      defenderTerrainDefense: 0,
+      defenderArmyLeadership: 0,
+      defenderEngagedStands: this.engagedDefenders,
+      melee: this._selectedAction === CHARGE,
+      separation: this.separation,
+      terrain: this.terrainModifier,
+      slope: this.slope });
+  }
+
+  _createSituation() {
+    return new Situation({
+          unit: this._unit,
+          armyLeadership: 0,
+          terrain: this.terrainModifier,
+          slope: this.slope });
+  }
+
+  _showError() {
+    this.errorElement.classList.remove('hidden');
+    setTimeout(() => {
+      this.errorElement.classList.add('hidden');
+    }, 3000);
   }
 
   _removeSelection() {
     [...this.shadowRoot.querySelectorAll('button')]
     .forEach(button => button.classList.remove('selected'));
+    this._hideInputs();
+  }
+
+  _hideInputs() {
     this.distanceElement.classList.add('hidden');
     this.separationElement.classList.add('hidden');
     this.engagedAttackingElement.classList.add('hidden');
@@ -267,6 +283,9 @@ class FightView extends connect(store)(PageViewElement) {
     this.terrainContainer.classList.add('hidden');
     this.resupplyContainer.classList.add('hidden');
     this.targetElement.classList.add('hidden');
+    this.chargeMessageElement.classList.add('hidden');
+    this.shadowRoot.getElementById('do-combat').classList.add('hidden');
+    this.shadowRoot.getElementById('take-action').classList.add('hidden');
   }
 
   _move(e) {
@@ -280,7 +299,7 @@ class FightView extends connect(store)(PageViewElement) {
     this.shadowRoot.getElementById('charge').style.opacity = 0.5;
     this.shadowRoot.getElementById('rest').style.opacity = 0.5;
     this.shadowRoot.getElementById('fire').style.opacity = 0.5;
-    this.shadowRoot.getElementById('take-action').style.opacity = 1;
+    this.shadowRoot.getElementById('take-action').classList.remove('hidden');
     this._selectedAction = MOVE;
   }
 
@@ -288,8 +307,6 @@ class FightView extends connect(store)(PageViewElement) {
     this._removeSelection();
     e.target.classList.add('selected');
     this.separationElement.classList.remove('hidden');
-    this.engagedAttackingElement.classList.remove('hidden');
-    this.engagedDefendingElement.classList.remove('hidden');
     this.hillContainer.classList.remove('hidden');
     this.leaderContainer.classList.remove('hidden');
     this.terrainContainer.classList.remove('hidden');
@@ -298,7 +315,7 @@ class FightView extends connect(store)(PageViewElement) {
     this.shadowRoot.getElementById('charge').style.opacity = 1;
     this.shadowRoot.getElementById('rest').style.opacity = 0.5;
     this.shadowRoot.getElementById('fire').style.opacity = 0.5;
-    this.shadowRoot.getElementById('take-action').style.opacity = 1;
+    this.shadowRoot.getElementById('do-combat').classList.remove('hidden');
     this._selectedAction = CHARGE;
   }
 
@@ -309,7 +326,7 @@ class FightView extends connect(store)(PageViewElement) {
     this.shadowRoot.getElementById('charge').style.opacity = 0.5;
     this.shadowRoot.getElementById('rest').style.opacity = 1;
     this.shadowRoot.getElementById('fire').style.opacity = 0.5;
-    this.shadowRoot.getElementById('take-action').style.opacity = 1;
+    this.shadowRoot.getElementById('take-action').classList.remove('hidden');
     this.resupplyContainer.classList.remove('hidden');
     this._selectedAction = REST;
   }
@@ -318,17 +335,17 @@ class FightView extends connect(store)(PageViewElement) {
     this._removeSelection();
     e.target.classList.add('selected');
     this.separationElement.classList.remove('hidden');
-    this.engagedAttackingElement.classList.remove('hidden');
-    this.engagedDefendingElement.classList.remove('hidden');
     this.hillContainer.classList.remove('hidden');
     this.leaderContainer.classList.remove('hidden');
     this.terrainContainer.classList.remove('hidden');
     this.targetElement.classList.remove('hidden');
+    this.engagedAttackingElement.classList.remove('hidden');
+    this.engagedDefendingElement.classList.remove('hidden');
     this.shadowRoot.getElementById('move').style.opacity = 0.5;
     this.shadowRoot.getElementById('charge').style.opacity = 0.5;
     this.shadowRoot.getElementById('rest').style.opacity = 0.5;
     this.shadowRoot.getElementById('fire').style.opacity = 1;
-    this.shadowRoot.getElementById('take-action').style.opacity = 1;
+    this.shadowRoot.getElementById('take-action').classList.remove('hidden');
     this._selectedAction = FIRE;
   }
 
@@ -351,6 +368,10 @@ class FightView extends connect(store)(PageViewElement) {
 
   get separationElement() {
     return this.shadowRoot.getElementById('separation');
+  }
+
+  get chargeMessageElement() {
+    return this.shadowRoot.getElementById('charge-message');
   }
 
   get engagedAttackingElement() {

@@ -34,7 +34,7 @@ export default class SoloUnit {
     return this.unit.baseSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod;
   }
 
-  distanceMovedPer(seconds) {
+  yardsMovedPer(seconds) {
     return this.speed * seconds;
   }
 

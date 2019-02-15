@@ -111,28 +111,28 @@ export default [
         text: 'Units can take the charge action to attack an enemy unit in melee. This also represents close distance ranged weapons such as pistols.',
         subsections: [
           {
-            heading: 'Charging',
-            text: 'When selecting the charge action move your stands half the distance to the enemy unit and then submit the action.'
+            heading: 'Selecting a target',
+            text: 'When selecting the charge action you will be asked to enter the distance towards the enemy unit. This should the distance between the closest stand of the charging unit to the closest stand of the defending unit.'
           },
           {
-            heading: 'Attack',
-            text: 'If the actions results tell you to do so finish the movement. Take the closest stand and line it up with the closest unengaged enemy stand. Continue to do this until every stand from the charging unit is engaged.'
+            heading: 'Performing the charge',
+            text: 'After entering in the distance and other information about the attack such as terrain, you will be told whether or not your unit reached the defender, how far you can move your stands, how far the defender can move his stands in response. If the actions results tell you to do so finish the movement. Take the closest stand and line it up with the closest unengaged enemy stand. Continue to do this until every stand from the charging unit is engaged.',
           },
           {
             heading: 'Extra charging stands',
-            text: 'If the charging unit has more stands than the enemy unit place the extra charging stands either behind the other stands from the charging unit or to the side of an engaged charging stand.'
+            text: 'If the charging unit has more stands than the enemy unit place the extra charging stands either behind the other stands from the charging unit or to the side of an engaged charging stand. These stands also count as being in combat.'
           },
           {
             heading: 'Extra defending stands',
-            text: 'If the defending unit has more stands than the attacking unit the extra stands can move a certain distance in order to attempt to engage in the melee. Place these stands either behind the engaged stands of the defending unit or to the sides of a defending stand.'
+            text: 'If the defending unit has more stands than the attacking unit the extra stands can move the previously specified distance in order to attempt to engage in the melee. Place these stands either behind the engaged stands of the defending unit or to the sides of a defending stand. These stands also count as being in combat.'
           },
           {
             heading: 'Unengaged stands',
-            text: 'All defending stands move to engagement. However the action result may say that some of the attaking stands could not make it into the attack. If this happens take the number of stands as explained in the action result and place them two inches behind the engaged charging stands signifying that they did not make it into the attack.'
+            text: 'Any stand that could not make it into combat is not counted in the melee, reducing the overall effectiveness of the unit. You will be asked to enter this information.'
           },
           {
-            heading: 'Outcome',
-            text: 'The action result may additionaly explain some final outcomes of the battle. '
+            heading: 'Making the attack',
+            text: 'Determine how many engaged stands there are in each unit and enter this information. Then click the do combat button to see what the results of the combat are. There might be follow up actions such as a fall back or persuit.'
           },
         ]
       },

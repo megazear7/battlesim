@@ -10,18 +10,18 @@ export function combat(unit1, unit2, duration = SECONDS_PER_TURN) {
   while (secondsOfAction < duration) {
     if (unit1.encounter.closeEnoughToFight) {
       if (unit1.fallingback) {
-        unit1.yardsFallenback += unit1.distanceMovedPer(SECONDS_PER_ROUND);
+        unit1.yardsFallenback += unit1.yardsMovedPer(SECONDS_PER_ROUND);
         if (! unit2.fallingback) {
-          unit2.yardsPersued += unit2.distanceMovedPer(SECONDS_PER_ROUND);
+          unit2.yardsPersued += unit2.yardsMovedPer(SECONDS_PER_ROUND);
         }
       } else {
         makeAttacks(unit1, unit2, SECONDS_PER_ROUND);
       }
 
       if (unit2.fallingback) {
-        unit2.yardsFallenback += unit2.distanceMovedPer(SECONDS_PER_ROUND);
+        unit2.yardsFallenback += unit2.yardsMovedPer(SECONDS_PER_ROUND);
         if (! unit1.fallingback) {
-          unit1.yardsPersued += unit1.distanceMovedPer(SECONDS_PER_ROUND);
+          unit1.yardsPersued += unit1.yardsMovedPer(SECONDS_PER_ROUND);
         }
       } else {
         makeAttacks(unit2, unit1, SECONDS_PER_ROUND);
