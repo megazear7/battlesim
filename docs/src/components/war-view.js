@@ -1,12 +1,12 @@
-define(["exports","./battle-sim.js"],function(_exports,_battleSim){"use strict";Object.defineProperty(_exports,"__esModule",{value:!0});_exports.classMap=_exports.$classMap=void 0;if(window.navigator.userAgent.match("Trident")){DOMTokenList.prototype.toggle=function(token,force){if(force===void 0||force){this.add(token)}else{this.remove(token)}return force===void 0?!0:force}}const classMapCache=new WeakMap,classMapStatics=new WeakMap,classMap=(0,_battleSim.directive)(classInfo=>part=>{if(!(part instanceof _battleSim.AttributePart)||part instanceof _battleSim.PropertyPart||"class"!==part.committer.name||1<part.committer.parts.length){throw new Error("The `classMap` directive must be used in the `class` attribute "+"and must be the only part in the attribute.")}if(!classMapStatics.has(part)){part.committer.element.className=part.committer.strings.join(" ");classMapStatics.set(part,!0)}const oldInfo=classMapCache.get(part);for(const name in oldInfo){if(!(name in classInfo)){part.committer.element.classList.remove(name)}}for(const name in classInfo){if(!oldInfo||oldInfo[name]!==classInfo[name]){part.committer.element.classList.toggle(name,!!classInfo[name])}}classMapCache.set(part,classInfo)});_exports.classMap=classMap;var classMap$1={classMap:classMap};_exports.$classMap=classMap$1;class WarView extends(0,_battleSim.connect)(_battleSim.store)(_battleSim.PageViewElement){static get properties(){return{_battles:{type:Object}}}static get styles(){return[_battleSim.SharedStyles,_battleSim.ButtonSharedStyles,_battleSim.css`
+define(["./battle-sim.js"],function(_battleSim){"use strict";class WarView extends(0,_battleSim.connect)(_battleSim.store)(_battleSim.PageViewElement){static get properties(){return{_battles:{type:Object}}}static get styles(){return[_battleSim.SharedStyles,_battleSim.ButtonSharedStyles,_battleSim.css`
         .selectedBattle {
           color: var(--app-primary-color);
         }
       `]}render(){return _battleSim.html`
       ${(0,_battleSim.repeat)(this._battles,({battle,index,active,createdAt})=>_battleSim.html`
         <section>
-          <div class="${classMap({battle:!0,active:active})}" data-index="${index}">
-            <h3 class="${classMap({selectedBattle:active})}">${battle.name}</h3>
+          <div class="${(0,_battleSim.classMap)({battle:!0,active:active})}" data-index="${index}">
+            <h3 class="${(0,_battleSim.classMap)({selectedBattle:active})}">${battle.name}</h3>
             <pre>Created ${createdAt}</pre>
             ${active?_battleSim.html`
               <button @click="${this._playBattle}" disabled>Playing</button>
