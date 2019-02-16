@@ -29,6 +29,7 @@ class FightView extends connect(store)(PageViewElement) {
       _actionMessages: { type: Array },
       _date: { type: Object },
       _chargeMessage: { type: String },
+      prop4: { type: String },
     };
   }
 
@@ -103,32 +104,28 @@ class FightView extends connect(store)(PageViewElement) {
             </select>
             <br>
             <br>
-            <div id="hill" class="hidden">
-              <radiogroup>
-                <input type="radio" name="hill" id="${SLOPE_UP}" value="${SLOPE_UP}">
-                <label for="${SLOPE_UP}">Uphill</label>
-                <br>
-                <input type="radio" name="hill" id="${SLOPE_DOWN}" value="${SLOPE_DOWN}">
-                <label for="${SLOPE_DOWN}">Downhill</label>
-                <br>
-                <input type="radio" name="hill" id="${SLOPE_NONE}" value="${SLOPE_NONE}">
-                <label for="${SLOPE_NONE}">Neither</label>
-                <br><br>
-              </radiogroup>
-            </div>
-            <div id="leader" class="hidden">
-              <radiogroup>
-                <input type="radio" name="leader" id="general" value="general">
-                <label for="general">General</label>
-                <br>
-                <input type="radio" name="leader" id="subcommander" value="subcommander">
-                <label for="subcommander">Subcommander</label>
-                <br>
-                <input type="radio" name="leader" id="neither" value="neither">
-                <label for="neither">Neither</label>
-                <br><br>
-              </radiogroup>
-            </div>
+            <radiogroup id="hill" class="hidden">
+              <input type="radio" name="hill" id="${SLOPE_UP}" value="${SLOPE_UP}">
+              <label for="${SLOPE_UP}">Uphill</label>
+              <br>
+              <input type="radio" name="hill" id="${SLOPE_DOWN}" value="${SLOPE_DOWN}">
+              <label for="${SLOPE_DOWN}">Downhill</label>
+              <br>
+              <input type="radio" name="hill" id="${SLOPE_NONE}" value="${SLOPE_NONE}">
+              <label for="${SLOPE_NONE}">Neither</label>
+              <br><br>
+            </radiogroup>
+            <radiogroup id="leader" class="hidden">
+              <input type="radio" name="leader" id="general" value="general">
+              <label for="general">General</label>
+              <br>
+              <input type="radio" name="leader" id="subcommander" value="subcommander">
+              <label for="subcommander">Subcommander</label>
+              <br>
+              <input type="radio" name="leader" id="neither" value="neither">
+              <label for="neither">Neither</label>
+              <br><br>
+            </radiogroup>
             <div id="terrain" class="hidden">
               <input type="checkbox" id="terrain-checkbox"></input>
               <label for="terrain-checkbox">Difficult Terrain</label>
