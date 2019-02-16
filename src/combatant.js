@@ -161,7 +161,9 @@ export default class Combatant extends ActingUnit {
   }
 
   battleReport() {
-    return `${this.casualtyMessage} ${this.leadershipMessage}`;
+    return this.unit.strength > 0
+      ? `${this.casualtyMessage} ${this.leadershipMessage}`
+      : `${this.unit.name} was destroyed.`;
   }
 
   exactBattleReport() {

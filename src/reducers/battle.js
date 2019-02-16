@@ -100,7 +100,9 @@ function nextUnit(battle) {
   var minTime = Number.MAX_SAFE_INTEGER;
   var next;
   battle.units.forEach((unit, index) => {
-    if (unit.army === battle.activeArmy && unit.nextAction < minTime) {
+    if (unit.army === battle.activeArmy &&
+        unit.nextAction < minTime &&
+        unit.strength > 0) {
       minTime = unit.nextAction;
       next = index;
     }

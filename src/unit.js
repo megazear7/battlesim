@@ -95,7 +95,9 @@ export default class Unit {
   }
 
   get detailedStatus() {
-    return `${this.detailedStrengthDesc} ${this.detailedMoraleDesc} ${this.detailedEnergyDesc}`;
+    return this.strength > 0
+      ? `${this.detailedStrengthDesc} ${this.detailedMoraleDesc} ${this.detailedEnergyDesc}`
+      : `${this.name} has been destroyed.`;
   }
 
   get desc() {
