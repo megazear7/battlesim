@@ -57,7 +57,6 @@ export default class Encounter {
 
     let actionMessage = ``;
     if (this.attacker.fallingback && this.attacker.inchesFallenback >= 1) {
-      console.log(this.attacker.inchesFallenback);
       actionMessage += `${this.attacker.unit.name} fell back ${this.attacker.inchesFallenback} ${this.inchesWord(this.attacker.inchesFallenback)}. `;
 
       if (this.defender.persueing && this.defender.inchesPersued >= 2) {
@@ -85,6 +84,8 @@ export default class Encounter {
   get couldNotReachTargetMessage() {
     if (this.defenderFled) {
       return `${this.defender.unit.name} fled ${this.inchesDefenderFled} inches and ${this.attacker.unit.name} could not reach it's target but may persue up to ${this.inchesOfSeparationAfter} inches.`;
+    } else if (this.attacker.status === MORALE_FAILURE) {
+      return `${this.attacker.unit.name} refused to make the attack.`;
     } else {
       return `${this.attacker.unit.name} could not reach ${this.defender.unit.name} but moved ${this.inchesAttackerTravelled} inches towards it's target.`;
     }
@@ -111,9 +112,6 @@ export default class Encounter {
   }
 
   fight() {
-    this.attacker.performMoraleCheck();
-    this.defender.performMoraleCheck();
-
     const actionMessage = this.attackerReachedDefender ? this.attackerEngages() : ``;
     const fullMessage = `${actionMessage} ${this.defender.battleReport()} ${this.attacker.battleReport()}`;
 
@@ -226,10 +224,14 @@ export default class Encounter {
 
   // Warning: this could be negative in which case that means the defender outran the attacker.
   get secondsSpentFighting() {
-    if (this.melee) {
-      return this.secondsAvailableAfterOrder - this.secondsToReachDefender;
+    if (this.attacker.status === MORALE_SUCCESS) {
+      if (this.melee) {
+        return this.secondsAvailableAfterOrder - this.secondsToReachDefender;
+      } else {
+        return this.secondsAvailableAfterOrder;
+      }
     } else {
-      return this.secondsAvailableAfterOrder;
+      return 0;
     }
   }
 

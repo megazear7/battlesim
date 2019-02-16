@@ -4,7 +4,7 @@ import { statModFor, MAX_EQUIPMENT_WEIGHT } from './game.js';
 import { FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP } from './units.js';
 
 export const MORALE_SUCCESS = 'MORALE_SUCCESS';
-export const MORALE_FAILURE = 'STATUS_FALL_BACK';
+export const MORALE_FAILURE = 'MORALE_FAILURE';
 
 /** @class Situation
  *  This represents a single unit taking an order. */
@@ -19,7 +19,7 @@ export default class SoloUnit {
     this.armyLeadership = armyLeadership;
     this.status = status;
     this.slope = slope;
-    this.status = this.moraleRoll() > 0 ? MORALE_SUCCESS : this.status = MORALE_FAILURE;
+    this.status = this.moraleRoll() > this.unit.morale ? MORALE_FAILURE : this.status = MORALE_SUCCESS;
   }
 
   get terrainSpeedMod() {
@@ -67,11 +67,6 @@ export default class SoloUnit {
   }
 
   moraleRoll() {
-    return weightedRandom(3) * 100;
-  }
-
-  performMoraleCheck() {
-    const roll = weightedRandom(3) * 100;
-    const modifiedMorale = this.unit.morale - roll;
+    return weightedRandom(2) * 100;
   }
 }

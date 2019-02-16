@@ -14,7 +14,6 @@ export default class Combatant extends ActingUnit {
                   armyLeadership = 0,
                   terrainDefense = 0,
                   engagedStands = -1,
-                  status = MORALE_SUCCESS,
                   slope = SLOPE_NONE }) {
     super({ unit, environment: encounter, armyLeadership });
     this.unit = unit;
@@ -23,7 +22,6 @@ export default class Combatant extends ActingUnit {
     this.armyLeadership = armyLeadership;
     this.terrainDefense = terrainDefense;
     this.engagedStands = engagedStands <= -1 || engagedStands > unit.stands ? unit.stands : engagedStands;
-    this.status = status;
     this.slope = slope;
     this.casualties = 0;
     this.ammunitionUsed = 0;
@@ -32,10 +30,6 @@ export default class Combatant extends ActingUnit {
     this.leaderSurviveRoll = Math.random();
     this.energyModRoll = randomBellMod();
     this.moraleModRoll = randomBellMod();
-  }
-
-  performMoraleCheck() {
-    this.status = (Math.random() * 100) > this.unit.morale ? MORALE_FAILURE : MORALE_SUCCESS;
   }
 
   get energyLoss() {
