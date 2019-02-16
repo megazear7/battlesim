@@ -1,6 +1,6 @@
-import { weightedRandomTowards, modVolume, SECONDS_IN_AN_HOUR } from './math-utils.js';
+import { randomBellMod, modVolume, weightedAverage, SECONDS_IN_AN_HOUR } from './math-utils.js';
 import { SLOPE_NONE } from './terrain.js';
-import { statModFor, MAX_STAT, SECONDS_PER_TURN, YARDS_PER_INCH } from './game.js';
+import { statModFor, MAX_STAT, SECONDS_PER_TURN, YARDS_PER_INCH, MAX_EQUIPMENT_WEIGHT } from './game.js';
 import { FOOT_TROOP, MELEE_WEAPON, RANGED_WEAPON } from './units.js';
 import { POWER_VS_FOOT, POWER_VS_MOUNTED } from './weapons.js';
 import ActingUnit, { MORALE_SUCCESS, MORALE_FAILURE } from './acting-unit.js';
@@ -30,25 +30,29 @@ export default class Combatant extends ActingUnit {
     this.yardsFallenback = 0;
     this.yardsPersued = 0;
     this.leaderSurviveRoll = Math.random();
-    this.energyModRoll = weightedRandomTowards(0, 100, 10, 4);
-    this.moraleModRoll = weightedRandomTowards(0, 100, 10, 4);
+    this.energyModRoll = randomBellMod();
+    this.moraleModRoll = randomBellMod();
   }
 
   get energyLoss() {
-    // TODO Average these values together instead of multipling them.
-    return Math.floor(
-      (this.energyModRoll + this.unit.carriedWeight) *
-      (this.encounter.melee ? 1 : 0.5) *
-      (this.encounter.secondsSpentFighting / SECONDS_PER_TURN));
+    return weightedAverage(
+      {
+        value: this.encounter.melee ? 0.2 : 0.1,
+        weight: 2
+      },
+      this.encounter.secondsSpentFighting / SECONDS_PER_TURN,
+      this.energyModRoll,
+      this.unit.carriedWeight / MAX_EQUIPMENT_WEIGHT
+    ) * 50;
   }
 
   get moraleLoss() {
-    // TODO Average these values together instead of multipling them.
-    return Math.floor(
-      (this.moraleModRoll) *
-      (this.hardinessMod) *
-      (1 + (this.casualties / this.unit.strength)) *
-      (1 + (this.unit.strength / this.unit.fullStrength)));
+    return weightedAverage(
+      this.moraleModRoll,
+      this.hardinessMod,
+      this.casualties / this.unit.strength,
+      this.unit.strength / this.unit.fullStrength,
+    ) * 50;
   }
 
   get attacksRequireAmmunition() {

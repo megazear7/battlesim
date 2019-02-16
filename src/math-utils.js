@@ -23,6 +23,25 @@ export function modVolume(volume, range, distance) {
   return Math.max(Math.min(volume * (- Math.pow(distance / range, 2) + 1), volume), 0);
 }
 
+// Each argument should either be a number or an object with a "value" and an optional "weight"
+export function weightedAverage() {
+  let value = 0;
+  let weights = 0;
+  for (var i = 0; i < arguments.length; i++) {
+    let param = arguments[i];
+    if (typeof param === 'object') {
+      let weight = typeof param.weight !== 'undefined' ? param.weight : 1;
+      value += param.value * weight;
+      weights += weight;
+    } else {
+      value += param;
+      weights += 1;
+    }
+  }
+
+  return value / weights;
+}
+
 /** @function randomMinutesBetween
  *  Returns a random amount of time given in seconds betwee x minutes and y minutes.
  */
@@ -35,6 +54,10 @@ export function randomMinutesBetween(x, y) {
  */
 export function weightedRandomTowards(x, y, z, weight) {
   return (getRandomInt(x, y) + (z * weight)) / (weight + 1);
+}
+
+export function randomBellMod(weight = 2) {
+  return weightedRandomTowards(0, 1, 0.5, weight);
 }
 
 /**

@@ -1,4 +1,4 @@
-import { weightedRandomTowards, numberWithCommas, nearest100, SECONDS_IN_AN_MINUTE } from './math-utils.js';
+import { weightedRandomTowards, numberWithCommas, weightedAverage, nearest100, SECONDS_IN_AN_MINUTE } from './math-utils.js';
 import { MAX_STAT, YARDS_PER_INCH } from './game.js';
 import ActingUnit, { MORALE_SUCCESS, MORALE_FAILURE } from './acting-unit.js';
 
@@ -29,16 +29,18 @@ export default class SoloUnit extends ActingUnit {
   }
 
   get maxMoraleRecovered() {
-    // TODO Average these values together instead of multipling them.
-    return this.moraleModRoll *
-      (this.situation.percentageOfATurnSpentResting / 100);
+    return weightedAverage(
+      this.moraleModRoll,
+      this.situation.percentageOfATurnSpentResting / 100
+    );
   }
 
   get maxEnergyRecovered() {
-    // TODO Average these values together instead of multipling them.
-    return this.energyModRoll *
-      (this.situation.percentageOfATurnSpentResting / 100) *
-      ((100 - this.situation.percentageOfATurnSpentMoving) / 100);
+    return weightedAverage(
+      this.energyModRoll,
+      this.situation.percentageOfATurnSpentResting / 100,
+      (100 - this.situation.percentageOfATurnSpentMoving) / 100,
+    );
   }
 
   updates(delay) {
