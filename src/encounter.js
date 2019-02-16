@@ -33,18 +33,18 @@ export default class Encounter {
       unit: attacker,
       encounter: this,
       target: defender,
-      attackerTerrainDefense,
-      attackerArmyLeadership,
-      attackerEngagedStands,
+      engagedStands: attackerEngagedStands,
+      terrainDefense: attackerTerrainDefense,
+      armyLeadership: attackerArmyLeadership,
       slope: this.attackerSlope });
 
     this.defender = new Combatant({
       unit: defender,
       encounter: this,
       target: attacker,
-      defenderTerrainDefense,
-      defenderArmyLeadership,
-      defenderEngagedStands,
+      engagedStands: defenderEngagedStands,
+      terrainDefense: defenderTerrainDefense,
+      armyLeadership: defenderArmyLeadership,
       slope: this.defenderSlope });
   }
 

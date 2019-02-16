@@ -350,11 +350,11 @@ class FightView extends connect(store)(PageViewElement) {
   }
 
   get engagedAttackers() {
-    return parseInt(this.get('engaged-attackers').value === '' ? 0 : this.get('engaged-attackers').value);
+    return parseInt(this.get('engaged-attackers').value === '' ? -1 : this.get('engaged-attackers').value);
   }
 
   get engagedDefenders() {
-    return parseInt(this.get('engaged-defenders').value === '' ? 0 : this.get('engaged-defenders').value);
+    return parseInt(this.get('engaged-defenders').value === '' ? -1 : this.get('engaged-defenders').value);
   }
 
   get slope() {

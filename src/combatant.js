@@ -130,7 +130,7 @@ export default class Combatant extends ActingUnit {
   }
 
   get engagedMod() {
-    return this.engagedStands / this.unit.stands;
+    return Math.min(this.engagedStands, this.unit.stands) / this.unit.stands;
   }
 
   get powerModifier() {
@@ -154,7 +154,10 @@ export default class Combatant extends ActingUnit {
   }
 
   attacksForTime(duration) {
-    return this.unit.strength * this.modifiedVolume * (duration / SECONDS_IN_AN_HOUR);
+    return this.unit.strength *
+           this.engagedMod *
+           this.modifiedVolume *
+           (duration / SECONDS_IN_AN_HOUR);
   }
 
   battleReport() {
