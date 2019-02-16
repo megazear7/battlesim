@@ -1,5 +1,6 @@
 import { html, css } from 'lit-element';
 import { repeat } from 'lit-html/directives/repeat';
+import { classMap } from 'lit-html/directives/class-map.js';
 import { PageViewElement } from './page-view-element.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
@@ -9,10 +10,7 @@ import { ButtonSharedStyles } from './button-shared-styles.js';
 import Unit from '../unit.js';
 import { prettyDateTime } from '../math-utils.js';
 import { getRadioVal } from '../dom-utils.js';
-import {
-  SLOPE_UP,
-  SLOPE_DOWN,
-  SLOPE_NONE } from '../terrain.js';
+import { SLOPE_UP, SLOPE_DOWN, SLOPE_NONE } from '../terrain.js';
 import Encounter from '../encounter.js';
 import Situation from '../situation.js';
 
@@ -20,6 +18,8 @@ const REST = 'REST';
 const MOVE = 'MOVE';
 const CHARGE = 'CHARGE';
 const FIRE = 'FIRE';
+const ACTIONS = [ REST, MOVE, CHARGE, FIRE ];
+const NO_ACTION = 'NO_ACTION';
 
 class FightView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -29,7 +29,20 @@ class FightView extends connect(store)(PageViewElement) {
       _actionMessages: { type: Array },
       _date: { type: Object },
       _chargeMessage: { type: String },
-      prop4: { type: String },
+      _showDistance: { type: Boolean },
+      _showSeparation: { type: Boolean },
+      _showTarget: { type: Boolean },
+      _showHill: { type: Boolean },
+      _showLeader: { type: Boolean },
+      _showTerrain: { type: Boolean },
+      _showResupply: { type: Boolean },
+      _showChargeMessage: { type: Boolean },
+      _showEnagedStands: { type: Boolean },
+      _showDoCombat: { type: Boolean },
+      _showTakeAction: { type: Boolean },
+      _showError: { type: Boolean },
+      _showActionResult: { type: Boolean },
+      _actionsDisabled: { type: Boolean },
     };
   }
 
@@ -42,28 +55,16 @@ class FightView extends connect(store)(PageViewElement) {
           width: calc(50% - 3px);
           box-sizing: border-box;
         }
-        #unit {
-          text-align: center;
-          font-size: 2rem;
-        }
-        #army {
-          text-align: center;
-          color: var(--app-muted-text-color);
-        }
-        #time-of-day {
-          text-align: center;
-          color: var(--app-muted-text-color);
-        }
-        #action-result {
-          display: none;
-        }
-        h6 {
-          margin-bottom: 0;
-        }
         #hill, #leader {
           width: calc(50% - 3px);
           box-sizing: border-box;
           display: inline-block;
+        }
+        .has-selection button {
+          opacity: 0.5;
+        }
+        button.selected {
+          opacity: 1;
         }
       `
     ];
@@ -73,38 +74,32 @@ class FightView extends connect(store)(PageViewElement) {
     return html`
       ${this._hasActiveBattle ? html`
         <section>
-          <div>
-            <div id="unit">${this._unit.name}</div>
-            <div id="army">Army: ${this._unit.army.name}</div>
-            <div id="time-of-day">${prettyDateTime(this._date)}</div>
-          </div>
-          <h6>Unit Status</h6>
+          <h2>${this._unit.name}</h2>
+          <div class="muted centered">Army: ${this._unit.army.name}</div>
+          <div class="muted centered">${prettyDateTime(this._date)}</div>
           <p>${this._unit.detailedStatus}</p>
-
-          <h6>Unit Description</h6>
+          <hr>
           <p>${this._unit.desc}</p>
         </section>
         <section>
-          <div id="actions">
-            <button @click="${this._rest}" id="rest">Rest</button>
-            <button @click="${this._move}" id="move">Move</button>
-            <button @click="${this._charge}" id="charge">Charge</button>
-            <button @click="${this._fire}" id="fire">Fire</button>
+          <div class="${classMap({'has-selection': this._actionSelected})}">
+            <button @click="${this._rest}" id="rest" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === REST})}">Rest</button>
+            <button @click="${this._move}" id="move" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === MOVE})}">Move</button>
+            <button @click="${this._charge}" id="charge" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === CHARGE})}">Charge</button>
+            <button @click="${this._fire}" id="fire" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === FIRE})}">Fire</button>
           </div>
         </section>
         <section>
-          <div id="input-container">
-            <input id="distance" class="hidden" type="number" placeholder="Distance (Leave blank to move as far as possible)"></input>
-            <input id="separation" class="hidden" type="number" placeholder="Distance (Required)"></input>
-            <select id="target" class="hidden">
+          <div>
+            <input id="distance" class="${classMap({hidden: ! this._showDistance})}" type="number" placeholder="Distance (Leave blank to move as far as possible)"></input>
+            <input id="separation" class="${classMap({hidden: ! this._showSeparation})}" type="number" placeholder="Distance (Required)"></input>
+            <select id="target" class="${classMap({hidden: ! this._showTarget})}">
               <option value="">Select Target (Required)</option>
               ${repeat(this._unit.targets, target => html`
                 <option value="${target.id}">${target.unit.name}</option>
               `)}
             </select>
-            <br>
-            <br>
-            <radiogroup id="hill" class="hidden">
+            <radiogroup id="hill" class="${classMap({hidden: ! this._showHill})}">
               <input type="radio" name="hill" id="${SLOPE_UP}" value="${SLOPE_UP}">
               <label for="${SLOPE_UP}">Uphill</label>
               <br>
@@ -115,7 +110,7 @@ class FightView extends connect(store)(PageViewElement) {
               <label for="${SLOPE_NONE}">Neither</label>
               <br><br>
             </radiogroup>
-            <radiogroup id="leader" class="hidden">
+            <radiogroup id="leader" class="${classMap({hidden: ! this._showLeader})}">
               <input type="radio" name="leader" id="general" value="general">
               <label for="general">General</label>
               <br>
@@ -126,32 +121,25 @@ class FightView extends connect(store)(PageViewElement) {
               <label for="neither">Neither</label>
               <br><br>
             </radiogroup>
-            <div id="terrain" class="hidden">
+            <div id="terrain" class="${classMap({hidden: ! this._showTerrain})}">
               <input type="checkbox" id="terrain-checkbox"></input>
               <label for="terrain-checkbox">Difficult Terrain</label>
             </div>
-            <div id="resupply" class="hidden">
+            <div id="resupply" class="${classMap({hidden: ! this._showResupply})}">
               <input type="checkbox" id="resupply-checkbox"></input>
               <label for="resupply-checkbox">Resupply</label>
             </div>
-            <p id="charge-message" class="hidden">${this._chargeMessage}</p>
-            <input id="engaged-attackers" class="hidden stands" type="number" placeholder="Attacking Stands"></input>
-            <input id="engaged-defenders" class="hidden stands" type="number" placeholder="Defending Stands"></input>
+            <p class="${classMap({hidden: ! this._showChargeMessage})}">${this._chargeMessage}</p>
+            <input id="engaged-attackers" class="${classMap({hidden: ! this._showEnagedStands, stands: true})}" type="number" placeholder="Attacking Stands"></input>
+            <input id="engaged-defenders" class="${classMap({hidden: ! this._showEnagedStands, stands: true})}" type="number" placeholder="Defending Stands"></input>
+            <button class="${classMap({hidden: ! this._showDoCombat})}" @click="${this._doCombat}">Do Combat</button>
+            <button class="${classMap({hidden: ! this._showTakeAction})}" @click="${this._takeAction}">Take Action</button>
+            <p class="${classMap({hidden: ! this._showError, error: true})}">You must provide valid values for each required field.</p>
+            <div class="${classMap({hidden: ! this._showActionResult})}">
+              ${repeat(this._actionMessages, message => html`<p>${message}</p>`)}
+              <button @click="${this._progressToNextAction}">Next Action</button>
+            </div>
           <div>
-          <div id="do-combat" class="hidden">
-            <button @click="${this._doCombat}">Do Combat</button>
-          </div>
-          <div id="take-action" class="hidden">
-            <button @click="${this._takeAction}">Take Action</button>
-          </div>
-          <p class="error hidden">You must provide valid values for each required field.</p>
-          <div id="action-result">
-            ${repeat(this._actionMessages, message => html`
-              <p>${message}</p>
-            `)}
-            <p id="action-message"></p>
-            <button @click="${this._progressToNextAction}">Next Action</button>
-          </div>
         </section>
       `:html`
         <section>
@@ -161,76 +149,109 @@ class FightView extends connect(store)(PageViewElement) {
     `;
   }
 
-  _progressToNextAction() {
-    store.dispatch(takeAction(this._actionUpdates));
-    this._actionUpdate = {};
-    this.shadowRoot.getElementById('actions').style.display = 'block';
-    this.shadowRoot.getElementById('take-action').style.display = 'block';
-    this.shadowRoot.getElementById('action-result').style.display = 'none';
-    this._actionMessageElement.innerText = '';
+  stateChanged(state) {
+    this._actionMessages = [];
+    if (state.battle.battles.length > state.battle.activeBattle) {
+      this._activeBattle = state.battle.battles[state.battle.activeBattle];
+      this._unit = new Unit(this._activeBattle.units[this._activeBattle.activeUnit], this._activeBattle.activeUnit);
+      this._date = new Date(this._activeBattle.startTime + (this._activeBattle.second * 1000));
+      this._hasActiveBattle = true;
+    } else {
+      this._hasActiveBattle = false;
+    }
   }
 
   _doCombat() {
-    if (this.validSituation) {
+    if (this._validSituation) {
       this._hideInputs();
-      let encounter = this._createEncounter();
-
+      const encounter = this._createEncounter();
       this._chargeMessage = encounter.chargeMessage;
-      this.chargeMessageElement.classList.remove('hidden');
-
-      if (encounter.attackerReachedDefender) {
-        this.engagedAttackingElement.classList.remove('hidden');
-        this.engagedDefendingElement.classList.remove('hidden');
-      }
-
-      this.shadowRoot.getElementById('take-action').classList.remove('hidden');
+      this._showEnagedStands = encounter.attackerReachedDefender;
+      this._actionsDisabled = true;
+      this._showTakeAction = true;
+      this._showChargeMessage = true;
     } else {
-      this._showError();
+      this._blinkError();
     }
   }
 
   _takeAction() {
-    if (this.validSituation) {
+    if (this._validSituation) {
       let actionResult;
-      let skipResults = false;
+      let skipResults;
       if (this._selectedAction === REST || this._selectedAction === MOVE) {
-        let sitation = this._createSituation();
-        actionResult = this._selectedAction === REST ? sitation.rest() : sitation.move(this.distance)
+        const situation = this._createSituation();
+        actionResult = this._selectedAction === REST ? situation.rest() : situation.move(this.distance);
+        skipResults = false;
       } else {
-        let encounter = this._createEncounter();
+        let encounter = this._createEncounter()
         actionResult = encounter.fight();
         skipResults = this._selectedAction === CHARGE && ! encounter.attackerReachedDefender;
       }
 
       this._actionMessages = actionResult.messages;
       this._actionUpdates = actionResult.updates;
-
-      this._removeSelection();
-      this.shadowRoot.getElementById('move').style.opacity = 1;
-      this.shadowRoot.getElementById('charge').style.opacity = 1;
-      this.shadowRoot.getElementById('rest').style.opacity = 1;
-      this.shadowRoot.getElementById('fire').style.opacity = 1;
-      this.distanceElement.value = '';
-      this.separationElement.value = '';
-      this.engagedAttackingElement.value = '';
-      this.engagedDefendingElement.value = '';
-      this.hillContainer.querySelectorAll('input').forEach(input => input.checked = false);
-      this.leaderContainer.querySelectorAll('input').forEach(input => input.checked = false);
-      this.terrainContainer.querySelector('input').checked = false;
-      this.resupplyContainer.querySelector('input').checked = false;
-      this.targetElement.value = '';
-      this.shadowRoot.getElementById('take-action').style.display = 'none';
-      this.shadowRoot.getElementById('actions').style.display = 'none';
+      this._hideInputs();
+      this._resetInputs();
+      this._selectedAction = NO_ACTION;
+      this._actionsDisabled = true;
+      this._showTakeAction = false;
 
       if (skipResults) {
-        this._removeSelection();
         this._progressToNextAction();
       } else {
-        this.shadowRoot.getElementById('action-result').style.display = 'block';
+        this._showActionResult = true;
       }
     } else {
-      this._showError();
+      this._blinkError();
     }
+  }
+
+  _progressToNextAction() {
+    store.dispatch(takeAction(this._actionUpdates));
+    this._actionUpdate = {};
+    this._showActionResult = false;
+    this._actionsDisabled = false;
+  }
+
+  _rest(e) {
+    this._hideInputs();
+    this._selectedAction = REST;
+    this._showTakeAction = true;
+    this._showResupply = true;
+  }
+
+  _move(e) {
+    this._hideInputs();
+    this._selectedAction = MOVE;
+    this._showDistance = true;
+    this._showHill = true;
+    this._showLeader = true;
+    this._showTerrain = true;
+    this._showTakeAction = true;
+  }
+
+  _charge(e) {
+    this._hideInputs();
+    this._selectedAction = CHARGE;
+    this._showSeparation = true;
+    this._showHill = true;
+    this._showLeader = true;
+    this._showTerrain = true;
+    this._showTarget = true;
+    this._showDoCombat = true;
+  }
+
+  _fire(e) {
+    this._hideInputs();
+    this._selectedAction = FIRE;
+    this._showSeparation = true;
+    this._showHill = true;
+    this._showLeader = true;
+    this._showTerrain = true;
+    this._showTarget = true;
+    this._showEnagedStands = true;
+    this._showTakeAction = true;
   }
 
   _createEncounter() {
@@ -245,7 +266,7 @@ class FightView extends connect(store)(PageViewElement) {
       defenderEngagedStands: this.engagedDefenders,
       melee: this._selectedAction === CHARGE,
       separation: this.separation,
-      terrain: this.terrainModifier,
+      terrain: this._terrainModifier,
       slope: this.slope });
   }
 
@@ -253,198 +274,48 @@ class FightView extends connect(store)(PageViewElement) {
     return new Situation({
           unit: this._unit,
           armyLeadership: 0,
-          terrain: this.terrainModifier,
+          terrain: this._terrainModifier,
           slope: this.slope });
   }
 
-  _showError() {
-    this.errorElement.classList.remove('hidden');
+  _hideInputs() {
+    this._showDistance = false;
+    this._showSeparation = false;
+    this._showEnagedStands = false;
+    this._showHill = false;
+    this._showLeader = false;
+    this._showTerrain = false;
+    this._showResupply = false;
+    this._showTarget = false;
+    this._showChargeMessage = false;
+    this._showDoCombat = false;
+    this._showTakeAction = false;
+  }
+
+  _resetInputs() {
+    this.get('distance').value = '';
+    this.get('separation').value = '';
+    this.get('engaged-attackers').value = '';
+    this.get('engaged-defenders').value = '';
+    this.get('hill').querySelectorAll('input').forEach(input => input.checked = false);
+    this.get('leader').querySelectorAll('input').forEach(input => input.checked = false);
+    this.get('terrain').querySelector('input').checked = false;
+    this.get('resupply').querySelector('input').checked = false;
+    this.get('target').value = '';
+  }
+
+  _blinkError() {
+    this._showError = true;
     setTimeout(() => {
-      this.errorElement.classList.add('hidden');
+      this._showError = false;
     }, 3000);
   }
 
-  _removeSelection() {
-    [...this.shadowRoot.querySelectorAll('button')]
-    .forEach(button => button.classList.remove('selected'));
-    this._hideInputs();
+  get _actionSelected() {
+    return ACTIONS.indexOf(this._selectedAction) >= 0;
   }
 
-  _hideInputs() {
-    this.distanceElement.classList.add('hidden');
-    this.separationElement.classList.add('hidden');
-    this.engagedAttackingElement.classList.add('hidden');
-    this.engagedDefendingElement.classList.add('hidden');
-    this.hillContainer.classList.add('hidden');
-    this.leaderContainer.classList.add('hidden');
-    this.terrainContainer.classList.add('hidden');
-    this.resupplyContainer.classList.add('hidden');
-    this.targetElement.classList.add('hidden');
-    this.chargeMessageElement.classList.add('hidden');
-    this.shadowRoot.getElementById('do-combat').classList.add('hidden');
-    this.shadowRoot.getElementById('take-action').classList.add('hidden');
-  }
-
-  _move(e) {
-    this._removeSelection();
-    e.target.classList.add('selected');
-    this.distanceElement.classList.remove('hidden');
-    this.hillContainer.classList.remove('hidden');
-    this.leaderContainer.classList.remove('hidden');
-    this.terrainContainer.classList.remove('hidden');
-    this.shadowRoot.getElementById('move').style.opacity = 1;
-    this.shadowRoot.getElementById('charge').style.opacity = 0.5;
-    this.shadowRoot.getElementById('rest').style.opacity = 0.5;
-    this.shadowRoot.getElementById('fire').style.opacity = 0.5;
-    this.shadowRoot.getElementById('take-action').classList.remove('hidden');
-    this._selectedAction = MOVE;
-  }
-
-  _charge(e) {
-    this._removeSelection();
-    e.target.classList.add('selected');
-    this.separationElement.classList.remove('hidden');
-    this.hillContainer.classList.remove('hidden');
-    this.leaderContainer.classList.remove('hidden');
-    this.terrainContainer.classList.remove('hidden');
-    this.targetElement.classList.remove('hidden');
-    this.shadowRoot.getElementById('move').style.opacity = 0.5;
-    this.shadowRoot.getElementById('charge').style.opacity = 1;
-    this.shadowRoot.getElementById('rest').style.opacity = 0.5;
-    this.shadowRoot.getElementById('fire').style.opacity = 0.5;
-    this.shadowRoot.getElementById('do-combat').classList.remove('hidden');
-    this._selectedAction = CHARGE;
-  }
-
-  _rest(e) {
-    this._removeSelection();
-    e.target.classList.add('selected');
-    this.shadowRoot.getElementById('move').style.opacity = 0.5;
-    this.shadowRoot.getElementById('charge').style.opacity = 0.5;
-    this.shadowRoot.getElementById('rest').style.opacity = 1;
-    this.shadowRoot.getElementById('fire').style.opacity = 0.5;
-    this.shadowRoot.getElementById('take-action').classList.remove('hidden');
-    this.resupplyContainer.classList.remove('hidden');
-    this._selectedAction = REST;
-  }
-
-  _fire(e) {
-    this._removeSelection();
-    e.target.classList.add('selected');
-    this.separationElement.classList.remove('hidden');
-    this.hillContainer.classList.remove('hidden');
-    this.leaderContainer.classList.remove('hidden');
-    this.terrainContainer.classList.remove('hidden');
-    this.targetElement.classList.remove('hidden');
-    this.engagedAttackingElement.classList.remove('hidden');
-    this.engagedDefendingElement.classList.remove('hidden');
-    this.shadowRoot.getElementById('move').style.opacity = 0.5;
-    this.shadowRoot.getElementById('charge').style.opacity = 0.5;
-    this.shadowRoot.getElementById('rest').style.opacity = 0.5;
-    this.shadowRoot.getElementById('fire').style.opacity = 1;
-    this.shadowRoot.getElementById('take-action').classList.remove('hidden');
-    this._selectedAction = FIRE;
-  }
-
-  // This is called every time something is updated in the store.
-  stateChanged(state) {
-    this._actionMessages = [];
-    if (state.battle.battles.length > state.battle.activeBattle) {
-      this._activeBattle = state.battle.battles[state.battle.activeBattle];
-      this._unit = new Unit(this._activeBattle.units[this._activeBattle.activeUnit], this._activeBattle.activeUnit);
-      this._date = new Date(this._activeBattle.startTime + (this._activeBattle.second * 1000));
-      this._hasActiveBattle = true;
-    } else {
-      this._hasActiveBattle = false;
-    }
-  }
-
-  get distanceElement() {
-    return this.shadowRoot.getElementById('distance');
-  }
-
-  get separationElement() {
-    return this.shadowRoot.getElementById('separation');
-  }
-
-  get chargeMessageElement() {
-    return this.shadowRoot.getElementById('charge-message');
-  }
-
-  get engagedAttackingElement() {
-    return this.shadowRoot.getElementById('engaged-attackers');
-  }
-
-  get engagedDefendingElement() {
-    return this.shadowRoot.getElementById('engaged-defenders');
-  }
-
-  get hillContainer() {
-    return this.shadowRoot.getElementById('hill');
-  }
-
-  get leaderContainer() {
-    return this.shadowRoot.getElementById('leader');
-  }
-
-  get terrainContainer() {
-    return this.shadowRoot.getElementById('terrain');
-  }
-
-  get resupplyContainer() {
-    return this.shadowRoot.getElementById('resupply');
-  }
-
-  get targetElement() {
-    return this.shadowRoot.getElementById('target');
-  }
-
-  get errorElement() {
-    return this.shadowRoot.querySelector('.error');
-  }
-
-  get distance() {
-    return parseInt(this.distanceElement.value === '' ? -1 : this.distanceElement.value);
-  }
-
-  get separation() {
-    return parseInt(this.separationElement.value ? this.separationElement.value : 0);
-  }
-
-  get engagedAttackers() {
-    return parseInt(this.engagedAttackingElement.value === '' ? 0 : this.engagedAttackingElement.value);
-  }
-
-  get engagedDefenders() {
-    return parseInt(this.engagedDefendingElement.value === '' ? 0 : this.engagedDefendingElement.value);
-  }
-
-  get slope() {
-    const radioVal = getRadioVal(this.shadowRoot.getElementById('input-container'), 'hill');
-    return radioVal ? radioVal : SLOPE_NONE;
-  }
-
-  get generalNearby() {
-    return getRadioVal(this.shadowRoot.getElementById('input-container'), 'leader') === 'general';
-  }
-
-  get subcommanderNearby() {
-    return getRadioVal(this.shadowRoot.getElementById('input-container'), 'leader') === 'subcommander';
-  }
-
-  get terrain() {
-    return this.terrainContainer.querySelector('input').checked;
-  }
-
-  get resupply() {
-    return this.resupplyContainer.querySelector('input').checked;
-  }
-
-  get target() {
-    return parseInt(this.targetElement.value);
-  }
-
-  get terrainModifier() {
+  get _terrainModifier() {
     if (this.uphill && this.terrain) {
       return 60;
     } else if (this.uphill) {
@@ -456,7 +327,7 @@ class FightView extends connect(store)(PageViewElement) {
     }
   }
 
-  get validSituation() {
+  get _validSituation() {
     if (this._selectedAction === REST) {
       return true;
     } else if (this._selectedAction === MOVE) {
@@ -470,8 +341,49 @@ class FightView extends connect(store)(PageViewElement) {
     }
   }
 
-  get _actionMessageElement() {
-    return this.shadowRoot.getElementById('action-message');
+  get distance() {
+    return parseInt(this.get('distance').value === '' ? -1 : this.get('distance').value);
+  }
+
+  get separation() {
+    return parseInt(this.get('separation').value ? this.get('separation').value : 0);
+  }
+
+  get engagedAttackers() {
+    return parseInt(this.get('engaged-attackers').value === '' ? 0 : this.get('engaged-attackers').value);
+  }
+
+  get engagedDefenders() {
+    return parseInt(this.get('engaged-defenders').value === '' ? 0 : this.get('engaged-defenders').value);
+  }
+
+  get slope() {
+    const radioVal = getRadioVal(this.get('hill'), 'hill');
+    return radioVal ? radioVal : SLOPE_NONE;
+  }
+
+  get generalNearby() {
+    return getRadioVal(this.get('leader'), 'leader') === 'general';
+  }
+
+  get subcommanderNearby() {
+    return getRadioVal(this.get('leader'), 'leader') === 'subcommander';
+  }
+
+  get terrain() {
+    return this.get('terrain').querySelector('input').checked;
+  }
+
+  get resupply() {
+    return this.get('resupply').querySelector('input').checked;
+  }
+
+  get target() {
+    return parseInt(this.get('target').value);
+  }
+
+  get(id) {
+    return this.shadowRoot.getElementById(id);
   }
 }
 

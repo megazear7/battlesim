@@ -113,4 +113,12 @@ export const SharedStyles = css`
   .hidden {
     display: none !important;
   }
+
+  .muted {
+    color: var(--app-muted-text-color);
+  }
+
+  .centered {
+    text-align: center;
+  }
 `;

@@ -44,6 +44,7 @@ export const ButtonSharedStyles = css`
     cursor: unset;
     border-color: grey;
     color: grey;
+    background: none;
   }
 
   button:disabled:hover {
