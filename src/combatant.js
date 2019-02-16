@@ -34,6 +34,10 @@ export default class Combatant extends ActingUnit {
     this.moraleModRoll = randomBellMod();
   }
 
+  performMoraleCheck() {
+    this.status = (Math.random() * 100) > this.unit.morale ? MORALE_FAILURE : MORALE_SUCCESS;
+  }
+
   get energyLoss() {
     return weightedAverage(
       {

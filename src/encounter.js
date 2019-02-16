@@ -48,23 +48,28 @@ export default class Encounter {
       slope: this.defenderSlope });
   }
 
+  inchesWord(number) {
+    return number === 1 ? 'inch' : 'inches';
+  }
+
   attackerEngages() {
     let secondsOfCombat = combat(this.attacker, this.defender, SECONDS_PER_TURN);
 
     let actionMessage = ``;
     if (this.attacker.fallingback && this.attacker.inchesFallenback >= 1) {
-      actionMessage += `${this.attacker.unit.name} fell back ${this.defender.inchesFallenback} inch. `;
+      console.log(this.attacker.inchesFallenback);
+      actionMessage += `${this.attacker.unit.name} fell back ${this.attacker.inchesFallenback} ${this.inchesWord(this.attacker.inchesFallenback)}. `;
 
       if (this.defender.persueing && this.defender.inchesPersued >= 2) {
-        actionMessage += `${this.defender.unit.name} persued ${this.defender.inchesPersued} inch. `;
+        actionMessage += `${this.defender.unit.name} persued ${this.defender.inchesPersued} ${this.inchesWord(this.defender.inchesPersued)}. `;
       }
     }
 
     if (this.defender.fallingback && this.defender.inchesFallenback >= 1) {
-      actionMessage += `${this.defender.unit.name} fell back ${this.defender.inchesFallenback} inch.`;
+      actionMessage += `${this.defender.unit.name} fell back ${this.defender.inchesFallenback} ${this.inchesWord(this.defender.inchesFallenback)}.`;
 
       if (this.attacker.persueing && this.attacker.inchesPersued >= 2) {
-        actionMessage += `${this.attacker.unit.name} persued ${this.attacker.inchesPersued} inch.`;
+        actionMessage += `${this.attacker.unit.name} persued ${this.attacker.inchesPersued} ${this.inchesWord(this.attacker.inchesPersued)}.`;
       }
     }
 

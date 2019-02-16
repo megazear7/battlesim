@@ -318,6 +318,7 @@ export default [
         ...FRESH_UNION_BRIGADE,
         name: "Tyler's 3rd Brigade",
         fallback: 5,
+        morale: 0
       },
       {
         ...FRESH_CONFEDERATE_BRIGADE,

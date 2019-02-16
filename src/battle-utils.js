@@ -1,5 +1,6 @@
 import { DEADLYNESS, SECONDS_PER_TURN } from './game.js';
 import { SECONDS_IN_AN_MINUTE } from './math-utils.js';
+import { MORALE_FAILURE } from './acting-unit.js';
 
 export const SECONDS_PER_ROUND = SECONDS_IN_AN_MINUTE;
 export const YARDS_TO_FIGHT = 100;
@@ -9,18 +10,18 @@ export function combat(unit1, unit2, duration = SECONDS_PER_TURN) {
   let secondsOfAction = 0;
   while (secondsOfAction < duration) {
     if (unit1.encounter.closeEnoughToFight) {
-      if (unit1.fallingback) {
+      if (unit1.fallingback || unit1.status === MORALE_FAILURE) {
         unit1.yardsFallenback += unit1.yardsMovedPer(SECONDS_PER_ROUND);
-        if (! unit2.fallingback) {
+        if (! unit2.fallingback && unit2.encounter.melee) {
           unit2.yardsPersued += unit2.yardsMovedPer(SECONDS_PER_ROUND);
         }
       } else {
         makeAttacks(unit1, unit2, SECONDS_PER_ROUND);
       }
 
-      if (unit2.fallingback) {
+      if (unit2.fallingback || unit2.status === MORALE_FAILURE) {
         unit2.yardsFallenback += unit2.yardsMovedPer(SECONDS_PER_ROUND);
-        if (! unit1.fallingback) {
+        if (! unit1.fallingback && unit1.encounter.melee) {
           unit1.yardsPersued += unit1.yardsMovedPer(SECONDS_PER_ROUND);
         }
       } else {
