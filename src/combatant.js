@@ -223,7 +223,7 @@ export default class Combatant extends ActingUnit {
     } else if (this.casualties > 0) {
       return `${this.unit.name} sustained almost no casualties.`;
     } else {
-      return `${this.unit.name} sustained no casualties.`;
+      return this.encounter.melee ? `${this.unit.name} sustained no casualties.` : ``;
     }
   }
 

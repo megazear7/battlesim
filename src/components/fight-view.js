@@ -37,7 +37,7 @@ class FightView extends connect(store)(PageViewElement) {
       _showTerrain: { type: Boolean },
       _showResupply: { type: Boolean },
       _showChargeMessage: { type: Boolean },
-      _showEnagedStands: { type: Boolean },
+      _showEngagedAttackers: { type: Boolean },
       _showDoCombat: { type: Boolean },
       _showTakeAction: { type: Boolean },
       _showError: { type: Boolean },
@@ -59,6 +59,9 @@ class FightView extends connect(store)(PageViewElement) {
           width: calc(50% - 3px);
           box-sizing: border-box;
           display: inline-block;
+        }
+        .full {
+          width: 100% !important;
         }
         .has-selection button {
           opacity: 0.5;
@@ -130,8 +133,8 @@ class FightView extends connect(store)(PageViewElement) {
               <label for="resupply-checkbox">Resupply</label>
             </div>
             <p class="${classMap({hidden: ! this._showChargeMessage})}">${this._chargeMessage}</p>
-            <input id="engaged-attackers" class="${classMap({hidden: ! this._showEnagedStands, stands: true})}" type="number" placeholder="Attacking Stands"></input>
-            <input id="engaged-defenders" class="${classMap({hidden: ! this._showEnagedStands, stands: true})}" type="number" placeholder="Defending Stands"></input>
+            <input id="engaged-attackers" class="${classMap({hidden: ! this._showEngagedAttackers, full: this._showEngagedAttackers && ! this._showEngagedDefenders, stands: true})}" type="number" placeholder="Attacking Stands"></input>
+            <input id="engaged-defenders" class="${classMap({hidden: ! this._showEngagedDefenders, stands: true})}" type="number" placeholder="Defending Stands"></input>
             <button class="${classMap({hidden: ! this._showDoCombat})}" @click="${this._doCombat}">Do Combat</button>
             <button class="${classMap({hidden: ! this._showTakeAction})}" @click="${this._takeAction}">Take Action</button>
             <p class="${classMap({hidden: ! this._showError, error: true})}">You must provide valid values for each required field.</p>
@@ -166,7 +169,8 @@ class FightView extends connect(store)(PageViewElement) {
       this._hideInputs();
       const encounter = this._createEncounter();
       this._chargeMessage = encounter.chargeMessage;
-      this._showEnagedStands = encounter.attackerReachedDefender;
+      this._showEngagedAttackers = encounter.attackerReachedDefender;
+      this._showEngagedDefenders = encounter.attackerReachedDefender;
       this._actionsDisabled = true;
       this._showTakeAction = true;
       this._showChargeMessage = true;
@@ -250,7 +254,7 @@ class FightView extends connect(store)(PageViewElement) {
     this._showLeader = true;
     this._showTerrain = true;
     this._showTarget = true;
-    this._showEnagedStands = true;
+    this._showEngagedAttackers = true;
     this._showTakeAction = true;
   }
 
@@ -281,7 +285,8 @@ class FightView extends connect(store)(PageViewElement) {
   _hideInputs() {
     this._showDistance = false;
     this._showSeparation = false;
-    this._showEnagedStands = false;
+    this._showEngagedAttackers = false;
+    this._showEngagedDefenders = false;
     this._showHill = false;
     this._showLeader = false;
     this._showTerrain = false;
@@ -354,7 +359,11 @@ class FightView extends connect(store)(PageViewElement) {
   }
 
   get engagedDefenders() {
-    return parseInt(this.get('engaged-defenders').value === '' ? -1 : this.get('engaged-defenders').value);
+    if (this._selectedAction === CHARGE) {
+      return parseInt(this.get('engaged-defenders').value === '' ? -1 : this.get('engaged-defenders').value);
+    } else {
+      return 0;
+    }
   }
 
   get slope() {
