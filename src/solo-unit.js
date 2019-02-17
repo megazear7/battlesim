@@ -21,11 +21,19 @@ export default class SoloUnit extends ActingUnit {
   }
 
   get energyGain() {
-    return Math.min(MAX_STAT - this.unit.energy, this.maxEnergyRecovered);
+    if (this.situation.minutesSpentResting > 0) {
+      return Math.min(MAX_STAT - this.unit.energy, this.maxEnergyRecovered);
+    } else {
+      return 0;
+    }
   }
 
   get moraleGain() {
-    return Math.min(MAX_STAT - this.unit.morale, this.maxMoraleRecovered);
+    if (this.situation.minutesSpentResting > 0) {
+      return Math.min(MAX_STAT - this.unit.morale, this.maxMoraleRecovered);
+    } else {
+      return 0;
+    }
   }
 
   get maxMoraleRecovered() {
@@ -66,7 +74,7 @@ export default class SoloUnit extends ActingUnit {
   }
 
   get desc() {
-    return `${this.situation.yardsTravelled > 0 ? this.moveDesc : ''} ${this.situation.yardsTravelled > 0 ? this.battlefieldMoveDesc : ''} ${this.energyGain > 0 ? this.energyRecoveredDesc : ''} ${this.moraleGain > 0 ? this.moraleRecoveredDesc : ''}`;
+    return `${this.situation.yardsTravelled > 0 ? this.moveDesc : ''} ${this.situation.yardsTravelled > 0 ? this.battlefieldMoveDesc : ''} ${this.energyGain > 0 && this.situation.minutesSpentResting > 0 ? this.energyRecoveredDesc : ''} ${this.moraleGain > 0 && this.situation.minutesSpentResting > 0 ? this.moraleRecoveredDesc : ''}`;
   }
 
   get battlefieldMoveDesc() {
