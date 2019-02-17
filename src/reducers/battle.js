@@ -1,5 +1,5 @@
 import BATTLE_TEMPLATES from '../battle-templates.js';
-import { SECONDS_IN_AN_HOUR } from '../math-utils.js';
+import { SECONDS_PER_PLAYER_TURN, SECONDS_PER_TURN } from '../game.js';
 import {
   TAKE_ACTION,
   ADD,
@@ -55,7 +55,7 @@ const battle = (state = initialState, action) => {
       newBattle.name = action.battleStats.name;
     }
     newBattle.units.forEach(unit => {
-      unit.nextAction = Math.random() * SECONDS_IN_AN_HOUR;
+      unit.nextAction = Math.random() * SECONDS_PER_TURN;
     });
 
     updateTime(newBattle);
@@ -81,7 +81,7 @@ const battle = (state = initialState, action) => {
 function updateTime(battle) {
   let next = nextUnit(battle);
 
-  if (battle.units[next].nextAction > battle.turnStarted + SECONDS_IN_AN_HOUR) {
+  if (battle.units[next].nextAction > battle.turnStarted + SECONDS_PER_PLAYER_TURN) {
     if (battle.activeArmy === 0) {
       battle.activeArmy = 1;
     } else {
