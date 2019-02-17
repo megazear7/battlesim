@@ -20,7 +20,7 @@ export default class Situation {
   }
 
   rest(secondsSpent = SECONDS_PER_TURN) {
-    this.distance = 0;
+    this.distance = -1;
     this.secondsSpentMoving = 0;
     this.secondsSpentResting = secondsSpent;
 
@@ -28,7 +28,7 @@ export default class Situation {
   }
 
   move(distance) {
-    this.distance = distance === -1 ? Number.MAX_SAFE_INTEGER : distance;
+    this.distance = distance;
     this.secondsSpentMoving = this.yardsTravelled / this.soloUnit.speed;
     this.secondsSpentResting = 0;
 
@@ -55,7 +55,11 @@ export default class Situation {
   }
 
   get yardsTravelled() {
-    return Math.min(this.distanceInYards, this.maxYardsTravelled);
+    if (this.distance === -1) {
+      return this.maxYardsTravelled;
+    } else {
+      return Math.min(this.distanceInYards, this.maxYardsTravelled);
+    }
   }
 
   get distanceInYards() {

@@ -66,20 +66,21 @@ export default class SoloUnit extends ActingUnit {
   }
 
   get desc() {
-    return `${this.situation.yardsTravelled ? this.moveDesc : ''} ${this.situation.yardsTravelled ? this.battlefieldMoveDesc : ''} ${this.energyGain > 0 ? this.energyRecoveredDesc : ''}`;
+    console.log(this.situation.yardsTravelled);
+    return `${this.situation.yardsTravelled > 0 ? this.moveDesc : ''} ${this.situation.yardsTravelled > 0 ? this.battlefieldMoveDesc : ''} ${this.energyGain > 0 ? this.energyRecoveredDesc : ''}`;
   }
 
   get battlefieldMoveDesc() {
-    return `${this.unit.name} travelled ${numberWithCommas(nearest100(this.situation.yardsTravelled))} yards in ${Math.floor(this.situation.secondsSpentMoving / SECONDS_IN_AN_MINUTE)} minutes.`;
+    return `in ${Math.floor(this.situation.secondsSpentMoving / SECONDS_IN_AN_MINUTE)} minutes.`;
   }
 
   get moveDesc() {
-    if (this.situation.distanceInYards === 0) {
-      return `You move ${Math.floor(this.situation.yardsTravelled / YARDS_PER_INCH)} inches.`;
+    if (this.situation.distance === -1) {
+      return `You move ${Math.floor(this.situation.yardsTravelled / YARDS_PER_INCH)} inches `;
     } else if (this.situation.yardsTravelled < this.situation.distanceInYards) {
-      return `You could only move ${Math.floor(this.situation.yardsTravelled / YARDS_PER_INCH)} inches.`;
+      return `You could only move ${Math.floor(this.situation.yardsTravelled / YARDS_PER_INCH)} inches `;
     } else {
-      return `You move the full ${Math.floor(this.situation.yardsTravelled / YARDS_PER_INCH)} inches.`;
+      return `You move the full ${Math.floor(this.situation.yardsTravelled / YARDS_PER_INCH)} inches `;
     }
   }
 
