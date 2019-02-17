@@ -8,6 +8,7 @@
 
 ###### TODO
 
+1. Make a way to make some ranged weapons more effective at close range and then other weapons maintain effectiveness for a longer range. Smooth bore rifles more effective at close range
 1. Make a way to do events. The main event that this would be used for is night time.
 1. Make a way to add images to the rules.
 1. Modify the casualty report to read like either "Both units received heavy casualties" or "<unit name> took heavy casualties while <other unit name> only took moderate casualties"
