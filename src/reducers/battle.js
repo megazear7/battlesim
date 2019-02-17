@@ -102,7 +102,8 @@ function nextUnit(battle) {
   battle.units.forEach((unit, index) => {
     if (unit.army === battle.activeArmy &&
         unit.nextAction < minTime &&
-        unit.strength > 0) {
+        unit.strength > 0 &&
+        unit.morale > 0) {
       minTime = unit.nextAction;
       next = index;
     }

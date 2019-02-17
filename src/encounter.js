@@ -121,7 +121,7 @@ export default class Encounter {
         fullMessage,
       ],
       updates: [
-        this.defender.updates(SECONDS_PER_TURN),
+        this.defender.updates(0),
         this.attacker.updates(SECONDS_PER_TURN + randomMinutesBetween(5, 10))
       ]
     };

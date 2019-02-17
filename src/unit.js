@@ -95,9 +95,13 @@ export default class Unit {
   }
 
   get detailedStatus() {
-    return this.strength > 0
-      ? `${this.detailedStrengthDesc} ${this.detailedMoraleDesc} ${this.detailedEnergyDesc}`
-      : `${this.name} has been destroyed.`;
+    if (this.strength <= 0) {
+      return `${this.name} has been destroyed.`;
+    } else if (this.morale <= 0) {
+      return `${this.name} has fled the battlefield.`;
+    } else {
+      return `${this.detailedStrengthDesc} ${this.detailedMoraleDesc} ${this.detailedEnergyDesc}`;
+    }
   }
 
   get desc() {
