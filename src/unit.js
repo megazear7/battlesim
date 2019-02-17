@@ -3,6 +3,7 @@ import { WEAPONS } from './weapons.js';
 import { ARMOR } from './armor.js';
 import { FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP } from './units.js';
 import { upperCaseFirst } from './string-utils.js';
+import { getRandomInt } from './math-utils.js';
 
 export default class Unit {
   constructor({
@@ -10,7 +11,8 @@ export default class Unit {
                 name,
                 unitType = FOOT_TROOP,
                 openness = 20,
-                fallback = 10,
+                minFallback = 10,
+                maxFallback = 20,
                 ammunition = 0,
                 stands = 8,
                 strength,
@@ -35,7 +37,8 @@ export default class Unit {
     this.name = name;
     this.unitType = unitType;
     this.openness = openness;
-    this.fallback = fallback;
+    this.minFallback = minFallback;
+    this.maxFallback = maxFallback;
     this.ammunition = ammunition;
     this.stands = stands;
     this.strength = strength || fullStrength;
@@ -54,6 +57,7 @@ export default class Unit {
     this.baseSpeed = baseSpeed;
     this.baseBackwardSpeed = baseBackwardSpeed;
     this.maneuverTime = maneuverTime;
+    this.fallback = getRandomInt(this.minFallback, this.maxFallback);
   }
 
   get secondsToIssueOrder() {

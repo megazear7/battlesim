@@ -27,7 +27,8 @@ export const FRESH_UNION_BRIGADE = {
   energy: 100,
   stands: 8,
   openness: 20,
-  fallback: 10, // Percentage losses at which point the unit will fallback during combat.
+  minFallback: 10,
+  maxFallback: 20,
   ammunition: UNION_BRIGADE_SIZE * 20,
   armor: NO_ARMOR,
   [MELEE_WEAPON]: BAYONETE,
@@ -52,7 +53,8 @@ export const FRESH_UNION_CAVALRY_REGIMENT = {
   energy: 100,
   stands: 6,
   openness: 20,
-  fallback: 10, // Percentage losses at which point the unit will fallback during combat.
+  minFallback: 10,
+  maxFallback: 20,
   ammunition: UNION_CAVALRY_REGIMENT_SIZE * 20,
   armor: NO_ARMOR,
   [MELEE_WEAPON]: BAYONETE,
@@ -77,7 +79,8 @@ export const FRESH_UNION_ARTILLERY = {
   energy: 100,
   stands: 2,
   openness: 0,
-  fallback: 10, // Percentage losses at which point the unit will fallback during combat.
+  minFallback: 10,
+  maxFallback: 20,
   ammunition: 50 * 100,
   armor: NO_ARMOR,
   [MELEE_WEAPON]: NO_WEAPON,
@@ -102,7 +105,8 @@ export const FRESH_CONFEDERATE_BRIGADE = {
   energy: 100,
   stands: 8,
   openness: 20,
-  fallback: 10, // Percentage losses at which point the unit will fallback during combat.
+  minFallback: 10,
+  maxFallback: 20,
   ammunition: CONFEDERATE_BRIGADE_SIZE * 20,
   armor: NO_ARMOR,
   [MELEE_WEAPON]: BAYONETE,
@@ -127,7 +131,8 @@ export const FRESH_CONFEDERATE_CAVALRY_REGIMENT = {
   energy: 100,
   stands: 6,
   openness: 20,
-  fallback: 10, // Percentage losses at which point the unit will fallback during combat.
+  minFallback: 10,
+  maxFallback: 20,
   ammunition: CONFEDERATE_CAVALRY_REGIMENT_SIZE * 20,
   armor: NO_ARMOR,
   [MELEE_WEAPON]: BAYONETE,
@@ -152,7 +157,8 @@ export const FRESH_CONFEDERATE_ARTILLERY = {
   energy: 100,
   stands: 2,
   openness: 0,
-  fallback: 10, // Percentage losses at which point the unit will fallback during combat.
+  minFallback: 10,
+  maxFallback: 20,
   ammunition: 50 * 100,
   armor: NO_ARMOR,
   [MELEE_WEAPON]: NO_WEAPON,
