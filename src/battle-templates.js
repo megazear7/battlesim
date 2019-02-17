@@ -317,10 +317,12 @@ export default [
       {
         ...FRESH_UNION_BRIGADE,
         name: "Tyler's 3rd Brigade",
+        energy: 10
       },
       {
         ...FRESH_CONFEDERATE_BRIGADE,
         name: "1st Potomac Brigade",
+        energy: 10
       },
     ],
     unitTemplates: CIVIL_WAR_UNITS,

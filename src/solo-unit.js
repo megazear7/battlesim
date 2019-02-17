@@ -37,7 +37,6 @@ export default class SoloUnit extends ActingUnit {
 
   get maxEnergyRecovered() {
     return weightedAverage(
-      100,
       this.energyModRoll,
       (this.situation.percentageOfATurnSpentResting / 100) * 100,
       ((100 - this.situation.percentageOfATurnSpentMoving) / 100) * 100,

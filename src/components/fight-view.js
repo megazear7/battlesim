@@ -13,6 +13,7 @@ import { getRadioVal } from '../dom-utils.js';
 import { SLOPE_UP, SLOPE_DOWN, SLOPE_NONE } from '../terrain.js';
 import Encounter from '../encounter.js';
 import Situation from '../situation.js';
+import { MINUTES_PER_TURN } from '../game.js';
 
 const REST = 'REST';
 const MOVE = 'MOVE';
@@ -30,6 +31,7 @@ class FightView extends connect(store)(PageViewElement) {
       _date: { type: Object },
       _chargeMessage: { type: String },
       _showDistance: { type: Boolean },
+      _showRestTime: { type: Boolean },
       _showSeparation: { type: Boolean },
       _showTarget: { type: Boolean },
       _showHill: { type: Boolean },
@@ -94,6 +96,7 @@ class FightView extends connect(store)(PageViewElement) {
         </section>
         <section>
           <div>
+            <input id="rest-time" class="${classMap({hidden: ! this._showRestTime})}" type="number" placeholder="Minutes to rest"></input>
             <input id="distance" class="${classMap({hidden: ! this._showDistance})}" type="number" placeholder="Distance (Leave blank to move as far as possible)"></input>
             <input id="separation" class="${classMap({hidden: ! this._showSeparation})}" type="number" placeholder="Distance (Required)"></input>
             <select id="target" class="${classMap({hidden: ! this._showTarget})}">
@@ -185,7 +188,7 @@ class FightView extends connect(store)(PageViewElement) {
       let skipResults;
       if (this._selectedAction === REST || this._selectedAction === MOVE) {
         const situation = this._createSituation();
-        actionResult = this._selectedAction === REST ? situation.rest() : situation.move(this.distance);
+        actionResult = this._selectedAction === REST ? situation.rest(this.restTime) : situation.move(this.distance);
         skipResults = false;
       } else {
         let encounter = this._createEncounter()
@@ -222,6 +225,7 @@ class FightView extends connect(store)(PageViewElement) {
     this._hideInputs();
     this._selectedAction = REST;
     this._showTakeAction = true;
+    this._showRestTime = true;
     this._showResupply = true;
   }
 
@@ -284,6 +288,7 @@ class FightView extends connect(store)(PageViewElement) {
 
   _hideInputs() {
     this._showDistance = false;
+    this._showRestTime = false;
     this._showSeparation = false;
     this._showEngagedAttackers = false;
     this._showEngagedDefenders = false;
@@ -348,6 +353,10 @@ class FightView extends connect(store)(PageViewElement) {
 
   get distance() {
     return parseInt(this.get('distance').value === '' ? -1 : this.get('distance').value);
+  }
+
+  get restTime() {
+    return parseInt(this.get('rest-time').value === '' ? MINUTES_PER_TURN : this.get('rest-time').value);
   }
 
   get separation() {
