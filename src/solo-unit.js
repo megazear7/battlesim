@@ -16,7 +16,7 @@ export default class SoloUnit extends ActingUnit {
     this.armyLeadership = armyLeadership;
     this.status = status;
     this.slope = slope;
-    this.energyModRoll = weightedRandomTowards(0, 100, 50, 2);
+    this.energyModRoll = weightedRandomTowards(0, 100, 30, 2);
     this.moraleModRoll = weightedRandomTowards(0, 100, 50, 2);
   }
 
@@ -85,21 +85,21 @@ export default class SoloUnit extends ActingUnit {
 
   get energyRecoveredDesc() {
     if (this.energyGain > 80) {
-      return `They got back all of there energy.`;
+      return `In ${this.situation.minutesSpentResting} minutes they got back all of there energy.`;
     } else if (this.energyGain > 60) {
-      return `They recovered almost all of their strength.`;
+      return `In ${this.situation.minutesSpentResting} minutes they recovered almost all of their strength.`;
     } else if (this.energyGain > 40) {
-      return `They made a great recovery. The rest was very helpful.`;
+      return `In ${this.situation.minutesSpentResting} minutes they made a great recovery. The rest was very helpful.`;
     } else if (this.energyGain > 20) {
-      return `They recovered a lot of their strength`;
+      return `In ${this.situation.minutesSpentResting} minutes they recovered a lot of their strength`;
     } else if (this.energyGain > 15) {
-      return `They recovered much of their strength`;
+      return `In ${this.situation.minutesSpentResting} minutes they recovered much of their strength`;
     } else if (this.energyGain > 9) {
-      return `They recovered some of their strength`;
+      return `In ${this.situation.minutesSpentResting} minutes they recovered some of their strength`;
     } else if (this.energyGain > 6) {
-      return `They recovered a bit of their strength.`;
+      return `In ${this.situation.minutesSpentResting} minutes they recovered a bit of their strength.`;
     } else if (this.energyGain > 3) {
-      return `The rest was worth it but they only recovered a little bit.`;
+      return `In ${this.situation.minutesSpentResting} minutes they recovered a bit of their strength.`;
     } else {
       return `The rest was hardly worth it.`;
     }

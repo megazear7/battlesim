@@ -96,7 +96,7 @@ class FightView extends connect(store)(PageViewElement) {
         </section>
         <section>
           <div>
-            <input id="rest-time" class="${classMap({hidden: ! this._showRestTime})}" type="number" placeholder="Minutes to rest"></input>
+            <input id="rest-time" class="${classMap({hidden: ! this._showRestTime})}" type="number" placeholder="Minutes to rest" max="${MINUTES_PER_TURN}"></input>
             <input id="distance" class="${classMap({hidden: ! this._showDistance})}" type="number" placeholder="Distance (Leave blank to move as far as possible)"></input>
             <input id="separation" class="${classMap({hidden: ! this._showSeparation})}" type="number" placeholder="Distance (Required)"></input>
             <select id="target" class="${classMap({hidden: ! this._showTarget})}">
@@ -304,6 +304,7 @@ class FightView extends connect(store)(PageViewElement) {
 
   _resetInputs() {
     this.get('distance').value = '';
+    this.get('rest-time').value = '';
     this.get('separation').value = '';
     this.get('engaged-attackers').value = '';
     this.get('engaged-defenders').value = '';
@@ -356,7 +357,7 @@ class FightView extends connect(store)(PageViewElement) {
   }
 
   get restTime() {
-    return parseInt(this.get('rest-time').value === '' ? MINUTES_PER_TURN : this.get('rest-time').value);
+    return Math.min(parseInt(this.get('rest-time').value === '' ? MINUTES_PER_TURN : this.get('rest-time').value), MINUTES_PER_TURN);
   }
 
   get separation() {

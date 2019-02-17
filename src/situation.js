@@ -78,4 +78,8 @@ export default class Situation {
   get percentageOfATurnSpentResting() {
     return (this.secondsSpentResting / SECONDS_PER_TURN) * 100;
   }
+
+  get minutesSpentResting() {
+    return this.secondsSpentResting / SECONDS_IN_AN_MINUTE;
+  }
 }
