@@ -17,7 +17,7 @@ export default class SoloUnit extends ActingUnit {
     this.status = status;
     this.slope = slope;
     this.energyModRoll = weightedRandomTowards(0, 100, 30, 2);
-    this.moraleModRoll = weightedRandomTowards(0, 100, 50, 2);
+    this.moraleModRoll = weightedRandomTowards(0, 100, 1, 2);
   }
 
   get energyGain() {
@@ -30,16 +30,16 @@ export default class SoloUnit extends ActingUnit {
 
   get maxMoraleRecovered() {
     return weightedAverage(
-      this.moraleModRoll,
-      this.situation.percentageOfATurnSpentResting / 100
+      { value: this.moraleModRoll, weight: 2 },
+      this.situation.percentageOfATurnSpentResting / 4,
     );
   }
 
   get maxEnergyRecovered() {
     return weightedAverage(
       this.energyModRoll,
-      (this.situation.percentageOfATurnSpentResting / 100) * 100,
-      ((100 - this.situation.percentageOfATurnSpentMoving) / 100) * 100,
+      this.situation.percentageOfATurnSpentResting,
+      100 - this.situation.percentageOfATurnSpentMoving,
     );
   }
 
@@ -66,7 +66,7 @@ export default class SoloUnit extends ActingUnit {
   }
 
   get desc() {
-    return `${this.situation.yardsTravelled > 0 ? this.moveDesc : ''} ${this.situation.yardsTravelled > 0 ? this.battlefieldMoveDesc : ''} ${this.energyGain > 0 ? this.energyRecoveredDesc : ''}`;
+    return `${this.situation.yardsTravelled > 0 ? this.moveDesc : ''} ${this.situation.yardsTravelled > 0 ? this.battlefieldMoveDesc : ''} ${this.energyGain > 0 ? this.energyRecoveredDesc : ''} ${this.moraleGain > 0 ? this.moraleRecoveredDesc : ''}`;
   }
 
   get battlefieldMoveDesc() {
@@ -102,6 +102,16 @@ export default class SoloUnit extends ActingUnit {
       return `In ${this.situation.minutesSpentResting} minutes they recovered a bit of their strength.`;
     } else {
       return `The rest was hardly worth it.`;
+    }
+  }
+
+  get moraleRecoveredDesc() {
+    if (this.moraleGain > 20) {
+      return `They have been greatly encouraged.`;
+    } else if (this.moraleGain > 10) {
+      return `They have been encouraged.`;
+    } else {
+      return `They seem to be more willing to fight than before.`;
     }
   }
 }
