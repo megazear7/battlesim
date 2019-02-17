@@ -66,7 +66,6 @@ export default class SoloUnit extends ActingUnit {
   }
 
   get desc() {
-    console.log(this.situation.yardsTravelled);
     return `${this.situation.yardsTravelled > 0 ? this.moveDesc : ''} ${this.situation.yardsTravelled > 0 ? this.battlefieldMoveDesc : ''} ${this.energyGain > 0 ? this.energyRecoveredDesc : ''}`;
   }
 

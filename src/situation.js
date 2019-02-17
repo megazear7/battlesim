@@ -20,7 +20,7 @@ export default class Situation {
   }
 
   rest(secondsSpent = SECONDS_PER_TURN) {
-    this.distance = -1;
+    this.distance = 0;
     this.secondsSpentMoving = 0;
     this.secondsSpentResting = secondsSpent;
 
