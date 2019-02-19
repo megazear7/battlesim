@@ -54,13 +54,18 @@ class FightView extends connect(store)(PageViewElement) {
       ButtonSharedStyles,
       css`
         input.stands {
-          width: calc(50% - 3px);
+          width: 50%;
           box-sizing: border-box;
         }
+        .options-container {
+          font-size: 0; /* This solves the side by side inline-block element issue but be careful it might introduce other problems. */
+        }
         .options-block {
-          width: calc(50% - 3px);
+          font-size: 1rem;
+          width: 50%;
           box-sizing: border-box;
           display: inline-block;
+          vertical-align: top;
         }
         .full {
           width: 100% !important;
@@ -113,7 +118,7 @@ class FightView extends connect(store)(PageViewElement) {
           </div>
         </section>
         <section>
-          <div>
+          <div class="options-container">
             <input id="rest-time" class="${classMap({hidden: ! this._showRestTime})}" type="number" placeholder="Minutes to rest" max="${MINUTES_PER_TURN}"></input>
             <input id="distance" class="${classMap({hidden: ! this._showDistance})}" type="number" placeholder="Distance (Leave blank to move as far as possible)"></input>
             <input id="separation" class="${classMap({hidden: ! this._showSeparation})}" type="number" placeholder="Distance (Required)"></input>
@@ -123,6 +128,8 @@ class FightView extends connect(store)(PageViewElement) {
                 <option value="${target.id}">${target.unit.name}</option>
               `)}
             </select>
+            <input id="engaged-attackers" class="${classMap({hidden: ! this._showEngagedAttackers, full: this._showEngagedAttackers && ! this._showEngagedDefenders, stands: true})}" type="number" placeholder="Attacking Stands"></input>
+            <input id="engaged-defenders" class="${classMap({hidden: ! this._showEngagedDefenders, stands: true})}" type="number" placeholder="Defending Stands"></input>
             <button class="${classMap({hidden: ! this._showDoCombat})}" @click="${this._doCombat}">Do Combat</button>
             <button class="${classMap({hidden: ! this._showTakeAction})}" @click="${this._takeAction}">Take Action</button>
             <br>
@@ -214,8 +221,6 @@ class FightView extends connect(store)(PageViewElement) {
               <label for="resupply-checkbox">Resupply</label>
             </div>
             <p class="${classMap({hidden: ! this._showChargeMessage})}">${this._chargeMessage}</p>
-            <input id="engaged-attackers" class="${classMap({hidden: ! this._showEngagedAttackers, full: this._showEngagedAttackers && ! this._showEngagedDefenders, stands: true})}" type="number" placeholder="Attacking Stands"></input>
-            <input id="engaged-defenders" class="${classMap({hidden: ! this._showEngagedDefenders, stands: true})}" type="number" placeholder="Defending Stands"></input>
             <p class="${classMap({hidden: ! this._showError, error: true})}">You must provide valid values for each required field.</p>
             <div class="${classMap({hidden: ! this._showActionResult})}">
               ${repeat(this._actionMessages, message => html`<p>${message}</p>`)}
