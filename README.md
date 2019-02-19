@@ -8,14 +8,13 @@
 
 ###### TODO
 
+1. Optional pace for movements (recovery pace, marching pace, charging pace)
 1. Update civil war army size to be regiment level.
-1. Mount / Unmount options while resting. isMounted, canUnmount, unmountedSpeed, mountedSpeed.
 1. Review the usage of army leadership in resting, movement, and combat. Leadership is now configurable by scenario and army but I don't know how this influences actions.
 1. Move terrain out of the reducer and just reference it by index so that we don't have to recreate battles when terrain get's modified.
 1. Update civil war ruleset based on our practice games.
 1. Event sourced data for step back in time or undoing actions.
 1. Action log of every action (maybe do this along with the event sourced data)
-1. Optional pace for movements (recovery pace, marching pace, charging pace)
 1. Various equations for ranged weapon effectiveness.
 1. Army actions (generals, supply wagons).
 1. Make a way to add images to the rules.

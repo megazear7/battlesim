@@ -45,6 +45,7 @@ class FightView extends connect(store)(PageViewElement) {
       _showLeader: { type: Boolean },
       _showTerrain: { type: Boolean },
       _showResupply: { type: Boolean },
+      _showMount: { type: Boolean },
       _showChargeMessage: { type: Boolean },
       _showEngagedAttackers: { type: Boolean },
       _showDoCombat: { type: Boolean },
@@ -76,6 +77,9 @@ class FightView extends connect(store)(PageViewElement) {
           box-sizing: border-box;
           display: inline-block;
           vertical-align: top;
+        }
+        label {
+          font-size: 1rem;
         }
         .full {
           width: 100% !important;
@@ -207,6 +211,18 @@ class FightView extends connect(store)(PageViewElement) {
               <input type="checkbox" id="resupply-checkbox"></input>
               <label for="resupply-checkbox">Resupply</label>
             </div>
+            <div class="${classMap({hidden: ! this._showMount})}">
+              <h5>Mounted Actions</h5>
+              ${this._unit.isCurrentlyMounted ? html`
+                <div><small>${this._unit.name} is currently mounted</small></div>
+                <input type="checkbox" id="unmount"></input>
+                <label for="unmount">Unmount</label>
+              ` : html`
+                <div><small>${this._unit.name} is currently unmounted</small></div>
+                <input type="checkbox" id="mount"></input>
+                <label for="mount">Mount</label>
+              `}
+            </div>
             <p class="${classMap({hidden: ! this._showError, error: true})}">You must provide valid values for each required field.</p>
             <div class="${classMap({hidden: ! this._showActionResult})}">
               ${repeat(this._actionMessages, message => html`<p>${message}</p>`)}
@@ -294,6 +310,7 @@ class FightView extends connect(store)(PageViewElement) {
     this._showTakeAction = true;
     this._showRestTime = true;
     this._showResupply = true;
+    this._showMount = this._unit.isMounted && this._unit.canUnmount;
   }
 
   _move(e) {
@@ -356,6 +373,8 @@ class FightView extends connect(store)(PageViewElement) {
           unit: this._unit,
           armyLeadership: this._activeArmyLeadership,
           movementTerrain: this._selectedTerrain(TERRAIN_TYPE_MOVEMENT),
+          mount: this.mount,
+          unmount: this.unmount,
           slope: this.slope });
   }
 
@@ -369,6 +388,7 @@ class FightView extends connect(store)(PageViewElement) {
     this._showLeader = false;
     this._showTerrain = false;
     this._showResupply = false;
+    this._showMount = false;
     this._showTarget = false;
     this._showChargeMessage = false;
     this._showDoCombat = false;
@@ -507,6 +527,14 @@ class FightView extends connect(store)(PageViewElement) {
 
   get resupply() {
     return this.get('resupply').querySelector('input').checked;
+  }
+
+  get mount() {
+    return this.get('mount') && this.get('mount').checked;
+  }
+
+  get unmount() {
+    return this.get('unmount') && this.get('unmount').checked;
   }
 
   get(id) {

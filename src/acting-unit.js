@@ -31,6 +31,7 @@ export default class SoloUnit {
   }
 
   get terrainMovePenalty() {
+    // This should be based upon this.unit.openness and this.unit.isMounted
     return Math.min(this.environment.movementTerrain.reduce((sum, terrain) => sum += terrain.movePenalty, 0), 100);
   }
 
@@ -43,7 +44,15 @@ export default class SoloUnit {
   }
 
   get speed() {
-    return this.unit.baseSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod;
+    if (this.unit.canMounted) {
+      if (this.unit.isMounted) {
+        return this.unit.mountedSpeed.baseSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod;
+      } else {
+        return this.unit.unmountedSpeed.baseSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod;
+      }
+    } else {
+        return this.unit.baseSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod;
+    }
   }
 
   get backwardsSpeed() {

@@ -41,7 +41,7 @@ export const FRESH_UNION_BRIGADE = {
   fullStrength: UNION_BRIGADE_SIZE,
   baseSpeed: 0.5, // meters per second
   baseBackwardsSpeed: 0.25,
-  chargeSpeed: 1, // TODO Use these values
+  chargeSpeed: 0.7, // TODO Use these values
   maneuverTime: 110,
 };
 
@@ -65,9 +65,19 @@ export const FRESH_UNION_CAVALRY_REGIMENT = {
   leadership: 60,
   troopType: CAVALRY_TROOP,
   fullStrength: UNION_CAVALRY_REGIMENT_SIZE,
-  baseSpeed: 1,
-  baseBackwardsSpeed: 0.5,
-  chargeSpeed: 1,
+  isMounted: true,
+  isCurrentlyMounted: true,
+  canUnmount: true,
+  mountedSpeed: {
+    baseSpeed: 1,
+    baseBackwardsSpeed: 0.5,
+    chargeSpeed: 1,
+  },
+  unmountedSpeed: {
+    baseSpeed: 0.5,
+    chargeSpeed: 0.7,
+    backwardsSpeed: 0.25,
+  },
   maneuverTime: 90,
 };
 
@@ -93,7 +103,7 @@ export const FRESH_UNION_ARTILLERY = {
   fullStrength: 50,
   baseSpeed: 0.3,
   baseBackwardsSpeed: 0.1,
-  chargeSpeed: 1,
+  chargeSpeed: 0.1,
   maneuverTime: 220,
 };
 
@@ -119,7 +129,7 @@ export const FRESH_CONFEDERATE_BRIGADE = {
   fullStrength: CONFEDERATE_BRIGADE_SIZE,
   baseSpeed: 0.5, // meters per second
   baseBackwardsSpeed: 0.25,
-  chargeSpeed: 1,
+  chargeSpeed: 0.7,
   maneuverTime: 80,
 };
 
@@ -143,9 +153,19 @@ export const FRESH_CONFEDERATE_CAVALRY_REGIMENT = {
   leadership: 75,
   troopType: CAVALRY_TROOP,
   fullStrength: CONFEDERATE_CAVALRY_REGIMENT_SIZE,
-  baseSpeed: 1,
-  baseBackwardsSpeed: 0.5,
-  chargeSpeed: 1,
+  isMounted: true,
+  isCurrentlyMounted: true,
+  canUnmount: true,
+  mountedSpeed: {
+    baseSpeed: 1,
+    baseBackwardsSpeed: 0.5,
+    chargeSpeed: 1,
+  },
+  unmountedSpeed: {
+    baseSpeed: 0.5,
+    chargeSpeed: 0.7,
+    backwardsSpeed: 0.25,
+  },
   maneuverTime: 70,
 };
 
@@ -171,7 +191,7 @@ export const FRESH_CONFEDERATE_ARTILLERY = {
   fullStrength: 50,
   baseSpeed: 0.3,
   baseBackwardsSpeed: 0.1,
-  chargeSpeed: 1,
+  chargeSpeed: 0.1,
   maneuverTime: 200,
 };
 

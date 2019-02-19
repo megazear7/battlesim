@@ -10,6 +10,8 @@ export default class Situation {
   constructor({ unit,
                 armyLeadership = 0,
                 movementTerrain = 0,
+                mount = false,
+                unmount = false,
                 slope = SLOPE_NONE }) {
     this.movementTerrain = movementTerrain;
     this.slope = slope;
@@ -17,6 +19,8 @@ export default class Situation {
     this.soloUnit = new SoloUnit({
       unit: unit,
       situation: this,
+      mount,
+      unmount,
       slope: this.slope });
   }
 

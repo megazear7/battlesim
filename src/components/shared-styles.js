@@ -56,6 +56,11 @@ export const SharedStyles = css`
     line-height: 1.75rem;
   }
 
+  small {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+
   hr {
     border: 0.5px solid var(--app-secondary-color);
   }

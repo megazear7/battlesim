@@ -30,6 +30,11 @@ export default class Unit {
                 fullStrength,
                 baseSpeed = 1,
                 baseBackwardSpeed = 0.5,
+                isMounted = false,
+                canUnmount = false,
+                isCurrentlyMounted,
+                mountedSpeed,
+                unmountedSpeed,
                 maneuverTime = 100,
               }, id) {
     this.armyIndex = army;
@@ -56,6 +61,11 @@ export default class Unit {
     this.fullStrength = fullStrength;
     this.baseSpeed = baseSpeed;
     this.baseBackwardSpeed = baseBackwardSpeed;
+    this.isMounted = isMounted;
+    this.canUnmount = canUnmount;
+    this.isCurrentlyMounted = isCurrentlyMounted;
+    this.mountedSpeed = mountedSpeed;
+    this.unmountedSpeed = unmountedSpeed;
     this.maneuverTime = maneuverTime;
     this.fallback = getRandomInt(this.minFallback, this.maxFallback);
   }
@@ -104,7 +114,21 @@ export default class Unit {
     } else if (this.morale <= 0) {
       return `${this.name} has fled the battlefield.`;
     } else {
-      return `${this.detailedStrengthDesc} ${this.detailedMoraleDesc} ${this.detailedEnergyDesc}`;
+      return `${this.detailedStrengthDesc} ${this.detailedMoraleDesc} ${this.detailedEnergyDesc} ${this.mountedStatus}`;
+    }
+  }
+
+  get mountedStatus() {
+    if (this.isMounted) {
+      if (this.canUnmount && this.isCurrentlyMounted) {
+        return `They are currently mounted.`;
+      } else if (this.canUnmount && ! this.isCurrentlyMounted) {
+        return `They are currently unmounted.`;
+      } else {
+        return ``;
+      }
+    } else {
+      return ``;
     }
   }
 

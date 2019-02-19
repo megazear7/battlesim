@@ -9,12 +9,16 @@ export default class SoloUnit extends ActingUnit {
                   situation,
                   armyLeadership = 0,
                   status = MORALE_SUCCESS,
+                  mount = false,
+                  unmount = false,
                   slope = SLOPE_NONE }) {
     super({ unit, environment: situation, armyLeadership });
     this.unit = unit;
     this.situation = situation;
     this.armyLeadership = armyLeadership;
     this.status = status;
+    this.mount = mount;
+    this.unmount = unmount;
     this.slope = slope;
     this.energyModRoll = weightedRandomTowards(0, 100, 30, 2);
     this.moraleModRoll = weightedRandomTowards(0, 100, 1, 2);
@@ -59,7 +63,7 @@ export default class SoloUnit extends ActingUnit {
   }
 
   changes(delay) {
-    return [
+    let changes = [
       {
         prop: "energy",
         value: this.unit.energy + this.energyGain
@@ -71,6 +75,20 @@ export default class SoloUnit extends ActingUnit {
         value: this.unit.nextAction + delay
       }
     ];
+
+    if (this.mount) {
+      changes.push({
+        prop: "isCurrentlyMounted",
+        value: true,
+      });
+    } else if (this.unmount) {
+      changes.push({
+        prop: "isCurrentlyMounted",
+        value: false,
+      });
+    }
+
+    return changes;
   }
 
   get desc() {
