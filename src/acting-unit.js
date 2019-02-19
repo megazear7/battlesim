@@ -22,8 +22,20 @@ export default class SoloUnit {
     this.status = this.moraleRoll() > this.unit.morale ? MORALE_FAILURE : this.status = MORALE_SUCCESS;
   }
 
+  yardsMovedPer(seconds) {
+    return this.speed * seconds;
+  }
+
+  moraleRoll() {
+    return weightedRandom(2) * 100;
+  }
+
+  get terrainMovePenalty() {
+    return Math.min(this.environment.movementTerrain.reduce((sum, terrain) => sum += terrain.movePenalty, 0), 100);
+  }
+
   get terrainSpeedMod() {
-    return ((MAX_TERRAIN - this.environment.terrain) / MAX_TERRAIN);
+    return ((MAX_TERRAIN - this.terrainMovePenalty) / MAX_TERRAIN);
   }
 
   get equipmentMod() {
@@ -32,10 +44,6 @@ export default class SoloUnit {
 
   get speed() {
     return this.unit.baseSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod;
-  }
-
-  yardsMovedPer(seconds) {
-    return this.speed * seconds;
   }
 
   get backwardsSpeed() {
@@ -55,7 +63,7 @@ export default class SoloUnit {
   }
 
   get terrainMod() {
-    return ((MAX_TERRAIN - this.environment.terrain) / MAX_TERRAIN) * statModFor(this.unit.openness) * this.unitTypeTerrainMod;
+    return ((MAX_TERRAIN - this.terrainMovePenalty) / MAX_TERRAIN) * statModFor(this.unit.openness) * this.unitTypeTerrainMod;
   }
 
   get slopeMod() {
@@ -64,9 +72,5 @@ export default class SoloUnit {
       [SLOPE_DOWN]: 1.25,
       [SLOPE_NONE]: 1,
     }[this.slope];
-  }
-
-  moraleRoll() {
-    return weightedRandom(2) * 100;
   }
 }

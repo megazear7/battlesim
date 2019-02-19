@@ -13,7 +13,9 @@ export default class Combatant extends ActingUnit {
                   encounter,
                   target,
                   armyLeadership = 0,
-                  terrain = [],
+                  movementTerrain = [],
+                  protectingTerrain =  [],
+                  areaTerrain = [],
                   engagedStands = -1,
                   slope = SLOPE_NONE }) {
     super({ unit, environment: encounter, armyLeadership });
@@ -21,7 +23,9 @@ export default class Combatant extends ActingUnit {
     this.encounter = encounter;
     this.target = target;
     this.armyLeadership = armyLeadership;
-    this.terrain = terrain;
+    this.movementTerrain = movementTerrain;
+    this.protectingTerrain = protectingTerrain;
+    this.areaTerrain = areaTerrain;
     this.engagedStands = engagedStands <= -1 || engagedStands > unit.stands ? unit.stands : engagedStands;
     this.slope = slope;
     this.casualties = 0;
@@ -31,6 +35,18 @@ export default class Combatant extends ActingUnit {
     this.leaderSurviveRoll = Math.random();
     this.energyModRoll = randomBellMod();
     this.moraleModRoll = randomBellMod();
+  }
+
+  skillRoll() {
+    return Math.random() * this.skill * statModFor(this.unit.energy);
+  }
+
+  armorRoll() {
+    return Math.random() * this.armor;
+  }
+
+  powerRoll() {
+    return Math.random() * this.modifiedPower;
   }
 
   get energyLoss() {
@@ -109,7 +125,7 @@ export default class Combatant extends ActingUnit {
   }
 
   get terrainMod() {
-    return 1 - Math.min(this.terrain.reduce((sum, next) => sum + next[this.encounterType].volumeMod, 0), 1);
+    return 1 - Math.min(this.areaTerrain.reduce((sum, next) => sum + next[this.encounterType].volumeMod, 0), 1);
   }
 
   get targetTroopType() {
@@ -142,18 +158,6 @@ export default class Combatant extends ActingUnit {
 
   get powerModifier() {
     return this.slopeMod;
-  }
-
-  get skillRoll() {
-    return Math.random() * this.skill * statModFor(this.unit.energy);
-  }
-
-  get powerRoll() {
-    return Math.random() * this.modifiedPower;
-  }
-
-  get armorRoll() {
-    return Math.random() * this.armor;
   }
 
   get secondsPerAttack() {

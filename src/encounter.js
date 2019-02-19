@@ -2,12 +2,12 @@ import Combatant from './combatant.js';
 import { WEAPONS } from './weapons.js';
 import { ARMOR } from './armor.js';
 import { store } from './store.js';
-import { combat, YARDS_TO_FIGHT } from './battle-utils.js';
+import { combat } from './battle-utils.js';
 import { randomMinutesBetween, SECONDS_IN_AN_MINUTE } from './math-utils.js';
 import { FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP } from './units.js';
 import { SLOPE_UP, SLOPE_DOWN, SLOPE_NONE } from './terrain.js';
 import { MORALE_SUCCESS, MORALE_FAILURE } from './acting-unit.js'
-import { SECONDS_PER_TURN, YARDS_PER_INCH } from './game.js';
+import { SECONDS_PER_TURN, YARDS_PER_INCH, YARDS_TO_FIGHT } from './game.js';
 
 export const MELEE = 'melee';
 export const RANGED = 'ranged';
@@ -16,26 +16,30 @@ export const RANGED = 'ranged';
  *  This represents the encounter of two units on the battle field. */
 export default class Encounter {
   constructor({ attacker,
-                attackerTerrain = [],
                 attackerArmyLeadership = 0,
                 attackerEngagedStands = -1,
                 defender,
-                defenderTerrain = [],
                 defenderArmyLeadership = 0,
                 defenderEngagedStands = -1,
                 melee = true,
                 separation = 0,
-                slope = SLOPE_NONE }) {
+                slope = SLOPE_NONE,
+                attackerChargeTerrain = [],
+                defenderTerrain = [],
+                meleeCombatTerrain = [] }) {
     this.melee = melee;
     this.separation = separation;
     this.slope = slope;
+    this.movementTerrain = attackerChargeTerrain;
 
     this.attacker = new Combatant({
       unit: attacker,
       encounter: this,
       target: defender,
       engagedStands: attackerEngagedStands,
-      terrain: attackerTerrain,
+      movementTerrain: attackerChargeTerrain,
+      protectingTerrain: [],
+      areaTerrain: this.melee ? meleeCombatTerrain : [],
       armyLeadership: attackerArmyLeadership,
       slope: this.attackerSlope });
 
@@ -44,7 +48,9 @@ export default class Encounter {
       encounter: this,
       target: attacker,
       engagedStands: defenderEngagedStands,
-      terrain: defenderTerrain,
+      movementTerrain: [],
+      protectingTerrain: defenderTerrain,
+      areaTerrain: this.melee ? meleeCombatTerrain : [],
       armyLeadership: defenderArmyLeadership,
       slope: this.defenderSlope });
   }

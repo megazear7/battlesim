@@ -1,9 +1,7 @@
-import { DEADLYNESS, SECONDS_PER_TURN } from './game.js';
+import { DEADLYNESS, SECONDS_PER_TURN, SECONDS_PER_ROUND, YARDS_TO_FIGHT } from './game.js';
 import { SECONDS_IN_AN_MINUTE } from './math-utils.js';
 import { MORALE_FAILURE } from './acting-unit.js';
-
-export const SECONDS_PER_ROUND = SECONDS_IN_AN_MINUTE;
-export const YARDS_TO_FIGHT = 100;
+import { Terrain } from './terrain.js';
 
 export function combat(unit1, unit2, duration = SECONDS_PER_TURN) {
   let secondsOfCombat = 0;
@@ -42,15 +40,16 @@ function makeAttacks(attacker, defender, duration) {
       attacker.ammunitionUsed += 1;
     }
     let attackHits = true;
-    if (attacker.skillRoll * DEADLYNESS < defender.skillRoll) {
+    if (attacker.skillRoll() * DEADLYNESS < defender.skillRoll()) {
       attackHits = false;
     }
-    let powerRoll = attacker.powerRoll;
-    if (powerRoll * DEADLYNESS < defender.armorRoll) {
+    let powerRoll = attacker.powerRoll();
+    if (powerRoll * DEADLYNESS < defender.armorRoll()) {
       attackHits = false;
     }
-    defender.terrain.forEach(terrain => {
-      if (powerRoll * DEADLYNESS < terrain[defender.encounterType].armor) {
+    defender.protectingTerrain.forEach(terrainConfig => {
+      let terrain = new Terrain(terrainConfig, defender.encounterType);
+      if (powerRoll * DEADLYNESS < terrain.armorRoll()) {
         attackHits = false;
       }
     });

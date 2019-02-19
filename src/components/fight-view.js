@@ -22,6 +22,12 @@ const FIRE = 'FIRE';
 const ACTIONS = [ REST, MOVE, CHARGE, FIRE ];
 const NO_ACTION = 'NO_ACTION';
 
+export const TERRAIN_TYPE_MOVEMENT = 'movement-terrain';
+export const TERRAIN_TYPE_DEFENDER = 'defender-terrain';
+export const TERRAIN_TYPE_MELEE_COMBAT = 'melee-combat-terrain';
+export const TERRAIN_TYPE_RANGED_DEFENDER = 'ranged-defender-terrain';
+export const TERRAIN_TYPES = [ TERRAIN_TYPE_MOVEMENT, TERRAIN_TYPE_DEFENDER, TERRAIN_TYPE_MELEE_COMBAT, TERRAIN_TYPE_RANGED_DEFENDER ];
+
 class FightView extends connect(store)(PageViewElement) {
   static get properties() {
     return {
@@ -54,8 +60,11 @@ class FightView extends connect(store)(PageViewElement) {
       ButtonSharedStyles,
       css`
         input.stands {
-          width: 50%;
+          width: calc(50% - 0.5rem);
           box-sizing: border-box;
+        }
+        input.stands:nth-child(odd) {
+          margin-right: 1rem;
         }
         .options-container {
           font-size: 0; /* This solves the side by side inline-block element issue but be careful it might introduce other problems. */
@@ -69,6 +78,7 @@ class FightView extends connect(store)(PageViewElement) {
         }
         .full {
           width: 100% !important;
+          margin-right: 0;
         }
         .has-selection button {
           opacity: 0.5;
@@ -119,6 +129,7 @@ class FightView extends connect(store)(PageViewElement) {
         </section>
         <section>
           <div class="options-container">
+            <p class="${classMap({hidden: ! this._showChargeMessage})}">${this._chargeMessage}</p>
             <input id="rest-time" class="${classMap({hidden: ! this._showRestTime})}" type="number" placeholder="Minutes to rest" max="${MINUTES_PER_TURN}"></input>
             <input id="distance" class="${classMap({hidden: ! this._showDistance})}" type="number" placeholder="Distance (Leave blank to move as far as possible)"></input>
             <input id="separation" class="${classMap({hidden: ! this._showSeparation})}" type="number" placeholder="Distance (Required)"></input>
@@ -128,14 +139,16 @@ class FightView extends connect(store)(PageViewElement) {
                 <option value="${target.id}">${target.unit.name}</option>
               `)}
             </select>
-            <input id="engaged-attackers" class="${classMap({hidden: ! this._showEngagedAttackers, full: this._showEngagedAttackers && ! this._showEngagedDefenders, stands: true})}" type="number" placeholder="Attacking Stands"></input>
-            <input id="engaged-defenders" class="${classMap({hidden: ! this._showEngagedDefenders, stands: true})}" type="number" placeholder="Defending Stands"></input>
+            <div class="${classMap({hidden: ! this._showEngagedAttackers && ! this._showEngagedDefenders})}">
+              <input id="engaged-attackers" class="${classMap({hidden: ! this._showEngagedAttackers, full: this._showEngagedAttackers && ! this._showEngagedDefenders, stands: true})}" type="number" placeholder="Attacking Stands"></input>
+              <input id="engaged-defenders" class="${classMap({hidden: ! this._showEngagedDefenders, stands: true})}" type="number" placeholder="Defending Stands"></input>
+            </div>
             <button class="${classMap({hidden: ! this._showDoCombat})}" @click="${this._doCombat}">Do Combat</button>
             <button class="${classMap({hidden: ! this._showTakeAction})}" @click="${this._takeAction}">Take Action</button>
             <br>
             <div class="${classMap({"options-block": true, hidden: ! this._showTerrain})}">
               ${repeat(this._typesOfTerrain, terrainType => html`
-                <div id="ranged-defender-terrain" class="${classMap({hidden: ! terrainType.show})}">
+                <div id="${terrainType.id}" class="${classMap({hidden: ! terrainType.show})}">
                   <h6 class="tooltip">
                     ${terrainType.name}
                     <span class="tooltiptext">${terrainType.description}</span>
@@ -186,7 +199,6 @@ class FightView extends connect(store)(PageViewElement) {
               <input type="checkbox" id="resupply-checkbox"></input>
               <label for="resupply-checkbox">Resupply</label>
             </div>
-            <p class="${classMap({hidden: ! this._showChargeMessage})}">${this._chargeMessage}</p>
             <p class="${classMap({hidden: ! this._showError, error: true})}">You must provide valid values for each required field.</p>
             <div class="${classMap({hidden: ! this._showActionResult})}">
               ${repeat(this._actionMessages, message => html`<p>${message}</p>`)}
@@ -310,6 +322,10 @@ class FightView extends connect(store)(PageViewElement) {
   }
 
   _createEncounter() {
+    let defenderTerrain = this._selectedAction === CHARGE
+      ? this._selectedTerrain(TERRAIN_TYPE_DEFENDER)
+      : this._selectedTerrain(TERRAIN_TYPE_RANGED_DEFENDER);
+
     return new Encounter({
       attacker: this._unit,
       attackerTerrainDefense: 0,
@@ -321,8 +337,9 @@ class FightView extends connect(store)(PageViewElement) {
       defenderEngagedStands: this.engagedDefenders,
       melee: this._selectedAction === CHARGE,
       separation: this.separation,
-      defenderTerrain: this._attackerTerrain,
-      attackerTerrain: this._defenderTerrain,
+      attackerChargeTerrain: this._selectedTerrain(TERRAIN_TYPE_MOVEMENT),
+      defenderTerrain: defenderTerrain,
+      meleeCombatTerrain: this._selectedTerrain(TERRAIN_TYPE_MELEE_COMBAT),
       slope: this.slope });
   }
 
@@ -330,7 +347,7 @@ class FightView extends connect(store)(PageViewElement) {
     return new Situation({
           unit: this._unit,
           armyLeadership: 0,
-          terrain: this._terrain,
+          movementTerrain: this._selectedTerrain(TERRAIN_TYPE_MOVEMENT),
           slope: this.slope });
   }
 
@@ -358,10 +375,9 @@ class FightView extends connect(store)(PageViewElement) {
     this.get('engaged-defenders').value = '';
     this.get('hill').querySelectorAll('input').forEach(input => input.checked = false);
     this.get('leader').querySelectorAll('input').forEach(input => input.checked = false);
-    this.get('attacker-terrain').querySelectorAll('input').forEach(input => input.checked = false);
-    this.get('defender-terrain').querySelectorAll('input').forEach(input => input.checked = false);
     this.get('resupply').querySelector('input').checked = false;
     this.get('target').value = '';
+    TERRAIN_TYPES.forEach(type => this.get(type).querySelectorAll('input').forEach(input => input.checked = false));
   }
 
   _blinkError() {
@@ -369,6 +385,12 @@ class FightView extends connect(store)(PageViewElement) {
     setTimeout(() => {
       this._showError = false;
     }, 3000);
+  }
+
+  _selectedTerrain(typeId) {
+    return [...this.get(typeId).querySelectorAll('input')]
+    .filter(input => input.checked)
+    .map(input => this._activeBattle.terrain[input.dataset.terrainIndex]);
   }
 
   get _actionSelected() {
@@ -429,46 +451,34 @@ class FightView extends connect(store)(PageViewElement) {
   get _typesOfTerrain() {
     return [
       {
-        id: "movement-terrain",
+        id: TERRAIN_TYPE_MOVEMENT,
         name: "Movement",
         description: "This is the terrain that applys to the movement or charge.",
         terrain: this._activeBattle.terrain.map((terrain, index) => ({ terrain, index })),
         show: this._showTerrain && (this._selectedAction === CHARGE || this._selectedAction === MOVE)
       },
       {
-        id: "defender-terrain",
+        id: TERRAIN_TYPE_DEFENDER,
         name: "Defender",
         description: "This is the terrain that the defender is defending.",
         terrain: this._activeBattle.terrain.map((terrain, index) => ({ terrain, index })).filter(({terrain}) => terrain.defendable),
         show: this._showTerrain && this._selectedAction === CHARGE
       },
       {
-        id: "melee-combat-terrain",
+        id: TERRAIN_TYPE_MELEE_COMBAT,
         name: "Combat",
         description: "This is the terrain that the combat that is taking place.",
         terrain: this._activeBattle.terrain.map((terrain, index) => ({ terrain, index })).filter(({terrain}) => terrain.areaTerrain),
         show: this._showTerrain &&  this._selectedAction === CHARGE
       },
       {
-        id: "ranged-defender-terrain",
+        id: TERRAIN_TYPE_RANGED_DEFENDER,
         name: "Terrain",
         description: "This is the terrain that the defender recieves the benefit of.",
         terrain: this._activeBattle.terrain.map((terrain, index) => ({ terrain, index })),
         show: this._showTerrain && this._selectedAction === FIRE
       },
     ];
-  }
-
-  get _attackerTerrain() {
-    return [...this.get('attacker-terrain').querySelectorAll('input')]
-    .filter(input => input.checked)
-    .map(input => this._activeBattle.terrain[input.dataset.terrainIndex]);
-  }
-
-  get _defenderTerrain() {
-    return [...this.get('defender-terrain').querySelectorAll('input')]
-    .filter(input => input.checked)
-    .map(input => this._activeBattle.terrain[input.dataset.terrainIndex]);
   }
 
   get resupply() {

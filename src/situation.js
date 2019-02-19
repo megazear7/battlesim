@@ -9,9 +9,9 @@ import { SECONDS_IN_AN_MINUTE } from './math-utils.js';
 export default class Situation {
   constructor({ unit,
                 armyLeadership = 0,
-                terrain = 0,
+                movementTerrain = 0,
                 slope = SLOPE_NONE }) {
-    this.terrain = terrain;
+    this.movementTerrain = movementTerrain;
     this.slope = slope;
 
     this.soloUnit = new SoloUnit({
