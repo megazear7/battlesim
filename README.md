@@ -11,8 +11,6 @@
 1. Update civil war army size to be regiment level.
 1. Mount / Unmount options while resting. isMounted, canUnmount, unmountedSpeed, mountedSpeed.
 1. Make leaders configurable by scenario by army and provide a 0-100 rating.
-1. Terrain configurable by scenario.
-1. Terrain specific to attacker / defender.
 1. Update civil war ruleset based on our practice games.
 1. Event sourced data for step back in time or undoing actions.
 1. Action log of every action (maybe do this along with the event sourced data)

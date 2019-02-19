@@ -19,7 +19,7 @@ export const ButtonSharedStyles = css`
     border: 3px solid var(--app-primary-color);
     color: var(--app-dark-text-color);
     overflow: hidden;
-    margin-top: 1rem;
+    margin: 1rem 0;
   }
 
   .selected, button:hover {

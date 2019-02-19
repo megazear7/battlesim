@@ -4,6 +4,7 @@ import { statModFor, MAX_STAT, SECONDS_PER_TURN, YARDS_PER_INCH, MAX_EQUIPMENT_W
 import { FOOT_TROOP, MELEE_WEAPON, RANGED_WEAPON } from './units.js';
 import { POWER_VS_FOOT, POWER_VS_MOUNTED } from './weapons.js';
 import ActingUnit, { MORALE_SUCCESS, MORALE_FAILURE } from './acting-unit.js';
+import { MELEE, RANGED } from './encounter.js';
 
 /** @class Situation
  *  This represents a unit in combat with another unit. */
@@ -12,7 +13,7 @@ export default class Combatant extends ActingUnit {
                   encounter,
                   target,
                   armyLeadership = 0,
-                  terrainDefense = 0,
+                  terrain = [],
                   engagedStands = -1,
                   slope = SLOPE_NONE }) {
     super({ unit, environment: encounter, armyLeadership });
@@ -20,7 +21,7 @@ export default class Combatant extends ActingUnit {
     this.encounter = encounter;
     this.target = target;
     this.armyLeadership = armyLeadership;
-    this.terrainDefense = terrainDefense;
+    this.terrain = terrain;
     this.engagedStands = engagedStands <= -1 || engagedStands > unit.stands ? unit.stands : engagedStands;
     this.slope = slope;
     this.casualties = 0;
@@ -107,8 +108,16 @@ export default class Combatant extends ActingUnit {
     return statModFor(this.unit.energy) * this.engagedMod * this.terrainMod;
   }
 
+  get terrainMod() {
+    return 1 - Math.min(this.terrain.reduce((sum, next) => sum + next[this.encounterType].volumeMod, 0), 1);
+  }
+
   get targetTroopType() {
     return this.target.unitType === FOOT_TROOP ? POWER_VS_FOOT : POWER_VS_MOUNTED;
+  }
+
+  get encounterType() {
+    return this.encounter.melee ? MELEE : RANGED;
   }
 
   get weaponTypeForEncounter() {
@@ -223,7 +232,7 @@ export default class Combatant extends ActingUnit {
     } else if (this.casualties > 0) {
       return `${this.unit.name} sustained almost no casualties.`;
     } else {
-      return this.encounter.melee ? `${this.unit.name} sustained no casualties.` : ``;
+      return `${this.unit.name} sustained no casualties.`;
     }
   }
 

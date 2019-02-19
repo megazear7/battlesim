@@ -41,8 +41,20 @@ function makeAttacks(attacker, defender, duration) {
     if (attacker.attacksRequireAmmunition) {
       attacker.ammunitionUsed += 1;
     }
-    if (attacker.skillRoll * DEADLYNESS > defender.skillRoll &&
-        attacker.powerRoll * DEADLYNESS > defender.armorRoll) {
+    let attackHits = true;
+    if (attacker.skillRoll * DEADLYNESS < defender.skillRoll) {
+      attackHits = false;
+    }
+    let powerRoll = attacker.powerRoll;
+    if (powerRoll * DEADLYNESS < defender.armorRoll) {
+      attackHits = false;
+    }
+    defender.terrain.forEach(terrain => {
+      if (powerRoll * DEADLYNESS < terrain[defender.encounterType].armor) {
+        attackHits = false;
+      }
+    });
+    if (attackHits) {
       defender.casualties += 1;
     }
   }

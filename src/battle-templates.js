@@ -11,6 +11,7 @@ import {
   LONGBOW,
   CANNON_6_POUNDER_CIVIL_WAR,
   CANNON_12_POUNDER_CIVIL_WAR, } from './weapons.js';
+import { CIVIL_WAR_TERRAIN } from './terrain.js';
 
 export default [
   {
@@ -27,6 +28,7 @@ export default [
         proceedClock: 10000, // TODO this needs to be the seconds between sunset and sunrise.
       }
     ],
+    terrain: [...CIVIL_WAR_TERRAIN],
     deadliness: 1, // TODO Use this in combat calculations.
     turnDuration: SECONDS_IN_AN_HOUR, // TODO use this value here throughout instead of the constant.
     roundStrength: 100, // TODO Use this and round the number of reported strength based on this number
@@ -294,6 +296,7 @@ export default [
         proceedClock: 10000,
       }
     ],
+    terrain: [...CIVIL_WAR_TERRAIN],
     deadliness: 1,
     turnDuration: SECONDS_IN_AN_HOUR,
     roundStrength: 100, // TODO Use this and round the number of reported
@@ -357,6 +360,7 @@ export default [
         proceedClock: 10000, // TODO this needs to be the seconds between sunset and sunrise.
       }
     ],
+    terrain: [...CIVIL_WAR_TERRAIN],
     deadliness: 1, // TODO Use this in combat calculations.
     turnDuration: SECONDS_IN_AN_HOUR, // TODO use this value here throughout instead of the constant.
     roundStrength: 100, // TODO Use this and round the number of reported strength based on this number

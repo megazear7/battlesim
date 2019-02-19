@@ -62,6 +62,11 @@ class FightView extends connect(store)(PageViewElement) {
           box-sizing: border-box;
           display: inline-block;
         }
+        .terrain-block {
+          width: calc(50% - 3px);
+          box-sizing: border-box;
+          display: inline-block;
+        }
         .full {
           width: 100% !important;
         }
@@ -70,6 +75,24 @@ class FightView extends connect(store)(PageViewElement) {
         }
         button.selected {
           opacity: 1;
+        }
+        .tooltip {
+          position: relative;
+          display: inline-block;
+        }
+        .tooltip .tooltiptext {
+          visibility: hidden;
+          width: 10rem;
+          background-color: var(--app-primary-color);
+          color: var(--app-light-text-color);
+          text-align: center;
+          padding: 10px;
+          border-radius: 6px;
+          position: absolute;
+          z-index: 1;
+        }
+        .tooltip:hover .tooltiptext {
+          visibility: visible;
         }
       `
     ];
@@ -105,7 +128,41 @@ class FightView extends connect(store)(PageViewElement) {
                 <option value="${target.id}">${target.unit.name}</option>
               `)}
             </select>
+            <button class="${classMap({hidden: ! this._showDoCombat})}" @click="${this._doCombat}">Do Combat</button>
+            <button class="${classMap({hidden: ! this._showTakeAction})}" @click="${this._takeAction}">Take Action</button>
+            <hr class="${classMap({hidden: ! this._actionSelected})}">
+            <div id="attacker-terrain" class="${classMap({hidden: ! this._showTerrain, "terrain-block": true})}">
+              <h6>Attacker Terrain</h6>
+              ${repeat(this._activeBattle.terrain, (terrain, index) => html`
+                <div>
+                  <input type="checkbox" id="${'attacker-terrain'+index}" data-terrain-index="${index}"></input>
+                  <label for="${'attacker-terrain'+index}">
+                    ${terrain.name}
+                    <span class="tooltip">
+                      ...
+                      <span class="tooltiptext">${terrain.descripton}</span>
+                    <span>
+                  </label>
+                </div>
+              `)}
+            </div>
+            <div id="defender-terrain" class="${classMap({hidden: ! this._showTerrain, "terrain-block": true})}">
+              <h6>Defender Terrain</h6>
+              ${repeat(this._activeBattle.terrain, (terrain, index) => html`
+                <div>
+                  <input type="checkbox" id="${'defender-terrain'+index}" data-terrain-index="${index}"></input>
+                  <label for="${'defender-terrain'+index}">
+                    ${terrain.name}
+                    <span class="tooltip">
+                      ...
+                      <span class="tooltiptext">${terrain.descripton}</span>
+                    <span>
+                  </label>
+                </div>
+              `)}
+            </div>
             <radiogroup id="hill" class="${classMap({hidden: ! this._showHill})}">
+              <h6>Hills</h6>
               <input type="radio" name="hill" id="${SLOPE_UP}" value="${SLOPE_UP}">
               <label for="${SLOPE_UP}">Uphill</label>
               <br>
@@ -117,6 +174,7 @@ class FightView extends connect(store)(PageViewElement) {
               <br><br>
             </radiogroup>
             <radiogroup id="leader" class="${classMap({hidden: ! this._showLeader})}">
+              <h6>Leadership</h6>
               <input type="radio" name="leader" id="general" value="general">
               <label for="general">General</label>
               <br>
@@ -127,19 +185,14 @@ class FightView extends connect(store)(PageViewElement) {
               <label for="neither">Neither</label>
               <br><br>
             </radiogroup>
-            <div id="terrain" class="${classMap({hidden: ! this._showTerrain})}">
-              <input type="checkbox" id="terrain-checkbox"></input>
-              <label for="terrain-checkbox">Difficult Terrain</label>
-            </div>
             <div id="resupply" class="${classMap({hidden: ! this._showResupply})}">
+              <h6>Supply</h6>
               <input type="checkbox" id="resupply-checkbox"></input>
               <label for="resupply-checkbox">Resupply</label>
             </div>
             <p class="${classMap({hidden: ! this._showChargeMessage})}">${this._chargeMessage}</p>
             <input id="engaged-attackers" class="${classMap({hidden: ! this._showEngagedAttackers, full: this._showEngagedAttackers && ! this._showEngagedDefenders, stands: true})}" type="number" placeholder="Attacking Stands"></input>
             <input id="engaged-defenders" class="${classMap({hidden: ! this._showEngagedDefenders, stands: true})}" type="number" placeholder="Defending Stands"></input>
-            <button class="${classMap({hidden: ! this._showDoCombat})}" @click="${this._doCombat}">Do Combat</button>
-            <button class="${classMap({hidden: ! this._showTakeAction})}" @click="${this._takeAction}">Take Action</button>
             <p class="${classMap({hidden: ! this._showError, error: true})}">You must provide valid values for each required field.</p>
             <div class="${classMap({hidden: ! this._showActionResult})}">
               ${repeat(this._actionMessages, message => html`<p>${message}</p>`)}
@@ -274,7 +327,8 @@ class FightView extends connect(store)(PageViewElement) {
       defenderEngagedStands: this.engagedDefenders,
       melee: this._selectedAction === CHARGE,
       separation: this.separation,
-      terrain: this._terrainModifier,
+      defenderTerrain: this._attackerTerrain,
+      attackerTerrain: this._defenderTerrain,
       slope: this.slope });
   }
 
@@ -282,7 +336,7 @@ class FightView extends connect(store)(PageViewElement) {
     return new Situation({
           unit: this._unit,
           armyLeadership: 0,
-          terrain: this._terrainModifier,
+          terrain: this._terrain,
           slope: this.slope });
   }
 
@@ -310,7 +364,8 @@ class FightView extends connect(store)(PageViewElement) {
     this.get('engaged-defenders').value = '';
     this.get('hill').querySelectorAll('input').forEach(input => input.checked = false);
     this.get('leader').querySelectorAll('input').forEach(input => input.checked = false);
-    this.get('terrain').querySelector('input').checked = false;
+    this.get('attacker-terrain').querySelectorAll('input').forEach(input => input.checked = false);
+    this.get('defender-terrain').querySelectorAll('input').forEach(input => input.checked = false);
     this.get('resupply').querySelector('input').checked = false;
     this.get('target').value = '';
   }
@@ -324,18 +379,6 @@ class FightView extends connect(store)(PageViewElement) {
 
   get _actionSelected() {
     return ACTIONS.indexOf(this._selectedAction) >= 0;
-  }
-
-  get _terrainModifier() {
-    if (this.uphill && this.terrain) {
-      return 60;
-    } else if (this.uphill) {
-      return 40;
-    } else if (this.terrain) {
-      return 20;
-    } else {
-      return 0;
-    }
   }
 
   get _validSituation() {
@@ -389,8 +432,16 @@ class FightView extends connect(store)(PageViewElement) {
     return getRadioVal(this.get('leader'), 'leader') === 'subcommander';
   }
 
-  get terrain() {
-    return this.get('terrain').querySelector('input').checked;
+  get _attackerTerrain() {
+    return [...this.get('attacker-terrain').querySelectorAll('input')]
+    .filter(input => input.checked)
+    .map(input => this._activeBattle.terrain[input.dataset.terrainIndex]);
+  }
+
+  get _defenderTerrain() {
+    return [...this.get('defender-terrain').querySelectorAll('input')]
+    .filter(input => input.checked)
+    .map(input => this._activeBattle.terrain[input.dataset.terrainIndex]);
   }
 
   get resupply() {

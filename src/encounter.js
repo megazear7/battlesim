@@ -9,24 +9,25 @@ import { SLOPE_UP, SLOPE_DOWN, SLOPE_NONE } from './terrain.js';
 import { MORALE_SUCCESS, MORALE_FAILURE } from './acting-unit.js'
 import { SECONDS_PER_TURN, YARDS_PER_INCH } from './game.js';
 
+export const MELEE = 'melee';
+export const RANGED = 'ranged';
+
 /** @class Situation
  *  This represents the encounter of two units on the battle field. */
 export default class Encounter {
   constructor({ attacker,
-                attackerTerrainDefense = 0,
+                attackerTerrain = [],
                 attackerArmyLeadership = 0,
                 attackerEngagedStands = -1,
                 defender,
-                defenderTerrainDefense = 0,
+                defenderTerrain = [],
                 defenderArmyLeadership = 0,
                 defenderEngagedStands = -1,
                 melee = true,
                 separation = 0,
-                terrain = 0,
                 slope = SLOPE_NONE }) {
     this.melee = melee;
     this.separation = separation;
-    this.terrain = terrain;
     this.slope = slope;
 
     this.attacker = new Combatant({
@@ -34,7 +35,7 @@ export default class Encounter {
       encounter: this,
       target: defender,
       engagedStands: attackerEngagedStands,
-      terrainDefense: attackerTerrainDefense,
+      terrain: attackerTerrain,
       armyLeadership: attackerArmyLeadership,
       slope: this.attackerSlope });
 
@@ -43,7 +44,7 @@ export default class Encounter {
       encounter: this,
       target: attacker,
       engagedStands: defenderEngagedStands,
-      terrainDefense: defenderTerrainDefense,
+      terrain: defenderTerrain,
       armyLeadership: defenderArmyLeadership,
       slope: this.defenderSlope });
   }
@@ -113,7 +114,9 @@ export default class Encounter {
 
   fight() {
     const actionMessage = this.attackerReachedDefender ? this.attackerEngages() : ``;
-    const fullMessage = `${actionMessage} ${this.defender.battleReport()} ${this.attacker.battleReport()}`;
+    const fullMessage = this.melee
+      ? `${actionMessage} ${this.defender.battleReport()} ${this.attacker.battleReport()}`
+      : `${actionMessage} ${this.defender.battleReport()}`;
 
     return {
       messages: [
