@@ -134,15 +134,15 @@ class FightView extends connect(store)(PageViewElement) {
             <button class="${classMap({hidden: ! this._showTakeAction})}" @click="${this._takeAction}">Take Action</button>
             <br>
             <div class="${classMap({"options-block": true, hidden: ! this._showTerrain})}">
-              <div id="defender-terrain" class="${classMap({hidden: ! this._showTerrain})}">
+              <div id="ranged-defender-terrain" class="${classMap({hidden: ! (this._showTerrain && this._selectedAction === FIRE)})}">
                 <h6 class="tooltip">
-                  Defender
-                  <span class="tooltiptext">This is the terrain that the defender is defending.</span>
+                  Terrain
+                  <span class="tooltiptext">This is the terrain that the defender recieves the benefit of.</span>
                 </h6>
-                ${repeat(this._activeBattle.terrain.filter(terrain => terrain.defendable), (terrain, index) => html`
+                ${repeat(this._activeBattle.terrain, (terrain, index) => html`
                   <div>
-                    <input type="checkbox" id="${'defender-terrain'+index}" data-terrain-index="${index}"></input>
-                    <label for="${'defender-terrain'+index}">
+                    <input type="checkbox" id="${'ranged-defender-terrain'+index}" data-terrain-index="${index}"></input>
+                    <label for="${'ranged-defender-terrain'+index}">
                       ${terrain.name}
                       <span class="tooltip">
                         ...
@@ -152,15 +152,15 @@ class FightView extends connect(store)(PageViewElement) {
                   </div>
                 `)}
               </div>
-              <div id="movement-terrain" class="${classMap({hidden: ! this._showTerrain})}">
+              <div id="movement-terrain" class="${classMap({hidden: ! (this._showTerrain && (this._selectedAction === CHARGE || this._selectedAction === MOVE))})}">
                 <h6 class="tooltip">
                   Movement
                   <span class="tooltiptext">This is the terrain that applys to the movement or charge.</span>
                 </h6>
                 ${repeat(this._activeBattle.terrain, (terrain, index) => html`
                   <div>
-                    <input type="checkbox" id="${'defender-terrain'+index}" data-terrain-index="${index}"></input>
-                    <label for="${'defender-terrain'+index}">
+                    <input type="checkbox" id="${'movement-terrain'+index}" data-terrain-index="${index}"></input>
+                    <label for="${'movement-terrain'+index}">
                       ${terrain.name}
                       <span class="tooltip">
                         ...
@@ -170,15 +170,33 @@ class FightView extends connect(store)(PageViewElement) {
                   </div>
                 `)}
               </div>
-              <div id="defender-terrain" class="${classMap({hidden: ! this._showTerrain || ! this._selectedAction === CHARGE})}">
+              <div id="melee-defender-terrain" class="${classMap({hidden: ! (this._showTerrain && this._selectedAction === CHARGE)})}">
+                <h6 class="tooltip">
+                  Defender
+                  <span class="tooltiptext">This is the terrain that the defender is defending.</span>
+                </h6>
+                ${repeat(this._activeBattle.terrain.filter(terrain => terrain.defendable), (terrain, index) => html`
+                  <div>
+                    <input type="checkbox" id="${'melee-defender-terrain'+index}" data-terrain-index="${index}"></input>
+                    <label for="${'melee-defender-terrain'+index}">
+                      ${terrain.name}
+                      <span class="tooltip">
+                        ...
+                        <span class="tooltiptext">${terrain.descripton}</span>
+                      <span>
+                    </label>
+                  </div>
+                `)}
+              </div>
+              <div id="combat-terrain" class="${classMap({hidden: ! (this._showTerrain &&  this._selectedAction === CHARGE)})}">
                 <h6 class="tooltip">
                   Combat
                   <span class="tooltiptext">This is the terrain that the combat that is taking place.</span>
                 </h6>
                 ${repeat(this._activeBattle.terrain.filter(terrain => terrain.areaTerrain), (terrain, index) => html`
                   <div>
-                    <input type="checkbox" id="${'defender-terrain'+index}" data-terrain-index="${index}"></input>
-                    <label for="${'defender-terrain'+index}">
+                    <input type="checkbox" id="${'combat-terrain'+index}" data-terrain-index="${index}"></input>
+                    <label for="${'combat-terrain'+index}">
                       ${terrain.name}
                       <span class="tooltip">
                         ...
