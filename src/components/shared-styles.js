@@ -41,6 +41,7 @@ export const SharedStyles = css`
   h5 {
     font-size: 1.125rem;
     font-weight: 400;
+    margin: 1rem 0 0.5rem 0;
   }
 
   h6 {

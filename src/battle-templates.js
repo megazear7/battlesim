@@ -40,12 +40,14 @@ export default [
       {
         name: "Union",
         armyActionTitle: "Union Army Actions.",
-        armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches."
+        armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
+        leaders: [],
       },
       {
         name: "Confederate",
         armyActionTitle: "Confederate Army Actions.",
-        armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches."
+        armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
+        leaders: [],
       },
     ],
     units: [
@@ -308,12 +310,14 @@ export default [
       {
         name: "Union",
         armyActionTitle: "Union Army Actions.",
-        armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches."
+        armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
+        leaders: [],
       },
       {
         name: "Confederate",
         armyActionTitle: "Confederate Army Actions.",
-        armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches."
+        armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
+        leaders: [],
       },
     ],
     units: [
@@ -372,12 +376,46 @@ export default [
       {
         name: "Union",
         armyActionTitle: "Union Army Actions.",
-        armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches."
+        armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
+        leaders: [
+          {
+            shortname: "McDowell",
+            name: "Brigadier General Irvin McDowell",
+            leadership: 80,
+          },
+          {
+            shortname: "Tyler",
+            name: "Colonel Daniel Tyler",
+            leadership: 68,
+          },
+          {
+            shortname: "Hunter",
+            name: "Colonel David Hunter",
+            leadership: 78,
+          },
+        ]
       },
       {
         name: "Confederate",
         armyActionTitle: "Confederate Army Actions.",
-        armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches."
+        armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
+        leaders: [
+          {
+            shortname: "Beauregard",
+            name: "Brigadier General Beauregard",
+            leadership: 88,
+          },
+          {
+            shortname: "Longstreet",
+            name: "Brigadier General Longstreet",
+            leadership: 95,
+          },
+          {
+            shortname: "Bartow",
+            name: "Colonel Bartow",
+            leadership: 78,
+          },
+        ]
       },
     ],
     units: [
