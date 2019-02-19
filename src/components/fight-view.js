@@ -172,6 +172,20 @@ class FightView extends connect(store)(PageViewElement) {
                   `)}
                 </div>
               `)}
+              <div class="${classMap({hidden: this.showPace})}">
+                <radiogroup id="pace" class="${classMap({hidden: ! this._showHill})}">
+                  <h5>Pace</h5>
+                  <input type="radio" name="pace" id="pace-fast" value="1">
+                  <label for="pace-fast">Fast</label>
+                  <br>
+                  <input type="radio" name="pace" id="pace-march" value="0.75" checked>
+                  <label for="pace-march">March</label>
+                  <br>
+                  <input type="radio" name="pace" id="pace-rest" value="0.5">
+                  <label for="pace-rest">Rest</label>
+                  <br><br>
+                </radiogroup>
+              </div>
             </div>
             <div class="${classMap({"options-block": true, hidden: ! this._showHill && ! this._showLeader})}">
               <radiogroup id="hill" class="${classMap({hidden: ! this._showHill})}">
@@ -375,6 +389,7 @@ class FightView extends connect(store)(PageViewElement) {
           movementTerrain: this._selectedTerrain(TERRAIN_TYPE_MOVEMENT),
           mount: this.mount,
           unmount: this.unmount,
+          pace: this.pace,
           slope: this.slope });
   }
 
@@ -401,6 +416,9 @@ class FightView extends connect(store)(PageViewElement) {
     this.get('separation').value = '';
     this.get('engaged-attackers').value = '';
     this.get('engaged-defenders').value = '';
+    if (this.get('pace-fast')) this.get('pace-fast').checked = false;
+    if (this.get('pace-march')) this.get('pace-march').checked = true;
+    if (this.get('pace-slow')) this.get('pace-slow').checked = false;
     this.get('hill').querySelectorAll('input').forEach(input => input.checked = false);
     this.get('leadership').querySelectorAll('input').forEach(input => input.checked = false);
     this.get('resupply').querySelector('input').checked = false;
@@ -482,6 +500,15 @@ class FightView extends connect(store)(PageViewElement) {
   get slope() {
     const radioVal = getRadioVal(this.get('hill'), 'hill');
     return radioVal ? radioVal : SLOPE_NONE;
+  }
+
+  get pace() {
+    if (this._selectedAction === REST) {
+      return 0;
+    } else {
+      const radioVal = getRadioVal(this.get('pace'), 'pace');
+      return radioVal ? parseFloat(radioVal) : 1;
+    }
   }
 
   get _activeArmyLeadership() {

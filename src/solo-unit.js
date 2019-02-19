@@ -11,8 +11,9 @@ export default class SoloUnit extends ActingUnit {
                   status = MORALE_SUCCESS,
                   mount = false,
                   unmount = false,
+                  pace = 1,
                   slope = SLOPE_NONE }) {
-    super({ unit, environment: situation, armyLeadership });
+    super({ unit, pace, environment: situation, armyLeadership });
     this.unit = unit;
     this.situation = situation;
     this.armyLeadership = armyLeadership;
@@ -20,38 +21,36 @@ export default class SoloUnit extends ActingUnit {
     this.mount = mount;
     this.unmount = unmount;
     this.slope = slope;
+    this.pace = pace;
     this.energyModRoll = weightedRandomTowards(0, 100, 30, 2);
     this.moraleModRoll = weightedRandomTowards(0, 100, 1, 2);
   }
 
   get energyGain() {
-    if (this.situation.minutesSpentResting > 0) {
-      return Math.min(MAX_STAT - this.unit.energy, this.maxEnergyRecovered);
-    } else {
-      return 0;
-    }
+    return Math.min(MAX_STAT - this.unit.energy, this.maxEnergyRecovered);
   }
 
   get moraleGain() {
-    if (this.situation.minutesSpentResting > 0) {
-      return Math.min(MAX_STAT - this.unit.morale, this.maxMoraleRecovered);
-    } else {
-      return 0;
-    }
+    return Math.min(MAX_STAT - this.unit.morale, this.maxMoraleRecovered);
+  }
+
+  get paceAdjustment() {
+    return (1 - this.pace) * 100;
   }
 
   get maxMoraleRecovered() {
     return weightedAverage(
-      { value: this.moraleModRoll, weight: 2 },
-      this.situation.percentageOfATurnSpentResting / 4,
+      this.paceAdjustment,
+      this.moraleModRoll,
+      0, // Adjust the average down.
     );
   }
 
   get maxEnergyRecovered() {
     return weightedAverage(
+      this.paceAdjustment,
       this.energyModRoll,
       this.situation.percentageOfATurnSpentResting,
-      100 - this.situation.percentageOfATurnSpentMoving,
     );
   }
 

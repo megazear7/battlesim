@@ -8,7 +8,6 @@
 
 ###### TODO
 
-1. Optional pace for movements (recovery pace, marching pace, charging pace)
 1. Update civil war army size to be regiment level.
 1. Review the usage of army leadership in resting, movement, and combat. Leadership is now configurable by scenario and army but I don't know how this influences actions.
 1. Move terrain out of the reducer and just reference it by index so that we don't have to recreate battles when terrain get's modified.

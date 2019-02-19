@@ -12,6 +12,7 @@ export default class Situation {
                 movementTerrain = 0,
                 mount = false,
                 unmount = false,
+                pace,
                 slope = SLOPE_NONE }) {
     this.movementTerrain = movementTerrain;
     this.slope = slope;
@@ -21,6 +22,7 @@ export default class Situation {
       situation: this,
       mount,
       unmount,
+      pace,
       slope: this.slope });
   }
 

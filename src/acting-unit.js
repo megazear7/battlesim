@@ -10,11 +10,13 @@ export const MORALE_FAILURE = 'MORALE_FAILURE';
  *  This represents a single unit taking an order. */
 export default class SoloUnit {
     constructor({ unit,
+                  pace = 1,
                   environment,
                   armyLeadership = 0,
                   status = MORALE_SUCCESS,
                   slope = SLOPE_NONE }) {
     this.unit = unit;
+    this.pace = pace;
     this.environment = environment;
     this.armyLeadership = armyLeadership;
     this.status = status;
@@ -46,17 +48,17 @@ export default class SoloUnit {
   get speed() {
     if (this.unit.canMounted) {
       if (this.unit.isMounted) {
-        return this.unit.mountedSpeed.baseSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod;
+        return this.unit.mountedSpeed.baseSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod * this.pace;
       } else {
-        return this.unit.unmountedSpeed.baseSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod;
+        return this.unit.unmountedSpeed.baseSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod * this.pace;
       }
     } else {
-        return this.unit.baseSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod;
+        return this.unit.baseSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod * this.pace;
     }
   }
 
   get backwardsSpeed() {
-    return this.unit.baseBackwardSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod;
+    return this.unit.baseBackwardSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod * this.pace;
   }
 
   get armor() {
