@@ -57,12 +57,7 @@ class FightView extends connect(store)(PageViewElement) {
           width: calc(50% - 3px);
           box-sizing: border-box;
         }
-        #hill, #leader {
-          width: calc(50% - 3px);
-          box-sizing: border-box;
-          display: inline-block;
-        }
-        .terrain-block {
+        .options-block {
           width: calc(50% - 3px);
           box-sizing: border-box;
           display: inline-block;
@@ -130,61 +125,89 @@ class FightView extends connect(store)(PageViewElement) {
             </select>
             <button class="${classMap({hidden: ! this._showDoCombat})}" @click="${this._doCombat}">Do Combat</button>
             <button class="${classMap({hidden: ! this._showTakeAction})}" @click="${this._takeAction}">Take Action</button>
-            <hr class="${classMap({hidden: ! this._actionSelected})}">
-            <div id="attacker-terrain" class="${classMap({hidden: ! this._showTerrain, "terrain-block": true})}">
-              <h6>Attacker Terrain</h6>
-              ${repeat(this._activeBattle.terrain, (terrain, index) => html`
-                <div>
-                  <input type="checkbox" id="${'attacker-terrain'+index}" data-terrain-index="${index}"></input>
-                  <label for="${'attacker-terrain'+index}">
-                    ${terrain.name}
-                    <span class="tooltip">
-                      ...
-                      <span class="tooltiptext">${terrain.descripton}</span>
-                    <span>
-                  </label>
-                </div>
-              `)}
+            <br>
+            <div class="${classMap({"options-block": true, hidden: ! this._showTerrain})}">
+              <div id="defender-terrain" class="${classMap({hidden: ! this._showTerrain})}">
+                <h6 class="tooltip">
+                  Defender
+                  <span class="tooltiptext">This is the terrain that the defender is defending.</span>
+                </h6>
+                ${repeat(this._activeBattle.terrain.filter(terrain => terrain.defendable), (terrain, index) => html`
+                  <div>
+                    <input type="checkbox" id="${'defender-terrain'+index}" data-terrain-index="${index}"></input>
+                    <label for="${'defender-terrain'+index}">
+                      ${terrain.name}
+                      <span class="tooltip">
+                        ...
+                        <span class="tooltiptext">${terrain.descripton}</span>
+                      <span>
+                    </label>
+                  </div>
+                `)}
+              </div>
+              <div id="movement-terrain" class="${classMap({hidden: ! this._showTerrain})}">
+                <h6 class="tooltip">
+                  Movement
+                  <span class="tooltiptext">This is the terrain that applys to the movement or charge.</span>
+                </h6>
+                ${repeat(this._activeBattle.terrain, (terrain, index) => html`
+                  <div>
+                    <input type="checkbox" id="${'defender-terrain'+index}" data-terrain-index="${index}"></input>
+                    <label for="${'defender-terrain'+index}">
+                      ${terrain.name}
+                      <span class="tooltip">
+                        ...
+                        <span class="tooltiptext">${terrain.descripton}</span>
+                      <span>
+                    </label>
+                  </div>
+                `)}
+              </div>
+              <div id="defender-terrain" class="${classMap({hidden: ! this._showTerrain || ! this._selectedAction === CHARGE})}">
+                <h6 class="tooltip">
+                  Combat
+                  <span class="tooltiptext">This is the terrain that the combat that is taking place.</span>
+                </h6>
+                ${repeat(this._activeBattle.terrain.filter(terrain => terrain.areaTerrain), (terrain, index) => html`
+                  <div>
+                    <input type="checkbox" id="${'defender-terrain'+index}" data-terrain-index="${index}"></input>
+                    <label for="${'defender-terrain'+index}">
+                      ${terrain.name}
+                      <span class="tooltip">
+                        ...
+                        <span class="tooltiptext">${terrain.descripton}</span>
+                      <span>
+                    </label>
+                  </div>
+                `)}
+              </div>
             </div>
-            <div id="defender-terrain" class="${classMap({hidden: ! this._showTerrain, "terrain-block": true})}">
-              <h6>Defender Terrain</h6>
-              ${repeat(this._activeBattle.terrain, (terrain, index) => html`
-                <div>
-                  <input type="checkbox" id="${'defender-terrain'+index}" data-terrain-index="${index}"></input>
-                  <label for="${'defender-terrain'+index}">
-                    ${terrain.name}
-                    <span class="tooltip">
-                      ...
-                      <span class="tooltiptext">${terrain.descripton}</span>
-                    <span>
-                  </label>
-                </div>
-              `)}
+            <div class="${classMap({"options-block": true, hidden: ! this._showHill && ! this._showLeader})}">
+              <radiogroup id="hill" class="${classMap({hidden: ! this._showHill})}">
+                <h6>Hills</h6>
+                <input type="radio" name="hill" id="${SLOPE_UP}" value="${SLOPE_UP}">
+                <label for="${SLOPE_UP}">Uphill</label>
+                <br>
+                <input type="radio" name="hill" id="${SLOPE_DOWN}" value="${SLOPE_DOWN}">
+                <label for="${SLOPE_DOWN}">Downhill</label>
+                <br>
+                <input type="radio" name="hill" id="${SLOPE_NONE}" value="${SLOPE_NONE}">
+                <label for="${SLOPE_NONE}">Neither</label>
+                <br><br>
+              </radiogroup>
+              <radiogroup id="leader" class="${classMap({hidden: ! this._showLeader})}">
+                <h6>Leadership</h6>
+                <input type="radio" name="leader" id="general" value="general">
+                <label for="general">General</label>
+                <br>
+                <input type="radio" name="leader" id="subcommander" value="subcommander">
+                <label for="subcommander">Subcommander</label>
+                <br>
+                <input type="radio" name="leader" id="neither" value="neither">
+                <label for="neither">Neither</label>
+                <br><br>
+              </radiogroup>
             </div>
-            <radiogroup id="hill" class="${classMap({hidden: ! this._showHill})}">
-              <h6>Hills</h6>
-              <input type="radio" name="hill" id="${SLOPE_UP}" value="${SLOPE_UP}">
-              <label for="${SLOPE_UP}">Uphill</label>
-              <br>
-              <input type="radio" name="hill" id="${SLOPE_DOWN}" value="${SLOPE_DOWN}">
-              <label for="${SLOPE_DOWN}">Downhill</label>
-              <br>
-              <input type="radio" name="hill" id="${SLOPE_NONE}" value="${SLOPE_NONE}">
-              <label for="${SLOPE_NONE}">Neither</label>
-              <br><br>
-            </radiogroup>
-            <radiogroup id="leader" class="${classMap({hidden: ! this._showLeader})}">
-              <h6>Leadership</h6>
-              <input type="radio" name="leader" id="general" value="general">
-              <label for="general">General</label>
-              <br>
-              <input type="radio" name="leader" id="subcommander" value="subcommander">
-              <label for="subcommander">Subcommander</label>
-              <br>
-              <input type="radio" name="leader" id="neither" value="neither">
-              <label for="neither">Neither</label>
-              <br><br>
-            </radiogroup>
             <div id="resupply" class="${classMap({hidden: ! this._showResupply})}">
               <h6>Supply</h6>
               <input type="checkbox" id="resupply-checkbox"></input>
@@ -198,7 +221,7 @@ class FightView extends connect(store)(PageViewElement) {
               ${repeat(this._actionMessages, message => html`<p>${message}</p>`)}
               <button @click="${this._progressToNextAction}">Next Action</button>
             </div>
-          <div>
+          </div>
         </section>
       `:html`
         <section>
