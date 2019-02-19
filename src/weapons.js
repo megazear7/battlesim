@@ -53,7 +53,7 @@ export const WEAPONS = {
     [POWER_VS_MOUNTED]: 50,
     volume: 2,
     weight: 3,
-    range: 400,
+    range: 200,
   },
   [BAYONETE]: {
     name: 'Bayonete',
@@ -69,7 +69,7 @@ export const WEAPONS = {
     [POWER_VS_MOUNTED]: 120,
     volume: 5,
     weight: 3,
-    range: 500,
+    range: 250,
   },
   [CONFEDERATE_SMOOTH_BORE]: { // Standard union civil war rifle
     name: 'Smoothbore Musket',
@@ -77,7 +77,7 @@ export const WEAPONS = {
     [POWER_VS_MOUNTED]: 160,
     volume: 6,
     weight: 3,
-    range: 1000,
+    range: 500,
   },
   [SPRINGFIELD_RIFLED_MUSKET]: { // Standard union civil war rifle
     name: 'Springfield Rifled Musket',
@@ -85,7 +85,7 @@ export const WEAPONS = {
     [POWER_VS_MOUNTED]: 180,
     volume: 7,
     weight: 3,
-    range: 1200,
+    range: 600,
   },
   [CANNON_6_POUNDER_CIVIL_WAR]: { // Standard civil war cannon
     name: '6 Pounder',
@@ -93,7 +93,7 @@ export const WEAPONS = {
     [POWER_VS_MOUNTED]: 400,
     volume: 40,
     weight: 10,
-    range: 1600,
+    range: 800,
   },
   [CANNON_12_POUNDER_CIVIL_WAR]: { // Standard civil war cannon
     name: '12 Pounder',
@@ -101,7 +101,7 @@ export const WEAPONS = {
     [POWER_VS_MOUNTED]: 600,
     volume: 60,
     weight: 15,
-    range: 2000,
+    range: 1000,
   },
   [CANNON_24_POUNDER_CIVIL_WAR]: { // Standard civil war cannon
     name: '24 Pounder',
@@ -109,7 +109,7 @@ export const WEAPONS = {
     [POWER_VS_MOUNTED]: 800,
     volume: 85,
     weight: 20,
-    range: 2400,
+    range: 1200,
   },
   [LEE_ENFIELD_303]: { // Standard ww1 rifle
     name: 'Lee Enfield 303',
@@ -117,6 +117,6 @@ export const WEAPONS = {
     [POWER_VS_MOUNTED]: 200,
     volume: 12,
     weight: 3,
-    range: 1800,
+    range: 900,
   }
 };
