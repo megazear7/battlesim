@@ -1,4 +1,246 @@
-import { weightedRandomTowards, weightedAverage, SECONDS_IN_AN_MINUTE, prettyDateTime, MAX_STAT, YARDS_PER_INCH, SECONDS_PER_TURN, MINUTES_PER_TURN, ActingUnit, MORALE_SUCCESS, SLOPE_NONE as SLOPE_NONE$1, SLOPE_UP, SLOPE_DOWN, html, css, repeat, classMap, PageViewElement, connect, store, takeAction, SharedStyles, ButtonSharedStyles, $unitDefault as Unit, $encounterDefault as Encounter } from './battle-sim.js';
+import { randomBellMod, modVolume, weightedAverage, SECONDS_IN_AN_HOUR, randomMinutesBetween, SECONDS_IN_AN_MINUTE, weightedRandomTowards, prettyDateTime, SLOPE_NONE as SLOPE_NONE$1, SLOPE_UP, SLOPE_DOWN, statModFor, MAX_STAT, SECONDS_PER_TURN, YARDS_PER_INCH, MAX_EQUIPMENT_WEIGHT, MELEE, RANGED, YARDS_TO_FIGHT, MINUTES_PER_TURN, FOOT_TROOP, MELEE_WEAPON, RANGED_WEAPON, POWER_VS_FOOT, POWER_VS_MOUNTED, ActingUnit, MORALE_SUCCESS, MORALE_FAILURE, store, combat, html, css, repeat, classMap, PageViewElement, connect, takeAction, SharedStyles, ButtonSharedStyles, $unitDefault as Unit } from './battle-sim.js';
+
+class Combatant extends ActingUnit {
+  constructor({
+    unit,
+    encounter,
+    target,
+    armyLeadership = 0,
+    movementTerrain = [],
+    protectingTerrain = [],
+    areaTerrain = [],
+    engagedStands = -1,
+    slope = SLOPE_NONE$1
+  }) {
+    super({
+      unit,
+      environment: encounter,
+      armyLeadership
+    });
+    this.unit = unit;
+    this.encounter = encounter;
+    this.target = target;
+    this.armyLeadership = armyLeadership;
+    this.movementTerrain = movementTerrain;
+    this.protectingTerrain = protectingTerrain;
+    this.areaTerrain = areaTerrain;
+    this.engagedStands = engagedStands <= -1 || engagedStands > unit.stands ? unit.stands : engagedStands;
+    this.slope = slope;
+    this.casualties = 0;
+    this.ammunitionUsed = 0;
+    this.yardsFallenback = 0;
+    this.yardsPersued = 0;
+    this.leaderSurviveRoll = Math.random();
+    this.energyModRoll = randomBellMod();
+    this.moraleModRoll = randomBellMod();
+  }
+
+  skillRoll() {
+    return Math.random() * this.skill * statModFor(this.unit.energy);
+  }
+
+  armorRoll() {
+    return Math.random() * this.armor;
+  }
+
+  powerRoll() {
+    return Math.random() * this.modifiedPower;
+  }
+
+  get energyLoss() {
+    return weightedAverage({
+      value: this.encounter.melee ? 0.2 : 0.1,
+      weight: 2
+    }, this.encounter.secondsSpentFighting / SECONDS_PER_TURN, this.energyModRoll, this.unit.carriedWeight / MAX_EQUIPMENT_WEIGHT) * 50;
+  }
+
+  get moraleLoss() {
+    return weightedAverage(this.moraleModRoll, this.hardinessMod, this.casualties / this.unit.strength, this.unit.strength / this.unit.fullStrength) * 50;
+  }
+
+  get attacksRequireAmmunition() {
+    return !this.encounter.melee;
+  }
+
+  get fallingback() {
+    return this.casualties > this.fallbackCasualtyCount;
+  }
+
+  get persueing() {
+    return !this.fallingback && this.yardsPersued > 0;
+  }
+
+  get fallbackCasualtyCount() {
+    return this.unit.strength * (this.unit.fallback / 100);
+  }
+
+  get leadershipLoss() {
+    return this.casualties / this.unit.strength > this.leaderSurviveRoll ? Math.min(30, this.unit.leadership) : 0;
+  }
+
+  get hardinessMod() {
+    return (MAX_STAT - this.unit.experience) / MAX_STAT;
+  }
+
+  get inchesPersued() {
+    return Math.ceil(this.yardsPersued / YARDS_PER_INCH);
+  }
+
+  get inchesFallenback() {
+    return Math.ceil(this.yardsFallenback / YARDS_PER_INCH);
+  }
+
+  get modifiedMeleeVolume() {
+    return this.unit.meleeWeapon.volume;
+  }
+
+  get modifiedRangedVolume() {
+    return modVolume(this.unit.rangedWeapon.volume, this.unit.rangedWeapon.range, this.encounter.yardsOfSeparation);
+  }
+
+  get volume() {
+    return this.encounter.melee ? this.modifiedMeleeVolume : this.modifiedRangedVolume;
+  }
+
+  get modifiedVolume() {
+    return this.volume * this.volumeModifier;
+  }
+
+  get volumeModifier() {
+    return statModFor(this.unit.energy) * this.engagedMod * this.terrainMod;
+  }
+
+  get terrainMod() {
+    return 1 - Math.min(this.areaTerrain.reduce((sum, next) => sum + next[this.encounterType].volumeMod, 0), 1);
+  }
+
+  get targetTroopType() {
+    return this.target.unitType === FOOT_TROOP ? POWER_VS_FOOT : POWER_VS_MOUNTED;
+  }
+
+  get encounterType() {
+    return this.encounter.melee ? MELEE : RANGED;
+  }
+
+  get weaponTypeForEncounter() {
+    return this.encounter.melee ? MELEE_WEAPON : RANGED_WEAPON;
+  }
+
+  get power() {
+    return this.unit[this.weaponTypeForEncounter][this.targetTroopType];
+  }
+
+  get modifiedPower() {
+    return this.power * this.powerModifier;
+  }
+
+  get skill() {
+    return this.encounter.melee ? this.unit.meleeSkill : this.unit.rangedSkill;
+  }
+
+  get engagedMod() {
+    return Math.min(this.engagedStands, this.unit.stands) / this.unit.stands;
+  }
+
+  get powerModifier() {
+    return this.slopeMod;
+  }
+
+  get secondsPerAttack() {
+    return this.unit.strength * this.modifiedVolume / SECONDS_IN_AN_HOUR;
+  }
+
+  attacksForTime(duration) {
+    return this.unit.strength * this.engagedMod * this.modifiedVolume * (duration / SECONDS_IN_AN_HOUR);
+  }
+
+  battleReport() {
+    if (this.unit.strength - this.casualties <= 0) {
+      return `${this.unit.name} was destroyed.`;
+    } else if (this.unit.morale - this.moraleLoss <= 0) {
+      return `${this.unit.name} fled the battlefield.`;
+    } else {
+      return `${this.casualtyMessage} ${this.leadershipMessage}`;
+    }
+  }
+
+  exactBattleReport() {
+    return `${this.unit.name} -- ${this.status} -- Casualties: ${this.casualties} -- Energy Loss: ${this.energyLoss} -- Morale Loss: ${this.moraleLoss} -- Leadership Loss: ${this.leadershipLoss}`;
+  }
+
+  updates(delay) {
+    return {
+      id: this.unit.id,
+      changes: this.changes(delay)
+    };
+  }
+
+  changes(delay) {
+    return [{
+      prop: "strength",
+      value: this.unit.strength - this.casualties
+    }, {
+      prop: "energy",
+      value: this.unit.energy - this.energyLoss
+    }, {
+      prop: "morale",
+      value: this.unit.morale - this.moraleLoss
+    }, {
+      prop: "leadership",
+      value: this.unit.leadership - this.leadershipLoss
+    }, {
+      prop: 'nextAction',
+      value: this.unit.nextAction + delay
+    }];
+  }
+
+  get casualtyMessage() {
+    if (this.casualties > this.unit.strength) {
+      return `${this.unit.name} was totally destroyed.`;
+    } else if (this.casualties > this.unit.strength * 0.75) {
+      return `${this.unit.name} sustained terrible casualties. Almost the whole unit was destroyed.`;
+    } else if (this.casualties > this.unit.strength * 0.50) {
+      return `${this.unit.name} sustained terrible casualties. Over half the unit is destroyed.`;
+    } else if (this.casualties > this.unit.strength * 0.30) {
+      return `${this.unit.name} sustained terrible casualties.`;
+    } else if (this.casualties > this.unit.strength * 0.20) {
+      return `${this.unit.name} sustained grave casualties.`;
+    } else if (this.casualties > this.unit.strength * 0.15) {
+      return `${this.unit.name} sustained massive casualties.`;
+    } else if (this.casualties > this.unit.strength * 0.10) {
+      return `${this.unit.name} sustained major casualties.`;
+    } else if (this.casualties > this.unit.strength * 0.5) {
+      return `${this.unit.name} sustained significant casualties.`;
+    } else if (this.casualties > this.unit.strength * 0.03) {
+      return `${this.unit.name} sustained noticable casualties.`;
+    } else if (this.casualties > this.unit.strength * 0.02) {
+      return `${this.unit.name} sustained minor casualties.`;
+    } else if (this.casualties > 0) {
+      return `${this.unit.name} sustained almost no casualties.`;
+    } else {
+      return `${this.unit.name} sustained no casualties.`;
+    }
+  }
+
+  get leadershipMessage() {
+    if (this.leadershipLoss > this.unit.leadership) {
+      return `${this.unit.name} lost all of their leaders during the fight. They have no one to command them.`;
+    } else if (this.leadershipLoss > this.unit.leadership * 0.5) {
+      return `${this.unit.name} lost their captain during the fight.`;
+    } else if (this.leadershipLoss > this.unit.leadership * 0.25) {
+      return `${this.unit.name} lost a lieutenant during the fight.`;
+    } else if (this.leadershipLoss > 0) {
+      return `${this.unit.name} lost some of their sergeant's during the fight.`;
+    } else {
+      return ``;
+    }
+  }
+
+}
+
+var combatant = {
+  default: Combatant
+};
 
 function getRadioVal(container, name) {
   var val; // get list of radio buttons with specified name
@@ -19,6 +261,240 @@ function getRadioVal(container, name) {
 
 var domUtils = {
   getRadioVal: getRadioVal
+};
+
+class Encounter {
+  constructor({
+    attacker,
+    attackerArmyLeadership = 0,
+    attackerEngagedStands = -1,
+    defender,
+    defenderArmyLeadership = 0,
+    defenderEngagedStands = -1,
+    melee = true,
+    separation = 0,
+    slope = SLOPE_NONE$1,
+    attackerChargeTerrain = [],
+    defenderTerrain = [],
+    meleeCombatTerrain = []
+  }) {
+    this.melee = melee;
+    this.separation = separation;
+    this.slope = slope;
+    this.movementTerrain = attackerChargeTerrain;
+    this.attacker = new Combatant({
+      unit: attacker,
+      encounter: this,
+      target: defender,
+      engagedStands: attackerEngagedStands,
+      movementTerrain: attackerChargeTerrain,
+      protectingTerrain: [],
+      areaTerrain: this.melee ? meleeCombatTerrain : [],
+      armyLeadership: attackerArmyLeadership,
+      slope: this.attackerSlope
+    });
+    this.defender = new Combatant({
+      unit: defender,
+      encounter: this,
+      target: attacker,
+      engagedStands: defenderEngagedStands,
+      movementTerrain: [],
+      protectingTerrain: defenderTerrain,
+      areaTerrain: this.melee ? meleeCombatTerrain : [],
+      armyLeadership: defenderArmyLeadership,
+      slope: this.defenderSlope
+    });
+  }
+
+  inchesWord(number) {
+    return number === 1 ? 'inch' : 'inches';
+  }
+
+  attackerEngages() {
+    let secondsOfCombat = combat(this.attacker, this.defender, SECONDS_PER_TURN);
+    let actionMessage = ``;
+
+    if (this.attacker.fallingback && this.attacker.inchesFallenback >= 1) {
+      actionMessage += `${this.attacker.unit.name} fell back ${this.attacker.inchesFallenback} ${this.inchesWord(this.attacker.inchesFallenback)}. `;
+
+      if (this.defender.persueing && this.defender.inchesPersued >= 2) {
+        actionMessage += `${this.defender.unit.name} persued ${this.defender.inchesPersued} ${this.inchesWord(this.defender.inchesPersued)}. `;
+      }
+    }
+
+    if (this.defender.fallingback && this.defender.inchesFallenback >= 1) {
+      actionMessage += `${this.defender.unit.name} fell back ${this.defender.inchesFallenback} ${this.inchesWord(this.defender.inchesFallenback)}.`;
+
+      if (this.attacker.persueing && this.attacker.inchesPersued >= 2) {
+        actionMessage += `${this.attacker.unit.name} persued ${this.attacker.inchesPersued} ${this.inchesWord(this.attacker.inchesPersued)}.`;
+      }
+    }
+
+    if (this.inchesDefenderFled > 1) {
+      return `${actionMessage} ${attackerMessage} ${this.defender.unit.name} fled ${this.inchesDefenderFled} inches but was then caught by ${this.attacker.unit.name}. ${this.timeEngagedMessage(secondsOfCombat)}`;
+    } else if (this.defenderFled) {
+      return `${actionMessage} ${this.defender.unit.name} attempted to fall back but was quickly caught by ${this.attacker.unit.name}. ${this.timeEngagedMessage(secondsOfCombat)}`;
+    } else {
+      return `${actionMessage} ${this.timeEngagedMessage(secondsOfCombat)}`;
+    }
+  }
+
+  get couldNotReachTargetMessage() {
+    if (this.defenderFled) {
+      return `${this.defender.unit.name} fled ${this.inchesDefenderFled} inches and ${this.attacker.unit.name} could not reach it's target but may persue up to ${this.inchesOfSeparationAfter} inches.`;
+    } else if (this.attacker.status === MORALE_FAILURE) {
+      return `${this.attacker.unit.name} refused to make the attack.`;
+    } else {
+      return `${this.attacker.unit.name} could not reach ${this.defender.unit.name} but moved ${this.inchesAttackerTravelled} inches towards it's target.`;
+    }
+  }
+
+  get chargeMovementMessage() {
+    return `${this.attacker.unit.name} may move his stands ${this.attackerMovementInches} inches in order to make it into combat. Then the defender may follow this by moving his unengaged stands ${this.defenderMovementInches} inches.`;
+  }
+
+  get attackerMovementInches() {
+    return Math.ceil((this.attacker.yardsMovedPer(this.graceWindow) + this.yardsAttackerTravelled) / YARDS_PER_INCH);
+  }
+
+  get defenderMovementInches() {
+    return Math.ceil(this.defender.yardsMovedPer(this.graceWindow) / YARDS_PER_INCH);
+  }
+
+  get chargeMessage() {
+    return this.attackerReachedDefender ? this.chargeMovementMessage : this.couldNotReachTargetMessage;
+  }
+
+  get graceWindow() {
+    return this.secondsSpentFighting * 0.5; // Stands that could have made it in time to partake in half of the combat are allowed to be counted.
+  }
+
+  fight() {
+    const actionMessage = this.attackerReachedDefender ? this.attackerEngages() : ``;
+    const fullMessage = this.melee ? `${actionMessage} ${this.defender.battleReport()} ${this.attacker.battleReport()}` : `${actionMessage} ${this.defender.battleReport()}`;
+    return {
+      messages: [//`Attacker casualties: ${this.attacker.casualties}. Attacker energy loss: ${this.attacker.energyLoss}. Attacker morale loss: ${this.attacker.moraleLoss}. Attacker leadership loss: ${this.attacker.leadershipLoss}. Defender casualties: ${this.defender.casualties}. Defender energy loss: ${this.defender.energyLoss}. Defender morale loss: ${this.defender.moraleLoss}. Defender leadership loss: ${this.defender.leadershipLoss}.`,
+      fullMessage],
+      updates: [this.defender.updates(0), this.attacker.updates(SECONDS_PER_TURN + randomMinutesBetween(5, 10))]
+    };
+  }
+
+  timeEngagedMessage(seconds) {
+    return `They were engaged for ${seconds / SECONDS_IN_AN_MINUTE} minutes.`;
+  }
+
+  get attackerSlope() {
+    return this.slope;
+  }
+
+  get defenderSlope() {
+    if (this.slope === SLOPE_UP) {
+      return SLOPE_DOWN;
+    } else if (this.slope === SLOPE_DOWN) {
+      return SLOPE_UP;
+    } else {
+      return SLOPE_NONE$1;
+    }
+  }
+
+  get closeEnoughToFight() {
+    if (this.attacker.fallingback && this.defender.fallingback) {
+      return false;
+    } else if (this.attacker.fallingback) {
+      return this.attacker.fallBackDistance - this.defender.persuitDistance > YARDS_TO_FIGHT;
+    } else if (this.defender.fallingback) {
+      return this.defender.fallBackDistance - this.attacker.persuitDistance > YARDS_TO_FIGHT;
+    } else {
+      return true;
+    }
+  }
+
+  get yardsOfSeparation() {
+    return this.separation * YARDS_PER_INCH;
+  }
+
+  get yardsOfSeparationAfter() {
+    if (this.secondsToReachDefender > 0) {
+      return 0;
+    } else {
+      return this.separation + this.defender.backwardsSpeed * this.secondsAvailableAfterOrder - this.attacker.speed * this.secondsAvailableAfterOrder;
+    }
+  }
+
+  get inchesOfSeparationAfter() {
+    return Math.ceil(this.yardsOfSeparationAfter / YARDS_PER_INCH);
+  }
+
+  get yardsDefenderFled() {
+    if (this.defender.status === MORALE_FAILURE) {
+      const timeAvailableToFlee = this.secondsAvailableAfterOrder - 0.5 * this.separation / this.attacker.speed;
+      return timeAvailableToFlee * this.backwardsSpeed;
+    } else {
+      return 0;
+    }
+  }
+
+  get inchesDefenderFled() {
+    return Math.ceil(this.yardsDefenderFled / YARDS_PER_INCH);
+  }
+
+  get yardsAttackerTravelled() {
+    if (this.melee) {
+      return this.attacker.speed * this.secondsToReachDefenderOrMax;
+    } else {
+      return 0;
+    }
+  }
+
+  get inchesAttackerTravelled() {
+    return Math.floor(this.yardsAttackerTravelled / YARDS_PER_INCH);
+  }
+
+  get secondsAvailableAfterOrder() {
+    return SECONDS_PER_TURN - this.attacker.unit.secondsToIssueOrder;
+  }
+
+  get secondsToReachDefender() {
+    if (this.defender.status === MORALE_FAILURE) {
+      return this.yardsOfSeparation / (this.attacker.speed - this.defender.backwardsSpeed);
+    } else {
+      return this.yardsOfSeparation / this.attacker.speed;
+    }
+  }
+
+  get secondsToReachDefenderOrMax() {
+    return Math.min(this.secondsToReachDefender, this.secondsAvailableAfterOrder);
+  }
+
+  get attackerReachedDefender() {
+    return this.secondsSpentFighting > 0;
+  }
+
+  get defenderFled() {
+    return this.yardsDefenderFled > 0;
+  } // Warning: this could be negative in which case that means the defender outran the attacker.
+
+
+  get secondsSpentFighting() {
+    if (this.attacker.status === MORALE_SUCCESS) {
+      if (this.melee) {
+        return this.secondsAvailableAfterOrder - this.secondsToReachDefender;
+      } else {
+        return this.secondsAvailableAfterOrder;
+      }
+    } else {
+      return 0;
+    }
+  }
+
+  get minutesSpentFighting() {
+    return Math.ceil(this.secondsSpentFighting / SECONDS_IN_AN_MINUTE);
+  }
+
+}
+
+var encounter = {
+  default: Encounter
 };
 
 class SoloUnit extends ActingUnit {
@@ -929,4 +1405,4 @@ var fightView = {
   TERRAIN_TYPE_RANGED_DEFENDER: TERRAIN_TYPE_RANGED_DEFENDER,
   TERRAIN_TYPES: TERRAIN_TYPES
 };
-export { fightView as $fightView, domUtils as $domUtils, situation as $situation, soloUnit as $soloUnit, TERRAIN_TYPE_MOVEMENT, TERRAIN_TYPE_DEFENDER, TERRAIN_TYPE_MELEE_COMBAT, TERRAIN_TYPE_RANGED_DEFENDER, TERRAIN_TYPES, getRadioVal, Situation as $situationDefault, SoloUnit as $soloUnitDefault };
+export { combatant as $combatant, fightView as $fightView, domUtils as $domUtils, encounter as $encounter, situation as $situation, soloUnit as $soloUnit, Combatant as $combatantDefault, TERRAIN_TYPE_MOVEMENT, TERRAIN_TYPE_DEFENDER, TERRAIN_TYPE_MELEE_COMBAT, TERRAIN_TYPE_RANGED_DEFENDER, TERRAIN_TYPES, getRadioVal, Encounter as $encounterDefault, Situation as $situationDefault, SoloUnit as $soloUnitDefault };
