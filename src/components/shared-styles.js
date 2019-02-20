@@ -41,14 +41,16 @@ export const SharedStyles = css`
   h5 {
     font-size: 1.125rem;
     font-weight: 400;
-    margin: 1rem 0 0.5rem 0;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
   }
 
   h6 {
     font-size: 0.9rem;
     font-weight: 600;
     color: grey;
-    margin: 1rem 0 0.5rem 0;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
   }
 
   p {

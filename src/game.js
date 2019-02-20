@@ -10,6 +10,10 @@ export const MAX_STAT = 100;
 export const DEADLYNESS = 1;
 export const MAX_EQUIPMENT_WEIGHT = 100;
 export const YARDS_TO_FIGHT = 100;
+export const MELEE = 'melee';
+export const RANGED = 'ranged';
+export const MORALE_SUCCESS = 'MORALE_SUCCESS';
+export const MORALE_FAILURE = 'MORALE_FAILURE';
 
 export function statModFor(stat) {
   return weightedRandomTowards(20, 80, stat, 2) / 100;

@@ -1,8 +1,7 @@
-import SoloUnit from './solo-unit.js';
 import { SLOPE_NONE } from './terrain.js';
-import { MORALE_SUCCESS, MORALE_FAILURE } from './acting-unit.js'
-import { SECONDS_PER_TURN, MINUTES_PER_TURN, YARDS_PER_INCH } from './game.js';
+import { SECONDS_PER_TURN, MINUTES_PER_TURN, YARDS_PER_INCH, MORALE_SUCCESS, MORALE_FAILURE } from './game.js';
 import { SECONDS_IN_AN_MINUTE } from './math-utils.js';
+import SoloUnit from './solo-unit.js';
 
 /** @class Situation
  *  This represents the sitation of a single unit on the battle field. */

@@ -1,4 +1,88 @@
-import { randomBellMod, modVolume, weightedAverage, SECONDS_IN_AN_HOUR, randomMinutesBetween, SECONDS_IN_AN_MINUTE, weightedRandomTowards, prettyDateTime, SLOPE_NONE as SLOPE_NONE$1, SLOPE_UP, SLOPE_DOWN, statModFor, MAX_STAT, SECONDS_PER_TURN, YARDS_PER_INCH, MAX_EQUIPMENT_WEIGHT, MELEE, RANGED, YARDS_TO_FIGHT, MINUTES_PER_TURN, FOOT_TROOP, MELEE_WEAPON, RANGED_WEAPON, POWER_VS_FOOT, POWER_VS_MOUNTED, ActingUnit, MORALE_SUCCESS, MORALE_FAILURE, store, combat, html, css, repeat, classMap, PageViewElement, connect, takeAction, SharedStyles, ButtonSharedStyles, $unitDefault as Unit } from './battle-sim.js';
+import { weightedRandom, weightedRandomTowards, randomBellMod, modVolume, weightedAverage, SECONDS_IN_AN_HOUR, randomMinutesBetween, SECONDS_IN_AN_MINUTE, prettyDateTime, SLOPE_UP, SLOPE_DOWN, SLOPE_NONE as SLOPE_NONE$1, MAX_TERRAIN, statModFor, MAX_EQUIPMENT_WEIGHT, MORALE_SUCCESS, MORALE_FAILURE, MAX_STAT, SECONDS_PER_TURN, YARDS_PER_INCH, MELEE, RANGED, YARDS_TO_FIGHT, MINUTES_PER_TURN, FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP, MELEE_WEAPON, RANGED_WEAPON, POWER_VS_FOOT, POWER_VS_MOUNTED, store, combat, html, css, repeat, classMap, PageViewElement, connect, takeAction, SharedStyles, ButtonSharedStyles, $unitDefault as Unit } from './battle-sim.js';
+
+class ActingUnit {
+  constructor({
+    unit,
+    pace = 1,
+    environment,
+    armyLeadership = 0,
+    slope = SLOPE_NONE$1,
+    status = MORALE_SUCCESS
+  }) {
+    this.unit = unit;
+    this.pace = pace;
+    this.environment = environment;
+    this.armyLeadership = armyLeadership;
+    this.slope = slope;
+    this.status = this.moraleRoll() > this.unit.morale ? MORALE_FAILURE : this.status = MORALE_SUCCESS;
+  }
+
+  yardsMovedPer(seconds) {
+    return this.speed * seconds;
+  }
+
+  moraleRoll() {
+    return weightedRandom(2) * 100;
+  }
+
+  get terrainMovePenalty() {
+    // This should be based upon this.unit.openness and this.unit.isMounted
+    return Math.min(this.environment.movementTerrain.reduce((sum, terrain) => sum += terrain.movePenalty, 0), 100);
+  }
+
+  get terrainSpeedMod() {
+    return (MAX_TERRAIN - this.terrainMovePenalty) / MAX_TERRAIN;
+  }
+
+  get equipmentMod() {
+    return (MAX_EQUIPMENT_WEIGHT - this.unit.carriedWeight) / MAX_EQUIPMENT_WEIGHT;
+  }
+
+  get speed() {
+    if (this.unit.canMounted) {
+      if (this.unit.isMounted) {
+        return this.unit.mountedSpeed.baseSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod * this.pace;
+      } else {
+        return this.unit.unmountedSpeed.baseSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod * this.pace;
+      }
+    } else {
+      return this.unit.baseSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod * this.pace;
+    }
+  }
+
+  get backwardsSpeed() {
+    return this.unit.baseBackwardSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod * this.pace;
+  }
+
+  get armor() {
+    return this.unit.armor.defense;
+  }
+
+  get unitTypeTerrainMod() {
+    return {
+      [FOOT_TROOP]: 1,
+      [CAVALRY_TROOP]: 0.5,
+      [ARTILLERY_TROOP]: 0.25
+    }[this.unit.unitType];
+  }
+
+  get terrainMod() {
+    return (MAX_TERRAIN - this.terrainMovePenalty) / MAX_TERRAIN * statModFor(this.unit.openness) * this.unitTypeTerrainMod;
+  }
+
+  get slopeMod() {
+    return {
+      [SLOPE_UP]: 0.75,
+      [SLOPE_DOWN]: 1.25,
+      [SLOPE_NONE$1]: 1
+    }[this.slope];
+  }
+
+}
+
+var actingUnit = {
+  default: ActingUnit
+};
 
 class Combatant extends ActingUnit {
   constructor({
@@ -1405,4 +1489,4 @@ var fightView = {
   TERRAIN_TYPE_RANGED_DEFENDER: TERRAIN_TYPE_RANGED_DEFENDER,
   TERRAIN_TYPES: TERRAIN_TYPES
 };
-export { combatant as $combatant, fightView as $fightView, domUtils as $domUtils, encounter as $encounter, situation as $situation, soloUnit as $soloUnit, Combatant as $combatantDefault, TERRAIN_TYPE_MOVEMENT, TERRAIN_TYPE_DEFENDER, TERRAIN_TYPE_MELEE_COMBAT, TERRAIN_TYPE_RANGED_DEFENDER, TERRAIN_TYPES, getRadioVal, Encounter as $encounterDefault, Situation as $situationDefault, SoloUnit as $soloUnitDefault };
+export { actingUnit as $actingUnit, combatant as $combatant, fightView as $fightView, domUtils as $domUtils, encounter as $encounter, situation as $situation, soloUnit as $soloUnit, ActingUnit as $actingUnitDefault, Combatant as $combatantDefault, TERRAIN_TYPE_MOVEMENT, TERRAIN_TYPE_DEFENDER, TERRAIN_TYPE_MELEE_COMBAT, TERRAIN_TYPE_RANGED_DEFENDER, TERRAIN_TYPES, getRadioVal, Encounter as $encounterDefault, Situation as $situationDefault, SoloUnit as $soloUnitDefault };

@@ -1,6 +1,6 @@
 import { weightedRandomTowards, numberWithCommas, weightedAverage, nearest100, SECONDS_IN_AN_MINUTE } from './math-utils.js';
-import { MAX_STAT, YARDS_PER_INCH } from './game.js';
-import { ActingUnit, MORALE_SUCCESS, MORALE_FAILURE } from './acting-unit.js';
+import { MAX_STAT, YARDS_PER_INCH, MORALE_SUCCESS } from './game.js';
+import ActingUnit from './acting-unit.js';
 
 /** @class Situation
  *  This represents a single unit taking an order. */

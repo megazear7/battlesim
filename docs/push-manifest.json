@@ -1,27 +1,11 @@
 {
   "/": {
-    "src/components/my-app.js": {
+    "src/components/battle-sim.js": {
       "crossorigin": "anonymous",
       "type": "script",
       "weight": 1
     },
-    "src/components/my-view1.js": {
-      "crossorigin": "anonymous",
-      "type": "script",
-      "weight": 1
-    },
-    "node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js": {
-      "type": "script",
-      "weight": 1
-    }
-  },
-  "/view1": {
-    "src/components/my-app.js": {
-      "crossorigin": "anonymous",
-      "type": "script",
-      "weight": 1
-    },
-    "src/components/my-view1.js": {
+    "src/components/war-view.js": {
       "crossorigin": "anonymous",
       "type": "script",
       "weight": 1
@@ -31,13 +15,61 @@
       "weight": 1
     }
   },
-  "/view2": {
-    "src/components/my-app.js": {
+  "/war": {
+    "src/components/battle-sim.js": {
       "crossorigin": "anonymous",
       "type": "script",
       "weight": 1
     },
-    "src/components/my-view2.js": {
+    "src/components/war-view.js": {
+      "crossorigin": "anonymous",
+      "type": "script",
+      "weight": 1
+    },
+    "node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js": {
+      "type": "script",
+      "weight": 1
+    }
+  },
+  "/battle": {
+    "src/components/battle-sim.js": {
+      "crossorigin": "anonymous",
+      "type": "script",
+      "weight": 1
+    },
+    "src/components/battle-view.js": {
+      "crossorigin": "anonymous",
+      "type": "script",
+      "weight": 1
+    },
+    "node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js": {
+      "type": "script",
+      "weight": 1
+    }
+  },
+  "/fight": {
+    "src/components/battle-sim.js": {
+      "crossorigin": "anonymous",
+      "type": "script",
+      "weight": 1
+    },
+    "src/components/fight-view.js": {
+      "crossorigin": "anonymous",
+      "type": "script",
+      "weight": 1
+    },
+    "node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js": {
+      "type": "script",
+      "weight": 1
+    }
+  },
+  "/rules": {
+    "src/components/battle-sim.js": {
+      "crossorigin": "anonymous",
+      "type": "script",
+      "weight": 1
+    },
+    "src/components/rules-view.js": {
       "crossorigin": "anonymous",
       "type": "script",
       "weight": 1

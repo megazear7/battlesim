@@ -2,13 +2,11 @@ import { weightedRandom, weightedRandomTowards } from './math-utils.js';
 import { SLOPE_UP, SLOPE_DOWN, SLOPE_NONE, MAX_TERRAIN } from './terrain.js';
 import { statModFor, MAX_EQUIPMENT_WEIGHT } from './game.js';
 import { FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP } from './units.js';
-
-export const MORALE_SUCCESS = 'MORALE_SUCCESS';
-export const MORALE_FAILURE = 'MORALE_FAILURE';
+import { MORALE_SUCCESS, MORALE_FAILURE } from './game.js';
 
 /** @class Situation
  *  This represents a single unit taking an order. */
-export class ActingUnit {
+export default class ActingUnit {
     constructor({ unit,
                   pace = 1,
                   environment,
