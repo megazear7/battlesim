@@ -4,7 +4,7 @@ import { ARMOR } from './armor.js';
 import { FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP } from './units.js';
 import { upperCaseFirst } from './string-utils.js';
 import { getRandomInt } from './math-utils.js';
-import { STAT_PERCENTAGE, STAT_DESCRIPTION } from './game.js';
+import { STAT_PERCENTAGE, STAT_DESCRIPTION, STRENGTH_MESSAGE_DESCRIPTIVE } from './game.js';
 
 export default class Unit {
   constructor({
@@ -116,7 +116,7 @@ export default class Unit {
     } else if (this.morale <= 0) {
       return `${this.name} has fled the battlefield.`;
     } else {
-      return `${this.detailedStrengthDesc} ${this.moraleMessage} ${this.energyMessage} ${this.mountedStatus}`;
+      return `${this.strengthMessage} ${this.moraleMessage} ${this.energyMessage} ${this.mountedStatus}`;
     }
   }
 
@@ -216,7 +216,13 @@ export default class Unit {
     }
   }
 
-  get detailedStrengthDesc() {
+  get strengthMessage() {
+    return this.battle.strengthReporting === STRENGTH_MESSAGE_DESCRIPTIVE
+      ? this.strengthDesc
+      : `They are at ${Math.ceil(this.strengthPercentage)}% strength, having ${Math.ceil(this.strength)} men left.`;
+  }
+
+  get strengthDesc() {
     if (this.strengthPercentage > 97) {
       return 'They are at full strength and have taken no casualties.';
     } else if (this.strengthPercentage > 93) {
