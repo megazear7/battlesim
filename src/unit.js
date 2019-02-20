@@ -4,6 +4,7 @@ import { ARMOR } from './armor.js';
 import { FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP } from './units.js';
 import { upperCaseFirst } from './string-utils.js';
 import { getRandomInt } from './math-utils.js';
+import { STAT_PERCENTAGE, STAT_DESCRIPTION } from './game.js';
 
 export default class Unit {
   constructor({
@@ -115,7 +116,7 @@ export default class Unit {
     } else if (this.morale <= 0) {
       return `${this.name} has fled the battlefield.`;
     } else {
-      return `${this.detailedStrengthDesc} ${this.detailedMoraleDesc} ${this.detailedEnergyDesc} ${this.mountedStatus}`;
+      return `${this.detailedStrengthDesc} ${this.moraleMessage} ${this.energyMessage} ${this.mountedStatus}`;
     }
   }
 
@@ -185,7 +186,13 @@ export default class Unit {
     }
   }
 
-  get detailedMoraleDesc() {
+  get moraleMessage() {
+    return this.battle.statReporting === STAT_PERCENTAGE
+      ? `They are at ${this.morale}% morale `
+      : this.moraleDesc;
+  }
+
+  get moraleDesc() {
     if (this.morale > 90) {
       return 'Morale is great.';
     } else if (this.morale > 80) {
@@ -235,7 +242,13 @@ export default class Unit {
     }
   }
 
-  get detailedEnergyDesc() {
+  get energyMessage() {
+    return this.battle.statReporting === STAT_PERCENTAGE
+      ? `and ${this.energy}% energy.`
+      : this.energyDesc;
+  }
+
+  get energyDesc() {
     if (this.energy > 90) {
       return 'They have lots of energy.';
     } else if (this.energy > 80) {

@@ -85,8 +85,8 @@ export default class SoloUnit extends ActingUnit {
   get desc() {
     return ` ${this.situation.yardsTravelled > 0 ? this.moveDesc : ''}
              ${this.situation.yardsTravelled > 0 ? this.battlefieldMoveDesc : ''}
-             ${this.energyGain > 0 && this.situation.minutesSpentResting > 0 ? this.energyRecoveredMessage : ''}
-             ${this.moraleGain > 0 && this.situation.minutesSpentResting > 0 ? this.moraleRecoveredMessage : ''}`;
+             ${this.moraleGain > 0 && this.situation.minutesSpentResting > 0 ? this.moraleRecoveredMessage : ''}
+             ${this.energyGain > 0 && this.situation.minutesSpentResting > 0 ? this.energyRecoveredMessage : ''}`;
   }
 
   get battlefieldMoveDesc() {
@@ -105,7 +105,7 @@ export default class SoloUnit extends ActingUnit {
 
   get energyRecoveredMessage() {
     return this.unit.battle.statReporting === STAT_PERCENTAGE
-      ? `In ${this.situation.minutesSpentResting} minutes they recovered ${this.energyGain} percent of their energy `
+      ? `and ${this.energyGain}% of their energy.`
       : this.energyRecoveredDesc;
   }
 
@@ -133,7 +133,7 @@ export default class SoloUnit extends ActingUnit {
 
   get moraleRecoveredMessage() {
     return this.unit.battle.statReporting === STAT_PERCENTAGE
-      ? `and ${this.moraleGain} percent of their morale.`
+      ? `In ${this.situation.minutesSpentResting} minutes they recovered ${this.moraleGain}% of their morale `
       : this.moraleRecoveredDesc;
   }
 
