@@ -8,7 +8,7 @@ export const MORALE_FAILURE = 'MORALE_FAILURE';
 
 /** @class Situation
  *  This represents a single unit taking an order. */
-export default class SoloUnit {
+export default class ActingUnit {
     constructor({ unit,
                   pace = 1,
                   environment,
