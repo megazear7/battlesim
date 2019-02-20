@@ -2,14 +2,16 @@ import BATTLE_TEMPLATES from '../battle-templates.js';
 import {
   SECONDS_PER_TURN,
   ACTION_TYPE_UNIT,
+  ACTION_TYPE_ARMY,
   NO_PLAYER_TURNS } from '../game.js';
 import {
   TAKE_ACTION,
+  TAKE_ARMY_ACTION,
   ADD,
   REMOVE,
   CREATE_NEW_BATTLE,
   SET_ACTIVE_BATTLE,
-  REMOVE_BATTLE
+  REMOVE_BATTLE,
 } from '../actions/battle.js';
 
 const INITIAL_STATE = {
@@ -35,6 +37,9 @@ const battle = (state = initialState, action) => {
       });
     });
     updateTime(activeBattle);
+  } else if (activeBattle && action.type === TAKE_ARMY_ACTION && activeBattle.activeAction.type === ACTION_TYPE_ARMY) {
+    activeBattle.armies[activeBattle.activeAction.index].nextAction += SECONDS_PER_TURN;
+    updateTime(activeBattle);
   } else if (activeBattle && action.type === ADD) {
     let newUnit = activeBattle.unitTemplates[action.unitTemplate];
     newUnit.nextAction = activeBattle.second + 1;
@@ -54,6 +59,9 @@ const battle = (state = initialState, action) => {
     }
     newBattle.units.forEach(unit => {
       unit.nextAction = Math.random() * SECONDS_PER_TURN;
+    });
+    newBattle.armies.forEach(army => {
+      army.nextAction = Math.random() * SECONDS_PER_TURN;
     });
 
     updateTime(newBattle);
@@ -77,7 +85,7 @@ const battle = (state = initialState, action) => {
 };
 
 function updateTime(battle) {
-  let next = nextUnit(battle);
+  let next = nextAction(battle);
 
   if (battle.playerTurnDuration !== NO_PLAYER_TURNS && battle.units[next].nextAction > battle.turnStarted + battle.playerTurnDuration) {
     if (battle.activeArmy === 0) {
@@ -86,30 +94,42 @@ function updateTime(battle) {
       battle.activeArmy = 0;
     }
 
-    next = nextUnit(battle);
-    battle.turnStarted = battle.units[next].nextAction;
+    next = nextAction(battle);
+    battle.turnStarted = next.action;
   }
 
-  battle.second = battle.units[next].nextAction;
-  battle.activeAction = {
-    type: ACTION_TYPE_UNIT,
-    index: next,
-  };
+  battle.second = next.time;
+  battle.activeAction = next.action;
 }
 
-function nextUnit(battle) {
-  var minTime = Number.MAX_SAFE_INTEGER;
-  var next;
+function nextAction(battle) {
+  var nextTime = Number.MAX_SAFE_INTEGER;
+  var nextAction;
   battle.units.forEach((unit, index) => {
     if ((battle.playerTurnDuration === NO_PLAYER_TURNS || unit.army === battle.activeArmy) &&
-        unit.nextAction < minTime &&
+        unit.nextAction < nextTime &&
         unit.strength > 0 &&
         unit.morale > 0) {
-      minTime = unit.nextAction;
-      next = index;
+      nextTime = unit.nextAction;
+      nextAction = {
+        type: ACTION_TYPE_UNIT,
+        index: index,
+      };
     }
   });
-  return next;
+  battle.armies.forEach((army, index) => {
+    if ((battle.playerTurnDuration === NO_PLAYER_TURNS || index === battle.activeArmy) && army.nextAction < nextTime) {
+      nextTime = army.nextAction;
+      nextAction = {
+        type: ACTION_TYPE_ARMY,
+        index: index,
+      };
+    }
+  });
+  return {
+    action: nextAction,
+    time: nextTime,
+  };
 }
 
 export default battle;

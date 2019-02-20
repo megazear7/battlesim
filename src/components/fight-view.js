@@ -4,7 +4,7 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { PageViewElement } from './page-view-element.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
-import { takeAction } from '../actions/battle.js';
+import { takeAction, takeArmyAction } from '../actions/battle.js';
 import { SharedStyles } from './shared-styles.js';
 import { ButtonSharedStyles } from './button-shared-styles.js';
 import Unit from '../unit.js';
@@ -13,7 +13,7 @@ import { getRadioVal } from '../dom-utils.js';
 import { SLOPE_UP, SLOPE_DOWN, SLOPE_NONE } from '../terrain.js';
 import Encounter from '../encounter.js';
 import Situation from '../situation.js';
-import { MINUTES_PER_TURN, ACTION_TYPE_UNIT } from '../game.js';
+import { MINUTES_PER_TURN, ACTION_TYPE_UNIT, ACTION_TYPE_ARMY } from '../game.js';
 
 const REST = 'REST';
 const MOVE = 'MOVE';
@@ -116,134 +116,146 @@ class FightView extends connect(store)(PageViewElement) {
   render() {
     return html`
       ${this._hasActiveBattle ? html`
-        <section>
-          <h2>${this._unit.name}</h2>
-          <div class="muted centered">Army: ${this._unit.army.name}</div>
-          <div class="muted centered">${prettyDateTime(this._date)}</div>
-          <p>${this._unit.detailedStatus}</p>
-          <hr>
-          <p>${this._unit.desc}</p>
-        </section>
-        <section>
-          <div class="${classMap({'has-selection': this._actionSelected})}">
-            <button @click="${this._rest}" id="rest" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === REST})}">Rest</button>
-            <button @click="${this._move}" id="move" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === MOVE})}">Move</button>
-            <button @click="${this._charge}" id="charge" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === CHARGE})}">Charge</button>
-            <button @click="${this._fire}" id="fire" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === FIRE})}">Fire</button>
-          </div>
-        </section>
-        <section>
-          <div class="options-container">
-            <p class="${classMap({hidden: ! this._showChargeMessage})}">${this._chargeMessage}</p>
-            <input id="rest-time" class="${classMap({hidden: ! this._showRestTime})}" type="number" placeholder="Minutes to rest" max="${MINUTES_PER_TURN}"></input>
-            <input id="distance" class="${classMap({hidden: ! this._showDistance})}" type="number" placeholder="Distance (Leave blank to move as far as possible)"></input>
-            <input id="separation" class="${classMap({hidden: ! this._showSeparation})}" type="number" placeholder="Distance (Required)"></input>
-            <select id="target" class="${classMap({hidden: ! this._showTarget})}" @change="${this._updateTarget}">
-              <option value="">Select Target (Required)</option>
-              ${repeat(this._unit.targets, target => html`
-                <option value="${target.id}">${target.unit.name}</option>
-              `)}
-            </select>
-            <div class="${classMap({hidden: ! this._showEngagedAttackers && ! this._showEngagedDefenders})}">
-              <input id="engaged-attackers" class="${classMap({hidden: ! this._showEngagedAttackers, full: this._showEngagedAttackers && ! this._showEngagedDefenders, stands: true})}" type="number" placeholder="Attacking Stands"></input>
-              <input id="engaged-defenders" class="${classMap({hidden: ! this._showEngagedDefenders, stands: true})}" type="number" placeholder="Defending Stands"></input>
+        ${this._unit ? html`
+          <section>
+            <h2>${this._unit.name}</h2>
+            <div class="muted centered">Army: ${this._unit.army.name}</div>
+            <div class="muted centered">${prettyDateTime(this._date)}</div>
+            <p>${this._unit.detailedStatus}</p>
+            <hr>
+            <p>${this._unit.desc}</p>
+          </section>
+          <section>
+            <div class="${classMap({'has-selection': this._actionSelected})}">
+              <button @click="${this._rest}" id="rest" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === REST})}">Rest</button>
+              <button @click="${this._move}" id="move" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === MOVE})}">Move</button>
+              <button @click="${this._charge}" id="charge" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === CHARGE})}">Charge</button>
+              <button @click="${this._fire}" id="fire" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === FIRE})}">Fire</button>
             </div>
-            <button class="${classMap({hidden: ! this._showDoCombat})}" @click="${this._doCombat}">Do Combat</button>
-            <button class="${classMap({hidden: ! this._showTakeAction})}" @click="${this._takeAction}">Take Action</button>
-            <br>
-            <div class="${classMap({"options-block": true, hidden: ! this._showTerrain})}">
-              ${repeat(this._typesOfTerrain, terrainType => html`
-                <div id="${terrainType.id}" class="${classMap({hidden: ! terrainType.show})}">
-                  <h5 class="tooltip">
-                    ${terrainType.name}
-                    <span class="tooltiptext">${terrainType.description}</span>
-                  </h5>
-                  ${repeat(terrainType.terrain, ({terrain, index}) => html`
-                    <div>
-                      <input type="checkbox" id="${terrainType.id+index}" data-terrain-index="${index}"></input>
-                      <label for="${terrainType.id+index}">
-                        ${terrain.name}
-                        <span class="tooltip">
-                          ...
-                          <span class="tooltiptext">${terrain.descripton}</span>
-                        <span>
-                      </label>
-                    </div>
-                  `)}
+          </section>
+          <section>
+            <div class="options-container">
+              <p class="${classMap({hidden: ! this._showChargeMessage})}">${this._chargeMessage}</p>
+              <input id="rest-time" class="${classMap({hidden: ! this._showRestTime})}" type="number" placeholder="Minutes to rest" max="${MINUTES_PER_TURN}"></input>
+              <input id="distance" class="${classMap({hidden: ! this._showDistance})}" type="number" placeholder="Distance (Leave blank to move as far as possible)"></input>
+              <input id="separation" class="${classMap({hidden: ! this._showSeparation})}" type="number" placeholder="Distance (Required)"></input>
+              <select id="target" class="${classMap({hidden: ! this._showTarget})}" @change="${this._updateTarget}">
+                <option value="">Select Target (Required)</option>
+                ${repeat(this._unit.targets, target => html`
+                  <option value="${target.id}">${target.unit.name}</option>
+                `)}
+              </select>
+              <div class="${classMap({hidden: ! this._showEngagedAttackers && ! this._showEngagedDefenders})}">
+                <input id="engaged-attackers" class="${classMap({hidden: ! this._showEngagedAttackers, full: this._showEngagedAttackers && ! this._showEngagedDefenders, stands: true})}" type="number" placeholder="Attacking Stands"></input>
+                <input id="engaged-defenders" class="${classMap({hidden: ! this._showEngagedDefenders, stands: true})}" type="number" placeholder="Defending Stands"></input>
+              </div>
+              <button class="${classMap({hidden: ! this._showDoCombat})}" @click="${this._doCombat}">Do Combat</button>
+              <button class="${classMap({hidden: ! this._showTakeAction})}" @click="${this._takeAction}">Take Action</button>
+              <br>
+              <div class="${classMap({"options-block": true, hidden: ! this._showTerrain})}">
+                ${repeat(this._typesOfTerrain, terrainType => html`
+                  <div id="${terrainType.id}" class="${classMap({hidden: ! terrainType.show})}">
+                    <h5 class="tooltip">
+                      ${terrainType.name}
+                      <span class="tooltiptext">${terrainType.description}</span>
+                    </h5>
+                    ${repeat(terrainType.terrain, ({terrain, index}) => html`
+                      <div>
+                        <input type="checkbox" id="${terrainType.id+index}" data-terrain-index="${index}"></input>
+                        <label for="${terrainType.id+index}">
+                          ${terrain.name}
+                          <span class="tooltip">
+                            ...
+                            <span class="tooltiptext">${terrain.descripton}</span>
+                          <span>
+                        </label>
+                      </div>
+                    `)}
+                  </div>
+                `)}
+                <div class="${classMap({hidden: this.showPace})}">
+                  <radiogroup id="pace" class="${classMap({hidden: ! this._showHill})}">
+                    <h5>Pace</h5>
+                    <input type="radio" name="pace" id="pace-fast" value="1">
+                    <label for="pace-fast">Fast</label>
+                    <br>
+                    <input type="radio" name="pace" id="pace-march" value="0.75" checked>
+                    <label for="pace-march">March</label>
+                    <br>
+                    <input type="radio" name="pace" id="pace-rest" value="0.5">
+                    <label for="pace-rest">Rest</label>
+                    <br><br>
+                  </radiogroup>
                 </div>
-              `)}
-              <div class="${classMap({hidden: this.showPace})}">
-                <radiogroup id="pace" class="${classMap({hidden: ! this._showHill})}">
-                  <h5>Pace</h5>
-                  <input type="radio" name="pace" id="pace-fast" value="1">
-                  <label for="pace-fast">Fast</label>
+              </div>
+              <div class="${classMap({"options-block": true, hidden: ! this._showHill && ! this._showLeader})}">
+                <radiogroup id="hill" class="${classMap({hidden: ! this._showHill})}">
+                  <h5>Hills</h5>
+                  <input type="radio" name="hill" id="${SLOPE_UP}" value="${SLOPE_UP}">
+                  <label for="${SLOPE_UP}">Uphill</label>
                   <br>
-                  <input type="radio" name="pace" id="pace-march" value="0.75" checked>
-                  <label for="pace-march">March</label>
+                  <input type="radio" name="hill" id="${SLOPE_DOWN}" value="${SLOPE_DOWN}">
+                  <label for="${SLOPE_DOWN}">Downhill</label>
                   <br>
-                  <input type="radio" name="pace" id="pace-rest" value="0.5">
-                  <label for="pace-rest">Rest</label>
+                  <input type="radio" name="hill" id="${SLOPE_NONE}" value="${SLOPE_NONE}">
+                  <label for="${SLOPE_NONE}">Neither</label>
                   <br><br>
                 </radiogroup>
-              </div>
-            </div>
-            <div class="${classMap({"options-block": true, hidden: ! this._showHill && ! this._showLeader})}">
-              <radiogroup id="hill" class="${classMap({hidden: ! this._showHill})}">
-                <h5>Hills</h5>
-                <input type="radio" name="hill" id="${SLOPE_UP}" value="${SLOPE_UP}">
-                <label for="${SLOPE_UP}">Uphill</label>
-                <br>
-                <input type="radio" name="hill" id="${SLOPE_DOWN}" value="${SLOPE_DOWN}">
-                <label for="${SLOPE_DOWN}">Downhill</label>
-                <br>
-                <input type="radio" name="hill" id="${SLOPE_NONE}" value="${SLOPE_NONE}">
-                <label for="${SLOPE_NONE}">Neither</label>
-                <br><br>
-              </radiogroup>
-              <h5>Leadership</h5>
-              <div id="leadership">
-                <radiogroup id="attacker-leader" class="${classMap({hidden: ! this._showLeader})}">
-                  <h6>${this._unit.name}</h6>
-                  ${repeat(this._unit.army.leaders, (leader, index) => html`
-                    <input type="radio" name="attacker-leader" id="${'attacker-leader-'+index}" value="${leader.leadership}">
-                    <label for="${'attacker-leader-'+index}">${leader.shortname}</label>
-                    <br>
-                  `)}
-                  ${this._targetUnit ? html`
-                    <h6>${this._targetUnit.name}</h6>
-                    ${repeat(this._targetUnit.army.leaders, (leader, index) => html`
-                      <input type="radio" name="defender-leader" id="${'defender-leader-'+index}" value="${leader.leadership}">
-                      <label for="${'defender-leader-'+index}">${leader.shortname}</label>
+                <h5>Leadership</h5>
+                <div id="leadership">
+                  <radiogroup id="attacker-leader" class="${classMap({hidden: ! this._showLeader})}">
+                    <h6>${this._unit.name}</h6>
+                    ${repeat(this._unit.army.leaders, (leader, index) => html`
+                      <input type="radio" name="attacker-leader" id="${'attacker-leader-'+index}" value="${leader.leadership}">
+                      <label for="${'attacker-leader-'+index}">${leader.shortname}</label>
                       <br>
                     `)}
-                  `: ``}
-                </radiogroup>
+                    ${this._targetUnit ? html`
+                      <h6>${this._targetUnit.name}</h6>
+                      ${repeat(this._targetUnit.army.leaders, (leader, index) => html`
+                        <input type="radio" name="defender-leader" id="${'defender-leader-'+index}" value="${leader.leadership}">
+                        <label for="${'defender-leader-'+index}">${leader.shortname}</label>
+                        <br>
+                      `)}
+                    `: ``}
+                  </radiogroup>
+                </div>
+              </div>
+              <div id="resupply" class="${classMap({hidden: ! this._showResupply})}">
+                <h5>Supply</h5>
+                <input type="checkbox" id="resupply-checkbox"></input>
+                <label for="resupply-checkbox">Resupply</label>
+              </div>
+              <div class="${classMap({hidden: ! this._showMount})}">
+                <h5>Mounted Actions</h5>
+                ${this._unit.isCurrentlyMounted ? html`
+                  <div><small>${this._unit.name} is currently mounted</small></div>
+                  <input type="checkbox" id="unmount"></input>
+                  <label for="unmount">Unmount</label>
+                ` : html`
+                  <div><small>${this._unit.name} is currently unmounted</small></div>
+                  <input type="checkbox" id="mount"></input>
+                  <label for="mount">Mount</label>
+                `}
+              </div>
+              <p class="${classMap({hidden: ! this._showError, error: true})}">You must provide valid values for each required field.</p>
+              <div class="${classMap({hidden: ! this._showActionResult})}">
+                ${repeat(this._actionMessages, message => html`<p>${message}</p>`)}
+                <button @click="${this._progressToNextAction}">Next Action</button>
               </div>
             </div>
-            <div id="resupply" class="${classMap({hidden: ! this._showResupply})}">
-              <h5>Supply</h5>
-              <input type="checkbox" id="resupply-checkbox"></input>
-              <label for="resupply-checkbox">Resupply</label>
+          </section>
+        `:html`
+          <section>
+            <h2>${this._armyTakingAction.armyActionTitle}</h2>
+            <div class="muted centered">Army: ${this._armyTakingAction.name}</div>
+            <div class="muted centered">${prettyDateTime(this._date)}</div>
+            <p>${this._armyTakingAction.armyActionDesc}</p>
+            <div class="centered">
+              <button @click="${this._takeArmyAction}">Next Action</button>
             </div>
-            <div class="${classMap({hidden: ! this._showMount})}">
-              <h5>Mounted Actions</h5>
-              ${this._unit.isCurrentlyMounted ? html`
-                <div><small>${this._unit.name} is currently mounted</small></div>
-                <input type="checkbox" id="unmount"></input>
-                <label for="unmount">Unmount</label>
-              ` : html`
-                <div><small>${this._unit.name} is currently unmounted</small></div>
-                <input type="checkbox" id="mount"></input>
-                <label for="mount">Mount</label>
-              `}
-            </div>
-            <p class="${classMap({hidden: ! this._showError, error: true})}">You must provide valid values for each required field.</p>
-            <div class="${classMap({hidden: ! this._showActionResult})}">
-              ${repeat(this._actionMessages, message => html`<p>${message}</p>`)}
-              <button @click="${this._progressToNextAction}">Next Action</button>
-            </div>
-          </div>
-        </section>
+          </section>
+        `}
       `:html`
         <section>
           <p>No active battle. Go to the war tab and either select a battle or create a new battle.</p>
@@ -252,12 +264,21 @@ class FightView extends connect(store)(PageViewElement) {
     `;
   }
 
+  constructor() {
+    super()
+    this._actionUpdates = [];
+  }
+
   stateChanged(state) {
     this._actionMessages = [];
     if (state.battle.battles.length > state.battle.activeBattle) {
       this._activeBattle = state.battle.battles[state.battle.activeBattle];
       if (this._activeBattle.activeAction.type === ACTION_TYPE_UNIT) {
         this._unit = new Unit(this._activeBattle.units[this._activeBattle.activeAction.index], this._activeBattle.activeAction.index, this._activeBattle);
+        this._armyTakingAction = null;
+      } else if (this._activeBattle.activeAction.type === ACTION_TYPE_ARMY) {
+        this._unit = null;
+        this._armyTakingAction = this._activeBattle.armies[this._activeBattle.activeAction.index];
       }
       this._date = new Date(this._activeBattle.startTime + (this._activeBattle.second * 1000));
       this._hasActiveBattle = true;
@@ -315,9 +336,13 @@ class FightView extends connect(store)(PageViewElement) {
 
   _progressToNextAction() {
     store.dispatch(takeAction(this._actionUpdates));
-    this._actionUpdate = {};
+    this._actionUpdates = [];
     this._showActionResult = false;
     this._actionsDisabled = false;
+  }
+
+  _takeArmyAction() {
+    store.dispatch(takeArmyAction());
   }
 
   _rest(e) {

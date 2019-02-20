@@ -12,6 +12,7 @@ import {
   STRENGTH_MESSAGE_DESCRIPTIVE,
   CASUALTY_MESSAGE_DESCRIPTIVE,
   ACTION_TYPE_UNIT,
+  ACTION_TYPE_ARMY,
   NO_PLAYER_TURNS } from './game.js';
 import { msSinceMidnight, SECONDS_IN_AN_HOUR } from './math-utils.js';
 import { LONGBOW, CANNON_6_POUNDER_CIVIL_WAR, CANNON_12_POUNDER_CIVIL_WAR, } from './weapons.js';
@@ -50,12 +51,14 @@ export default [
         name: "Union",
         armyActionTitle: "Union Army Actions.",
         armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
+        nextAction: 0,
         leaders: [],
       },
       {
         name: "Confederate",
         armyActionTitle: "Confederate Army Actions.",
         armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
+        nextAction: 0,
         leaders: [],
       },
     ],
@@ -325,12 +328,14 @@ export default [
         name: "Union",
         armyActionTitle: "Union Army Actions.",
         armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
+        nextAction: 0,
         leaders: [],
       },
       {
         name: "Confederate",
         armyActionTitle: "Confederate Army Actions.",
         armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
+        nextAction: 0,
         leaders: [],
       },
     ],
@@ -396,6 +401,7 @@ export default [
         name: "Union",
         armyActionTitle: "Union Army Actions.",
         armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
+        nextAction: 0,
         leaders: [
           {
             shortname: "McDowell",
@@ -418,6 +424,7 @@ export default [
         name: "Confederate",
         armyActionTitle: "Confederate Army Actions.",
         armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
+        nextAction: 0,
         leaders: [
           {
             shortname: "Beauregard",

@@ -1,4 +1,5 @@
 export const TAKE_ACTION = 'TAKE_ACTION';
+export const TAKE_ARMY_ACTION = 'TAKE_ARMY_ACTION';
 export const ADD = 'ADD';
 export const REMOVE = 'REMOVE';
 export const CREATE_NEW_BATTLE = 'CREATE_NEW_BATTLE';
@@ -11,6 +12,12 @@ export const takeAction = (updates) => {
     updates
   };
 };
+
+export const takeArmyAction = () => {
+  return {
+    type: TAKE_ARMY_ACTION,
+  };
+}
 
 export const add = (unitTemplate, name) => {
   return {
