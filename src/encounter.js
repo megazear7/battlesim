@@ -133,7 +133,7 @@ export default class Encounter {
   }
 
   timeEngagedMessage(seconds) {
-    return `They were engaged for ${seconds / SECONDS_IN_AN_MINUTE} minutes.`;
+    return `They were engaged for ${Math.ceil(seconds / SECONDS_IN_AN_MINUTE)} minutes.`;
   }
 
   get attackerSlope() {

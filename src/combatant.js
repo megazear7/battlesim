@@ -1,4 +1,4 @@
-import { randomBellMod, modVolume, weightedAverage, SECONDS_IN_AN_HOUR } from './math-utils.js';
+import { randomBellMod, dropOff, dropOffWithBoost, weightedAverage, SECONDS_IN_AN_HOUR } from './math-utils.js';
 import { SLOPE_NONE } from './terrain.js';
 import { statModFor, MAX_STAT, SECONDS_PER_TURN, YARDS_PER_INCH, MAX_EQUIPMENT_WEIGHT } from './game.js';
 import { FOOT_TROOP, MELEE_WEAPON, RANGED_WEAPON } from './units.js';
@@ -107,7 +107,11 @@ export default class Combatant extends ActingUnit {
   }
 
   get modifiedRangedVolume() {
-    return modVolume(this.unit.rangedWeapon.volume, this.unit.rangedWeapon.range, this.encounter.yardsOfSeparation);
+    if (this.unit.rangedWeapon.effectiveAtCloseRange) {
+      return this.unit.rangedWeapon.volume * dropOffWithBoost(this.encounter.yardsOfSeparation / this.unit.rangedWeapon.range, this.unit.rangedWeapon.dropOff);
+    } else {
+      return this.unit.rangedWeapon.volume * dropOff(this.encounter.yardsOfSeparation / this.unit.rangedWeapon.range, this.unit.rangedWeapon.dropOff);
+    }
   }
 
   get volume() {

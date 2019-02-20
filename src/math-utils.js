@@ -14,13 +14,36 @@ export function weightedRandom(bellFactor) {
   return num / max;
 }
 
-/** @function modVolume
- *  This function takes a volumne, a weapon range, and a current distance
- *  and then returns a modified volume. This returned value will be betwee 0
- *  and volume, the closer range gets to distance the quicker volume decreases.
+/**
+ * @function dropOff
+ * @param x must be greater than 0. Values of x over 1 will likely return 0.
+ * @paran s must be between 1 and 25
+ * @returns A value between 0 and 2. When x = 0 the return value is 1.
+            As x approaches 1 the return value appraoches 0. The higher s is
+            the longer the return value will remain close to 1 but the quicker the
+            drop off is near to x = 1.
+ * Desmos.com
+ * y=-x^{\left(4S\right)}+1.25
  */
-export function modVolume(volume, range, distance) {
-  return Math.max(Math.min(volume * (- Math.pow(distance / range, 2) + 1), volume), 0);
+export function dropOff(x, s = 1) {
+  const y = Math.pow(-x, 4*s) + 1.25;
+  return Math.min(Math.max(y, 0), 2);
+}
+
+/**
+ * @function dropOffWithBoost
+ * @param x must be greater than 0. Values of x over 1 will likely return 0.
+ * @paran s must be between 1 and 25
+ * @returns A value between 0 and 2. When x = 0.5 the return value will always be 0.5.
+ *          as x approaches 0 the return value approaches 2, as x approaches 1 the
+ *          return value approaches 0. The higher mod the more the return value stays
+ *          near to 1 at and the steeper the slopes at x = 0 and x = 1.
+ * Desmos.com
+ * y=\left(-\left(2x-1\right)^{\left(2S+1\right)}+1\right)
+ */
+export function dropOffWithBoost(x, s = 1) {
+  const y = Math.pow(-(2*x-1), 2*s+1) + 1;
+  return Math.min(Math.max(y, 0), 2);
 }
 
 // Each argument should either be a number or an object with a "value" and an optional "weight"

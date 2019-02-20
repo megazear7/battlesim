@@ -22,6 +22,7 @@ export const WEAPONS = {
     volume: 1,
     weight: 0,
     range: 0,
+    dropoff: 2,
   },
   [SWORD]: {
     name: 'Sword',
@@ -30,6 +31,7 @@ export const WEAPONS = {
     volume: 2,
     weight: 5,
     range: 0,
+    dropoff: 2,
   },
   [SPEAR]: {
     name: 'Spear',
@@ -38,6 +40,7 @@ export const WEAPONS = {
     volume: 2,
     weight: 5,
     range: 0,
+    dropoff: 2,
   },
   [PIKE]: {
     name: 'Pike',
@@ -46,6 +49,7 @@ export const WEAPONS = {
     volume: 2,
     weight: 7,
     range: 0,
+    dropoff: 2,
   },
   [LONGBOW]: {
     name: 'Longbow',
@@ -54,6 +58,7 @@ export const WEAPONS = {
     volume: 2,
     weight: 3,
     range: 200,
+    dropoff: 10,
   },
   [BAYONETE]: {
     name: 'Bayonete',
@@ -62,6 +67,7 @@ export const WEAPONS = {
     volume: 10,
     weight: 1,
     range: 0,
+    dropoff: 2,
   },
   [BROWN_BESS_SMOOTH_BORE]: { // Standard revolutionary war rifle
     name: 'Brown Bess Smooth Bore',
@@ -70,6 +76,8 @@ export const WEAPONS = {
     volume: 5,
     weight: 3,
     range: 250,
+    dropoff: 2,
+    effectiveAtCloseRange: true,
   },
   [CONFEDERATE_SMOOTH_BORE]: { // Standard union civil war rifle
     name: 'Smoothbore Musket',
@@ -78,6 +86,8 @@ export const WEAPONS = {
     volume: 6,
     weight: 3,
     range: 500,
+    dropoff: 2,
+    effectiveAtCloseRange: true,
   },
   [SPRINGFIELD_RIFLED_MUSKET]: { // Standard union civil war rifle
     name: 'Springfield Rifled Musket',
@@ -86,6 +96,7 @@ export const WEAPONS = {
     volume: 7,
     weight: 3,
     range: 600,
+    dropoff: 2,
   },
   [CANNON_6_POUNDER_CIVIL_WAR]: { // Standard civil war cannon
     name: '6 Pounder',
@@ -94,6 +105,8 @@ export const WEAPONS = {
     volume: 40,
     weight: 10,
     range: 800,
+    dropoff: 3,
+    effectiveAtCloseRange: true,
   },
   [CANNON_12_POUNDER_CIVIL_WAR]: { // Standard civil war cannon
     name: '12 Pounder',
@@ -102,6 +115,8 @@ export const WEAPONS = {
     volume: 60,
     weight: 15,
     range: 1000,
+    dropoff: 3,
+    effectiveAtCloseRange: true,
   },
   [CANNON_24_POUNDER_CIVIL_WAR]: { // Standard civil war cannon
     name: '24 Pounder',
@@ -110,6 +125,7 @@ export const WEAPONS = {
     volume: 85,
     weight: 20,
     range: 1200,
+    dropoff: 3,
   },
   [LEE_ENFIELD_303]: { // Standard ww1 rifle
     name: 'Lee Enfield 303',
@@ -118,5 +134,6 @@ export const WEAPONS = {
     volume: 12,
     weight: 3,
     range: 900,
+    dropoff: 3,
   }
 };
