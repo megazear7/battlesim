@@ -13,13 +13,12 @@ export class ActingUnit {
                   pace = 1,
                   environment,
                   armyLeadership = 0,
-                  status = MORALE_SUCCESS,
-                  slope = SLOPE_NONE }) {
+                  slope = SLOPE_NONE,
+                  status = MORALE_SUCCESS, }) {
     this.unit = unit;
     this.pace = pace;
     this.environment = environment;
     this.armyLeadership = armyLeadership;
-    this.status = status;
     this.slope = slope;
     this.status = this.moraleRoll() > this.unit.morale ? MORALE_FAILURE : this.status = MORALE_SUCCESS;
   }

@@ -66,7 +66,7 @@ export default class Combatant extends ActingUnit {
       this.moraleModRoll,
       this.hardinessMod,
       this.casualties / this.unit.strength,
-      this.unit.strength / this.unit.fullStrength,
+      this.unit.strength / this.unit.fullStrength
     ) * 50;
   }
 
