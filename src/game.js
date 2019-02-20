@@ -18,6 +18,7 @@ export const STAT_PERCENTAGE = 'STAT_PERCENTAGE';
 export const STAT_DESCRIPTION = 'STAT_DESCRIPTION';
 export const STRENGTH_MESSAGE_DESCRIPTIVE = 'STRENGTH_MESSAGE_DESCRIPTIVE';
 export const CASUALTY_MESSAGE_DESCRIPTIVE = 'CASUALTY_MESSAGE_DESCRIPTIVE';
+export const ACTION_TYPE_UNIT = 'ACTION_TYPE_UNIT';
 
 export function statModFor(stat) {
   return weightedRandomTowards(20, 80, stat, 2) / 100;

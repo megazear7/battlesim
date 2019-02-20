@@ -6,10 +6,15 @@ import {
   FRESH_CONFEDERATE_BRIGADE,
   FRESH_CONFEDERATE_CAVALRY_REGIMENT,
   FRESH_CONFEDERATE_ARTILLERY, } from './civil-war-units.js';
+import {
+  STAT_PERCENTAGE,
+  STAT_DESCRIPTION,
+  STRENGTH_MESSAGE_DESCRIPTIVE,
+  CASUALTY_MESSAGE_DESCRIPTIVE,
+  ACTION_TYPE_UNIT } from './game.js';
 import { msSinceMidnight, SECONDS_IN_AN_HOUR } from './math-utils.js';
 import { LONGBOW, CANNON_6_POUNDER_CIVIL_WAR, CANNON_12_POUNDER_CIVIL_WAR, } from './weapons.js';
 import { CIVIL_WAR_TERRAIN } from './terrain.js';
-import { STAT_PERCENTAGE, STAT_DESCRIPTION, STRENGTH_MESSAGE_DESCRIPTIVE, CASUALTY_MESSAGE_DESCRIPTIVE } from './game.js';
 
 export default [
   {
@@ -33,7 +38,10 @@ export default [
     casualtyReporting: CASUALTY_MESSAGE_DESCRIPTIVE,
     statReporting: STAT_DESCRIPTION,
     activeArmy: 0,
-    activeUnit: 0,
+    activeAction: {
+      type: ACTION_TYPE_UNIT,
+      index: 0,
+    },
     turnStarted: 0,
     armies: [
       {
@@ -304,7 +312,10 @@ export default [
     casualtyReporting: CASUALTY_MESSAGE_DESCRIPTIVE,
     statReporting: STAT_DESCRIPTION,
     activeArmy: 0,
-    activeUnit: 0,
+    activeAction: {
+      type: ACTION_TYPE_UNIT,
+      index: 0,
+    },
     turnStarted: 0,
     armies: [
       {
@@ -371,7 +382,10 @@ export default [
     casualtyReporting: 1,
     statReporting: STAT_PERCENTAGE,
     activeArmy: 0,
-    activeUnit: 0,
+    activeAction: {
+      type: ACTION_TYPE_UNIT,
+      index: 0,
+    },
     turnStarted: 0,
     armies: [
       {

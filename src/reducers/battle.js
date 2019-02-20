@@ -1,5 +1,5 @@
 import BATTLE_TEMPLATES from '../battle-templates.js';
-import { SECONDS_PER_PLAYER_TURN, SECONDS_PER_TURN } from '../game.js';
+import { SECONDS_PER_PLAYER_TURN, SECONDS_PER_TURN, ACTION_TYPE_UNIT } from '../game.js';
 import {
   TAKE_ACTION,
   ADD,
@@ -88,7 +88,10 @@ function updateTime(battle) {
   }
 
   battle.second = battle.units[next].nextAction;
-  battle.activeUnit = next;
+  battle.activeAction = {
+    type: ACTION_TYPE_UNIT,
+    index: next,
+  };
 }
 
 function nextUnit(battle) {

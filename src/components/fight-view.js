@@ -13,7 +13,7 @@ import { getRadioVal } from '../dom-utils.js';
 import { SLOPE_UP, SLOPE_DOWN, SLOPE_NONE } from '../terrain.js';
 import Encounter from '../encounter.js';
 import Situation from '../situation.js';
-import { MINUTES_PER_TURN } from '../game.js';
+import { MINUTES_PER_TURN, ACTION_TYPE_UNIT } from '../game.js';
 
 const REST = 'REST';
 const MOVE = 'MOVE';
@@ -256,7 +256,9 @@ class FightView extends connect(store)(PageViewElement) {
     this._actionMessages = [];
     if (state.battle.battles.length > state.battle.activeBattle) {
       this._activeBattle = state.battle.battles[state.battle.activeBattle];
-      this._unit = new Unit(this._activeBattle.units[this._activeBattle.activeUnit], this._activeBattle.activeUnit, this._activeBattle);
+      if (this._activeBattle.activeAction.type === ACTION_TYPE_UNIT) {
+        this._unit = new Unit(this._activeBattle.units[this._activeBattle.activeAction.index], this._activeBattle.activeAction.index, this._activeBattle);
+      }
       this._date = new Date(this._activeBattle.startTime + (this._activeBattle.second * 1000));
       this._hasActiveBattle = true;
     } else {
