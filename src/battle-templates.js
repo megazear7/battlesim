@@ -7,11 +7,9 @@ import {
   FRESH_CONFEDERATE_CAVALRY_REGIMENT,
   FRESH_CONFEDERATE_ARTILLERY, } from './civil-war-units.js';
 import { msSinceMidnight, SECONDS_IN_AN_HOUR } from './math-utils.js';
-import {
-  LONGBOW,
-  CANNON_6_POUNDER_CIVIL_WAR,
-  CANNON_12_POUNDER_CIVIL_WAR, } from './weapons.js';
+import { LONGBOW, CANNON_6_POUNDER_CIVIL_WAR, CANNON_12_POUNDER_CIVIL_WAR, } from './weapons.js';
 import { CIVIL_WAR_TERRAIN } from './terrain.js';
+import { STAT_PERCENTAGE, STAT_DESCRIPTION } from './game.js';
 
 export default [
   {
@@ -33,6 +31,7 @@ export default [
     turnDuration: SECONDS_IN_AN_HOUR, // TODO use this value here throughout instead of the constant.
     roundStrength: 100, // TODO Use this and round the number of reported strength based on this number
     roundCasualties: 10, // TODO Use this and round the number of reported casualties based on this number
+    statReporting: STAT_DESCRIPTION,
     activeArmy: 0,
     activeUnit: 0,
     turnStarted: 0,
@@ -303,6 +302,7 @@ export default [
     turnDuration: SECONDS_IN_AN_HOUR,
     roundStrength: 100, // TODO Use this and round the number of reported
     roundCasualties: 10, // TODO Use this and round the number of reported casualties to this number
+    statReporting: STAT_DESCRIPTION,
     activeArmy: 0,
     activeUnit: 0,
     turnStarted: 0,
@@ -369,6 +369,7 @@ export default [
     turnDuration: SECONDS_IN_AN_HOUR, // TODO use this value here throughout instead of the constant.
     roundStrength: 100, // TODO Use this and round the number of reported strength based on this number
     roundCasualties: 10, // TODO Use this and round the number of reported casualties based on this number
+    statReporting: STAT_PERCENTAGE,
     activeArmy: 0,
     activeUnit: 0,
     turnStarted: 0,

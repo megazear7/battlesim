@@ -8,11 +8,10 @@
 
 ###### TODO
 
-1. Various equations for ranged weapon effectiveness.
+1. Make reporting precision configurable per battle. Exact casualty counts, rounded to the nearest 10th, 100th, etc..., exact energy, leadership, and morale percentages, or generalized descriptions.
 1. Army actions (generals, supply wagons).
 1. Allow units to have a point cost and add a "usesPoints" flag to battles. If this flag is true then the battle page will display the point cost of each unit and the aggregate point cost of the army.
 1. Update the mobile nav to be a bottom based navigation instead of a drawer.
-1. Make reporting precision configurable per battle. Exact casualty counts, rounded to the nearest 10th, 100th, etc..., exact energy, leadership, and morale percentages, or generalized descriptions.
 1. Update the app favicon.
 1. Update civil war army size to be regiment level.
 1. Review the usage of army leadership in resting, movement, and combat. Leadership is now configurable by scenario and army but I don't know how this influences actions.

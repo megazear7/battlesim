@@ -36,9 +36,10 @@ export default class Unit {
                 mountedSpeed,
                 unmountedSpeed,
                 maneuverTime = 100,
-              }, id) {
+              }, id, battle) {
     this.armyIndex = army;
     this.id = id;
+    this.battle = battle;
     this.name = name;
     this.unitType = unitType;
     this.openness = openness;

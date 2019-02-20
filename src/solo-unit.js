@@ -1,5 +1,5 @@
 import { weightedRandomTowards, numberWithCommas, weightedAverage, nearest100, SECONDS_IN_AN_MINUTE } from './math-utils.js';
-import { MAX_STAT, YARDS_PER_INCH, MORALE_SUCCESS } from './game.js';
+import { MAX_STAT, YARDS_PER_INCH, MORALE_SUCCESS, STAT_PERCENTAGE, STAT_DESCRIPTION } from './game.js';
 import ActingUnit from './acting-unit.js';
 
 /** @class Situation
@@ -83,7 +83,10 @@ export default class SoloUnit extends ActingUnit {
   }
 
   get desc() {
-    return `${this.situation.yardsTravelled > 0 ? this.moveDesc : ''} ${this.situation.yardsTravelled > 0 ? this.battlefieldMoveDesc : ''} ${this.energyGain > 0 && this.situation.minutesSpentResting > 0 ? this.energyRecoveredDesc : ''} ${this.moraleGain > 0 && this.situation.minutesSpentResting > 0 ? this.moraleRecoveredDesc : ''}`;
+    return ` ${this.situation.yardsTravelled > 0 ? this.moveDesc : ''}
+             ${this.situation.yardsTravelled > 0 ? this.battlefieldMoveDesc : ''}
+             ${this.energyGain > 0 && this.situation.minutesSpentResting > 0 ? this.energyRecoveredMessage : ''}
+             ${this.moraleGain > 0 && this.situation.minutesSpentResting > 0 ? this.moraleRecoveredMessage : ''}`;
   }
 
   get battlefieldMoveDesc() {
@@ -98,6 +101,12 @@ export default class SoloUnit extends ActingUnit {
     } else {
       return `You move the full ${Math.floor(this.situation.yardsTravelled / YARDS_PER_INCH)} inches `;
     }
+  }
+
+  get energyRecoveredMessage() {
+    return this.unit.battle.statReporting === STAT_PERCENTAGE
+      ? `In ${this.situation.minutesSpentResting} minutes they recovered ${this.energyGain} percent of their energy `
+      : this.energyRecoveredDesc;
   }
 
   get energyRecoveredDesc() {
@@ -120,6 +129,12 @@ export default class SoloUnit extends ActingUnit {
     } else {
       return `The rest was hardly worth it.`;
     }
+  }
+
+  get moraleRecoveredMessage() {
+    return this.unit.battle.statReporting === STAT_PERCENTAGE
+      ? `and ${this.moraleGain} percent of their morale.`
+      : this.moraleRecoveredDesc;
   }
 
   get moraleRecoveredDesc() {

@@ -256,7 +256,7 @@ class FightView extends connect(store)(PageViewElement) {
     this._actionMessages = [];
     if (state.battle.battles.length > state.battle.activeBattle) {
       this._activeBattle = state.battle.battles[state.battle.activeBattle];
-      this._unit = new Unit(this._activeBattle.units[this._activeBattle.activeUnit], this._activeBattle.activeUnit);
+      this._unit = new Unit(this._activeBattle.units[this._activeBattle.activeUnit], this._activeBattle.activeUnit, this._activeBattle);
       this._date = new Date(this._activeBattle.startTime + (this._activeBattle.second * 1000));
       this._hasActiveBattle = true;
     } else {
@@ -370,7 +370,7 @@ class FightView extends connect(store)(PageViewElement) {
       attackerTerrainDefense: 0,
       attackerArmyLeadership: this._activeArmyLeadership,
       attackerEngagedStands: this.engagedAttackers,
-      defender: new Unit(this._activeBattle.units[this.target], this.target),
+      defender: new Unit(this._activeBattle.units[this.target], this.target, this._activeBattle),
       defenderTerrainDefense: 0,
       defenderArmyLeadership: this._defenderArmyLeadership, // TODO Add option for defender leaders
       defenderEngagedStands: this.engagedDefenders,

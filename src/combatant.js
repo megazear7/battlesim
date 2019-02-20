@@ -3,7 +3,7 @@ import { SLOPE_NONE } from './terrain.js';
 import { statModFor, MAX_STAT, SECONDS_PER_TURN, YARDS_PER_INCH, MAX_EQUIPMENT_WEIGHT } from './game.js';
 import { FOOT_TROOP, MELEE_WEAPON, RANGED_WEAPON } from './units.js';
 import { POWER_VS_FOOT, POWER_VS_MOUNTED } from './weapons.js';
-import { MELEE, RANGED } from './game.js';
+import { MELEE, RANGED, STAT_PERCENTAGE, STAT_DESCRIPTION } from './game.js';
 import ActingUnit from './acting-unit.js';
 
 /** @class Situation

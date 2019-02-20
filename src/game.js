@@ -14,6 +14,8 @@ export const MELEE = 'melee';
 export const RANGED = 'ranged';
 export const MORALE_SUCCESS = 'MORALE_SUCCESS';
 export const MORALE_FAILURE = 'MORALE_FAILURE';
+export const STAT_PERCENTAGE = 'STAT_PERCENTAGE';
+export const STAT_DESCRIPTION = 'STAT_DESCRIPTION';
 
 export function statModFor(stat) {
   return weightedRandomTowards(20, 80, stat, 2) / 100;
