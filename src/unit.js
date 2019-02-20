@@ -3,7 +3,7 @@ import { WEAPONS } from './weapons.js';
 import { ARMOR } from './armor.js';
 import { FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP } from './units.js';
 import { upperCaseFirst } from './string-utils.js';
-import { getRandomInt } from './math-utils.js';
+import { getRandomInt, roundToNearest } from './math-utils.js';
 import { STAT_PERCENTAGE, STAT_DESCRIPTION, STRENGTH_MESSAGE_DESCRIPTIVE } from './game.js';
 
 export default class Unit {
@@ -219,7 +219,7 @@ export default class Unit {
   get strengthMessage() {
     return this.battle.strengthReporting === STRENGTH_MESSAGE_DESCRIPTIVE
       ? this.strengthDesc
-      : `They are at ${Math.ceil(this.strengthPercentage)}% strength, having ${Math.ceil(this.strength)} men left.`;
+      : `They are at ${Math.ceil(this.strengthPercentage)}% strength, having ${roundToNearest(this.strength, this.battle.strengthReporting)} men left.`;
   }
 
   get strengthDesc() {

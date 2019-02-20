@@ -8,7 +8,6 @@
 
 ###### TODO
 
-1. Make reporting precision configurable per battle. Exact casualty counts, rounded to the nearest 10th, 100th, etc..., exact energy, leadership, and morale percentages, or generalized descriptions.
 1. Army actions (generals, supply wagons).
 1. Allow units to have a point cost and add a "usesPoints" flag to battles. If this flag is true then the battle page will display the point cost of each unit and the aggregate point cost of the army.
 1. Update the mobile nav to be a bottom based navigation instead of a drawer.

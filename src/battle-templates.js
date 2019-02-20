@@ -367,7 +367,7 @@ export default [
     terrain: [...CIVIL_WAR_TERRAIN],
     deadliness: 1, // TODO Use this in combat calculations.
     turnDuration: SECONDS_IN_AN_HOUR, // TODO use this value here throughout instead of the constant.
-    strengthReporting: 1,
+    strengthReporting: 10,
     casualtyReporting: 1,
     statReporting: STAT_PERCENTAGE,
     activeArmy: 0,

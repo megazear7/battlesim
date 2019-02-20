@@ -1,4 +1,4 @@
-import { randomBellMod, dropOff, dropOffWithBoost, weightedAverage, SECONDS_IN_AN_HOUR } from './math-utils.js';
+import { randomBellMod, dropOff, dropOffWithBoost, weightedAverage, roundToNearest, SECONDS_IN_AN_HOUR } from './math-utils.js';
 import { SLOPE_NONE } from './terrain.js';
 import { statModFor, MAX_STAT, SECONDS_PER_TURN, YARDS_PER_INCH, MAX_EQUIPMENT_WEIGHT } from './game.js';
 import { FOOT_TROOP, MELEE_WEAPON, RANGED_WEAPON } from './units.js';
@@ -215,7 +215,7 @@ export default class Combatant extends ActingUnit {
   get casualtyMessage() {
     return this.unit.battle.casualtyReporting === CASUALTY_MESSAGE_DESCRIPTIVE
       ? this.casualtyDesc
-      : `${this.unit.name} lost ${this.casualties} of their ${this.unit.strength} men during the fight.`;
+      : `${this.unit.name} lost ${roundToNearest(this.casualties, this.unit.battle.casualtyReporting)} of their ${roundToNearest(this.unit.strength, this.unit.battle.strengthReporting)} men during the fight.`;
   }
 
   get casualtyDesc() {

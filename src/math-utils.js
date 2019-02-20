@@ -14,6 +14,10 @@ export function weightedRandom(bellFactor) {
   return num / max;
 }
 
+export function roundToNearest(x, interval) {
+  return Math.ceil(x / interval) * interval;
+}
+
 /**
  * @function dropOff
  * @param x must be greater than 0. Values of x over 1 will likely return 0.
