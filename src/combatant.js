@@ -177,16 +177,12 @@ export default class Combatant extends ActingUnit {
 
   battleReport() {
     if (this.unit.strength - this.casualties <= 0) {
-      return `${this.unit.name} was destroyed.`;
+      return `${this.unit.name} was destroyed. ${this.moraleMessage} ${this.energyMessage}`;
     } else if (this.unit.morale - this.moraleLoss <= 0) {
-      return `${this.unit.name} fled the battlefield.`;
+      return `${this.unit.name} fled the battlefield. ${this.moraleMessage} ${this.energyMessage}`;
     } else {
-      return `${this.casualtyMessage} ${this.leadershipMessage}`
+      return `${this.casualtyMessage} ${this.leadershipMessage} ${this.moraleMessage} ${this.energyMessage}`
     }
-  }
-
-  exactBattleReport() {
-    return `${this.unit.name} -- ${this.status} -- Casualties: ${this.casualties} -- Energy Loss: ${this.energyLoss} -- Morale Loss: ${this.moraleLoss} -- Leadership Loss: ${this.leadershipLoss}`;
   }
 
   updates(delay) {
@@ -244,7 +240,25 @@ export default class Combatant extends ActingUnit {
     }
   }
 
+  get moraleMessage() {
+    return this.unit.battle.statReporting === STAT_PERCENTAGE
+      ? `They lost ${Math.ceil(this.moraleLoss)}% morale.`
+      : ``;
+  }
+
+  get energyMessage() {
+    return this.unit.battle.statReporting === STAT_PERCENTAGE
+      ? `They lost ${Math.ceil(this.energyLoss)}% energy.`
+      : ``;
+  }
+
   get leadershipMessage() {
+    return this.unit.battle.statReporting === STAT_PERCENTAGE && this.leadershipLoss > 0
+      ? `They lost a leaders during the fight and have suffered a ${this.leadershipLoss}% leadership penalty.`
+      : this.leadershipDescription;
+  }
+
+  get leadershipDescription() {
     if (this.leadershipLoss > this.unit.leadership) {
       return `${this.unit.name} lost all of their leaders during the fight. They have no one to command them.`;
     } else if (this.leadershipLoss > this.unit.leadership * 0.5) {
