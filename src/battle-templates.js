@@ -9,7 +9,7 @@ import {
 import { msSinceMidnight, SECONDS_IN_AN_HOUR } from './math-utils.js';
 import { LONGBOW, CANNON_6_POUNDER_CIVIL_WAR, CANNON_12_POUNDER_CIVIL_WAR, } from './weapons.js';
 import { CIVIL_WAR_TERRAIN } from './terrain.js';
-import { STAT_PERCENTAGE, STAT_DESCRIPTION } from './game.js';
+import { STAT_PERCENTAGE, STAT_DESCRIPTION, STRENGTH_MESSAGE_DESCRIPTIVE, CASUALTY_MESSAGE_DESCRIPTIVE } from './game.js';
 
 export default [
   {
@@ -29,8 +29,8 @@ export default [
     terrain: [...CIVIL_WAR_TERRAIN],
     deadliness: 1, // TODO Use this in combat calculations.
     turnDuration: SECONDS_IN_AN_HOUR, // TODO use this value here throughout instead of the constant.
-    roundStrength: 100, // TODO Use this and round the number of reported strength based on this number
-    roundCasualties: 10, // TODO Use this and round the number of reported casualties based on this number
+    strengthReporting: STRENGTH_MESSAGE_DESCRIPTIVE,
+    casualtyReporting: CASUALTY_MESSAGE_DESCRIPTIVE,
     statReporting: STAT_DESCRIPTION,
     activeArmy: 0,
     activeUnit: 0,
@@ -300,8 +300,8 @@ export default [
     terrain: [...CIVIL_WAR_TERRAIN],
     deadliness: 1,
     turnDuration: SECONDS_IN_AN_HOUR,
-    roundStrength: 100, // TODO Use this and round the number of reported
-    roundCasualties: 10, // TODO Use this and round the number of reported casualties to this number
+    strengthReporting: STRENGTH_MESSAGE_DESCRIPTIVE,
+    casualtyReporting: CASUALTY_MESSAGE_DESCRIPTIVE,
     statReporting: STAT_DESCRIPTION,
     activeArmy: 0,
     activeUnit: 0,
@@ -367,8 +367,8 @@ export default [
     terrain: [...CIVIL_WAR_TERRAIN],
     deadliness: 1, // TODO Use this in combat calculations.
     turnDuration: SECONDS_IN_AN_HOUR, // TODO use this value here throughout instead of the constant.
-    roundStrength: 100, // TODO Use this and round the number of reported strength based on this number
-    roundCasualties: 10, // TODO Use this and round the number of reported casualties based on this number
+    strengthReporting: STRENGTH_MESSAGE_DESCRIPTIVE,
+    casualtyReporting: 1,
     statReporting: STAT_PERCENTAGE,
     activeArmy: 0,
     activeUnit: 0,
