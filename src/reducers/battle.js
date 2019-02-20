@@ -1,5 +1,8 @@
 import BATTLE_TEMPLATES from '../battle-templates.js';
-import { SECONDS_PER_PLAYER_TURN, SECONDS_PER_TURN, ACTION_TYPE_UNIT } from '../game.js';
+import {
+  SECONDS_PER_TURN,
+  ACTION_TYPE_UNIT,
+  NO_PLAYER_TURNS } from '../game.js';
 import {
   TAKE_ACTION,
   ADD,
@@ -76,7 +79,7 @@ const battle = (state = initialState, action) => {
 function updateTime(battle) {
   let next = nextUnit(battle);
 
-  if (battle.units[next].nextAction > battle.turnStarted + SECONDS_PER_PLAYER_TURN) {
+  if (battle.playerTurnDuration !== NO_PLAYER_TURNS && battle.units[next].nextAction > battle.turnStarted + battle.playerTurnDuration) {
     if (battle.activeArmy === 0) {
       battle.activeArmy = 1;
     } else {
@@ -98,7 +101,7 @@ function nextUnit(battle) {
   var minTime = Number.MAX_SAFE_INTEGER;
   var next;
   battle.units.forEach((unit, index) => {
-    if (unit.army === battle.activeArmy &&
+    if ((battle.playerTurnDuration === NO_PLAYER_TURNS || unit.army === battle.activeArmy) &&
         unit.nextAction < minTime &&
         unit.strength > 0 &&
         unit.morale > 0) {

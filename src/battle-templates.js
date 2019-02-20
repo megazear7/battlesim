@@ -11,7 +11,8 @@ import {
   STAT_DESCRIPTION,
   STRENGTH_MESSAGE_DESCRIPTIVE,
   CASUALTY_MESSAGE_DESCRIPTIVE,
-  ACTION_TYPE_UNIT } from './game.js';
+  ACTION_TYPE_UNIT,
+  NO_PLAYER_TURNS } from './game.js';
 import { msSinceMidnight, SECONDS_IN_AN_HOUR } from './math-utils.js';
 import { LONGBOW, CANNON_6_POUNDER_CIVIL_WAR, CANNON_12_POUNDER_CIVIL_WAR, } from './weapons.js';
 import { CIVIL_WAR_TERRAIN } from './terrain.js';
@@ -34,6 +35,7 @@ export default [
     terrain: [...CIVIL_WAR_TERRAIN],
     deadliness: 1, // TODO Use this in combat calculations.
     turnDuration: SECONDS_IN_AN_HOUR, // TODO use this value here throughout instead of the constant.
+    playerTurnDuration: NO_PLAYER_TURNS,
     strengthReporting: STRENGTH_MESSAGE_DESCRIPTIVE,
     casualtyReporting: CASUALTY_MESSAGE_DESCRIPTIVE,
     statReporting: STAT_DESCRIPTION,
@@ -308,6 +310,7 @@ export default [
     terrain: [...CIVIL_WAR_TERRAIN],
     deadliness: 1,
     turnDuration: SECONDS_IN_AN_HOUR,
+    playerTurnDuration: NO_PLAYER_TURNS,
     strengthReporting: STRENGTH_MESSAGE_DESCRIPTIVE,
     casualtyReporting: CASUALTY_MESSAGE_DESCRIPTIVE,
     statReporting: STAT_DESCRIPTION,
@@ -378,6 +381,7 @@ export default [
     terrain: [...CIVIL_WAR_TERRAIN],
     deadliness: 1, // TODO Use this in combat calculations.
     turnDuration: SECONDS_IN_AN_HOUR, // TODO use this value here throughout instead of the constant.
+    playerTurnDuration: NO_PLAYER_TURNS,
     strengthReporting: 10,
     casualtyReporting: 1,
     statReporting: STAT_PERCENTAGE,
