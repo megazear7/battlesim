@@ -10,7 +10,6 @@
 
 1. Action log of every action and provide an easy way to review the full action log of the active battle. Maybe this should be at a hidden url?
 1. Review the usage of army leadership in resting, movement, and combat. Leadership is now configurable by scenario and army but I don't know how this influences actions.
-1. Update the mobile nav to be a bottom based navigation instead of a drawer.
 1. Update the app favicon.
 1. Update civil war army size to be regiment level.
 1. Update civil war ruleset based on our practice games.

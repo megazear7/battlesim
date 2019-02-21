@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import { setPassiveTouchGestures } from '@polymer/polymer/lib/utils/settings.js';
+import { classMap } from 'lit-html/directives/class-map.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { installMediaQueryWatcher } from 'pwa-helpers/media-query.js';
 import { installOfflineWatcher } from 'pwa-helpers/network.js';
@@ -25,7 +26,8 @@ class BattleSim extends connect(store)(LitElement) {
       _page: { type: String },
       _drawerOpened: { type: Boolean },
       _snackbarOpened: { type: Boolean },
-      _offline: { type: Boolean }
+      _offline: { type: Boolean },
+      _showMobileNav: { type: Boolean },
     };
   }
 
@@ -157,7 +159,8 @@ class BattleSim extends connect(store)(LitElement) {
 
         nav {
           position: fixed;
-          bottom: 0;
+          bottom: -4rem;
+          transition: bottom 250ms ease-in-out;
           left: 0;
           background: rgba(255,255,255,0.75);
           z-index: 1;
@@ -178,9 +181,11 @@ class BattleSim extends connect(store)(LitElement) {
         }
 
         nav > a[selected] {
-          background: rgba(233,30,99, 1);
-          color: white;
+          color: var(--app-primary-color);
+        }
 
+        nav.open-mobile-nav {
+          bottom: 0;
         }
 
         /* Wide layout: when the viewport width is bigger than 460px, layout
@@ -227,7 +232,7 @@ class BattleSim extends connect(store)(LitElement) {
         </nav>
       </app-header>
 
-      <nav class="mobile-nav">
+      <nav class="${classMap({'mobile-nav': true, 'open-mobile-nav': this._showMobileNav})}">
         <a ?selected="${this._page === 'war'}" href="/war">War</a>
         <a ?selected="${this._page === 'battle'}" href="/battle">Battle</a>
         <a ?selected="${this._page === 'fight'}" href="/fight">Fight</a>
@@ -258,6 +263,15 @@ class BattleSim extends connect(store)(LitElement) {
     // To force all event listeners for gestures to be passive.
     // See https://www.polymer-project.org/3.0/docs/devguide/settings#setting-passive-touch-gestures
     setPassiveTouchGestures(true);
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    let lastScrollPos = 0;
+    window.addEventListener('scroll', e => {
+      this._showMobileNav = lastScrollPos > window.scrollY;
+      lastScrollPos = window.scrollY;
+    });
   }
 
   firstUpdated() {
