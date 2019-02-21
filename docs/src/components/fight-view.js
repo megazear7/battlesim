@@ -877,6 +877,9 @@ class FightView extends connect(store)(PageViewElement) {
       _showHill: {
         type: Boolean
       },
+      _showPace: {
+        type: Boolean
+      },
       _showLeader: {
         type: Boolean
       },
@@ -1107,7 +1110,7 @@ class FightView extends connect(store)(PageViewElement) {
       hidden: this.showPace
     })}">
                   <radiogroup id="pace" class="${classMap({
-      hidden: !this._showHill
+      hidden: !this._showPace
     })}">
                     <h5>Pace</h5>
                     <input type="radio" name="pace" id="pace-fast" value="1">
@@ -1276,6 +1279,7 @@ class FightView extends connect(store)(PageViewElement) {
 
       this._actionMessages = actionResult.messages;
       this._actionUpdates = actionResult.updates;
+      this._savedEnvironment = this._environment;
 
       this._hideInputs();
 
@@ -1296,7 +1300,7 @@ class FightView extends connect(store)(PageViewElement) {
   }
 
   _progressToNextAction() {
-    store.dispatch(takeAction(this._actionUpdates, this._actionMessages));
+    store.dispatch(takeAction(this._actionUpdates, this._actionMessages, this._savedEnvironment));
 
     this._resetAction();
   }
@@ -1330,6 +1334,7 @@ class FightView extends connect(store)(PageViewElement) {
     this._selectedAction = MOVE;
     this._showDistance = true;
     this._showHill = true;
+    this._showPace = true;
     this._showLeader = true;
     this._showTerrain = true;
     this._showTakeAction = true;
@@ -1361,21 +1366,17 @@ class FightView extends connect(store)(PageViewElement) {
   }
 
   _createEncounter() {
-    let defenderTerrain = this._selectedAction === CHARGE ? this._selectedTerrain(TERRAIN_TYPE_DEFENDER) : this._selectedTerrain(TERRAIN_TYPE_RANGED_DEFENDER);
     return new Encounter({
       attacker: this._unit,
-      attackerTerrainDefense: 0,
       attackerArmyLeadership: this._activeArmyLeadership,
       attackerEngagedStands: this.engagedAttackers,
       defender: new Unit(this._activeBattle.units[this.target], this.target, this._activeBattle),
-      defenderTerrainDefense: 0,
       defenderArmyLeadership: this._defenderArmyLeadership,
-      // TODO Add option for defender leaders
       defenderEngagedStands: this.engagedDefenders,
       melee: this._selectedAction === CHARGE,
       separation: this.separation,
       attackerChargeTerrain: this._selectedTerrain(TERRAIN_TYPE_MOVEMENT),
-      defenderTerrain: defenderTerrain,
+      defenderTerrain: this._defenderTerrain,
       meleeCombatTerrain: this._selectedTerrain(TERRAIN_TYPE_MELEE_COMBAT),
       slope: this.slope
     });
@@ -1400,6 +1401,7 @@ class FightView extends connect(store)(PageViewElement) {
     this._showEngagedAttackers = false;
     this._showEngagedDefenders = false;
     this._showHill = false;
+    this._showPace = false;
     this._showLeader = false;
     this._showTerrain = false;
     this._showResupply = false;
@@ -1561,6 +1563,32 @@ class FightView extends connect(store)(PageViewElement) {
     }];
   }
 
+  get _defenderTerrain() {
+    return this._selectedAction === CHARGE ? this._selectedTerrain(TERRAIN_TYPE_DEFENDER) : this._selectedTerrain(TERRAIN_TYPE_RANGED_DEFENDER);
+  }
+
+  get _environment() {
+    return {
+      resupply: this.resupply,
+      mount: this.mount,
+      unmount: this.unmount,
+      defenderArmyLeadership: this._defenderArmyLeadership,
+      activeArmyLeadership: this._activeArmyLeadership,
+      pace: this.pace,
+      slope: this.slope,
+      engagedDefenders: this.engagedDefenders,
+      engagedAttackers: this.engagedAttackers,
+      separation: this.separation,
+      restTime: this.restTime,
+      distance: this.distance,
+      selectedAction: this._selectedAction,
+      target: this.target,
+      defenderTerrain: this._defenderTerrain,
+      attackerChargeTerrain: this._selectedTerrain(TERRAIN_TYPE_MOVEMENT),
+      meleeCombatTerrain: this._selectedTerrain(TERRAIN_TYPE_MELEE_COMBAT)
+    };
+  }
+
   get resupply() {
     return this.get('resupply').querySelector('input').checked;
   }
@@ -1581,10 +1609,16 @@ class FightView extends connect(store)(PageViewElement) {
 
 window.customElements.define('fight-view', FightView);
 var fightView = {
+  REST: REST,
+  MOVE: MOVE,
+  CHARGE: CHARGE,
+  FIRE: FIRE,
+  ACTIONS: ACTIONS,
+  NO_ACTION: NO_ACTION,
   TERRAIN_TYPE_MOVEMENT: TERRAIN_TYPE_MOVEMENT,
   TERRAIN_TYPE_DEFENDER: TERRAIN_TYPE_DEFENDER,
   TERRAIN_TYPE_MELEE_COMBAT: TERRAIN_TYPE_MELEE_COMBAT,
   TERRAIN_TYPE_RANGED_DEFENDER: TERRAIN_TYPE_RANGED_DEFENDER,
   TERRAIN_TYPES: TERRAIN_TYPES
 };
-export { actingUnit as $actingUnit, combatant as $combatant, fightView as $fightView, domUtils as $domUtils, encounter as $encounter, situation as $situation, soloUnit as $soloUnit, ActingUnit as $actingUnitDefault, Combatant as $combatantDefault, TERRAIN_TYPE_MOVEMENT, TERRAIN_TYPE_DEFENDER, TERRAIN_TYPE_MELEE_COMBAT, TERRAIN_TYPE_RANGED_DEFENDER, TERRAIN_TYPES, getRadioVal, Encounter as $encounterDefault, Situation as $situationDefault, SoloUnit as $soloUnitDefault };
+export { actingUnit as $actingUnit, combatant as $combatant, fightView as $fightView, domUtils as $domUtils, encounter as $encounter, situation as $situation, soloUnit as $soloUnit, ActingUnit as $actingUnitDefault, Combatant as $combatantDefault, REST, MOVE, CHARGE, FIRE, ACTIONS, NO_ACTION, TERRAIN_TYPE_MOVEMENT, TERRAIN_TYPE_DEFENDER, TERRAIN_TYPE_MELEE_COMBAT, TERRAIN_TYPE_RANGED_DEFENDER, TERRAIN_TYPES, getRadioVal, Encounter as $encounterDefault, Situation as $situationDefault, SoloUnit as $soloUnitDefault };

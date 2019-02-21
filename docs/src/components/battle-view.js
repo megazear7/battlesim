@@ -1,4 +1,5 @@
 import { html, css, repeat, PageViewElement, add, remove, connect, store, SharedStyles, ButtonSharedStyles, $unitDefault as Unit, prettyTime } from './battle-sim.js';
+import { MOVE, REST } from './fight-view.js';
 
 class BattleView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -97,6 +98,24 @@ class BattleView extends connect(store)(PageViewElement) {
           <hr>
           ${repeat(this._activeBattle.actionLog, log => html`
             <p><small>${prettyTime(new Date(this._activeBattle.startTime + log.time * 1000))}</small></p>
+            <p>
+              ${log.environment.selectedAction ? html`The selected action was ${log.environment.selectedAction}. ` : ''}
+              ${log.environment.resupply ? html`They were resupplying. ` : ''}
+              ${log.environment.mount ? html`They were mounting. ` : ''}
+              ${log.environment.unmount ? html`They were unmounting. ` : ''}
+              ${log.environment.defenderArmyLeadership > 0 ? html`Defender army leadership was ${log.environment.defenderArmyLeadership}. ` : ''}
+              ${log.environment.activeArmyLeadership > 0 ? html`Attacker army leadership was ${log.environment.activeArmyLeadership}. ` : ''}
+              ${log.environment.pace > 0 && log.environment.selectedAction === MOVE ? html`Pace was ${Math.ceil(log.environment.pace * 100)}%. ` : ''}
+              ${log.environment.slope > 0 ? html`Slope was ${log.environment.slope}. ` : ''}
+              ${log.environment.engagedDefenders > 0 ? html`${log.environment.engagedDefenders} defending stands were engaged. ` : ''}
+              ${log.environment.engagedAttackers > 0 ? html`${log.environment.engagedAttackers} defending stands were engaged. ` : ''}
+              ${log.environment.separation > 0 ? html`Distance to defending stand was ${log.environment.separation}. ` : ''}
+              ${log.environment.restTime && log.environment.selectedAction === REST > 0 ? html`${log.environment.restTime} minutes spent resting. ` : ''}
+              ${log.environment.distance > 0 ? html`${log.environment.distance} inches was set as the distance. ` : ''}
+              ${log.environment.defenderTerrain > 0 ? html`The defender recieved the benefit of the ${log.environment.defenderTerrain}. ` : ''}
+              ${log.environment.attackerChargeTerrain > 0 ? html`The attacker had to charge through ${log.environment.attackerChargeTerrain}. ` : ''}
+              ${log.environment.meleeCombatTerrain > 0 ? html`The combat was fought in ${log.environment.meleeCombatTerrain}. ` : ''}
+            </p>
             <p>${log.message}</p>
             <hr>
           `)}
