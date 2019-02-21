@@ -1,4 +1,4 @@
-import { html, css, repeat, PageViewElement, add, remove, connect, store, SharedStyles, ButtonSharedStyles, $unitDefault as Unit } from './battle-sim.js';
+import { html, css, repeat, PageViewElement, add, remove, connect, store, SharedStyles, ButtonSharedStyles, $unitDefault as Unit, prettyTime } from './battle-sim.js';
 
 class BattleView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -17,6 +17,9 @@ class BattleView extends connect(store)(PageViewElement) {
       },
       _hasActiveBattle: {
         type: Boolean
+      },
+      _activeBattle: {
+        type: Object
       }
     };
   }
@@ -88,6 +91,15 @@ class BattleView extends connect(store)(PageViewElement) {
             <p class="error hidden">You must select a type of unit to add.</p>
             <p id="added-message">Unit Added!</p>
           </div>
+        </section>
+        <section>
+          <h3>Battle Log</h3>
+          <hr>
+          ${repeat(this._activeBattle.actionLog, log => html`
+            <p><small>${prettyTime(new Date(this._activeBattle.startTime + log.time * 1000))}</small></p>
+            <p>${log.message}</p>
+            <hr>
+          `)}
         </section>
       ` : html`
         <section>
@@ -192,6 +204,7 @@ class BattleView extends connect(store)(PageViewElement) {
       this._unitTemplates = this._allUnitTemplates.filter(({
         unit
       }) => unit.army === this.army);
+      this._activeBattle = activeBattle;
       this._hasActiveBattle = true;
     } else {
       this._hasActiveBattle = false;

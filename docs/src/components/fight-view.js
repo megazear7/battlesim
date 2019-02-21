@@ -244,9 +244,9 @@ class Combatant extends ActingUnit {
 
   battleReport() {
     if (this.unit.strength - this.casualties <= 0) {
-      return `${this.unit.name} was destroyed. ${this.moraleMessage} ${this.energyMessage}`;
+      return `They were destroyed. ${this.moraleMessage} ${this.energyMessage}`;
     } else if (this.unit.morale - this.moraleLoss <= 0) {
-      return `${this.unit.name} fled the battlefield. ${this.moraleMessage} ${this.energyMessage}`;
+      return `They fled the battlefield. ${this.moraleMessage} ${this.energyMessage}`;
     } else {
       return `${this.casualtyMessage} ${this.leadershipMessage} ${this.moraleMessage} ${this.energyMessage}`;
     }
@@ -284,7 +284,7 @@ class Combatant extends ActingUnit {
 
   get casualtyDesc() {
     if (this.casualties > this.unit.strength) {
-      return `${this.unit.name} was totally destroyed.`;
+      return `${this.unit.name} lost all of their men.`;
     } else if (this.casualties > this.unit.strength * 0.75) {
       return `${this.unit.name} sustained terrible casualties. Almost the whole unit was destroyed.`;
     } else if (this.casualties > this.unit.strength * 0.50) {
@@ -311,26 +311,26 @@ class Combatant extends ActingUnit {
   }
 
   get moraleMessage() {
-    return this.unit.battle.statReporting === STAT_PERCENTAGE ? `They lost ${Math.ceil(this.moraleLoss)}% morale.` : ``;
+    return this.unit.battle.statReporting === STAT_PERCENTAGE ? `They lost ${Math.ceil(this.moraleLoss)}% morale` : ``;
   }
 
   get energyMessage() {
-    return this.unit.battle.statReporting === STAT_PERCENTAGE ? `They lost ${Math.ceil(this.energyLoss)}% energy.` : ``;
+    return this.unit.battle.statReporting === STAT_PERCENTAGE ? ` and ${Math.ceil(this.energyLoss)}% energy.` : ``;
   }
 
   get leadershipMessage() {
-    return this.unit.battle.statReporting === STAT_PERCENTAGE && this.leadershipLoss > 0 ? `They lost a leaders during the fight and have suffered a ${this.leadershipLoss}% leadership penalty.` : this.leadershipDescription;
+    return this.unit.battle.statReporting === STAT_PERCENTAGE && this.leadershipLoss > 0 ? `They lost a leader during the fight and have suffered a ${this.leadershipLoss}% leadership penalty.` : this.leadershipDescription;
   }
 
   get leadershipDescription() {
     if (this.leadershipLoss > this.unit.leadership) {
-      return `${this.unit.name} lost all of their leaders during the fight. They have no one to command them.`;
+      return `They lost all of their leaders during the fight. They have no one to command them.`;
     } else if (this.leadershipLoss > this.unit.leadership * 0.5) {
-      return `${this.unit.name} lost their captain during the fight.`;
+      return `They lost their captain during the fight.`;
     } else if (this.leadershipLoss > this.unit.leadership * 0.25) {
-      return `${this.unit.name} lost a lieutenant during the fight.`;
+      return `They lost a lieutenant during the fight.`;
     } else if (this.leadershipLoss > 0) {
-      return `${this.unit.name} lost some of their sergeant's during the fight.`;
+      return `They lost some of their sergeant's during the fight.`;
     } else {
       return ``;
     }
@@ -471,10 +471,8 @@ class Encounter {
 
   fight() {
     const actionMessage = this.attackerReachedDefender ? this.attackerEngages() : ``;
-    const fullMessage = this.melee ? `${actionMessage} ${this.defender.battleReport()} ${this.attacker.battleReport()}` : `${actionMessage} ${this.defender.battleReport()}`;
     return {
-      messages: [//`Attacker casualties: ${this.attacker.casualties}. Attacker energy loss: ${this.attacker.energyLoss}. Attacker morale loss: ${this.attacker.moraleLoss}. Attacker leadership loss: ${this.attacker.leadershipLoss}. Defender casualties: ${this.defender.casualties}. Defender energy loss: ${this.defender.energyLoss}. Defender morale loss: ${this.defender.moraleLoss}. Defender leadership loss: ${this.defender.leadershipLoss}.`,
-      fullMessage],
+      messages: [actionMessage, this.defender.battleReport(), this.melee ? this.attacker.battleReport() : ''],
       updates: [this.defender.updates(0), this.attacker.updates(SECONDS_PER_TURN + randomMinutesBetween(5, 10))]
     };
   }
@@ -693,11 +691,11 @@ class SoloUnit extends ActingUnit {
 
   get moveDesc() {
     if (this.situation.distance === -1) {
-      return `You move ${Math.floor(this.situation.yardsTravelled / YARDS_PER_INCH)} inches `;
+      return `${this.unit.name} moves ${Math.floor(this.situation.yardsTravelled / YARDS_PER_INCH)} inches `;
     } else if (this.situation.yardsTravelled < this.situation.distanceInYards) {
-      return `You could only move ${Math.floor(this.situation.yardsTravelled / YARDS_PER_INCH)} inches `;
+      return `${this.unit.name} could only move ${Math.floor(this.situation.yardsTravelled / YARDS_PER_INCH)} inches `;
     } else {
-      return `You move the full ${Math.floor(this.situation.yardsTravelled / YARDS_PER_INCH)} inches `;
+      return `${this.unit.name} moves the full ${Math.floor(this.situation.yardsTravelled / YARDS_PER_INCH)} inches `;
     }
   }
 
@@ -707,37 +705,37 @@ class SoloUnit extends ActingUnit {
 
   get energyRecoveredDesc() {
     if (this.energyGain > 80) {
-      return `In ${this.situation.minutesSpentResting} minutes they got back all of there energy.`;
+      return `and they got back all of there energy.`;
     } else if (this.energyGain > 60) {
-      return `In ${this.situation.minutesSpentResting} minutes they recovered almost all of their strength.`;
+      return `and they recovered almost all of their strength.`;
     } else if (this.energyGain > 40) {
-      return `In ${this.situation.minutesSpentResting} minutes they made a great recovery. The rest was very helpful.`;
+      return `and they made a great recovery. The rest was very helpful.`;
     } else if (this.energyGain > 20) {
-      return `In ${this.situation.minutesSpentResting} minutes they recovered a lot of their strength`;
+      return `and they recovered a lot of their strength`;
     } else if (this.energyGain > 15) {
-      return `In ${this.situation.minutesSpentResting} minutes they recovered much of their strength`;
+      return `and they recovered much of their strength`;
     } else if (this.energyGain > 9) {
-      return `In ${this.situation.minutesSpentResting} minutes they recovered some of their strength`;
+      return `and they recovered some of their strength`;
     } else if (this.energyGain > 6) {
-      return `In ${this.situation.minutesSpentResting} minutes they recovered a bit of their strength.`;
+      return `and they recovered a bit of their strength.`;
     } else if (this.energyGain > 3) {
-      return `In ${this.situation.minutesSpentResting} minutes they recovered a bit of their strength.`;
+      return `and they recovered a bit of their strength.`;
     } else {
-      return `The rest was hardly worth it.`;
+      return `but the rest was hardly worth it.`;
     }
   }
 
   get moraleRecoveredMessage() {
-    return this.unit.battle.statReporting === STAT_PERCENTAGE ? `In ${this.situation.minutesSpentResting} minutes they recovered ${this.moraleGain}% of their morale ` : this.moraleRecoveredDesc;
+    return this.unit.battle.statReporting === STAT_PERCENTAGE ? `In ${this.situation.minutesSpentResting} minutes ${this.unit.name} recovered ${this.moraleGain}% of their morale ` : this.moraleRecoveredDesc;
   }
 
   get moraleRecoveredDesc() {
     if (this.moraleGain > 20) {
-      return `They have been greatly encouraged.`;
+      return `${this.unit.name} have been greatly encouraged`;
     } else if (this.moraleGain > 10) {
-      return `They have been encouraged.`;
+      return `${this.unit.name} have been encouraged`;
     } else {
-      return `They seem to be more willing to fight than before.`;
+      return `${this.unit.name} seem to be more willing to fight than before`;
     }
   }
 
@@ -973,6 +971,15 @@ class FightView extends connect(store)(PageViewElement) {
         }
         .unit-actions button.selected {
           background-color: var(--app-primary-color);
+        }
+        .unit-actions button:disabled {
+          border-color: grey;
+        }
+        .unit-actions button.selected {
+          color: white;
+          border-width: 3px 1.5px;
+          border-style: solid;
+          border-color: var(--app-primary-color);
         }
         .tooltip {
           position: relative;
@@ -1289,7 +1296,7 @@ class FightView extends connect(store)(PageViewElement) {
   }
 
   _progressToNextAction() {
-    store.dispatch(takeAction(this._actionUpdates));
+    store.dispatch(takeAction(this._actionUpdates, this._actionMessages));
 
     this._resetAction();
   }
