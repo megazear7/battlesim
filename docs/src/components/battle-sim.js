@@ -8970,7 +8970,7 @@ store.addReducers({app:app$1,battle:battle$1});var store$1={store:store};const m
         }
       `];}render(){return html$1`
       <slot></slot>
-    `;}}window.customElements.define('snack-bar',SnackBar);class BattleSim extends connect(store)(LitElement){static get properties(){return{appTitle:{type:String},_title:{type:String},_page:{type:String},_drawerOpened:{type:Boolean},_snackbarOpened:{type:Boolean},_offline:{type:Boolean}};}static get styles(){return[css`
+    `;}}window.customElements.define('snack-bar',SnackBar);class BattleSim extends connect(store)(LitElement){static get properties(){return{appTitle:{type:String},_title:{type:String},_page:{type:String},_drawerOpened:{type:Boolean},_snackbarOpened:{type:Boolean},_offline:{type:Boolean},_showMobileNav:{type:Boolean}};}static get styles(){return[css`
         :host {
           display: block;
 
@@ -9096,7 +9096,8 @@ store.addReducers({app:app$1,battle:battle$1});var store$1={store:store};const m
 
         nav {
           position: fixed;
-          bottom: 0;
+          bottom: -4rem;
+          transition: bottom 250ms ease-in-out;
           left: 0;
           background: rgba(255,255,255,0.75);
           z-index: 1;
@@ -9117,9 +9118,11 @@ store.addReducers({app:app$1,battle:battle$1});var store$1={store:store};const m
         }
 
         nav > a[selected] {
-          background: rgba(233,30,99, 1);
-          color: white;
+          color: var(--app-primary-color);
+        }
 
+        nav.open-mobile-nav {
+          bottom: 0;
         }
 
         /* Wide layout: when the viewport width is bigger than 460px, layout
@@ -9161,7 +9164,7 @@ store.addReducers({app:app$1,battle:battle$1});var store$1={store:store};const m
         </nav>
       </app-header>
 
-      <nav class="mobile-nav">
+      <nav class="${classMap({'mobile-nav':true,'open-mobile-nav':this._showMobileNav})}">
         <a ?selected="${this._page==='war'}" href="/war">War</a>
         <a ?selected="${this._page==='battle'}" href="/battle">Battle</a>
         <a ?selected="${this._page==='fight'}" href="/fight">Fight</a>
@@ -9186,7 +9189,7 @@ store.addReducers({app:app$1,battle:battle$1});var store$1={store:store};const m
       </snack-bar>
     `;}constructor(){super();// To force all event listeners for gestures to be passive.
 // See https://www.polymer-project.org/3.0/docs/devguide/settings#setting-passive-touch-gestures
-setPassiveTouchGestures(true);}firstUpdated(){installRouter(location=>store.dispatch(navigate(decodeURIComponent(location.pathname))));installOfflineWatcher(offline=>store.dispatch(updateOffline(offline)));installMediaQueryWatcher(`(min-width: 460px)`,()=>store.dispatch(updateDrawerState(false)));}updated(changedProps){if(changedProps.has('_page')){const pageTitle=this.appTitle+' - '+this._page;updateMetadata({title:pageTitle,description:pageTitle// This object also takes an image property, that points to an img src.
+setPassiveTouchGestures(true);}connectedCallback(){super.connectedCallback();let lastScrollPos=0;window.addEventListener('scroll',e=>{this._showMobileNav=lastScrollPos>window.scrollY;lastScrollPos=window.scrollY;});}firstUpdated(){installRouter(location=>store.dispatch(navigate(decodeURIComponent(location.pathname))));installOfflineWatcher(offline=>store.dispatch(updateOffline(offline)));installMediaQueryWatcher(`(min-width: 460px)`,()=>store.dispatch(updateDrawerState(false)));}updated(changedProps){if(changedProps.has('_page')){const pageTitle=this.appTitle+' - '+this._page;updateMetadata({title:pageTitle,description:pageTitle// This object also takes an image property, that points to an img src.
 });}}_menuButtonClicked(){store.dispatch(updateDrawerState(true));}_drawerOpenedChanged(e){store.dispatch(updateDrawerState(e.target.opened));}stateChanged(state){if(state.battle.battles.length>state.battle.activeBattle){this._title=state.battle.battles[state.battle.activeBattle].name;}else{this._title=this.appTitle;}this._page=state.app.page;this._offline=state.app.offline;this._snackbarOpened=state.app.snackbarOpened;this._drawerOpened=state.app.drawerOpened;}}window.customElements.define('battle-sim',BattleSim);const ButtonSharedStyles=css`
   button {
     font-family: inherit;

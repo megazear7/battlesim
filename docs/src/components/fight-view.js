@@ -1263,13 +1263,21 @@ class FightView extends connect(store)(PageViewElement) {
 
   _progressToNextAction() {
     store.dispatch(takeAction(this._actionUpdates));
-    this._actionUpdates = [];
-    this._showActionResult = false;
-    this._actionsDisabled = false;
+
+    this._resetAction();
   }
 
   _takeArmyAction() {
     store.dispatch(takeArmyAction());
+
+    this._resetAction();
+  }
+
+  _resetAction() {
+    this._actionUpdates = [];
+    this._showActionResult = false;
+    this._actionsDisabled = false;
+    window.scroll(0, 0);
   }
 
   _rest(e) {
