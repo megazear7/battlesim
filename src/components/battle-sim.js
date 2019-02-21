@@ -157,7 +157,7 @@ class BattleSim extends connect(store)(LitElement) {
           text-align: center;
         }
 
-        nav {
+        .mobile-nav {
           position: fixed;
           bottom: -4rem;
           transition: bottom 250ms ease-in-out;
@@ -168,7 +168,7 @@ class BattleSim extends connect(store)(LitElement) {
           font-size: 0;
         }
 
-        nav > a {
+        .mobile-nav > a {
           display: inline-block;
           box-sizing: border-box;
           padding: 1rem;
@@ -180,11 +180,11 @@ class BattleSim extends connect(store)(LitElement) {
           color: var(--app-dark-text-color);
         }
 
-        nav > a[selected] {
+        .mobile-nav > a[selected] {
           color: var(--app-primary-color);
         }
 
-        nav.open-mobile-nav {
+        .mobile-nav.open-mobile-nav {
           bottom: 0;
         }
 
