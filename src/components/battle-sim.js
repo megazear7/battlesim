@@ -11,7 +11,6 @@ import {
   updateOffline,
   updateDrawerState
 } from '../actions/app.js';
-import '@polymer/app-layout/app-drawer/app-drawer.js';
 import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-scroll-effects/effects/waterfall.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
@@ -41,7 +40,6 @@ class BattleSim extends connect(store)(LitElement) {
           --app-primary-color: #E91E63;
           --app-secondary-color: #293237;
           --app-grey-color: #c1c1c1;
-          --app-grey-color: #fff;
           --app-dark-text-color: var(--app-secondary-color);
           --app-muted-text-color: #919191;
           --app-light-text-color: white;
@@ -66,10 +64,6 @@ class BattleSim extends connect(store)(LitElement) {
           background-color: var(--app-header-background-color);
           color: var(--app-header-text-color);
           border-bottom: 1px solid #eee;
-          z-index: 1;
-        }
-
-        app-drawer {
           z-index: 1;
         }
 
@@ -136,10 +130,6 @@ class BattleSim extends connect(store)(LitElement) {
           padding: 0 24px;
         }
 
-        .drawer-list > a[selected] {
-          color: var(--app-drawer-selected-color);
-        }
-
         /* Workaround for IE11 displaying <main> as inline */
         main {
           display: block;
@@ -165,6 +155,34 @@ class BattleSim extends connect(store)(LitElement) {
           text-align: center;
         }
 
+        nav {
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          background: rgba(255,255,255,0.75);
+          z-index: 1;
+          width: 100%;
+          font-size: 0;
+        }
+
+        nav > a {
+          display: inline-block;
+          box-sizing: border-box;
+          padding: 1rem;
+          width: 25%;
+          background: rgba(255,255,255,0.65);
+          font-size: 1rem;
+          text-align: center;
+          text-decoration: none;
+          color: var(--app-dark-text-color);
+        }
+
+        nav > a[selected] {
+          background: rgba(233,30,99, 1);
+          color: white;
+
+        }
+
         /* Wide layout: when the viewport width is bigger than 460px, layout
         changes to a wide layout */
         @media (min-width: 460px) {
@@ -185,6 +203,10 @@ class BattleSim extends connect(store)(LitElement) {
           [main-title] {
             padding-right: 0px;
           }
+
+          .mobile-nav {
+            display: none;
+          }
         }
       `
     ];
@@ -194,7 +216,6 @@ class BattleSim extends connect(store)(LitElement) {
     return html`
       <app-header condenses reveals effects="waterfall">
         <app-toolbar class="toolbar-top">
-          <button class="menu-btn" title="Menu" @click="${this._menuButtonClicked}">${menuIcon}</button>
           <div main-title>${this._title}</div>
         </app-toolbar>
 
@@ -206,16 +227,12 @@ class BattleSim extends connect(store)(LitElement) {
         </nav>
       </app-header>
 
-      <app-drawer
-          .opened="${this._drawerOpened}"
-          @opened-changed="${this._drawerOpenedChanged}">
-        <nav class="drawer-list">
-          <a ?selected="${this._page === 'war'}" href="/war">War</a>
-          <a ?selected="${this._page === 'battle'}" href="/battle">Battle</a>
-          <a ?selected="${this._page === 'fight'}" href="/fight">Fight</a>
-          <a ?selected="${this._page === 'rules'}" href="/rules">Rules</a>
-        </nav>
-      </app-drawer>
+      <nav class="mobile-nav">
+        <a ?selected="${this._page === 'war'}" href="/war">War</a>
+        <a ?selected="${this._page === 'battle'}" href="/battle">Battle</a>
+        <a ?selected="${this._page === 'fight'}" href="/fight">Fight</a>
+        <a ?selected="${this._page === 'rules'}" href="/rules">Rules</a>
+      </nav>
 
       <main role="main" class="main-content">
         <war-view class="page" ?active="${this._page === 'war'}"></war-view>
