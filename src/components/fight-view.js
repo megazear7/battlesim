@@ -371,7 +371,7 @@ class FightView extends connect(store)(PageViewElement) {
   }
 
   _progressToNextAction() {
-    store.dispatch(takeAction(this._actionUpdates, this._actionMessages));
+    store.dispatch(takeAction(this._actionUpdates, this._actionMessages, this._environment));
     this._resetAction();
   }
 
@@ -429,24 +429,19 @@ class FightView extends connect(store)(PageViewElement) {
     this._showTakeAction = true;
   }
 
-  _createEncounter() {
-    let defenderTerrain = this._selectedAction === CHARGE
-      ? this._selectedTerrain(TERRAIN_TYPE_DEFENDER)
-      : this._selectedTerrain(TERRAIN_TYPE_RANGED_DEFENDER);
 
+  _createEncounter() {
     return new Encounter({
       attacker: this._unit,
-      attackerTerrainDefense: 0,
       attackerArmyLeadership: this._activeArmyLeadership,
       attackerEngagedStands: this.engagedAttackers,
       defender: new Unit(this._activeBattle.units[this.target], this.target, this._activeBattle),
-      defenderTerrainDefense: 0,
-      defenderArmyLeadership: this._defenderArmyLeadership, // TODO Add option for defender leaders
+      defenderArmyLeadership: this._defenderArmyLeadership,
       defenderEngagedStands: this.engagedDefenders,
       melee: this._selectedAction === CHARGE,
       separation: this.separation,
       attackerChargeTerrain: this._selectedTerrain(TERRAIN_TYPE_MOVEMENT),
-      defenderTerrain: defenderTerrain,
+      defenderTerrain: this._defenderTerrain,
       meleeCombatTerrain: this._selectedTerrain(TERRAIN_TYPE_MELEE_COMBAT),
       slope: this.slope });
   }
@@ -619,6 +614,34 @@ class FightView extends connect(store)(PageViewElement) {
         show: this._showTerrain && this._selectedAction === FIRE
       },
     ];
+  }
+
+  get _defenderTerrain() {
+    return this._selectedAction === CHARGE
+      ? this._selectedTerrain(TERRAIN_TYPE_DEFENDER)
+      : this._selectedTerrain(TERRAIN_TYPE_RANGED_DEFENDER);
+  }
+
+  get _environment() {
+    return {
+      resupply: this.resupply,
+      mount: this.mount,
+      unmount: this.unmount,
+      defenderArmyLeadership: this._defenderArmyLeadership,
+      activeArmyLeadership: this._activeArmyLeadership,
+      pace: this.pace,
+      slope: this.slope,
+      engagedDefenders: this.engagedDefenders,
+      engagedAttackers: this.engagedAttackers,
+      separation: this.separation,
+      restTime: this.restTime,
+      distance: this.distance,
+      actionSelected: this._actionSelected,
+      target: this.target,
+      defenderTerrain: this._defenderTerrain,
+      attackerChargeTerrain: this._selectedTerrain(TERRAIN_TYPE_MOVEMENT),
+      meleeCombatTerrain: this._selectedTerrain(TERRAIN_TYPE_MELEE_COMBAT),
+    }
   }
 
   get resupply() {

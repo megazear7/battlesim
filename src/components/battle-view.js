@@ -90,6 +90,25 @@ class BattleView extends connect(store)(PageViewElement) {
           ${repeat(this._activeBattle.actionLog, log => html`
             <p><small>${prettyTime(new Date(this._activeBattle.startTime + (log.time * 1000)))}</small></p>
             <p>${log.message}</p>
+            <!--
+              log.environment.resupply
+              log.environment.mount
+              log.environment.unmount
+              log.environment.defenderArmyLeadership
+              log.environment.activeArmyLeadership
+              log.environment.pace
+              log.environment.slope
+              log.environment.engagedDefenders
+              log.environment.engagedAttackers
+              log.environment.separation
+              log.environment.restTime
+              log.environment.distance
+              log.environment.actionSelected
+              log.environment.target
+              log.environment.defenderTerrain
+              log.environment.attackerChargeTerrain
+              log.environment.meleeCombatTerrain
+            -->
             <hr>
           `)}
         </section>

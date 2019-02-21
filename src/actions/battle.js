@@ -6,11 +6,12 @@ export const CREATE_NEW_BATTLE = 'CREATE_NEW_BATTLE';
 export const SET_ACTIVE_BATTLE = 'SET_ACTIVE_BATTLE';
 export const REMOVE_BATTLE = 'REMOVE_BATTLE';
 
-export const takeAction = (updates, message) => {
+export const takeAction = (updates, message, environment) => {
   return {
     type: TAKE_ACTION,
     updates,
-    message
+    message,
+    environment
   };
 };
 

@@ -33,6 +33,7 @@ const battle = (state = initialState, action) => {
     let actionLog = {
       time: activeBattle.second,
       message: action.message,
+      environment: action.environment,
       updates: action.updates,
       units: [ ],
     };
