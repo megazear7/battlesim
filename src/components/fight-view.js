@@ -95,6 +95,7 @@ class FightView extends connect(store)(PageViewElement) {
         .unit-actions button {
           width: 25%;
           box-sizing: border-box;
+          background-color: white;
           margin: 0;
           display: inline-block;
           padding: 1rem 0.25rem;
@@ -108,8 +109,14 @@ class FightView extends connect(store)(PageViewElement) {
         .unit-actions button:last-child {
           border-right: 3px solid var(--app-primary-color);
         }
-        button.selected {
+        .unit-actions button {
           opacity: 1;
+        }
+        .unit-actions button:hover {
+          background-color: var(--app-primary-color);
+        }
+        .unit-actions button.selected {
+          background-color: var(--app-primary-color);
         }
         .tooltip {
           position: relative;

@@ -74,13 +74,7 @@ class BattleSim extends connect(store)(LitElement) {
         }
 
         [main-title] {
-          /*font-family: 'Pacifico';
-          text-transform: lowercase;*/
-          font-size: 2rem;
-          /* In the narrow layout, the toolbar is offset by the width of the
-          drawer button, and the text looks not centered. Add a padding to
-          match that button */
-          padding-right: 44px;
+          font-size: 1.5rem;
           text-overflow: wrap;
           white-space: nowrap;
         }
@@ -163,6 +157,7 @@ class BattleSim extends connect(store)(LitElement) {
           transition: bottom 250ms ease-in-out;
           left: 0;
           background: rgba(255,255,255,0.75);
+          border-top: 1px solid #eee;
           z-index: 1;
           width: 100%;
           font-size: 0;
@@ -301,7 +296,7 @@ class BattleSim extends connect(store)(LitElement) {
   }
 
   stateChanged(state) {
-    if (state.battle.battles.length > state.battle.activeBattle) {
+    if (state.battle.battles.length > state.battle.activeBattle && state.app.page !== 'war') {
       this._title = state.battle.battles[state.battle.activeBattle].name;
     } else {
       this._title = this.appTitle;
