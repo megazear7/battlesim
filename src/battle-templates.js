@@ -41,6 +41,7 @@ export default [
     casualtyReporting: CASUALTY_MESSAGE_DESCRIPTIVE,
     statReporting: STAT_DESCRIPTION,
     activeArmy: 0,
+    actionLog: [ ],
     activeAction: {
       type: ACTION_TYPE_UNIT,
       index: 0,
@@ -318,6 +319,7 @@ export default [
     casualtyReporting: CASUALTY_MESSAGE_DESCRIPTIVE,
     statReporting: STAT_DESCRIPTION,
     activeArmy: 0,
+    actionLog: [ ],
     activeAction: {
       type: ACTION_TYPE_UNIT,
       index: 0,
@@ -391,6 +393,7 @@ export default [
     casualtyReporting: 1,
     statReporting: STAT_PERCENTAGE,
     activeArmy: 0,
+    actionLog: [ ],
     activeAction: {
       type: ACTION_TYPE_UNIT,
       index: 0,

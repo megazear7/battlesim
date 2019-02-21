@@ -177,9 +177,9 @@ export default class Combatant extends ActingUnit {
 
   battleReport() {
     if (this.unit.strength - this.casualties <= 0) {
-      return `${this.unit.name} was destroyed. ${this.moraleMessage} ${this.energyMessage}`;
+      return `They were destroyed. ${this.moraleMessage} ${this.energyMessage}`;
     } else if (this.unit.morale - this.moraleLoss <= 0) {
-      return `${this.unit.name} fled the battlefield. ${this.moraleMessage} ${this.energyMessage}`;
+      return `They fled the battlefield. ${this.moraleMessage} ${this.energyMessage}`;
     } else {
       return `${this.casualtyMessage} ${this.leadershipMessage} ${this.moraleMessage} ${this.energyMessage}`
     }
@@ -220,7 +220,7 @@ export default class Combatant extends ActingUnit {
 
   get casualtyDesc() {
     if (this.casualties > this.unit.strength) {
-      return `${this.unit.name} was totally destroyed.`;
+      return `${this.unit.name} lost all of their men.`;
     } else if (this.casualties > this.unit.strength * 0.75) {
       return `${this.unit.name} sustained terrible casualties. Almost the whole unit was destroyed.`;
     } else if (this.casualties > this.unit.strength * 0.50) {
@@ -248,31 +248,31 @@ export default class Combatant extends ActingUnit {
 
   get moraleMessage() {
     return this.unit.battle.statReporting === STAT_PERCENTAGE
-      ? `They lost ${Math.ceil(this.moraleLoss)}% morale.`
+      ? `They lost ${Math.ceil(this.moraleLoss)}% morale`
       : ``;
   }
 
   get energyMessage() {
     return this.unit.battle.statReporting === STAT_PERCENTAGE
-      ? `They lost ${Math.ceil(this.energyLoss)}% energy.`
+      ? ` and ${Math.ceil(this.energyLoss)}% energy.`
       : ``;
   }
 
   get leadershipMessage() {
     return this.unit.battle.statReporting === STAT_PERCENTAGE && this.leadershipLoss > 0
-      ? `They lost a leaders during the fight and have suffered a ${this.leadershipLoss}% leadership penalty.`
+      ? `They lost a leader during the fight and have suffered a ${this.leadershipLoss}% leadership penalty.`
       : this.leadershipDescription;
   }
 
   get leadershipDescription() {
     if (this.leadershipLoss > this.unit.leadership) {
-      return `${this.unit.name} lost all of their leaders during the fight. They have no one to command them.`;
+      return `They lost all of their leaders during the fight. They have no one to command them.`;
     } else if (this.leadershipLoss > this.unit.leadership * 0.5) {
-      return `${this.unit.name} lost their captain during the fight.`;
+      return `They lost their captain during the fight.`;
     } else if (this.leadershipLoss > this.unit.leadership * 0.25) {
-      return `${this.unit.name} lost a lieutenant during the fight.`;
+      return `They lost a lieutenant during the fight.`;
     } else if (this.leadershipLoss > 0) {
-      return `${this.unit.name} lost some of their sergeant's during the fight.`;
+      return `They lost some of their sergeant's during the fight.`;
     } else {
       return ``;
     }

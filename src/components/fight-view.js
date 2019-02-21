@@ -118,6 +118,15 @@ class FightView extends connect(store)(PageViewElement) {
         .unit-actions button.selected {
           background-color: var(--app-primary-color);
         }
+        .unit-actions button:disabled {
+          border-color: grey;
+        }
+        .unit-actions button.selected {
+          color: white;
+          border-width: 3px 1.5px;
+          border-style: solid;
+          border-color: var(--app-primary-color);
+        }
         .tooltip {
           position: relative;
           display: inline-block;
@@ -362,7 +371,7 @@ class FightView extends connect(store)(PageViewElement) {
   }
 
   _progressToNextAction() {
-    store.dispatch(takeAction(this._actionUpdates));
+    store.dispatch(takeAction(this._actionUpdates, this._actionMessages));
     this._resetAction();
   }
 

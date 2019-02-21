@@ -95,11 +95,11 @@ export default class SoloUnit extends ActingUnit {
 
   get moveDesc() {
     if (this.situation.distance === -1) {
-      return `You move ${Math.floor(this.situation.yardsTravelled / YARDS_PER_INCH)} inches `;
+      return `${this.unit.name} moves ${Math.floor(this.situation.yardsTravelled / YARDS_PER_INCH)} inches `;
     } else if (this.situation.yardsTravelled < this.situation.distanceInYards) {
-      return `You could only move ${Math.floor(this.situation.yardsTravelled / YARDS_PER_INCH)} inches `;
+      return `${this.unit.name} could only move ${Math.floor(this.situation.yardsTravelled / YARDS_PER_INCH)} inches `;
     } else {
-      return `You move the full ${Math.floor(this.situation.yardsTravelled / YARDS_PER_INCH)} inches `;
+      return `${this.unit.name} moves the full ${Math.floor(this.situation.yardsTravelled / YARDS_PER_INCH)} inches `;
     }
   }
 
@@ -111,39 +111,39 @@ export default class SoloUnit extends ActingUnit {
 
   get energyRecoveredDesc() {
     if (this.energyGain > 80) {
-      return `In ${this.situation.minutesSpentResting} minutes they got back all of there energy.`;
+      return `and they got back all of there energy.`;
     } else if (this.energyGain > 60) {
-      return `In ${this.situation.minutesSpentResting} minutes they recovered almost all of their strength.`;
+      return `and they recovered almost all of their strength.`;
     } else if (this.energyGain > 40) {
-      return `In ${this.situation.minutesSpentResting} minutes they made a great recovery. The rest was very helpful.`;
+      return `and they made a great recovery. The rest was very helpful.`;
     } else if (this.energyGain > 20) {
-      return `In ${this.situation.minutesSpentResting} minutes they recovered a lot of their strength`;
+      return `and they recovered a lot of their strength`;
     } else if (this.energyGain > 15) {
-      return `In ${this.situation.minutesSpentResting} minutes they recovered much of their strength`;
+      return `and they recovered much of their strength`;
     } else if (this.energyGain > 9) {
-      return `In ${this.situation.minutesSpentResting} minutes they recovered some of their strength`;
+      return `and they recovered some of their strength`;
     } else if (this.energyGain > 6) {
-      return `In ${this.situation.minutesSpentResting} minutes they recovered a bit of their strength.`;
+      return `and they recovered a bit of their strength.`;
     } else if (this.energyGain > 3) {
-      return `In ${this.situation.minutesSpentResting} minutes they recovered a bit of their strength.`;
+      return `and they recovered a bit of their strength.`;
     } else {
-      return `The rest was hardly worth it.`;
+      return `but the rest was hardly worth it.`;
     }
   }
 
   get moraleRecoveredMessage() {
     return this.unit.battle.statReporting === STAT_PERCENTAGE
-      ? `In ${this.situation.minutesSpentResting} minutes they recovered ${this.moraleGain}% of their morale `
+      ? `In ${this.situation.minutesSpentResting} minutes ${this.unit.name} recovered ${this.moraleGain}% of their morale `
       : this.moraleRecoveredDesc;
   }
 
   get moraleRecoveredDesc() {
     if (this.moraleGain > 20) {
-      return `They have been greatly encouraged.`;
+      return `${this.unit.name} have been greatly encouraged`;
     } else if (this.moraleGain > 10) {
-      return `They have been encouraged.`;
+      return `${this.unit.name} have been encouraged`;
     } else {
-      return `They seem to be more willing to fight than before.`;
+      return `${this.unit.name} seem to be more willing to fight than before`;
     }
   }
 }

@@ -116,14 +116,12 @@ export default class Encounter {
 
   fight() {
     const actionMessage = this.attackerReachedDefender ? this.attackerEngages() : ``;
-    const fullMessage = this.melee
-      ? `${actionMessage} ${this.defender.battleReport()} ${this.attacker.battleReport()}`
-      : `${actionMessage} ${this.defender.battleReport()}`;
 
     return {
       messages: [
-        //`Attacker casualties: ${this.attacker.casualties}. Attacker energy loss: ${this.attacker.energyLoss}. Attacker morale loss: ${this.attacker.moraleLoss}. Attacker leadership loss: ${this.attacker.leadershipLoss}. Defender casualties: ${this.defender.casualties}. Defender energy loss: ${this.defender.energyLoss}. Defender morale loss: ${this.defender.moraleLoss}. Defender leadership loss: ${this.defender.leadershipLoss}.`,
-        fullMessage,
+        actionMessage,
+        this.defender.battleReport(),
+        this.melee ? this.attacker.battleReport() : '',
       ],
       updates: [
         this.defender.updates(0),

@@ -30,12 +30,25 @@ const battle = (state = initialState, action) => {
     var activeBattle = newState.battles[newState.activeBattle];
   }
   if (activeBattle && action.type === TAKE_ACTION) {
+    let actionLog = {
+      message: action.message,
+      updates: action.updates,
+      units: [ ],
+    };
     action.updates.forEach(update => {
       let unit = activeBattle.units[update.id];
+      let unitBefore = { ...unit };
+
       update.changes.forEach(change => {
         unit[change.prop] = change.value;
       });
+
+      actionLog.units.push({
+        before:{...unitBefore},
+        after: {...unit}
+      });
     });
+    activeBattle.actionLog.push(actionLog);
     updateTime(activeBattle);
   } else if (activeBattle && action.type === TAKE_ARMY_ACTION && activeBattle.activeAction.type === ACTION_TYPE_ARMY) {
     activeBattle.armies[activeBattle.activeAction.index].nextAction += SECONDS_PER_TURN;
