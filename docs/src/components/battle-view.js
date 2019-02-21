@@ -175,7 +175,7 @@ class BattleView extends connect(store)(PageViewElement) {
       var activeBattle = state.battle.battles[state.battle.activeBattle];
       let units = activeBattle.units.map((unit, index) => ({
         index,
-        unit: new Unit(unit, index)
+        unit: new Unit(unit, index, activeBattle)
       }));
       this._army0Units = units.filter(({
         unit

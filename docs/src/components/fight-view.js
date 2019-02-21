@@ -1,4 +1,4 @@
-import { weightedRandom, weightedRandomTowards, randomBellMod, modVolume, weightedAverage, SECONDS_IN_AN_HOUR, randomMinutesBetween, SECONDS_IN_AN_MINUTE, prettyDateTime, SLOPE_UP, SLOPE_DOWN, SLOPE_NONE as SLOPE_NONE$1, MAX_TERRAIN, statModFor, MAX_EQUIPMENT_WEIGHT, MORALE_SUCCESS, MORALE_FAILURE, MAX_STAT, SECONDS_PER_TURN, YARDS_PER_INCH, MELEE, RANGED, YARDS_TO_FIGHT, MINUTES_PER_TURN, FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP, MELEE_WEAPON, RANGED_WEAPON, POWER_VS_FOOT, POWER_VS_MOUNTED, store, combat, html, css, repeat, classMap, PageViewElement, connect, takeAction, SharedStyles, ButtonSharedStyles, $unitDefault as Unit } from './battle-sim.js';
+import { weightedRandom, weightedRandomTowards, randomBellMod, dropOff, dropOffWithBoost, weightedAverage, roundToNearest, SECONDS_IN_AN_HOUR, randomMinutesBetween, SECONDS_IN_AN_MINUTE, prettyDateTime, SLOPE_UP, SLOPE_DOWN, SLOPE_NONE as SLOPE_NONE$1, MAX_TERRAIN, statModFor, MAX_EQUIPMENT_WEIGHT, MORALE_SUCCESS, MORALE_FAILURE, MAX_STAT, SECONDS_PER_TURN, YARDS_PER_INCH, MELEE, RANGED, STAT_PERCENTAGE, CASUALTY_MESSAGE_DESCRIPTIVE, YARDS_TO_FIGHT, MINUTES_PER_TURN, ACTION_TYPE_UNIT, ACTION_TYPE_ARMY, FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP, MELEE_WEAPON, RANGED_WEAPON, POWER_VS_FOOT, POWER_VS_MOUNTED, store, combat, html, css, repeat, classMap, PageViewElement, connect, takeAction, takeArmyAction, SharedStyles, ButtonSharedStyles, $unitDefault as Unit } from './battle-sim.js';
 
 class ActingUnit {
   constructor({
@@ -179,7 +179,11 @@ class Combatant extends ActingUnit {
   }
 
   get modifiedRangedVolume() {
-    return modVolume(this.unit.rangedWeapon.volume, this.unit.rangedWeapon.range, this.encounter.yardsOfSeparation);
+    if (this.unit.rangedWeapon.effectiveAtCloseRange) {
+      return this.unit.rangedWeapon.volume * dropOffWithBoost(this.encounter.yardsOfSeparation / this.unit.rangedWeapon.range, this.unit.rangedWeapon.dropOff);
+    } else {
+      return this.unit.rangedWeapon.volume * dropOff(this.encounter.yardsOfSeparation / this.unit.rangedWeapon.range, this.unit.rangedWeapon.dropOff);
+    }
   }
 
   get volume() {
@@ -240,16 +244,12 @@ class Combatant extends ActingUnit {
 
   battleReport() {
     if (this.unit.strength - this.casualties <= 0) {
-      return `${this.unit.name} was destroyed.`;
+      return `${this.unit.name} was destroyed. ${this.moraleMessage} ${this.energyMessage}`;
     } else if (this.unit.morale - this.moraleLoss <= 0) {
-      return `${this.unit.name} fled the battlefield.`;
+      return `${this.unit.name} fled the battlefield. ${this.moraleMessage} ${this.energyMessage}`;
     } else {
-      return `${this.casualtyMessage} ${this.leadershipMessage}`;
+      return `${this.casualtyMessage} ${this.leadershipMessage} ${this.moraleMessage} ${this.energyMessage}`;
     }
-  }
-
-  exactBattleReport() {
-    return `${this.unit.name} -- ${this.status} -- Casualties: ${this.casualties} -- Energy Loss: ${this.energyLoss} -- Morale Loss: ${this.moraleLoss} -- Leadership Loss: ${this.leadershipLoss}`;
   }
 
   updates(delay) {
@@ -279,6 +279,10 @@ class Combatant extends ActingUnit {
   }
 
   get casualtyMessage() {
+    return this.unit.battle.casualtyReporting === CASUALTY_MESSAGE_DESCRIPTIVE ? this.casualtyDesc : `${this.unit.name} lost ${roundToNearest(this.casualties, this.unit.battle.casualtyReporting)} of their ${roundToNearest(this.unit.strength, this.unit.battle.strengthReporting)} men during the fight.`;
+  }
+
+  get casualtyDesc() {
     if (this.casualties > this.unit.strength) {
       return `${this.unit.name} was totally destroyed.`;
     } else if (this.casualties > this.unit.strength * 0.75) {
@@ -306,7 +310,19 @@ class Combatant extends ActingUnit {
     }
   }
 
+  get moraleMessage() {
+    return this.unit.battle.statReporting === STAT_PERCENTAGE ? `They lost ${Math.ceil(this.moraleLoss)}% morale.` : ``;
+  }
+
+  get energyMessage() {
+    return this.unit.battle.statReporting === STAT_PERCENTAGE ? `They lost ${Math.ceil(this.energyLoss)}% energy.` : ``;
+  }
+
   get leadershipMessage() {
+    return this.unit.battle.statReporting === STAT_PERCENTAGE && this.leadershipLoss > 0 ? `They lost a leaders during the fight and have suffered a ${this.leadershipLoss}% leadership penalty.` : this.leadershipDescription;
+  }
+
+  get leadershipDescription() {
     if (this.leadershipLoss > this.unit.leadership) {
       return `${this.unit.name} lost all of their leaders during the fight. They have no one to command them.`;
     } else if (this.leadershipLoss > this.unit.leadership * 0.5) {
@@ -464,7 +480,7 @@ class Encounter {
   }
 
   timeEngagedMessage(seconds) {
-    return `They were engaged for ${seconds / SECONDS_IN_AN_MINUTE} minutes.`;
+    return `They were engaged for ${Math.ceil(seconds / SECONDS_IN_AN_MINUTE)} minutes.`;
   }
 
   get attackerSlope() {
@@ -665,7 +681,10 @@ class SoloUnit extends ActingUnit {
   }
 
   get desc() {
-    return `${this.situation.yardsTravelled > 0 ? this.moveDesc : ''} ${this.situation.yardsTravelled > 0 ? this.battlefieldMoveDesc : ''} ${this.energyGain > 0 && this.situation.minutesSpentResting > 0 ? this.energyRecoveredDesc : ''} ${this.moraleGain > 0 && this.situation.minutesSpentResting > 0 ? this.moraleRecoveredDesc : ''}`;
+    return ` ${this.situation.yardsTravelled > 0 ? this.moveDesc : ''}
+             ${this.situation.yardsTravelled > 0 ? this.battlefieldMoveDesc : ''}
+             ${this.moraleGain > 0 && this.situation.minutesSpentResting > 0 ? this.moraleRecoveredMessage : ''}
+             ${this.energyGain > 0 && this.situation.minutesSpentResting > 0 ? this.energyRecoveredMessage : ''}`;
   }
 
   get battlefieldMoveDesc() {
@@ -680,6 +699,10 @@ class SoloUnit extends ActingUnit {
     } else {
       return `You move the full ${Math.floor(this.situation.yardsTravelled / YARDS_PER_INCH)} inches `;
     }
+  }
+
+  get energyRecoveredMessage() {
+    return this.unit.battle.statReporting === STAT_PERCENTAGE ? `and ${this.energyGain}% of their energy.` : this.energyRecoveredDesc;
   }
 
   get energyRecoveredDesc() {
@@ -702,6 +725,10 @@ class SoloUnit extends ActingUnit {
     } else {
       return `The rest was hardly worth it.`;
     }
+  }
+
+  get moraleRecoveredMessage() {
+    return this.unit.battle.statReporting === STAT_PERCENTAGE ? `In ${this.situation.minutesSpentResting} minutes they recovered ${this.moraleGain}% of their morale ` : this.moraleRecoveredDesc;
   }
 
   get moraleRecoveredDesc() {
@@ -944,195 +971,207 @@ class FightView extends connect(store)(PageViewElement) {
   render() {
     return html`
       ${this._hasActiveBattle ? html`
-        <section>
-          <h2>${this._unit.name}</h2>
-          <div class="muted centered">Army: ${this._unit.army.name}</div>
-          <div class="muted centered">${prettyDateTime(this._date)}</div>
-          <p>${this._unit.detailedStatus}</p>
-          <hr>
-          <p>${this._unit.desc}</p>
-        </section>
-        <section>
-          <div class="${classMap({
+        ${this._unit ? html`
+          <section>
+            <h2>${this._unit.name}</h2>
+            <div class="muted centered">Army: ${this._unit.army.name}</div>
+            <div class="muted centered">${prettyDateTime(this._date)}</div>
+            <p>${this._unit.detailedStatus}</p>
+            <hr>
+            <p>${this._unit.desc}</p>
+          </section>
+          <section>
+            <div class="${classMap({
       'has-selection': this._actionSelected
     })}">
-            <button @click="${this._rest}" id="rest" ?disabled="${this._actionsDisabled}" class="${classMap({
+              <button @click="${this._rest}" id="rest" ?disabled="${this._actionsDisabled}" class="${classMap({
       selected: this._selectedAction === REST
     })}">Rest</button>
-            <button @click="${this._move}" id="move" ?disabled="${this._actionsDisabled}" class="${classMap({
+              <button @click="${this._move}" id="move" ?disabled="${this._actionsDisabled}" class="${classMap({
       selected: this._selectedAction === MOVE
     })}">Move</button>
-            <button @click="${this._charge}" id="charge" ?disabled="${this._actionsDisabled}" class="${classMap({
+              <button @click="${this._charge}" id="charge" ?disabled="${this._actionsDisabled}" class="${classMap({
       selected: this._selectedAction === CHARGE
     })}">Charge</button>
-            <button @click="${this._fire}" id="fire" ?disabled="${this._actionsDisabled}" class="${classMap({
+              <button @click="${this._fire}" id="fire" ?disabled="${this._actionsDisabled}" class="${classMap({
       selected: this._selectedAction === FIRE
     })}">Fire</button>
-          </div>
-        </section>
-        <section>
-          <div class="options-container">
-            <p class="${classMap({
+            </div>
+          </section>
+          <section>
+            <div class="options-container">
+              <p class="${classMap({
       hidden: !this._showChargeMessage
     })}">${this._chargeMessage}</p>
-            <input id="rest-time" class="${classMap({
+              <input id="rest-time" class="${classMap({
       hidden: !this._showRestTime
     })}" type="number" placeholder="Minutes to rest" max="${MINUTES_PER_TURN}"></input>
-            <input id="distance" class="${classMap({
+              <input id="distance" class="${classMap({
       hidden: !this._showDistance
     })}" type="number" placeholder="Distance (Leave blank to move as far as possible)"></input>
-            <input id="separation" class="${classMap({
+              <input id="separation" class="${classMap({
       hidden: !this._showSeparation
     })}" type="number" placeholder="Distance (Required)"></input>
-            <select id="target" class="${classMap({
+              <select id="target" class="${classMap({
       hidden: !this._showTarget
     })}" @change="${this._updateTarget}">
-              <option value="">Select Target (Required)</option>
-              ${repeat(this._unit.targets, target => html`
-                <option value="${target.id}">${target.unit.name}</option>
-              `)}
-            </select>
-            <div class="${classMap({
+                <option value="">Select Target (Required)</option>
+                ${repeat(this._unit.targets, target => html`
+                  <option value="${target.id}">${target.unit.name}</option>
+                `)}
+              </select>
+              <div class="${classMap({
       hidden: !this._showEngagedAttackers && !this._showEngagedDefenders
     })}">
-              <input id="engaged-attackers" class="${classMap({
+                <input id="engaged-attackers" class="${classMap({
       hidden: !this._showEngagedAttackers,
       full: this._showEngagedAttackers && !this._showEngagedDefenders,
       stands: true
     })}" type="number" placeholder="Attacking Stands"></input>
-              <input id="engaged-defenders" class="${classMap({
+                <input id="engaged-defenders" class="${classMap({
       hidden: !this._showEngagedDefenders,
       stands: true
     })}" type="number" placeholder="Defending Stands"></input>
-            </div>
-            <button class="${classMap({
+              </div>
+              <button class="${classMap({
       hidden: !this._showDoCombat
     })}" @click="${this._doCombat}">Do Combat</button>
-            <button class="${classMap({
+              <button class="${classMap({
       hidden: !this._showTakeAction
     })}" @click="${this._takeAction}">Take Action</button>
-            <br>
-            <div class="${classMap({
+              <br>
+              <div class="${classMap({
       "options-block": true,
       hidden: !this._showTerrain
     })}">
-              ${repeat(this._typesOfTerrain, terrainType => html`
-                <div id="${terrainType.id}" class="${classMap({
+                ${repeat(this._typesOfTerrain, terrainType => html`
+                  <div id="${terrainType.id}" class="${classMap({
       hidden: !terrainType.show
     })}">
-                  <h5 class="tooltip">
-                    ${terrainType.name}
-                    <span class="tooltiptext">${terrainType.description}</span>
-                  </h5>
-                  ${repeat(terrainType.terrain, ({
+                    <h5 class="tooltip">
+                      ${terrainType.name}
+                      <span class="tooltiptext">${terrainType.description}</span>
+                    </h5>
+                    ${repeat(terrainType.terrain, ({
       terrain,
       index
     }) => html`
-                    <div>
-                      <input type="checkbox" id="${terrainType.id + index}" data-terrain-index="${index}"></input>
-                      <label for="${terrainType.id + index}">
-                        ${terrain.name}
-                        <span class="tooltip">
-                          ...
-                          <span class="tooltiptext">${terrain.descripton}</span>
-                        <span>
-                      </label>
-                    </div>
-                  `)}
-                </div>
-              `)}
-              <div class="${classMap({
+                      <div>
+                        <input type="checkbox" id="${terrainType.id + index}" data-terrain-index="${index}"></input>
+                        <label for="${terrainType.id + index}">
+                          ${terrain.name}
+                          <span class="tooltip">
+                            ...
+                            <span class="tooltiptext">${terrain.descripton}</span>
+                          <span>
+                        </label>
+                      </div>
+                    `)}
+                  </div>
+                `)}
+                <div class="${classMap({
       hidden: this.showPace
     })}">
-                <radiogroup id="pace" class="${classMap({
+                  <radiogroup id="pace" class="${classMap({
       hidden: !this._showHill
     })}">
-                  <h5>Pace</h5>
-                  <input type="radio" name="pace" id="pace-fast" value="1">
-                  <label for="pace-fast">Fast</label>
-                  <br>
-                  <input type="radio" name="pace" id="pace-march" value="0.75" checked>
-                  <label for="pace-march">March</label>
-                  <br>
-                  <input type="radio" name="pace" id="pace-rest" value="0.5">
-                  <label for="pace-rest">Rest</label>
-                  <br><br>
-                </radiogroup>
+                    <h5>Pace</h5>
+                    <input type="radio" name="pace" id="pace-fast" value="1">
+                    <label for="pace-fast">Fast</label>
+                    <br>
+                    <input type="radio" name="pace" id="pace-march" value="0.75" checked>
+                    <label for="pace-march">March</label>
+                    <br>
+                    <input type="radio" name="pace" id="pace-rest" value="0.5">
+                    <label for="pace-rest">Rest</label>
+                    <br><br>
+                  </radiogroup>
+                </div>
               </div>
-            </div>
-            <div class="${classMap({
+              <div class="${classMap({
       "options-block": true,
       hidden: !this._showHill && !this._showLeader
     })}">
-              <radiogroup id="hill" class="${classMap({
+                <radiogroup id="hill" class="${classMap({
       hidden: !this._showHill
     })}">
-                <h5>Hills</h5>
-                <input type="radio" name="hill" id="${SLOPE_UP}" value="${SLOPE_UP}">
-                <label for="${SLOPE_UP}">Uphill</label>
-                <br>
-                <input type="radio" name="hill" id="${SLOPE_DOWN}" value="${SLOPE_DOWN}">
-                <label for="${SLOPE_DOWN}">Downhill</label>
-                <br>
-                <input type="radio" name="hill" id="${SLOPE_NONE$1}" value="${SLOPE_NONE$1}">
-                <label for="${SLOPE_NONE$1}">Neither</label>
-                <br><br>
-              </radiogroup>
-              <h5>Leadership</h5>
-              <div id="leadership">
-                <radiogroup id="attacker-leader" class="${classMap({
+                  <h5>Hills</h5>
+                  <input type="radio" name="hill" id="${SLOPE_UP}" value="${SLOPE_UP}">
+                  <label for="${SLOPE_UP}">Uphill</label>
+                  <br>
+                  <input type="radio" name="hill" id="${SLOPE_DOWN}" value="${SLOPE_DOWN}">
+                  <label for="${SLOPE_DOWN}">Downhill</label>
+                  <br>
+                  <input type="radio" name="hill" id="${SLOPE_NONE$1}" value="${SLOPE_NONE$1}">
+                  <label for="${SLOPE_NONE$1}">Neither</label>
+                  <br><br>
+                </radiogroup>
+                <h5>Leadership</h5>
+                <div id="leadership">
+                  <radiogroup id="attacker-leader" class="${classMap({
       hidden: !this._showLeader
     })}">
-                  <h6>${this._unit.name}</h6>
-                  ${repeat(this._unit.army.leaders, (leader, index) => html`
-                    <input type="radio" name="attacker-leader" id="${'attacker-leader-' + index}" value="${leader.leadership}">
-                    <label for="${'attacker-leader-' + index}">${leader.shortname}</label>
-                    <br>
-                  `)}
-                  ${this._targetUnit ? html`
-                    <h6>${this._targetUnit.name}</h6>
-                    ${repeat(this._targetUnit.army.leaders, (leader, index) => html`
-                      <input type="radio" name="defender-leader" id="${'defender-leader-' + index}" value="${leader.leadership}">
-                      <label for="${'defender-leader-' + index}">${leader.shortname}</label>
+                    <h6>${this._unit.name}</h6>
+                    ${repeat(this._unit.army.leaders, (leader, index) => html`
+                      <input type="radio" name="attacker-leader" id="${'attacker-leader-' + index}" value="${leader.leadership}">
+                      <label for="${'attacker-leader-' + index}">${leader.shortname}</label>
                       <br>
                     `)}
-                  ` : ``}
-                </radiogroup>
+                    ${this._targetUnit ? html`
+                      <h6>${this._targetUnit.name}</h6>
+                      ${repeat(this._targetUnit.army.leaders, (leader, index) => html`
+                        <input type="radio" name="defender-leader" id="${'defender-leader-' + index}" value="${leader.leadership}">
+                        <label for="${'defender-leader-' + index}">${leader.shortname}</label>
+                        <br>
+                      `)}
+                    ` : ``}
+                  </radiogroup>
+                </div>
               </div>
-            </div>
-            <div id="resupply" class="${classMap({
+              <div id="resupply" class="${classMap({
       hidden: !this._showResupply
     })}">
-              <h5>Supply</h5>
-              <input type="checkbox" id="resupply-checkbox"></input>
-              <label for="resupply-checkbox">Resupply</label>
-            </div>
-            <div class="${classMap({
+                <h5>Supply</h5>
+                <input type="checkbox" id="resupply-checkbox"></input>
+                <label for="resupply-checkbox">Resupply</label>
+              </div>
+              <div class="${classMap({
       hidden: !this._showMount
     })}">
-              <h5>Mounted Actions</h5>
-              ${this._unit.isCurrentlyMounted ? html`
-                <div><small>${this._unit.name} is currently mounted</small></div>
-                <input type="checkbox" id="unmount"></input>
-                <label for="unmount">Unmount</label>
-              ` : html`
-                <div><small>${this._unit.name} is currently unmounted</small></div>
-                <input type="checkbox" id="mount"></input>
-                <label for="mount">Mount</label>
-              `}
-            </div>
-            <p class="${classMap({
+                <h5>Mounted Actions</h5>
+                ${this._unit.isCurrentlyMounted ? html`
+                  <div><small>${this._unit.name} is currently mounted</small></div>
+                  <input type="checkbox" id="unmount"></input>
+                  <label for="unmount">Unmount</label>
+                ` : html`
+                  <div><small>${this._unit.name} is currently unmounted</small></div>
+                  <input type="checkbox" id="mount"></input>
+                  <label for="mount">Mount</label>
+                `}
+              </div>
+              <p class="${classMap({
       hidden: !this._showError,
       error: true
     })}">You must provide valid values for each required field.</p>
-            <div class="${classMap({
+              <div class="${classMap({
       hidden: !this._showActionResult
     })}">
-              ${repeat(this._actionMessages, message => html`<p>${message}</p>`)}
-              <button @click="${this._progressToNextAction}">Next Action</button>
+                ${repeat(this._actionMessages, message => html`<p>${message}</p>`)}
+                <button @click="${this._progressToNextAction}">Next Action</button>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        ` : html`
+          <section>
+            <h2>${this._armyTakingAction.armyActionTitle}</h2>
+            <div class="muted centered">Army: ${this._armyTakingAction.name}</div>
+            <div class="muted centered">${prettyDateTime(this._date)}</div>
+            <p>${this._armyTakingAction.armyActionDesc}</p>
+            <div class="centered">
+              <button @click="${this._takeArmyAction}">Next Action</button>
+            </div>
+          </section>
+        `}
       ` : html`
         <section>
           <p>No active battle. Go to the war tab and either select a battle or create a new battle.</p>
@@ -1141,12 +1180,25 @@ class FightView extends connect(store)(PageViewElement) {
     `;
   }
 
+  constructor() {
+    super();
+    this._actionUpdates = [];
+  }
+
   stateChanged(state) {
     this._actionMessages = [];
 
     if (state.battle.battles.length > state.battle.activeBattle) {
       this._activeBattle = state.battle.battles[state.battle.activeBattle];
-      this._unit = new Unit(this._activeBattle.units[this._activeBattle.activeUnit], this._activeBattle.activeUnit);
+
+      if (this._activeBattle.activeAction.type === ACTION_TYPE_UNIT) {
+        this._unit = new Unit(this._activeBattle.units[this._activeBattle.activeAction.index], this._activeBattle.activeAction.index, this._activeBattle);
+        this._armyTakingAction = null;
+      } else if (this._activeBattle.activeAction.type === ACTION_TYPE_ARMY) {
+        this._unit = null;
+        this._armyTakingAction = this._activeBattle.armies[this._activeBattle.activeAction.index];
+      }
+
       this._date = new Date(this._activeBattle.startTime + this._activeBattle.second * 1000);
       this._hasActiveBattle = true;
     } else {
@@ -1211,9 +1263,13 @@ class FightView extends connect(store)(PageViewElement) {
 
   _progressToNextAction() {
     store.dispatch(takeAction(this._actionUpdates));
-    this._actionUpdate = {};
+    this._actionUpdates = [];
     this._showActionResult = false;
     this._actionsDisabled = false;
+  }
+
+  _takeArmyAction() {
+    store.dispatch(takeArmyAction());
   }
 
   _rest(e) {
@@ -1269,7 +1325,7 @@ class FightView extends connect(store)(PageViewElement) {
       attackerTerrainDefense: 0,
       attackerArmyLeadership: this._activeArmyLeadership,
       attackerEngagedStands: this.engagedAttackers,
-      defender: new Unit(this._activeBattle.units[this.target], this.target),
+      defender: new Unit(this._activeBattle.units[this.target], this.target, this._activeBattle),
       defenderTerrainDefense: 0,
       defenderArmyLeadership: this._defenderArmyLeadership,
       // TODO Add option for defender leaders
