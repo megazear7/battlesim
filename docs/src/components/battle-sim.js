@@ -9011,13 +9011,7 @@ store.addReducers({app:app$1,battle:battle$1});var store$1={store:store};const m
         }
 
         [main-title] {
-          /*font-family: 'Pacifico';
-          text-transform: lowercase;*/
-          font-size: 2rem;
-          /* In the narrow layout, the toolbar is offset by the width of the
-          drawer button, and the text looks not centered. Add a padding to
-          match that button */
-          padding-right: 44px;
+          font-size: 1.5rem;
           text-overflow: wrap;
           white-space: nowrap;
         }
@@ -9094,18 +9088,19 @@ store.addReducers({app:app$1,battle:battle$1});var store$1={store:store};const m
           text-align: center;
         }
 
-        nav {
+        .mobile-nav {
           position: fixed;
           bottom: -4rem;
           transition: bottom 250ms ease-in-out;
           left: 0;
           background: rgba(255,255,255,0.75);
+          border-top: 1px solid #eee;
           z-index: 1;
           width: 100%;
           font-size: 0;
         }
 
-        nav > a {
+        .mobile-nav > a {
           display: inline-block;
           box-sizing: border-box;
           padding: 1rem;
@@ -9117,11 +9112,11 @@ store.addReducers({app:app$1,battle:battle$1});var store$1={store:store};const m
           color: var(--app-dark-text-color);
         }
 
-        nav > a[selected] {
+        .mobile-nav > a[selected] {
           color: var(--app-primary-color);
         }
 
-        nav.open-mobile-nav {
+        .mobile-nav.open-mobile-nav {
           bottom: 0;
         }
 
@@ -9190,7 +9185,7 @@ store.addReducers({app:app$1,battle:battle$1});var store$1={store:store};const m
     `;}constructor(){super();// To force all event listeners for gestures to be passive.
 // See https://www.polymer-project.org/3.0/docs/devguide/settings#setting-passive-touch-gestures
 setPassiveTouchGestures(true);}connectedCallback(){super.connectedCallback();let lastScrollPos=0;window.addEventListener('scroll',e=>{this._showMobileNav=lastScrollPos>window.scrollY;lastScrollPos=window.scrollY;});}firstUpdated(){installRouter(location=>store.dispatch(navigate(decodeURIComponent(location.pathname))));installOfflineWatcher(offline=>store.dispatch(updateOffline(offline)));installMediaQueryWatcher(`(min-width: 460px)`,()=>store.dispatch(updateDrawerState(false)));}updated(changedProps){if(changedProps.has('_page')){const pageTitle=this.appTitle+' - '+this._page;updateMetadata({title:pageTitle,description:pageTitle// This object also takes an image property, that points to an img src.
-});}}_menuButtonClicked(){store.dispatch(updateDrawerState(true));}_drawerOpenedChanged(e){store.dispatch(updateDrawerState(e.target.opened));}stateChanged(state){if(state.battle.battles.length>state.battle.activeBattle){this._title=state.battle.battles[state.battle.activeBattle].name;}else{this._title=this.appTitle;}this._page=state.app.page;this._offline=state.app.offline;this._snackbarOpened=state.app.snackbarOpened;this._drawerOpened=state.app.drawerOpened;}}window.customElements.define('battle-sim',BattleSim);const ButtonSharedStyles=css`
+});}}_menuButtonClicked(){store.dispatch(updateDrawerState(true));}_drawerOpenedChanged(e){store.dispatch(updateDrawerState(e.target.opened));}stateChanged(state){if(state.battle.battles.length>state.battle.activeBattle&&state.app.page!=='war'){this._title=state.battle.battles[state.battle.activeBattle].name;}else{this._title=this.appTitle;}this._page=state.app.page;this._offline=state.app.offline;this._snackbarOpened=state.app.snackbarOpened;this._drawerOpened=state.app.drawerOpened;}}window.customElements.define('battle-sim',BattleSim);const ButtonSharedStyles=css`
   button {
     font-family: inherit;
     font-size: 1rem;

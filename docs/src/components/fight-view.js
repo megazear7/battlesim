@@ -942,10 +942,37 @@ class FightView extends connect(store)(PageViewElement) {
           margin-right: 0;
         }
         .has-selection button {
-          opacity: 0.5;
+          opacity: 0.6;
         }
-        button.selected {
+        .unit-actions {
+          font-size: 0;
+          padding: 0;
+        }
+        .unit-actions button {
+          width: 25%;
+          box-sizing: border-box;
+          background-color: white;
+          margin: 0;
+          display: inline-block;
+          padding: 1rem 0.25rem;
+          font-size: 0.8rem;
+          border-left: 1.5px solid var(--app-primary-color);
+          border-right: 1.5px solid var(--app-primary-color);
+        }
+        .unit-actions button:first-child {
+          border-left: 3px solid var(--app-primary-color);
+        }
+        .unit-actions button:last-child {
+          border-right: 3px solid var(--app-primary-color);
+        }
+        .unit-actions button {
           opacity: 1;
+        }
+        .unit-actions button:hover {
+          background-color: var(--app-primary-color);
+        }
+        .unit-actions button.selected {
+          background-color: var(--app-primary-color);
         }
         .tooltip {
           position: relative;
@@ -980,7 +1007,7 @@ class FightView extends connect(store)(PageViewElement) {
             <hr>
             <p>${this._unit.desc}</p>
           </section>
-          <section>
+          <section class="unit-actions">
             <div class="${classMap({
       'has-selection': this._actionSelected
     })}">
