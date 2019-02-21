@@ -31,6 +31,7 @@ const battle = (state = initialState, action) => {
   }
   if (activeBattle && action.type === TAKE_ACTION) {
     let actionLog = {
+      time: activeBattle.second,
       message: action.message,
       updates: action.updates,
       units: [ ],

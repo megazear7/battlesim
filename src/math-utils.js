@@ -113,6 +113,23 @@ export function msSinceMidnight(date) {
   return date.getTime() - previousMidnight.getTime();
 }
 
+export function prettyTime(date) {
+    var hour;
+    var hourSuf;
+    if (date.getHours() >= 13) {
+      hour = date.getHours() - 12;
+      hourSuf = 'pm';
+    } else if (date.getHours() === 12) {
+      hour = date.getHours();
+      hourSuf = 'pm';
+    } else {
+      hour = date.getHours();
+      hourSuf = 'am';
+    }
+    var minutes = date.getMinutes() > 9 ? "" + date.getMinutes(): "0" + date.getMinutes();
+    return `${hour}:${minutes} ${hourSuf}`;
+}
+
 export function prettyDateTime(date) {
     var strArray=['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     var d = date.getDate();

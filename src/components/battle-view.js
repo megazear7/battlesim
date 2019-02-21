@@ -7,6 +7,7 @@ import { store } from '../store.js';
 import { SharedStyles } from './shared-styles.js';
 import { ButtonSharedStyles } from './button-shared-styles.js';
 import Unit from '../unit.js';
+import { prettyTime } from '../math-utils.js';
 
 class BattleView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -16,6 +17,7 @@ class BattleView extends connect(store)(PageViewElement) {
       _allUnitTemplates: { type: Object },
       _unitTemplates: { type: Object },
       _hasActiveBattle: { type: Boolean },
+      _activeBattle: { type: Object },
     };
   }
 
@@ -81,6 +83,15 @@ class BattleView extends connect(store)(PageViewElement) {
             <p class="error hidden">You must select a type of unit to add.</p>
             <p id="added-message">Unit Added!</p>
           </div>
+        </section>
+        <section>
+          <h3>Battle Log</h3>
+          <hr>
+          ${repeat(this._activeBattle.actionLog, log => html`
+            <p><small>${prettyTime(new Date(this._activeBattle.startTime + (log.time * 1000)))}</small></p>
+            <p>${log.message}</p>
+            <hr>
+          `)}
         </section>
       `:html`
         <section>
@@ -174,6 +185,7 @@ class BattleView extends connect(store)(PageViewElement) {
       this._army1Name = activeBattle.armies[1].name;
       this._allUnitTemplates = activeBattle.unitTemplates.map((unit, index) => ({ id: index, unit }));
       this._unitTemplates = this._allUnitTemplates.filter(({unit}) => unit.army === this.army);
+      this._activeBattle = activeBattle;
       this._hasActiveBattle = true;
     } else {
       this._hasActiveBattle = false;
