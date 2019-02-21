@@ -15,12 +15,12 @@ import Encounter from '../encounter.js';
 import Situation from '../situation.js';
 import { MINUTES_PER_TURN, ACTION_TYPE_UNIT, ACTION_TYPE_ARMY } from '../game.js';
 
-const REST = 'REST';
-const MOVE = 'MOVE';
-const CHARGE = 'CHARGE';
-const FIRE = 'FIRE';
-const ACTIONS = [ REST, MOVE, CHARGE, FIRE ];
-const NO_ACTION = 'NO_ACTION';
+export const REST = 'REST';
+export const MOVE = 'MOVE';
+export const CHARGE = 'CHARGE';
+export const FIRE = 'FIRE';
+export const ACTIONS = [ REST, MOVE, CHARGE, FIRE ];
+export const NO_ACTION = 'NO_ACTION';
 
 export const TERRAIN_TYPE_MOVEMENT = 'movement-terrain';
 export const TERRAIN_TYPE_DEFENDER = 'defender-terrain';
@@ -42,6 +42,7 @@ class FightView extends connect(store)(PageViewElement) {
       _showSeparation: { type: Boolean },
       _showTarget: { type: Boolean },
       _showHill: { type: Boolean },
+      _showPace: { type: Boolean },
       _showLeader: { type: Boolean },
       _showTerrain: { type: Boolean },
       _showResupply: { type: Boolean },
@@ -210,7 +211,7 @@ class FightView extends connect(store)(PageViewElement) {
                   </div>
                 `)}
                 <div class="${classMap({hidden: this.showPace})}">
-                  <radiogroup id="pace" class="${classMap({hidden: ! this._showHill})}">
+                  <radiogroup id="pace" class="${classMap({hidden: ! this._showPace})}">
                     <h5>Pace</h5>
                     <input type="radio" name="pace" id="pace-fast" value="1">
                     <label for="pace-fast">Fast</label>
@@ -354,6 +355,7 @@ class FightView extends connect(store)(PageViewElement) {
 
       this._actionMessages = actionResult.messages;
       this._actionUpdates = actionResult.updates;
+      this._savedEnvironment = this._environment;
       this._hideInputs();
       this._resetInputs();
       this._selectedAction = NO_ACTION;
@@ -371,7 +373,7 @@ class FightView extends connect(store)(PageViewElement) {
   }
 
   _progressToNextAction() {
-    store.dispatch(takeAction(this._actionUpdates, this._actionMessages, this._environment));
+    store.dispatch(takeAction(this._actionUpdates, this._actionMessages, this._savedEnvironment));
     this._resetAction();
   }
 
@@ -401,6 +403,7 @@ class FightView extends connect(store)(PageViewElement) {
     this._selectedAction = MOVE;
     this._showDistance = true;
     this._showHill = true;
+    this._showPace = true;
     this._showLeader = true;
     this._showTerrain = true;
     this._showTakeAction = true;
@@ -464,6 +467,7 @@ class FightView extends connect(store)(PageViewElement) {
     this._showEngagedAttackers = false;
     this._showEngagedDefenders = false;
     this._showHill = false;
+    this._showPace = false;
     this._showLeader = false;
     this._showTerrain = false;
     this._showResupply = false;
@@ -636,7 +640,7 @@ class FightView extends connect(store)(PageViewElement) {
       separation: this.separation,
       restTime: this.restTime,
       distance: this.distance,
-      actionSelected: this._actionSelected,
+      selectedAction: this._selectedAction,
       target: this.target,
       defenderTerrain: this._defenderTerrain,
       attackerChargeTerrain: this._selectedTerrain(TERRAIN_TYPE_MOVEMENT),
