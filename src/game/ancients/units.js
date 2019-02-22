@@ -21,33 +21,78 @@ const ARMY_1 = 0;
 const ARMY_2 = 1;
 const STANDARD_UNIT_SIZE = 1000;
 
-export const UNIT_SPEAR = {
+const BASIC_UNIT = {
   army: ARMY_1,
-  name: 'Spear',
+  name: 'Basic Unit',
   points: 100,
   strength: STANDARD_UNIT_SIZE,
   morale: 100,
   energy: 100,
   stands: 4,
-  openness: 15,
   minFallback: 10,
   maxFallback: 20,
   ammunition: 0,
-  armor: STANDARD_GAMBESON,
-  [MELEE_WEAPON]: SPEAR,
+  armor: NO_ARMOR,
+  [MELEE_WEAPON]: NO_WEAPON,
   [RANGED_WEAPON]: NO_WEAPON,
-  meleeSkill: 40,
-  rangedSkill: 10,
+  meleeSkill: 50,
+  rangedSkill: 50,
   experience: 50,
   leadership: 50,
-  troopType: FOOT_TROOP,
   fullStrength: STANDARD_UNIT_SIZE,
-  baseSpeed: 0.5,
-  baseBackwardsSpeed: 0.2,
-  chargeSpeed: 0.5,
   maneuverTime: 100,
 };
 
+const BASIC_FOOT_UNIT = {
+  ...BASIC_UNIT,
+  name: 'Basic Foot Unit',
+  troopType: FOOT_TROOP,
+  baseSpeed: 0.5,
+  baseBackwardsSpeed: 0.25,
+  chargeSpeed: 0.5,
+}
+
+const BASIC_MOUNTED_UNIT = {
+  ...BASIC_UNIT,
+  name: 'Basic Mounted Unit',
+  troopType: CAVALRY_TROOP,
+  baseSpeed: 1,
+  baseBackwardsSpeed: 0.5,
+  chargeSpeed: 1,
+}
+
+export const UNIT_SPEAR = {
+  ...BASIC_FOOT_UNIT,
+  name: 'Spear',
+  [MELEE_WEAPON]: SPEAR,
+  armor: STANDARD_GAMBESON,
+  rangedSkill: 10,
+  baseBackwardsSpeed: 0.2,
+  openness: 15,
+}
+
+export const UNIT_HEAVY_FOOT = {
+  ...BASIC_FOOT_UNIT,
+  name: 'Heavy Foot',
+  [MELEE_WEAPON]: BLADE,
+  armor: IRON_PARTIAL_CHAINMAIL,
+  rangedSkill: 10,
+  baseBackwardsSpeed: 0.15,
+  openness: 10,
+}
+
+export const UNIT_LIGHT_CAVALRY = {
+  ...BASIC_FOOT_UNIT,
+  name: 'Light Cavalry',
+  [MELEE_WEAPON]: BLADE,
+  armor: STANDARD_GAMBESON,
+  rangedSkill: 60,
+  baseBackwardsSpeed: 0.8,
+  openness: 40,
+}
+
 export const ANCIENTS_UNITS = [
   UNIT_SPEAR, { ...UNIT_SPEAR, army: ARMY_2 },
+  UNIT_HEAVY_FOOT, { ...UNIT_HEAVY_FOOT, army: ARMY_2 },
+  UNIT_LIGHT_CAVALRY, { ...UNIT_LIGHT_CAVALRY, army: ARMY_2 },
 ];
