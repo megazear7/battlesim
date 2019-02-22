@@ -1,4 +1,4 @@
-import { html } from 'lit-element';
+import { html, css } from 'lit-element';
 import { PageViewElement } from './page-view-element.js';
 import { SharedStyles } from './shared-styles.js';
 import RULESETS from '../game/rules.js';
@@ -17,7 +17,12 @@ class RulesView extends connect(store)(PageViewElement) {
 
   static get styles() {
     return [
-      SharedStyles
+      SharedStyles,
+      css`
+        img {
+          max-width: 100%;
+        }
+      `
     ];
   }
 
@@ -26,9 +31,10 @@ class RulesView extends connect(store)(PageViewElement) {
       ${this._hasActiveBattle ? html`
         <section>
           <h3>Scenario Rules</h3>
-          ${repeat(this._battleRules, ({heading, text}, index) => html`
+          ${repeat(this._battleRules, ({heading, text, image}, index) => html`
             <h5>${index+1} ${heading}</h5>
             <p>${text}</p>
+            ${image ? html`<div><img src=${image}></img></div>` : ``}
           `)}
         </section>
         <section>
@@ -38,9 +44,10 @@ class RulesView extends connect(store)(PageViewElement) {
           <section>
             <h4>${index+1} ${heading}</h4>
             <p>${text}</p>
-            ${repeat(subsections, ({heading, text}, subIndex) => html`
+            ${repeat(subsections, ({heading, text, image}, subIndex) => html`
               <h6>${index+1}.${subIndex+1} ${heading}</h6>
               <p>${text}</p>
+              ${image ? html`<div><img src=${image}></img></div>` : ``}
             `)}
           </section>
         `)}
