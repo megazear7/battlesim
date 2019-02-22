@@ -1,4 +1,28 @@
-import { weightedRandom, weightedRandomTowards, randomBellMod, dropOff, dropOffWithBoost, weightedAverage, roundToNearest, SECONDS_IN_AN_HOUR, randomMinutesBetween, SECONDS_IN_AN_MINUTE, prettyDateTime, SLOPE_UP, SLOPE_DOWN, SLOPE_NONE as SLOPE_NONE$1, MAX_TERRAIN, statModFor, MAX_EQUIPMENT_WEIGHT, MORALE_SUCCESS, MORALE_FAILURE, MAX_STAT, SECONDS_PER_TURN, YARDS_PER_INCH, MELEE, RANGED, STAT_PERCENTAGE, CASUALTY_MESSAGE_DESCRIPTIVE, YARDS_TO_FIGHT, MINUTES_PER_TURN, ACTION_TYPE_UNIT, ACTION_TYPE_ARMY, FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP, MELEE_WEAPON, RANGED_WEAPON, POWER_VS_FOOT, POWER_VS_MOUNTED, store, combat, html, css, repeat, classMap, PageViewElement, connect, takeAction, takeArmyAction, SharedStyles, ButtonSharedStyles, $unitDefault as Unit } from './battle-sim.js';
+import { MELEE, statModFor, MAX_EQUIPMENT_WEIGHT, MORALE_SUCCESS, MORALE_FAILURE, DEADLYNESS, SECONDS_PER_TURN, SECONDS_PER_ROUND, YARDS_TO_FIGHT, MAX_STAT, YARDS_PER_INCH, POWER_VS_FOOT, POWER_VS_MOUNTED, RANGED, STAT_PERCENTAGE, CASUALTY_MESSAGE_DESCRIPTIVE, MINUTES_PER_TURN, ACTION_TYPE_UNIT, ACTION_TYPE_ARMY, weightedRandom, weightedRandomTowards, SECONDS_IN_AN_MINUTE, randomBellMod, dropOff, dropOffWithBoost, weightedAverage, roundToNearest, SECONDS_IN_AN_HOUR, randomMinutesBetween, prettyDateTime, FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP, MELEE_WEAPON, RANGED_WEAPON, store, html, css, repeat, classMap, PageViewElement, connect, takeAction, takeArmyAction, SharedStyles, ButtonSharedStyles, $unitDefault as Unit } from './battle-sim.js';
+const SLOPE_UP = "SLOPE_UP";
+const SLOPE_DOWN = "SLOPE_DOWN";
+const SLOPE_NONE$1 = "SLOPE_NONE";
+const MAX_TERRAIN = 100;
+
+class Terrain {
+  constructor(config, combatType) {
+    this.config = config;
+    this.combatType = combatType;
+  }
+
+  armorRoll() {
+    return Math.random() * (this.combatType === MELEE ? this.config.melee.armor : this.config.ranged.armor);
+  }
+
+}
+
+var terrain = {
+  SLOPE_UP: SLOPE_UP,
+  SLOPE_DOWN: SLOPE_DOWN,
+  SLOPE_NONE: SLOPE_NONE$1,
+  MAX_TERRAIN: MAX_TERRAIN,
+  Terrain: Terrain
+};
 
 class ActingUnit {
   constructor({
@@ -82,6 +106,77 @@ class ActingUnit {
 
 var actingUnit = {
   default: ActingUnit
+};
+
+function combat(unit1, unit2, duration = SECONDS_PER_TURN) {
+  let secondsOfCombat = 0;
+  let secondsOfAction = 0;
+
+  while (secondsOfAction < duration) {
+    if (unit1.encounter.closeEnoughToFight) {
+      if (unit1.fallingback || unit1.status === MORALE_FAILURE) {
+        unit1.yardsFallenback += unit1.yardsMovedPer(SECONDS_PER_ROUND);
+
+        if (!unit2.fallingback && unit2.encounter.melee) {
+          unit2.yardsPersued += unit2.yardsMovedPer(SECONDS_PER_ROUND);
+        }
+      } else {
+        makeAttacks(unit1, unit2, SECONDS_PER_ROUND);
+      }
+
+      if (unit2.fallingback || unit2.status === MORALE_FAILURE) {
+        unit2.yardsFallenback += unit2.yardsMovedPer(SECONDS_PER_ROUND);
+
+        if (!unit1.fallingback && unit1.encounter.melee) {
+          unit1.yardsPersued += unit1.yardsMovedPer(SECONDS_PER_ROUND);
+        }
+      } else {
+        makeAttacks(unit2, unit1, SECONDS_PER_ROUND);
+      }
+
+      secondsOfCombat += SECONDS_PER_ROUND;
+    }
+
+    secondsOfAction += SECONDS_PER_ROUND;
+  }
+
+  return secondsOfCombat;
+}
+
+function makeAttacks(attacker, defender, duration) {
+  for (let i = 0; i < attacker.attacksForTime(duration); i++) {
+    if (attacker.attacksRequireAmmunition) {
+      attacker.ammunitionUsed += 1;
+    }
+
+    let attackHits = true;
+
+    if (attacker.skillRoll() * DEADLYNESS < defender.skillRoll()) {
+      attackHits = false;
+    }
+
+    let powerRoll = attacker.powerRoll();
+
+    if (powerRoll * DEADLYNESS < defender.armorRoll()) {
+      attackHits = false;
+    }
+
+    defender.protectingTerrain.forEach(terrainConfig => {
+      let terrain = new Terrain(terrainConfig, defender.encounterType);
+
+      if (powerRoll * DEADLYNESS < terrain.armorRoll()) {
+        attackHits = false;
+      }
+    });
+
+    if (attackHits) {
+      defender.casualties += 1;
+    }
+  }
+}
+
+var battleUtils = {
+  combat: combat
 };
 
 class Combatant extends ActingUnit {
@@ -1621,4 +1716,4 @@ var fightView = {
   TERRAIN_TYPE_RANGED_DEFENDER: TERRAIN_TYPE_RANGED_DEFENDER,
   TERRAIN_TYPES: TERRAIN_TYPES
 };
-export { actingUnit as $actingUnit, combatant as $combatant, fightView as $fightView, domUtils as $domUtils, encounter as $encounter, situation as $situation, soloUnit as $soloUnit, ActingUnit as $actingUnitDefault, Combatant as $combatantDefault, REST, MOVE, CHARGE, FIRE, ACTIONS, NO_ACTION, TERRAIN_TYPE_MOVEMENT, TERRAIN_TYPE_DEFENDER, TERRAIN_TYPE_MELEE_COMBAT, TERRAIN_TYPE_RANGED_DEFENDER, TERRAIN_TYPES, getRadioVal, Encounter as $encounterDefault, Situation as $situationDefault, SoloUnit as $soloUnitDefault };
+export { actingUnit as $actingUnit, battleUtils as $battleUtils, combatant as $combatant, fightView as $fightView, domUtils as $domUtils, encounter as $encounter, situation as $situation, soloUnit as $soloUnit, terrain as $terrain, ActingUnit as $actingUnitDefault, combat, Combatant as $combatantDefault, REST, MOVE, CHARGE, FIRE, ACTIONS, NO_ACTION, TERRAIN_TYPE_MOVEMENT, TERRAIN_TYPE_DEFENDER, TERRAIN_TYPE_MELEE_COMBAT, TERRAIN_TYPE_RANGED_DEFENDER, TERRAIN_TYPES, getRadioVal, Encounter as $encounterDefault, Situation as $situationDefault, SoloUnit as $soloUnitDefault, SLOPE_UP, SLOPE_DOWN, SLOPE_NONE$1 as SLOPE_NONE, MAX_TERRAIN, Terrain };

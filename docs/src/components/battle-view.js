@@ -92,7 +92,7 @@ class BattleView extends connect(store)(PageViewElement) {
               </option>
             </select>
             <select id="unit-template">
-              <option>Select Unit To Add (Required)</option>
+              <option value="">Select Unit To Add (Required)</option>
               ${repeat(this._unitTemplates, ({
       id,
       unit
@@ -105,7 +105,7 @@ class BattleView extends connect(store)(PageViewElement) {
             </select>
             <input id="name" type="text" placeholder="Optionally Change the Units Name"></input>
             <button @click="${this._add}">Add</button>
-            <p class="error hidden">You must select a type of unit to add.</p>
+            <p class="error hidden">You must select a type of unit to add and provide the unit a unique name.</p>
             <p id="added-message">Unit Added!</p>
           </div>
         </section>
@@ -180,12 +180,16 @@ class BattleView extends connect(store)(PageViewElement) {
     }) => unit.army === this.army);
   }
 
+  get nameElement() {
+    return this.shadowRoot.getElementById('name');
+  }
+
   get name() {
-    return this.shadowRoot.getElementById('name').value;
+    return this.nameElement.value;
   }
 
   get statsValid() {
-    return !isNaN(this.unitTemplate);
+    return !isNaN(this.unitTemplate) && this.nameElement.value != '';
   }
 
   _remove(e) {
@@ -200,8 +204,8 @@ class BattleView extends connect(store)(PageViewElement) {
   _add() {
     if (this.statsValid) {
       store.dispatch(add(this.unitTemplate, this.name));
-      this.shadowRoot.getElementById('army').value = '0';
-      this.shadowRoot.getElementById('name').value = '';
+      this.nameElement.value = '';
+      this.unitTemplateElement.value = '';
       let addedMessage = this.shadowRoot.getElementById('added-message');
       addedMessage.style.opacity = '1';
       addedMessage.style.display = 'block';
