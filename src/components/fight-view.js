@@ -11,6 +11,7 @@ import Unit from '../unit.js';
 import { prettyDateTime } from '../math-utils.js';
 import { getRadioVal } from '../dom-utils.js';
 import { SLOPE_UP, SLOPE_DOWN, SLOPE_NONE } from '../terrain.js';
+import TERRAIN from '../game/terrain.js';
 import Encounter from '../encounter.js';
 import Situation from '../situation.js';
 import { MINUTES_PER_TURN, ACTION_TYPE_UNIT, ACTION_TYPE_ARMY } from '../game.js';
@@ -504,7 +505,7 @@ class FightView extends connect(store)(PageViewElement) {
   _selectedTerrain(typeId) {
     return [...this.get(typeId).querySelectorAll('input')]
     .filter(input => input.checked)
-    .map(input => this._activeBattle.terrain[input.dataset.terrainIndex]);
+    .map(input => TERRAIN[this._activeBattle.terrain][input.dataset.terrainIndex]);
   }
 
   _updateTarget() {
@@ -593,28 +594,28 @@ class FightView extends connect(store)(PageViewElement) {
         id: TERRAIN_TYPE_MOVEMENT,
         name: "Movement",
         description: "This is the terrain that applys to the movement or charge.",
-        terrain: this._activeBattle.terrain.map((terrain, index) => ({ terrain, index })),
+        terrain: TERRAIN[this._activeBattle.terrain].map((terrain, index) => ({ terrain, index })),
         show: this._showTerrain && (this._selectedAction === CHARGE || this._selectedAction === MOVE)
       },
       {
         id: TERRAIN_TYPE_DEFENDER,
         name: "Defender",
         description: "This is the terrain that the defender is defending.",
-        terrain: this._activeBattle.terrain.map((terrain, index) => ({ terrain, index })).filter(({terrain}) => terrain.defendable),
+        terrain: TERRAIN[this._activeBattle.terrain].map((terrain, index) => ({ terrain, index })).filter(({terrain}) => terrain.defendable),
         show: this._showTerrain && this._selectedAction === CHARGE
       },
       {
         id: TERRAIN_TYPE_MELEE_COMBAT,
         name: "Combat",
         description: "This is the terrain that the combat that is taking place.",
-        terrain: this._activeBattle.terrain.map((terrain, index) => ({ terrain, index })).filter(({terrain}) => terrain.areaTerrain),
+        terrain: TERRAIN[this._activeBattle.terrain].map((terrain, index) => ({ terrain, index })).filter(({terrain}) => terrain.areaTerrain),
         show: this._showTerrain &&  this._selectedAction === CHARGE
       },
       {
         id: TERRAIN_TYPE_RANGED_DEFENDER,
         name: "Terrain",
         description: "This is the terrain that the defender recieves the benefit of.",
-        terrain: this._activeBattle.terrain.map((terrain, index) => ({ terrain, index })),
+        terrain: TERRAIN[this._activeBattle.terrain].map((terrain, index) => ({ terrain, index })),
         show: this._showTerrain && this._selectedAction === FIRE
       },
     ];

@@ -1,5 +1,5 @@
 import { ANCIENTS_UNITS_ID } from '../units.js';
-import { CIVIL_WAR_TERRAIN } from './terrain.js';
+import { ANCIENTS_TERRAIN_ID } from '../terrain.js';
 import {
   STAT_PERCENTAGE,
   STAT_DESCRIPTION,
@@ -17,7 +17,7 @@ export const BATTLE_TEMPLATES = [
     second: 0,
     startTime: Date.parse('11 May 245 11:30:00 EST'),
     events: [ ],
-    terrain: [...CIVIL_WAR_TERRAIN],
+    terrain: ANCIENTS_TERRAIN_ID,
     deadliness: 1,
     turnDuration: SECONDS_IN_AN_HOUR,
     playerTurnDuration: NO_PLAYER_TURNS,

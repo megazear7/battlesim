@@ -1,4 +1,4 @@
-export const CIVIL_WAR_TERRAIN = [
+export const ANCIENTS_TERRAIN = [
   {
     name: "Forest",
     descripton: "A thick grove of tree's that provide excelent cover but also are quite difficult to march through.",

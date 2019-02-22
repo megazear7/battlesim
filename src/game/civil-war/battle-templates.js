@@ -9,7 +9,7 @@ import {
 import {
   CANNON_6_POUNDER_CIVIL_WAR,
   CANNON_12_POUNDER_CIVIL_WAR } from './weapons.js';
-import { CIVIL_WAR_TERRAIN } from './terrain.js';
+import { CIVIL_WAR_TERRAIN_ID } from '../terrain.js';
 import {
   STAT_PERCENTAGE,
   STAT_DESCRIPTION,
@@ -35,7 +35,7 @@ export const BATTLE_TEMPLATES = [
         proceedClock: 10000, // TODO this needs to be the seconds between sunset and sunrise.
       }
     ],
-    terrain: [...CIVIL_WAR_TERRAIN],
+    terrain: CIVIL_WAR_TERRAIN_ID,
     deadliness: 1, // TODO Use this in combat calculations.
     turnDuration: SECONDS_IN_AN_HOUR, // TODO use this value here throughout instead of the constant.
     playerTurnDuration: NO_PLAYER_TURNS,
@@ -314,7 +314,7 @@ export const BATTLE_TEMPLATES = [
         proceedClock: 10000,
       }
     ],
-    terrain: [...CIVIL_WAR_TERRAIN],
+    terrain: CIVIL_WAR_TERRAIN_ID,
     deadliness: 1,
     turnDuration: SECONDS_IN_AN_HOUR,
     playerTurnDuration: NO_PLAYER_TURNS,
@@ -389,7 +389,7 @@ export const BATTLE_TEMPLATES = [
         proceedClock: 10000, // TODO this needs to be the seconds between sunset and sunrise.
       }
     ],
-    terrain: [...CIVIL_WAR_TERRAIN],
+    terrain: CIVIL_WAR_TERRAIN_ID,
     deadliness: 1, // TODO Use this in combat calculations.
     turnDuration: SECONDS_IN_AN_HOUR, // TODO use this value here throughout instead of the constant.
     playerTurnDuration: NO_PLAYER_TURNS,
@@ -626,7 +626,7 @@ export const BATTLE_TEMPLATES = [
         proceedClock: 10000, // TODO this needs to be the seconds between sunset and sunrise.
       }
     ],
-    terrain: [...CIVIL_WAR_TERRAIN],
+    terrain: CIVIL_WAR_TERRAIN_ID,
     deadliness: 1, // TODO Use this in combat calculations.
     turnDuration: SECONDS_IN_AN_HOUR, // TODO use this value here throughout instead of the constant.
     playerTurnDuration: NO_PLAYER_TURNS,
