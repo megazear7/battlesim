@@ -8,7 +8,7 @@
 
 ###### TODO
 
-1. Make a way to add images to the rules.
+1. Reference scenario rules by index.
 1. Update the app favicon.
 1. Fully review the results of each action, how environment details affect the outcome, and how unit stats affect the outcome.
 1. Update civil war army size to be regiment level.
