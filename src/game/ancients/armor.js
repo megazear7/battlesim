@@ -1,4 +1,5 @@
-export const NO_ARMOR =  'NO_ARMOR';
+import { NO_ARMOR } from '../../game.js';
+
 export const THIN_GAMBESON = 'THIN_GAMBESON';
 export const STANDARD_GAMBESON = 'STANDARD_GAMBESON';
 export const THICK_GAMBESON = 'THICK_GAMBESON';

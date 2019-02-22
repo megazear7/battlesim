@@ -7,7 +7,7 @@ import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
 import { SharedStyles } from './shared-styles.js';
 import { ButtonSharedStyles } from './button-shared-styles.js';
-import BATTLE_TEMPLATES from '../battle-templates.js';
+import BATTLE_TEMPLATES from '../game/battle-templates.js';
 
 class WarView extends connect(store)(PageViewElement) {
   static get properties() {

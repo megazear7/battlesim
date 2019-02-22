@@ -20,6 +20,10 @@ export const CASUALTY_MESSAGE_DESCRIPTIVE = 'CASUALTY_MESSAGE_DESCRIPTIVE';
 export const ACTION_TYPE_UNIT = 'ACTION_TYPE_UNIT';
 export const ACTION_TYPE_ARMY = 'ACTION_TYPE_ARMY';
 export const NO_PLAYER_TURNS = 'NO_PLAYER_TURNS';
+export const NO_ARMOR =  'NO_ARMOR';
+export const POWER_VS_FOOT = 'powerVsFoot';
+export const POWER_VS_MOUNTED = 'powerVsMounted';
+export const NO_WEAPON = 'NO_WEAPON';
 
 export function statModFor(stat) {
   return weightedRandomTowards(20, 80, stat, 2) / 100;

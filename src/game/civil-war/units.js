@@ -1,8 +1,7 @@
-import { NO_ARMOR } from './armor.js';
+import { NO_ARMOR, NO_WEAPON } from '../../game.js';
 import {
   BAYONETE,
   SPRINGFIELD_RIFLED_MUSKET,
-  NO_WEAPON,
   CANNON_24_POUNDER_CIVIL_WAR,
   CONFEDERATE_SMOOTH_BORE } from './weapons.js';
 import {
@@ -10,8 +9,7 @@ import {
   CAVALRY_TROOP,
   ARTILLERY_TROOP,
   MELEE_WEAPON,
-  RANGED_WEAPON } from './units.js';
-
+  RANGED_WEAPON } from '../../units.js';
 const UNION = 0;
 const CONFEDERATE = 1;
 const UNION_BRIGADE_SIZE = 3000;

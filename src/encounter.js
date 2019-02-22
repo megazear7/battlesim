@@ -1,5 +1,5 @@
-import { WEAPONS } from './weapons.js';
-import { ARMOR } from './armor.js';
+import WEAPONS from './game/weapons.js';
+import ARMOR from './game/armor.js';
 import { store } from './store.js';
 import { combat } from './battle-utils.js';
 import { randomMinutesBetween, SECONDS_IN_AN_MINUTE } from './math-utils.js';

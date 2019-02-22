@@ -1,4 +1,4 @@
-import BATTLE_TEMPLATES from '../battle-templates.js';
+import BATTLE_TEMPLATES from '../game/battle-templates.js';
 import {
   SECONDS_PER_TURN,
   ACTION_TYPE_UNIT,

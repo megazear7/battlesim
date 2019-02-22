@@ -5,7 +5,11 @@ import {
   FRESH_UNION_ARTILLERY,
   FRESH_CONFEDERATE_BRIGADE,
   FRESH_CONFEDERATE_CAVALRY_REGIMENT,
-  FRESH_CONFEDERATE_ARTILLERY, } from './civil-war-units.js';
+  FRESH_CONFEDERATE_ARTILLERY } from './units.js';
+import {
+  CANNON_6_POUNDER_CIVIL_WAR,
+  CANNON_12_POUNDER_CIVIL_WAR } from './weapons.js';
+import { CIVIL_WAR_TERRAIN } from './terrain.js';
 import {
   STAT_PERCENTAGE,
   STAT_DESCRIPTION,
@@ -13,12 +17,10 @@ import {
   CASUALTY_MESSAGE_DESCRIPTIVE,
   ACTION_TYPE_UNIT,
   ACTION_TYPE_ARMY,
-  NO_PLAYER_TURNS } from './game.js';
-import { msSinceMidnight, SECONDS_IN_AN_HOUR } from './math-utils.js';
-import { LONGBOW, CANNON_6_POUNDER_CIVIL_WAR, CANNON_12_POUNDER_CIVIL_WAR, } from './weapons.js';
-import { CIVIL_WAR_TERRAIN } from './terrain.js';
+  NO_PLAYER_TURNS } from '../../game.js';
+import { msSinceMidnight, SECONDS_IN_AN_HOUR } from '../../math-utils.js';
 
-export default [
+export const BATTLE_TEMPLATES = [
   {
     name: "Bull Run",
     ruleset: 0,
