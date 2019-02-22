@@ -10,6 +10,7 @@ export default class Unit {
   constructor({
                 army = 0,
                 name,
+                points = 0,
                 unitType = FOOT_TROOP,
                 openness = 20,
                 minFallback = 10,
@@ -42,6 +43,7 @@ export default class Unit {
     this.id = id;
     this.battle = battle;
     this.name = name;
+    this.points = points;
     this.unitType = unitType;
     this.openness = openness;
     this.minFallback = minFallback;

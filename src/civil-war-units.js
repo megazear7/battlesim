@@ -22,6 +22,7 @@ const CONFEDERATE_CAVALRY_REGIMENT_SIZE = 1000;
 export const FRESH_UNION_BRIGADE = {
   army: UNION,
   name: 'Fresh Union Brigade',
+  points: 100,
   strength: UNION_BRIGADE_SIZE,
   morale: 100,
   energy: 100,
@@ -48,6 +49,7 @@ export const FRESH_UNION_BRIGADE = {
 export const FRESH_UNION_CAVALRY_REGIMENT = {
   army: UNION,
   name: 'Fresh Union Cavalry Regiment',
+  points: 100,
   strength: UNION_CAVALRY_REGIMENT_SIZE,
   morale: 100,
   energy: 100,
@@ -84,6 +86,7 @@ export const FRESH_UNION_CAVALRY_REGIMENT = {
 export const FRESH_UNION_ARTILLERY = {
   army: UNION,
   name: 'Fresh Union Artillery (50 Cannons)',
+  points: 100,
   strength: 50,
   morale: 100,
   energy: 100,
@@ -110,6 +113,7 @@ export const FRESH_UNION_ARTILLERY = {
 export const FRESH_CONFEDERATE_BRIGADE = {
   army: CONFEDERATE,
   name: 'Fresh Confederate Brigade',
+  points: 100,
   strength: CONFEDERATE_BRIGADE_SIZE,
   morale: 100,
   energy: 100,
@@ -136,6 +140,7 @@ export const FRESH_CONFEDERATE_BRIGADE = {
 export const FRESH_CONFEDERATE_CAVALRY_REGIMENT = {
   army: CONFEDERATE,
   name: 'Fresh Confederate Cavalry Regiment',
+  points: 100,
   strength: CONFEDERATE_CAVALRY_REGIMENT_SIZE,
   morale: 100,
   energy: 100,
@@ -172,6 +177,7 @@ export const FRESH_CONFEDERATE_CAVALRY_REGIMENT = {
 export const FRESH_CONFEDERATE_ARTILLERY = {
   army: CONFEDERATE,
   name: 'Fresh Confederate Artillery (50 Cannons)',
+  points: 100,
   strength: 50,
   morale: 100,
   energy: 100,
@@ -199,20 +205,24 @@ export const CIVIL_WAR_UNITS = [
   FRESH_UNION_BRIGADE,
   { ... FRESH_UNION_BRIGADE,
     name: 'Tired Union Brigade',
+    points: 80,
     energy: 50,
   },
   { ... FRESH_UNION_BRIGADE,
     name: 'Battered Union Brigade',
+    points: 60,
     strength: UNION_BRIGADE_SIZE * 0.7,
     energy: 80
   },
   FRESH_CONFEDERATE_BRIGADE,
   { ... FRESH_CONFEDERATE_BRIGADE,
     name: 'Tired Confederate Brigade',
+    points: 80,
     energy: 50,
   },
   { ... FRESH_CONFEDERATE_BRIGADE,
     name: 'Battered Confederate Brigade',
+    points: 60,
     strength: CONFEDERATE_BRIGADE_SIZE * 0.7,
     energy: 80
   },

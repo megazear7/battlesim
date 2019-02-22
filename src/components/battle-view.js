@@ -46,6 +46,9 @@ class BattleView extends connect(store)(PageViewElement) {
         .unit:hover h5 {
           color: var(--app-primary-color);
         }
+        .point-cost {
+          float: right;
+        }
       `
     ];
   }
@@ -56,9 +59,15 @@ class BattleView extends connect(store)(PageViewElement) {
         ${repeat(this.armies, ({name, units}) => html`
           <section>
             <h3>${name}</h3>
+            ${this._activeBattle.usesPoints ? html`
+              <p>${units.map(unit => unit.unit.points).reduce((total, cost) => total + cost, 0)} points</p>
+            ` : ''}
             ${repeat(units, ({index, unit}) => html`
               <div class="unit" data-index="${index}">
-                <h4 class="unit-name">${unit.name}</h4>
+                <h4 class="unit-name">
+                  ${unit.name}
+                  ${this._activeBattle.usesPoints ? html`<small class="point-cost">${unit.points} points</small>` : ''}
+                </h4>
                 <button class="btn-link remove-unit" @click="${this._remove}">Remove</button>
                 <p>${unit.detailedStatus}</p>
                 <p>${unit.desc}</p>
@@ -70,13 +79,20 @@ class BattleView extends connect(store)(PageViewElement) {
           <h3>Add Unit</h3>
           <div>
             <select id="army" @change="${this._armyChanged}">
-              <option value="0">${this._army0Name}</option>
-              <option value="1">${this._army1Name}</option>
+              <option value="0">
+                ${this._army0Name}
+              </option>
+              <option value="1">
+                ${this._army1Name}
+              </option>
             </select>
             <select id="unit-template">
               <option>Select Unit To Add (Required)</option>
               ${repeat(this._unitTemplates, ({id, unit}) => html`
-                <option value="${id}">${unit.name}</option>
+                <option value="${id}">
+                  ${unit.name}
+                  ${this._activeBattle.usesPoints ? html`(${unit.points} points)` : ''}
+                </option>
               `)}
             </select>
             <input id="name" type="text" placeholder="Optionally Change the Units Name"></input>

@@ -40,6 +40,7 @@ export default [
     strengthReporting: STRENGTH_MESSAGE_DESCRIPTIVE,
     casualtyReporting: CASUALTY_MESSAGE_DESCRIPTIVE,
     statReporting: STAT_DESCRIPTION,
+    usesPoints: false,
     activeArmy: 0,
     actionLog: [ ],
     activeAction: {
@@ -318,6 +319,7 @@ export default [
     strengthReporting: STRENGTH_MESSAGE_DESCRIPTIVE,
     casualtyReporting: CASUALTY_MESSAGE_DESCRIPTIVE,
     statReporting: STAT_DESCRIPTION,
+    usesPoints: false,
     activeArmy: 0,
     actionLog: [ ],
     activeAction: {
@@ -392,6 +394,7 @@ export default [
     strengthReporting: 10,
     casualtyReporting: 1,
     statReporting: STAT_PERCENTAGE,
+    usesPoints: false,
     activeArmy: 0,
     actionLog: [ ],
     activeAction: {
@@ -604,6 +607,96 @@ export default [
       {
         heading: 'Night time actions',
         text: 'During night time each unit that is within 12 inches of an enemy unit must move toward their table edge. The distance they move is 12 - X where X is the distance to the closest enemy unit. They may chose to move further than this.'
+      },
+    ]
+  },
+  {
+    name: "Point Based Civil War",
+    ruleset: 0,
+    second: 0,
+    startTime: Date.parse('11 May 1862 11:30:00 EST'),
+    events: [ // TODO Implement the events feature.
+      {
+        time: msSinceMidnight(new Date(Date.parse('11 May 1862 20:36:00 EST'))),
+        title: 'Sun Set',
+        descripton: 'The sun has set. It might be clear as to which army won the battle. If it is not then you may proceed to the next morning and continue the engagment. Each unit withdraws at least 6 inches and at most 18 inches.',
+        provideArmyOverview: true,
+        proceedClock: 10000, // TODO this needs to be the seconds between sunset and sunrise.
+      }
+    ],
+    terrain: [...CIVIL_WAR_TERRAIN],
+    deadliness: 1, // TODO Use this in combat calculations.
+    turnDuration: SECONDS_IN_AN_HOUR, // TODO use this value here throughout instead of the constant.
+    playerTurnDuration: NO_PLAYER_TURNS,
+    strengthReporting: 10,
+    casualtyReporting: 1,
+    statReporting: STAT_PERCENTAGE,
+    usesPoints: true,
+    activeArmy: 0,
+    actionLog: [ ],
+    activeAction: {
+      type: ACTION_TYPE_UNIT,
+      index: 0,
+    },
+    turnStarted: 0,
+    armies: [
+      {
+        name: "Union",
+        armyActionTitle: "Union Army Actions.",
+        armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
+        nextAction: 0,
+        leaders: [
+          {
+            shortname: "McDowell",
+            name: "Brigadier General Irvin McDowell",
+            leadership: 80,
+          },
+          {
+            shortname: "Tyler",
+            name: "Colonel Daniel Tyler",
+            leadership: 68,
+          },
+          {
+            shortname: "Hunter",
+            name: "Colonel David Hunter",
+            leadership: 78,
+          },
+        ]
+      },
+      {
+        name: "Confederate",
+        armyActionTitle: "Confederate Army Actions.",
+        armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
+        nextAction: 0,
+        leaders: [
+          {
+            shortname: "Beauregard",
+            name: "Brigadier General Beauregard",
+            leadership: 88,
+          },
+          {
+            shortname: "Longstreet",
+            name: "Brigadier General Longstreet",
+            leadership: 95,
+          },
+          {
+            shortname: "Bartow",
+            name: "Colonel Bartow",
+            leadership: 78,
+          },
+        ]
+      },
+    ],
+    units: [ ],
+    unitTemplates: CIVIL_WAR_UNITS,
+    rules: [
+      {
+        heading: 'Create Your Army.',
+        text: 'Create your army on the battle page. Each unit will cost a certain number of points.'
+      },
+      {
+        heading: 'Setup',
+        text: 'Currently there are no setup instructions for this battle. Setup the terrain and units however you would like or try to base it off of the actual battle.'
       },
     ]
   },
