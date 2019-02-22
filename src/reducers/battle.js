@@ -73,6 +73,12 @@ const battle = (state = initialState, action) => {
     if (action.battleStats.name) {
       newBattle.name = action.battleStats.name;
     }
+    if (action.battleStats.army1Name) {
+      newBattle.armies[0].name = action.battleStats.army1Name;
+    }
+    if (action.battleStats.army2Name) {
+      newBattle.armies[1].name = action.battleStats.army2Name;
+    }
     newBattle.units.forEach(unit => {
       unit.nextAction = Math.random() * SECONDS_PER_TURN;
     });

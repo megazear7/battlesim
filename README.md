@@ -8,14 +8,11 @@
 
 ###### TODO
 
-1. Add ability to override army names.
-1. Fully review the results of each action, how environment details affect the outcome, and how unit stats affect the outcome.
+1. Make a way to add images to the rules.
 1. Update the app favicon.
+1. Fully review the results of each action, how environment details affect the outcome, and how unit stats affect the outcome.
 1. Update civil war army size to be regiment level.
 1. Update civil war ruleset based on our practice games.
-1. Make a way to add images to the rules.
-1. Bull run setup instructions.
-1. Make an 'ancients' ruleset and a ww1 era ruleset each with an example battle.
 1. Event sourced data for step back in time or undoing actions.
 
 ### Deployment
