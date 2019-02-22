@@ -258,6 +258,7 @@ class BattleSim extends connect(store)(LitElement) {
     // To force all event listeners for gestures to be passive.
     // See https://www.polymer-project.org/3.0/docs/devguide/settings#setting-passive-touch-gestures
     setPassiveTouchGestures(true);
+    this._showMobileNav = true;
   }
 
   connectedCallback() {
