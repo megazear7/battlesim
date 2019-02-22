@@ -108,10 +108,6 @@ export default class Unit {
     return (this.strength / this.fullStrength) * 100;
   }
 
-  get perfectStatus() {
-    return `${this.strength} soldiers remaining of the original ${this.fullStrength}. Morale is at ${this.morale}% of their maximum. There energy level is at ${this.energy}% of their maximum.`;
-  }
-
   get detailedStatus() {
     if (this.strength <= 0) {
       return `${this.name} has been destroyed.`;
@@ -190,7 +186,7 @@ export default class Unit {
 
   get moraleMessage() {
     return this.battle.statReporting === STAT_PERCENTAGE
-      ? `They are at ${this.morale}% morale `
+      ? `They are at ${Math.ceil(this.morale)}% morale `
       : this.moraleDesc;
   }
 
@@ -252,7 +248,7 @@ export default class Unit {
 
   get energyMessage() {
     return this.battle.statReporting === STAT_PERCENTAGE
-      ? `and ${this.energy}% energy.`
+      ? `and ${Math.ceil(this.energy)}% energy.`
       : this.energyDesc;
   }
 
