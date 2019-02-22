@@ -1,4 +1,4 @@
-import { MELEE, statModFor, MAX_EQUIPMENT_WEIGHT, MORALE_SUCCESS, MORALE_FAILURE, DEADLYNESS, SECONDS_PER_TURN, SECONDS_PER_ROUND, YARDS_TO_FIGHT, MAX_STAT, YARDS_PER_INCH, POWER_VS_FOOT, POWER_VS_MOUNTED, RANGED, STAT_PERCENTAGE, CASUALTY_MESSAGE_DESCRIPTIVE, MINUTES_PER_TURN, ACTION_TYPE_UNIT, ACTION_TYPE_ARMY, weightedRandom, weightedRandomTowards, SECONDS_IN_AN_MINUTE, randomBellMod, dropOff, dropOffWithBoost, weightedAverage, roundToNearest, SECONDS_IN_AN_HOUR, randomMinutesBetween, prettyDateTime, FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP, MELEE_WEAPON, RANGED_WEAPON, store, html, css, repeat, classMap, PageViewElement, connect, takeAction, takeArmyAction, SharedStyles, ButtonSharedStyles, $unitDefault as Unit } from './battle-sim.js';
+import { MELEE, statModFor, MAX_EQUIPMENT_WEIGHT, MORALE_SUCCESS, MORALE_FAILURE, DEADLYNESS, SECONDS_PER_TURN, SECONDS_PER_ROUND, YARDS_TO_FIGHT, MAX_STAT, YARDS_PER_INCH, POWER_VS_FOOT, POWER_VS_MOUNTED, RANGED, STAT_PERCENTAGE, CASUALTY_MESSAGE_DESCRIPTIVE, MINUTES_PER_TURN, ACTION_TYPE_UNIT, ACTION_TYPE_ARMY, weightedRandom, weightedRandomTowards, SECONDS_IN_AN_MINUTE, randomBellMod, dropOff, dropOffWithBoost, weightedAverage, roundToNearest, SECONDS_IN_AN_HOUR, randomMinutesBetween, prettyDateTime, FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP, MELEE_WEAPON, RANGED_WEAPON, store, html, css, repeat, classMap, PageViewElement, connect, takeAction, takeArmyAction, SharedStyles, ButtonSharedStyles, $unitDefault as Unit, $terrainDefault as TERRAIN } from './battle-sim.js';
 const SLOPE_UP = "SLOPE_UP";
 const SLOPE_DOWN = "SLOPE_DOWN";
 const SLOPE_NONE$1 = "SLOPE_NONE";
@@ -1531,7 +1531,7 @@ class FightView extends connect(store)(PageViewElement) {
   }
 
   _selectedTerrain(typeId) {
-    return [...this.get(typeId).querySelectorAll('input')].filter(input => input.checked).map(input => this._activeBattle.terrain[input.dataset.terrainIndex]);
+    return [...this.get(typeId).querySelectorAll('input')].filter(input => input.checked).map(input => TERRAIN[this._activeBattle.terrain][input.dataset.terrainIndex]);
   }
 
   _updateTarget() {
@@ -1619,7 +1619,7 @@ class FightView extends connect(store)(PageViewElement) {
       id: TERRAIN_TYPE_MOVEMENT,
       name: "Movement",
       description: "This is the terrain that applys to the movement or charge.",
-      terrain: this._activeBattle.terrain.map((terrain, index) => ({
+      terrain: TERRAIN[this._activeBattle.terrain].map((terrain, index) => ({
         terrain,
         index
       })),
@@ -1628,7 +1628,7 @@ class FightView extends connect(store)(PageViewElement) {
       id: TERRAIN_TYPE_DEFENDER,
       name: "Defender",
       description: "This is the terrain that the defender is defending.",
-      terrain: this._activeBattle.terrain.map((terrain, index) => ({
+      terrain: TERRAIN[this._activeBattle.terrain].map((terrain, index) => ({
         terrain,
         index
       })).filter(({
@@ -1639,7 +1639,7 @@ class FightView extends connect(store)(PageViewElement) {
       id: TERRAIN_TYPE_MELEE_COMBAT,
       name: "Combat",
       description: "This is the terrain that the combat that is taking place.",
-      terrain: this._activeBattle.terrain.map((terrain, index) => ({
+      terrain: TERRAIN[this._activeBattle.terrain].map((terrain, index) => ({
         terrain,
         index
       })).filter(({
@@ -1650,7 +1650,7 @@ class FightView extends connect(store)(PageViewElement) {
       id: TERRAIN_TYPE_RANGED_DEFENDER,
       name: "Terrain",
       description: "This is the terrain that the defender recieves the benefit of.",
-      terrain: this._activeBattle.terrain.map((terrain, index) => ({
+      terrain: TERRAIN[this._activeBattle.terrain].map((terrain, index) => ({
         terrain,
         index
       })),

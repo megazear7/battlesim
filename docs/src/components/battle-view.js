@@ -1,4 +1,4 @@
-import { html, css, repeat, PageViewElement, add, remove, connect, store, SharedStyles, ButtonSharedStyles, $unitDefault as Unit, prettyTime } from './battle-sim.js';
+import { html, css, repeat, PageViewElement, add, remove, connect, store, SharedStyles, ButtonSharedStyles, $unitDefault as Unit, prettyTime, $unitsDefault as UNITS } from './battle-sim.js';
 import { MOVE, REST } from './fight-view.js';
 
 class BattleView extends connect(store)(PageViewElement) {
@@ -236,7 +236,7 @@ class BattleView extends connect(store)(PageViewElement) {
       }) => unit.armyIndex === 1);
       this._army0Name = activeBattle.armies[0].name;
       this._army1Name = activeBattle.armies[1].name;
-      this._allUnitTemplates = activeBattle.unitTemplates.map((unit, index) => ({
+      this._allUnitTemplates = UNITS[activeBattle.unitTemplates].map((unit, index) => ({
         id: index,
         unit
       }));
