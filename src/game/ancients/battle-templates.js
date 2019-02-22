@@ -15,7 +15,7 @@ import { msSinceMidnight, SECONDS_IN_AN_HOUR } from '../../math-utils.js';
 export const BATTLE_TEMPLATES = [
   {
     name: "Point Based Ancient Warfare",
-    ruleset: 0,
+    ruleset: 1,
     second: 0,
     startTime: Date.parse('11 May 245 11:30:00 EST'),
     events: [ ],

@@ -1,7 +1,7 @@
 import { html } from 'lit-element';
 import { PageViewElement } from './page-view-element.js';
 import { SharedStyles } from './shared-styles.js';
-import RULESETS from '../rulesets.js';
+import RULESETS from '../game/rules.js';
 import { repeat } from 'lit-html/directives/repeat';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
@@ -36,10 +36,10 @@ class RulesView extends connect(store)(PageViewElement) {
         </section>
         ${repeat(this._ruleset.sections, ({heading, text, subsections}, index) => html`
           <section>
-            <h4>${index+1} ${heading}</h3>
+            <h4>${index+1} ${heading}</h4>
             <p>${text}</p>
             ${repeat(subsections, ({heading, text}, subIndex) => html`
-              <h6>${index+1}.${subIndex+1} ${heading}</h5>
+              <h6>${index+1}.${subIndex+1} ${heading}</h6>
               <p>${text}</p>
             `)}
           </section>
@@ -56,7 +56,9 @@ class RulesView extends connect(store)(PageViewElement) {
     if (state.battle.battles.length > state.battle.activeBattle) {
       let activeBattle = state.battle.battles[state.battle.activeBattle];
       this._battleRules = activeBattle.rules;
+      console.log(RULESETS);
       this._ruleset= RULESETS[activeBattle.ruleset];
+      console.log(this._ruleset);
       this._hasActiveBattle = true;
     } else {
       this._hasActiveBattle = false;
