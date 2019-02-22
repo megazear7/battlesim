@@ -1,14 +1,16 @@
 import {
   NO_ARMOR,
   NO_WEAPON,
-  STANDARD_GAMBESON,
-  IRON_PARTIAL_CHAINMAIL } from '../../game.js';
+  } from '../../game.js';
 import {
   SPEAR,
   PIKE,
   BLADE,
   BOW,
   LONGBOW } from './weapons.js';
+import {
+  STANDARD_GAMBESON,
+  IRON_PARTIAL_CHAINMAIL } from './armor.js';
 import {
   FOOT_TROOP,
   CAVALRY_TROOP,

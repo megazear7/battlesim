@@ -4,7 +4,7 @@ import {
   NO_WEAPON,
 } from '../../game.js';
 
-export const SWORD = 'SWORD';
+export const BLADE = 'BLADE';
 export const SPEAR = 'SPEAR';
 export const PIKE = 'PIKE';
 export const BOW = 'LONGBOW';
@@ -20,7 +20,7 @@ export const WEAPONS = {
     range: 0,
     dropoff: 2,
   },
-  [SWORD]: {
+  [BLADE]: {
     name: 'Sword',
     [POWER_VS_FOOT]: 50,
     [POWER_VS_MOUNTED]: 20,

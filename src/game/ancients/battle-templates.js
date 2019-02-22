@@ -1,9 +1,6 @@
 import {
   ANCIENTS_UNITS,
   UNIT_SPEAR } from './units.js';
-import {
-  CANNON_6_POUNDER_CIVIL_WAR,
-  CANNON_12_POUNDER_CIVIL_WAR } from './weapons.js';
 import { CIVIL_WAR_TERRAIN } from './terrain.js';
 import {
   STAT_PERCENTAGE,
