@@ -56,7 +56,7 @@ const battle = (state = initialState, action) => {
     activeBattle.armies[activeBattle.activeAction.index].nextAction += SECONDS_PER_TURN;
     updateTime(activeBattle);
   } else if (activeBattle && action.type === ADD) {
-    let newUnit = activeBattle.unitTemplates[action.unitTemplate];
+    let newUnit = { ...activeBattle.unitTemplates[action.unitTemplate] };
     newUnit.nextAction = activeBattle.second + 1;
     if (action.name) {
       newUnit.name = action.name;
