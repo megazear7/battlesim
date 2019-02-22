@@ -55,8 +55,10 @@ class WarView extends connect(store)(PageViewElement) {
               <option value="${index}">${battleTemplate.name}</option>
             `)}
           </select>
-          <input id="name" type="text" placeholder="Optional: Provide a Different Name for the Battle"></input>
           <button @click="${this._create}">Create</button>
+          <input id="name" type="text" placeholder="Optionally override battle name"></input>
+          <input id="army1-name" type="text" placeholder="Optionally override army 1 name"></input>
+          <input id="army2-name" type="text" placeholder="Optionally override army 2 name"></input>
         </div>
       </section>
     `;
@@ -70,8 +72,24 @@ class WarView extends connect(store)(PageViewElement) {
     return this.shadowRoot.getElementById('name');
   }
 
+  get newBattleArmy1NameElement() {
+    return this.shadowRoot.getElementById('army1-name');
+  }
+
+  get newBattleArmy2NameElement() {
+    return this.shadowRoot.getElementById('army2-name');
+  }
+
   get newBattleName() {
     return this.newBattleNameElement.value;
+  }
+
+  get newBattleArmy1Name() {
+    return this.newBattleArmy1NameElement.value;
+  }
+
+  get newBattleArmy2Name() {
+    return this.newBattleArmy2NameElement.value;
   }
 
   set newBattleName(value) {
@@ -80,8 +98,10 @@ class WarView extends connect(store)(PageViewElement) {
 
   get battleStats() {
     return {
+      templateIndex: this.newBattleTemplate,
       name: this.newBattleName,
-      templateIndex: this.newBattleTemplate
+      army1Name: this.newBattleArmy1Name,
+      army2Name: this.newBattleArmy2Name
     };
   }
 
