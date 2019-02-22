@@ -1,4 +1,4 @@
-import { html, PageViewElement, SharedStyles, repeat, connect, store } from './battle-sim.js';
+import { html, css, PageViewElement, SharedStyles, repeat, connect, store } from './battle-sim.js';
 var CIVIL_WAR_RULES = {
   name: "Civil War Rules",
   sections: [{
@@ -292,7 +292,11 @@ class RulesView extends connect(store)(PageViewElement) {
   }
 
   static get styles() {
-    return [SharedStyles];
+    return [SharedStyles, css`
+        img {
+          max-width: 100%;
+        }
+      `];
   }
 
   render() {
@@ -302,10 +306,12 @@ class RulesView extends connect(store)(PageViewElement) {
           <h3>Scenario Rules</h3>
           ${repeat(this._battleRules, ({
       heading,
-      text
+      text,
+      image
     }, index) => html`
             <h5>${index + 1} ${heading}</h5>
             <p>${text}</p>
+            ${image ? html`<div><img src=${image}></img></div>` : ``}
           `)}
         </section>
         <section>
@@ -321,10 +327,12 @@ class RulesView extends connect(store)(PageViewElement) {
             <p>${text}</p>
             ${repeat(subsections, ({
       heading,
-      text
+      text,
+      image
     }, subIndex) => html`
               <h6>${index + 1}.${subIndex + 1} ${heading}</h6>
               <p>${text}</p>
+              ${image ? html`<div><img src=${image}></img></div>` : ``}
             `)}
           </section>
         `)}
