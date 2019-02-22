@@ -97,6 +97,14 @@ class WarView extends connect(store)(PageViewElement) {
     this.newBattleNameElement.value = value;
   }
 
+  set newBattleArmy1Name(value) {
+    this.newBattleArmy1NameElement.value = value;
+  }
+
+  set newBattleArmy2Name(value) {
+    this.newBattleArmy2NameElement.value = value;
+  }
+
   get battleStats() {
     return {
       templateIndex: this.newBattleTemplate,
@@ -109,6 +117,8 @@ class WarView extends connect(store)(PageViewElement) {
   _create() {
     store.dispatch(createNewBattle(this.battleStats));
     this.newBattleName = '';
+    this.newBattleArmy1Name = '';
+    this.newBattleArmy2Name = '';
   }
 
   _playBattle(e) {
