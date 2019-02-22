@@ -1,6 +1,4 @@
-import {
-  ANCIENTS_UNITS,
-  UNIT_SPEAR } from './units.js';
+import { ANCIENTS_UNITS_ID } from '../units.js';
 import { CIVIL_WAR_TERRAIN } from './terrain.js';
 import {
   STAT_PERCENTAGE,
@@ -63,7 +61,7 @@ export const BATTLE_TEMPLATES = [
       },
     ],
     units: [ ],
-    unitTemplates: ANCIENTS_UNITS,
+    unitTemplates: ANCIENTS_UNITS_ID,
     rules: [
       {
         heading: 'Create Your Army.',

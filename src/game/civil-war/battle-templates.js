@@ -1,5 +1,5 @@
+import { CIVIL_WAR_UNITS_ID } from '../units.js';
 import {
-  CIVIL_WAR_UNITS,
   FRESH_UNION_BRIGADE,
   FRESH_UNION_CAVALRY_REGIMENT,
   FRESH_UNION_ARTILLERY,
@@ -284,7 +284,7 @@ export const BATTLE_TEMPLATES = [
         morale: 99,
       },
     ],
-    unitTemplates: CIVIL_WAR_UNITS,
+    unitTemplates: CIVIL_WAR_UNITS_ID,
     rules: [
       {
         heading: 'The battle begins.',
@@ -359,7 +359,7 @@ export const BATTLE_TEMPLATES = [
         morale: 10,
       },
     ],
-    unitTemplates: CIVIL_WAR_UNITS,
+    unitTemplates: CIVIL_WAR_UNITS_ID,
     rules: [
       {
         heading: 'The battle begins.',
@@ -596,7 +596,7 @@ export const BATTLE_TEMPLATES = [
         morale: 99,
       },
     ],
-    unitTemplates: CIVIL_WAR_UNITS,
+    unitTemplates: CIVIL_WAR_UNITS_ID,
     rules: [
       {
         heading: 'The battle begins.',
@@ -690,7 +690,7 @@ export const BATTLE_TEMPLATES = [
       },
     ],
     units: [ ],
-    unitTemplates: CIVIL_WAR_UNITS,
+    unitTemplates: CIVIL_WAR_UNITS_ID,
     rules: [
       {
         heading: 'Create Your Army.',

@@ -9,6 +9,7 @@ import { ButtonSharedStyles } from './button-shared-styles.js';
 import Unit from '../unit.js';
 import { prettyTime } from '../math-utils.js';
 import { MOVE, REST } from './fight-view.js';
+import UNITS from '../game/units.js';
 
 class BattleView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -222,7 +223,7 @@ class BattleView extends connect(store)(PageViewElement) {
       this._army1Units = units.filter(({unit}) => unit.armyIndex === 1);
       this._army0Name = activeBattle.armies[0].name;
       this._army1Name = activeBattle.armies[1].name;
-      this._allUnitTemplates = activeBattle.unitTemplates.map((unit, index) => ({ id: index, unit }));
+      this._allUnitTemplates = UNITS[activeBattle.unitTemplates].map((unit, index) => ({ id: index, unit }));
       this._unitTemplates = this._allUnitTemplates.filter(({unit}) => unit.army === this.army);
       this._activeBattle = activeBattle;
       this._hasActiveBattle = true;

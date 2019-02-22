@@ -10,7 +10,8 @@ import {
   LONGBOW } from './weapons.js';
 import {
   STANDARD_GAMBESON,
-  IRON_PARTIAL_CHAINMAIL } from './armor.js';
+  IRON_PARTIAL_CHAINMAIL,
+  STEEL_COMPLETE_PLATEMAIL } from './armor.js';
 import {
   FOOT_TROOP,
   CAVALRY_TROOP,
@@ -82,7 +83,7 @@ export const UNIT_HEAVY_FOOT = {
 }
 
 export const UNIT_LIGHT_CAVALRY = {
-  ...BASIC_FOOT_UNIT,
+  ...BASIC_MOUNTED_UNIT,
   name: 'Light Cavalry',
   [MELEE_WEAPON]: BLADE,
   armor: STANDARD_GAMBESON,
@@ -91,8 +92,19 @@ export const UNIT_LIGHT_CAVALRY = {
   openness: 40,
 }
 
+export const UNIT_KNIGHTS = {
+  ...BASIC_MOUNTED_UNIT,
+  name: 'Knights',
+  [MELEE_WEAPON]: BLADE,
+  armor: STEEL_COMPLETE_PLATEMAIL,
+  rangedSkill: 20,
+  baseBackwardsSpeed: 0.3,
+  openness: 10,
+}
+
 export const ANCIENTS_UNITS = [
   UNIT_SPEAR, { ...UNIT_SPEAR, army: ARMY_2 },
   UNIT_HEAVY_FOOT, { ...UNIT_HEAVY_FOOT, army: ARMY_2 },
   UNIT_LIGHT_CAVALRY, { ...UNIT_LIGHT_CAVALRY, army: ARMY_2 },
+  UNIT_KNIGHTS, { ...UNIT_KNIGHTS, army: ARMY_2 },
 ];

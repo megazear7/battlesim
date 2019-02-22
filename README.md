@@ -8,7 +8,8 @@
 
 ###### TODO
 
-1. Move terrain out of the reducer and just reference it by index so that we don't have to recreate battles when terrain get's modified.
+1. Add ability to override army names.
+1. Reference terrain by index.
 1. Fully review the results of each action, how environment details affect the outcome, and how unit stats affect the outcome.
 1. Update the app favicon.
 1. Update civil war army size to be regiment level.
