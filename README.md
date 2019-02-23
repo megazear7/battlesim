@@ -31,6 +31,7 @@
 1. Update civil war army size to be regiment level.
 1. Update civil war ruleset based on our practice games.
 1. Event sourced data for step back in time or undoing actions.
+1. Abstract out the game system from the interface. The game system would be a layer built underneath the rulesets. So the rulesets would be for a game system, a game system would implement the game itself. So for what we have done so far the game system would be something like "battlefield simulation", which does all of the yards, seconds, time tracking, etc... But we could have another game system which acts more like a game and less like a simulation. This would give us the flexibility to reuse the interface and the share battle functionality and such with other game systems.
 
 ###### Thoughts on shareable battles
 When the user clicks the share button the battle gets saved into firestore.
