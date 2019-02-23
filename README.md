@@ -8,6 +8,21 @@
 
 ###### TODO
 
+1. Scroll top between tabs or save scroll position of each tab independently
+1. Remove optionally override words from war page dropdowns
+1. Add another drop down to the create battle page with the various rulesets and then filter the battle templates drop-down by ruleset. If no ruleset is selected show a please select a ruleset message as the default value in the battle drop down.
+1. Add an empty default option to the battle drop-down that says select a battle. Add form validation if they don't select a battle.
+1. Can we use a reverse waterfall animation for the bottom navigation? Similar to the header.
+1. Action button margins
+1. Increase header size of army name on battle page.
+1. Remove period in army action title
+1. Add array of paragraphs for army actions and events
+1. Make generic event system. Make army actions fit the same format.
+1. Unit fled action details are not being saved to the log
+1. Image in rules is not showing up on mobile
+1. Get rid of the word required from the action page. Set the standard that anything above the submit button is required and anything below is optional. Move attacking stands of the fire action above the submit button. Move action page error message directly below the submit button. Move minutes to rest below the submit button. Move the move distance below the submit button.
+1. What about the move distance placeholder message?
+1. Make forms tab able and submittable with the enter key.
 1. Reference scenario rules by index.
 1. Make battles shareable.
 1. Update the app favicon.
@@ -30,6 +45,8 @@ Firestore should take care of all of this for us...
 When you visit a shared battle url the browser should save this battle ID to local storage.
 On the war page any links shared in local storage should be displayed like normal battles.
 These shared battles should get an indicator saying that they are shared and that they require an internet connection to play.
+On the battle page unshared battles will have the word "share" in grey text. Clicking it will bring up a confirmation dialog asking if they are sure that they want to share it. If they submit the dialog then we check if the Web Share API is available and if so we use it. Otherwise we will copy the battle url into the users clipboard and they will be notified that the shared battle url has been copied.
+Shared battles on the war page will have blue shared text. Clicking this will again either open the Web Share API or copy the text to the clipboard, but this time with no confirmation dialog.
 
 ### Deployment
 
