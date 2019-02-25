@@ -264,8 +264,26 @@ class BattleSim extends connect(store)(LitElement) {
   connectedCallback() {
     super.connectedCallback();
     let lastScrollPos = 0;
+    this._lastChangePosition = 0;
     window.addEventListener('scroll', e => {
-      this._showMobileNav = lastScrollPos > window.scrollY;
+      if (this._scrollDistance > 20 && this._scrollDirection === 'down') {
+        this._scrollDistance = 0;
+        this._lastChangePosition = window.scrollY;
+        this._showMobileNav = true;
+      } else if (this._scrollDistance > 60 && this._scrollDirection === 'up') {
+        this._scrollDistance = 0;
+        this._lastChangePosition = window.scrollY;
+        this._showMobileNav = false;
+      } else if (lastScrollPos > window.scrollY && this._scrollDirection === 'up') {
+        this._scrollDistance = 0;
+        this._lastChangePosition = window.scrollY;
+      } else if (lastScrollPos < window.scrollY && this._scrollDirection === 'down') {
+        this._scrollDistance = 0;
+        this._lastChangePosition = window.scrollY;
+      } else {
+        this._scrollDistance = Math.abs(window.scrollY - this._lastChangePosition);
+      }
+      this._scrollDirection = lastScrollPos > window.scrollY ? 'down' : 'up';
       lastScrollPos = window.scrollY;
     });
   }
