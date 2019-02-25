@@ -1042,7 +1042,8 @@ class FightView extends connect(store)(PageViewElement) {
         }
         .unit-actions {
           font-size: 0;
-          padding: 0;
+          padding-top: 0;
+          padding-bottom: 0;
         }
         .unit-actions button {
           width: 25%;
@@ -1097,6 +1098,19 @@ class FightView extends connect(store)(PageViewElement) {
         .tooltip:hover .tooltiptext {
           visibility: visible;
         }
+        .take-action {
+          margin-top: 0;
+        }
+        .do-combat {
+          margin-top: 0;
+        }
+        #separation {
+          width: calc(50% - 0.5rem);
+          margin-right: 1rem;
+        }
+        #target {
+          width: calc(50% - 0.5rem);
+        }
       `];
   }
 
@@ -1135,23 +1149,31 @@ class FightView extends connect(store)(PageViewElement) {
               <p class="${classMap({
       hidden: !this._showChargeMessage
     })}">${this._chargeMessage}</p>
-              <input id="rest-time" class="${classMap({
-      hidden: !this._showRestTime
-    })}" type="number" placeholder="Minutes to rest" max="${MINUTES_PER_TURN}"></input>
-              <input id="distance" class="${classMap({
-      hidden: !this._showDistance
-    })}" type="number" placeholder="Distance (Leave blank to move as far as possible)"></input>
               <input id="separation" class="${classMap({
       hidden: !this._showSeparation
-    })}" type="number" placeholder="Distance (Required)"></input>
+    })}" type="number" placeholder="Distance"></input>
               <select id="target" class="${classMap({
       hidden: !this._showTarget
     })}" @change="${this._updateTarget}">
-                <option value="">Select Target (Required)</option>
+                <option value="">Select Target</option>
                 ${repeat(this._unit.targets, target => html`
                   <option value="${target.id}">${target.unit.name}</option>
                 `)}
               </select>
+              <button class="${classMap({
+      hidden: !this._showDoCombat,
+      'do-combat': true
+    })}" @click="${this._doCombat}">Do Combat</button>
+              <button class="${classMap({
+      hidden: !this._showTakeAction,
+      'take-action': true
+    })}" @click="${this._takeAction}">Take Action</button>
+              <input id="distance" class="${classMap({
+      hidden: !this._showDistance
+    })}" type="number" placeholder="Distance"></input>
+              <input id="rest-time" class="${classMap({
+      hidden: !this._showRestTime
+    })}" type="number" placeholder="Minutes to rest" max="${MINUTES_PER_TURN}"></input>
               <div class="${classMap({
       hidden: !this._showEngagedAttackers && !this._showEngagedDefenders
     })}">
@@ -1165,12 +1187,6 @@ class FightView extends connect(store)(PageViewElement) {
       stands: true
     })}" type="number" placeholder="Defending Stands"></input>
               </div>
-              <button class="${classMap({
-      hidden: !this._showDoCombat
-    })}" @click="${this._doCombat}">Do Combat</button>
-              <button class="${classMap({
-      hidden: !this._showTakeAction
-    })}" @click="${this._takeAction}">Take Action</button>
               <br>
               <div class="${classMap({
       "options-block": true,

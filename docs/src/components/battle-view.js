@@ -92,7 +92,7 @@ class BattleView extends connect(store)(PageViewElement) {
               </option>
             </select>
             <select id="unit-template">
-              <option value="">Select Unit To Add (Required)</option>
+              <option value="">Select Unit To Add</option>
               ${repeat(this._unitTemplates, ({
       id,
       unit
@@ -103,7 +103,7 @@ class BattleView extends connect(store)(PageViewElement) {
                 </option>
               `)}
             </select>
-            <input id="name" type="text" placeholder="(Required) Unit Name"></input>
+            <input id="name" type="text" placeholder="Unit Name"></input>
             <button @click="${this._add}">Add</button>
             <p class="error hidden">You must select a type of unit to add and provide the unit a unique name.</p>
             <p id="added-message">Unit Added!</p>
