@@ -60,7 +60,7 @@ class BattleView extends connect(store)(PageViewElement) {
       units
     }) => html`
           <section>
-            <h3>${name}</h3>
+            <h2>${name}</h2>
             ${this._activeBattle.usesPoints ? html`
               <p>${units.map(unit => unit.unit.points).reduce((total, cost) => total + cost, 0)} points</p>
             ` : ''}
@@ -81,7 +81,7 @@ class BattleView extends connect(store)(PageViewElement) {
           </section>
         `)}
         <section>
-          <h3>Add Unit</h3>
+          <h2>Add Unit</h2>
           <div>
             <select id="army" @change="${this._armyChanged}">
               <option value="0">
@@ -110,7 +110,7 @@ class BattleView extends connect(store)(PageViewElement) {
           </div>
         </section>
         <section>
-          <h3>Battle Log</h3>
+          <h2>Battle Log</h2>
           <hr>
           ${repeat(this._activeBattle.actionLog, log => html`
             <p><small>${prettyTime(new Date(this._activeBattle.startTime + log.time * 1000))}</small></p>
