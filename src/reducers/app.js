@@ -11,11 +11,14 @@ const INITIAL_STATE = {
   offline: false,
   drawerOpened: false,
   snackbarOpened: false,
+  scrollPositions: {
+  }
 };
 
 const app = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case UPDATE_PAGE:
+      state.scrollPositions[state.page] = window.scrollY;
       return {
         ...state,
         page: action.page

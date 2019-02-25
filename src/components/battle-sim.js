@@ -285,6 +285,11 @@ class BattleSim extends connect(store)(LitElement) {
         description: pageTitle
         // This object also takes an image property, that points to an img src.
       });
+      if (! isNaN(this._savedScrollY)) {
+        window.scrollTo(0, this._savedScrollY);
+      } else {
+        window.scrollTo(0, 0);
+      }
     }
   }
 
@@ -306,6 +311,9 @@ class BattleSim extends connect(store)(LitElement) {
     this._offline = state.app.offline;
     this._snackbarOpened = state.app.snackbarOpened;
     this._drawerOpened = state.app.drawerOpened;
+    if (! isNaN(state.app.scrollPositions[state.app.page])) {
+      this._savedScrollY = state.app.scrollPositions[state.app.page];
+    }
   }
 }
 

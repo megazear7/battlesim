@@ -63,9 +63,7 @@ class RulesView extends connect(store)(PageViewElement) {
     if (state.battle.battles.length > state.battle.activeBattle) {
       let activeBattle = state.battle.battles[state.battle.activeBattle];
       this._battleRules = activeBattle.rules;
-      console.log(RULESETS);
       this._ruleset= RULESETS[activeBattle.ruleset];
-      console.log(this._ruleset);
       this._hasActiveBattle = true;
     } else {
       this._hasActiveBattle = false;
