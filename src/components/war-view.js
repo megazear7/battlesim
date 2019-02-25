@@ -57,9 +57,9 @@ class WarView extends connect(store)(PageViewElement) {
             `)}
           </select>
           <button @click="${this._create}">Create</button>
-          <input id="name" type="text" placeholder="Optionally override battle name"></input>
-          <input id="army1-name" type="text" placeholder="Optionally override army 1 name"></input>
-          <input id="army2-name" type="text" placeholder="Optionally override army 2 name"></input>
+          <input id="name" type="text" placeholder="Battle name"></input>
+          <input id="army1-name" type="text" placeholder="First army name"></input>
+          <input id="army2-name" type="text" placeholder="Second army name"></input>
         </div>
       </section>
     `;

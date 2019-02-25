@@ -35,7 +35,7 @@ export const BATTLE_TEMPLATES = [
     armies: [
       {
         name: "Army 1",
-        armyActionTitle: "Army 1 Actions.",
+        armyActionTitle: "Army 1 Actions",
         armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
         nextAction: 0,
         leaders: [
@@ -48,7 +48,7 @@ export const BATTLE_TEMPLATES = [
       },
       {
         name: "Army 2",
-        armyActionTitle: "Army 2 Actions.",
+        armyActionTitle: "Army 2 Actions",
         armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
         nextAction: 0,
         leaders: [
