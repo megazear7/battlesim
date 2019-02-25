@@ -7,7 +7,7 @@ export const SharedStyles = css`
   }
 
   section {
-    padding: 24px;
+    padding: 1rem;
     background: var(--app-section-odd-color);
   }
 

@@ -92,7 +92,8 @@ class FightView extends connect(store)(PageViewElement) {
         }
         .unit-actions {
           font-size: 0;
-          padding: 0;
+          padding-top: 0;
+          padding-bottom: 0;
         }
         .unit-actions button {
           width: 25%;
