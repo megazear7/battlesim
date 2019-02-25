@@ -10,15 +10,12 @@
 
 1. Add another drop down to the create battle page with the various rulesets and then filter the battle templates drop-down by ruleset. If no ruleset is selected show a please select a ruleset message as the default value in the battle drop down.
 1. Add an empty default option to the battle drop-down that says select a battle. Add form validation if they don't select a battle.
-1. Increase header size of army name on battle page.
 1. Add array of paragraphs for army actions and events
 1. Make generic event system. Make army actions fit the same format.
 1. Unit fled action details are not being saved to the log
-1. Image in rules is not showing up on mobile
 1. Make forms tab able and submittable with the enter key.
 1. Reference scenario rules by index.
 1. Make battles shareable.
-1. Update the app favicon.
 1. Refactor code to have the following classes Battle, War, Rules, and Army instead of referencing the json directly. Better utilize the Terrain class as well.
 1. Fully review the results of each action, how environment details affect the outcome, and how unit stats affect the outcome.
 1. Update civil war army size to be regiment level.

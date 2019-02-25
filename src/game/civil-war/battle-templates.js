@@ -293,7 +293,7 @@ export const BATTLE_TEMPLATES = [
       {
         heading: 'Setup',
         text: 'Currently there are no setup instructions for this battle. Setup the terrain and units however you would like or try to base it off of the actual battle.',
-        image: '/src/game/civil-war/images/bull-run-setup.jpg'
+        image: '/images/game/civil-war/bull-run-setup.jpg'
       },
       {
         heading: 'Night time actions',
