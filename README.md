@@ -8,7 +8,6 @@
 
 ###### TODO
 
-1. Make generic event system. Make army actions fit the same format.
 1. Unit fled action details are not being saved to the log
 1. Make forms tab able and submittable with the enter key.
 1. Reference scenario rules by index.
