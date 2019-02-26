@@ -54,14 +54,18 @@ export const BATTLE_TEMPLATES = [
       {
         name: "Union",
         armyActionTitle: "Union Army Actions",
-        armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
+        messages: [
+          "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
+        ],
         nextAction: 0,
         leaders: [],
       },
       {
         name: "Confederate",
         armyActionTitle: "Confederate Army Actions",
-        armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
+        messages: [
+          "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
+        ],
         nextAction: 0,
         leaders: [],
       },
@@ -334,14 +338,18 @@ export const BATTLE_TEMPLATES = [
       {
         name: "Union",
         armyActionTitle: "Union Army Actions",
-        armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
+        messages: [
+          "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
+        ],
         nextAction: 0,
         leaders: [],
       },
       {
         name: "Confederate",
         armyActionTitle: "Confederate Army Actions",
-        armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
+        messages: [
+          "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
+        ],
         nextAction: 0,
         leaders: [],
       },
@@ -409,7 +417,9 @@ export const BATTLE_TEMPLATES = [
       {
         name: "Union",
         armyActionTitle: "Union Army Actions",
-        armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
+        messages: [
+          "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
+        ],
         nextAction: 0,
         leaders: [
           {
@@ -432,7 +442,9 @@ export const BATTLE_TEMPLATES = [
       {
         name: "Confederate",
         armyActionTitle: "Confederate Army Actions",
-        armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
+        messages: [
+          "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
+        ],
         nextAction: 0,
         leaders: [
           {
@@ -646,7 +658,9 @@ export const BATTLE_TEMPLATES = [
       {
         name: "Union",
         armyActionTitle: "Union Army Actions",
-        armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
+        messages: [
+          "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
+        ],
         nextAction: 0,
         leaders: [
           {
@@ -669,7 +683,9 @@ export const BATTLE_TEMPLATES = [
       {
         name: "Confederate",
         armyActionTitle: "Confederate Army Actions",
-        armyActionDesc: "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
+        messages: [
+          "Generals and commanders can move 12 inches. Supply wagons can move 8 inches.",
+        ],
         nextAction: 0,
         leaders: [
           {

@@ -61,8 +61,8 @@ class WarView extends connect(store)(PageViewElement) {
           </select>
           <select id="battle-template">
             <option value="">Select a battle</option>
-            ${repeat(this._selectableBattles, (battleTemplate, index) => html`
-              <option value="${index}">${battleTemplate.name}</option>
+            ${repeat(this._selectableBattles, ({battleTemplate, id}) => html`
+              <option value="${id}">${battleTemplate.name}</option>
             `)}
           </select>
           <button @click="${this._create}">Create</button>
@@ -81,7 +81,9 @@ class WarView extends connect(store)(PageViewElement) {
   }
 
   updateRuleset() {
-    this._selectableBattles = BATTLE_TEMPLATES.filter(battle => battle.ruleset === this.selectedRuleset);
+    this._selectableBattles = BATTLE_TEMPLATES
+    .map((battle, index) => ({ battleTemplate: battle, id: index}))
+    .filter(battle => battle.battleTemplate.ruleset === this.selectedRuleset);
   }
 
   get rulesets() {

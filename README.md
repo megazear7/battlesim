@@ -8,7 +8,6 @@
 
 ###### TODO
 
-1. Add array of paragraphs for army actions and events
 1. Make generic event system. Make army actions fit the same format.
 1. Unit fled action details are not being saved to the log
 1. Make forms tab able and submittable with the enter key.

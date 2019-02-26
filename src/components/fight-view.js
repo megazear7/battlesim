@@ -302,7 +302,7 @@ class FightView extends connect(store)(PageViewElement) {
             <h2>${this._armyTakingAction.armyActionTitle}</h2>
             <div class="muted centered">Army: ${this._armyTakingAction.name}</div>
             <div class="muted centered">${prettyDateTime(this._date)}</div>
-            <p>${this._armyTakingAction.armyActionDesc}</p>
+            ${repeat(this._armyTakingAction.messages, message => html`<p>${message}</p>`)}
             <div class="centered">
               <button @click="${this._takeArmyAction}">Next Action</button>
             </div>
