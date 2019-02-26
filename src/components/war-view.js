@@ -87,7 +87,7 @@ class WarView extends connect(store)(PageViewElement) {
   }
 
   get rulesets() {
-    return RULES.map((ruleset, index) => ({ ruleset, id: index }));
+    return Object.keys(RULES).map(rulesetId => ({ ruleset: RULES[rulesetId], id: rulesetId }));
   }
 
   get rulesetsElement() {
@@ -95,7 +95,7 @@ class WarView extends connect(store)(PageViewElement) {
   }
 
   get selectedRuleset() {
-    return parseInt(this.rulesetsElement.value);
+    return this.rulesetsElement.value;
   }
 
   set selectedRuleset(value) {
@@ -160,7 +160,7 @@ class WarView extends connect(store)(PageViewElement) {
   }
 
   get createBattleFormValid() {
-    return ! isNaN(this.selectedRuleset) && ! isNaN(this.newBattleTemplate);
+    return this.selectedRuleset && this.newBattleTemplate;
   }
 
   _create() {

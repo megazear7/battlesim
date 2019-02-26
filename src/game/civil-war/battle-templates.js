@@ -1,4 +1,5 @@
 import { CIVIL_WAR_UNITS_ID } from '../units.js';
+import { CIVIL_WAR_RULES_ID } from '../rules.js';
 import {
   FRESH_UNION_BRIGADE,
   FRESH_UNION_CAVALRY_REGIMENT,
@@ -24,7 +25,7 @@ import { CIVIL_WAR_BULL_RUN_SCENARIO, CIVIL_WAR_GENERIC_SCENARIO } from './scena
 export const BATTLE_TEMPLATES = [
   {
     name: "Bull Run",
-    ruleset: 0,
+    ruleset: CIVIL_WAR_RULES_ID,
     second: 0,
     startTime: Date.parse('11 May 1862 11:30:00 EST'),
     events: [
@@ -294,7 +295,7 @@ export const BATTLE_TEMPLATES = [
   },
   {
     name: "Generic Civil War",
-    ruleset: 0,
+    ruleset: CIVIL_WAR_RULES_ID,
     second: 0,
     startTime: Date.parse('20 June 1862 9:03:00 EST'),
     events: [
@@ -365,7 +366,7 @@ export const BATTLE_TEMPLATES = [
   },
   {
     name: "Example Civil War Battle",
-    ruleset: 0,
+    ruleset: CIVIL_WAR_RULES_ID,
     second: 0,
     startTime: Date.parse('11 May 1862 11:30:00 EST'),
     events: [ // TODO Implement the events feature.
@@ -593,7 +594,7 @@ export const BATTLE_TEMPLATES = [
   },
   {
     name: "Point Based Civil War",
-    ruleset: 0,
+    ruleset: CIVIL_WAR_RULES_ID,
     second: 0,
     startTime: Date.parse('11 May 1862 11:30:00 EST'),
     events: [ // TODO Implement the events feature.

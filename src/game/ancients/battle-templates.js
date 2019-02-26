@@ -1,5 +1,6 @@
 import { ANCIENTS_UNITS_ID } from '../units.js';
 import { ANCIENTS_TERRAIN_ID } from '../terrain.js';
+import { ANCIENTS_RULES_ID } from '../rules.js';
 import {
   STAT_PERCENTAGE,
   STAT_DESCRIPTION,
@@ -14,7 +15,7 @@ import { ANCIENTS_GENERIC_SCENARIO } from './scenarios.js';
 export const BATTLE_TEMPLATES = [
   {
     name: "Point Based Ancient Warfare",
-    ruleset: 1,
+    ruleset: ANCIENTS_RULES_ID,
     second: 0,
     startTime: Date.parse('11 May 245 11:30:00 EST'),
     events: [ ],
