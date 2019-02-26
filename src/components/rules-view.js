@@ -2,6 +2,7 @@ import { html, css } from 'lit-element';
 import { PageViewElement } from './page-view-element.js';
 import { SharedStyles } from './shared-styles.js';
 import RULESETS from '../game/rules.js';
+import SCENARIOS from '../game/scenarios.js';
 import { repeat } from 'lit-html/directives/repeat';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
@@ -62,7 +63,7 @@ class RulesView extends connect(store)(PageViewElement) {
   stateChanged(state) {
     if (state.battle.battles.length > state.battle.activeBattle) {
       let activeBattle = state.battle.battles[state.battle.activeBattle];
-      this._battleRules = activeBattle.rules;
+      this._battleRules = SCENARIOS[activeBattle.rules];
       this._ruleset= RULESETS[activeBattle.ruleset];
       this._hasActiveBattle = true;
     } else {

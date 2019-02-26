@@ -9,6 +9,7 @@ import {
   ACTION_TYPE_ARMY,
   NO_PLAYER_TURNS } from '../../game.js';
 import { msSinceMidnight, SECONDS_IN_AN_HOUR } from '../../math-utils.js';
+import { ANCIENTS_GENERIC_SCENARIO } from './scenarios.js';
 
 export const BATTLE_TEMPLATES = [
   {
@@ -66,15 +67,6 @@ export const BATTLE_TEMPLATES = [
     ],
     units: [ ],
     unitTemplates: ANCIENTS_UNITS_ID,
-    rules: [
-      {
-        heading: 'Create Your Army.',
-        text: 'Create your army on the battle page. Each unit will cost a certain number of points.'
-      },
-      {
-        heading: 'Setup',
-        text: 'Currently there are no setup instructions for this battle. Setup the terrain and units however you would like or try to base it off of the actual battle.'
-      },
-    ]
+    rules: ANCIENTS_GENERIC_SCENARIO
   },
 ];

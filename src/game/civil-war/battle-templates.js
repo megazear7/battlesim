@@ -19,6 +19,7 @@ import {
   ACTION_TYPE_ARMY,
   NO_PLAYER_TURNS } from '../../game.js';
 import { msSinceMidnight, SECONDS_IN_AN_HOUR } from '../../math-utils.js';
+import { CIVIL_WAR_BULL_RUN_SCENARIO, CIVIL_WAR_GENERIC_SCENARIO } from './scenarios.js';
 
 export const BATTLE_TEMPLATES = [
   {
@@ -289,21 +290,7 @@ export const BATTLE_TEMPLATES = [
       },
     ],
     unitTemplates: CIVIL_WAR_UNITS_ID,
-    rules: [
-      {
-        heading: 'The battle begins.',
-        text: 'The game clock starts at 9:03 am on 11th of May, 1862 '
-      },
-      {
-        heading: 'Setup',
-        text: 'Currently there are no setup instructions for this battle. Setup the terrain and units however you would like or try to base it off of the actual battle.',
-        image: '/images/game/civil-war/bull-run-setup.jpg'
-      },
-      {
-        heading: 'Night time actions',
-        text: 'During night time each unit that is within 12 inches of an enemy unit must move toward their table edge. The distance they move is 12 - X where X is the distance to the closest enemy unit. They may chose to move further than this.'
-      },
-    ]
+    rules: CIVIL_WAR_BULL_RUN_SCENARIO
   },
   {
     name: "Generic Civil War",
@@ -374,20 +361,7 @@ export const BATTLE_TEMPLATES = [
       },
     ],
     unitTemplates: CIVIL_WAR_UNITS_ID,
-    rules: [
-      {
-        heading: 'The battle begins.',
-        text: 'The game clock starts at 11:30 am on 11th of May, 1862 '
-      },
-      {
-        heading: 'Setup',
-        text: 'Currently there are no setup instructions for this battle. Setup the terrain and units however you would like.'
-      },
-      {
-        heading: 'Night time actions',
-        text: 'During night time each unit that is within 12 inches of an enemy unit must move toward their table edge. The distance they move is 12 - X where X is the distance to the closest enemy unit. They may chose to move further than this.'
-      },
-    ]
+    rules: CIVIL_WAR_GENERIC_SCENARIO
   },
   {
     name: "Example Civil War Battle",
@@ -615,20 +589,7 @@ export const BATTLE_TEMPLATES = [
       },
     ],
     unitTemplates: CIVIL_WAR_UNITS_ID,
-    rules: [
-      {
-        heading: 'The battle begins.',
-        text: 'The game clock starts at 9:03 am on 11th of May, 1862 '
-      },
-      {
-        heading: 'Setup',
-        text: 'Currently there are no setup instructions for this battle. Setup the terrain and units however you would like or try to base it off of the actual battle.'
-      },
-      {
-        heading: 'Night time actions',
-        text: 'During night time each unit that is within 12 inches of an enemy unit must move toward their table edge. The distance they move is 12 - X where X is the distance to the closest enemy unit. They may chose to move further than this.'
-      },
-    ]
+    rules: CIVIL_WAR_GENERIC_SCENARIO
   },
   {
     name: "Point Based Civil War",
@@ -713,15 +674,6 @@ export const BATTLE_TEMPLATES = [
     ],
     units: [ ],
     unitTemplates: CIVIL_WAR_UNITS_ID,
-    rules: [
-      {
-        heading: 'Create Your Army.',
-        text: 'Create your army on the battle page. Each unit will cost a certain number of points.'
-      },
-      {
-        heading: 'Setup',
-        text: 'Currently there are no setup instructions for this battle. Setup the terrain and units however you would like or try to base it off of the actual battle.'
-      },
-    ]
+    rules: CIVIL_WAR_GENERIC_SCENARIO
   },
 ];
