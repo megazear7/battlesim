@@ -87,16 +87,16 @@ class WarView extends connect(store)(PageViewElement) {
   }
 
   updateRuleset() {
-    this._selectableBattles = BATTLE_TEMPLATES.map((battle, index) => ({
-      battleTemplate: battle,
-      id: index
+    this._selectableBattles = Object.keys(BATTLE_TEMPLATES).map(battleId => ({
+      battleTemplate: BATTLE_TEMPLATES[battleId],
+      id: battleId
     })).filter(battle => battle.battleTemplate.ruleset === this.selectedRuleset);
   }
 
   get rulesets() {
-    return RULES.map((ruleset, index) => ({
-      ruleset,
-      id: index
+    return Object.keys(RULES).map(rulesetId => ({
+      ruleset: RULES[rulesetId],
+      id: rulesetId
     }));
   }
 
@@ -105,7 +105,7 @@ class WarView extends connect(store)(PageViewElement) {
   }
 
   get selectedRuleset() {
-    return parseInt(this.rulesetsElement.value);
+    return this.rulesetsElement.value;
   }
 
   set selectedRuleset(value) {
@@ -170,7 +170,7 @@ class WarView extends connect(store)(PageViewElement) {
   }
 
   get createBattleFormValid() {
-    return !isNaN(this.selectedRuleset) && !isNaN(this.newBattleTemplate);
+    return this.selectedRuleset && this.newBattleTemplate;
   }
 
   _create() {
