@@ -8,7 +8,6 @@
 
 ###### TODO
 
-1. Make forms tab able and submittable with the enter key.
 1. Refactor code to have the following classes Battle, War, Rules, and Army instead of referencing the json directly. Better utilize the Terrain class as well.
 1. Make battles shareable.
 1. Fully review the results of each action, how environment details affect the outcome, and how unit stats affect the outcome.

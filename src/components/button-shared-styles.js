@@ -11,7 +11,6 @@ export const ButtonSharedStyles = css`
     text-transform: uppercase;
     letter-spacing: 1px;
     font-weight: 700;
-    outline: none;
     position: relative;
     -webkit-transition: all 0.3s;
     -moz-transition: all 0.3s;
