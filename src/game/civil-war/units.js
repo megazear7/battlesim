@@ -12,23 +12,23 @@ import {
   RANGED_WEAPON } from '../../units.js';
 const UNION = 0;
 const CONFEDERATE = 1;
-const UNION_BRIGADE_SIZE = 3000;
-const UNION_CAVALRY_REGIMENT_SIZE = 1000;
-const CONFEDERATE_BRIGADE_SIZE = 3000;
-const CONFEDERATE_CAVALRY_REGIMENT_SIZE = 1000;
+const UNION_REGIMENT_SIZE = 1000;
+const UNION_CAVALRY_REGIMENT_SIZE = 500;
+const CONFEDERATE_REGIMENT_SIZE = 1000;
+const CONFEDERATE_CAVALRY_REGIMENT_SIZE = 500;
 
-export const FRESH_UNION_BRIGADE = {
+export const FRESH_UNION_REGIMENT = {
   army: UNION,
-  name: 'Fresh Union Brigade',
+  name: 'Fresh Union Regiment',
   points: 100,
-  strength: UNION_BRIGADE_SIZE,
+  strength: UNION_REGIMENT_SIZE,
   morale: 100,
   energy: 100,
   stands: 8,
   openness: 20,
   minFallback: 10,
   maxFallback: 20,
-  ammunition: UNION_BRIGADE_SIZE * 20,
+  ammunition: UNION_REGIMENT_SIZE * 20,
   armor: NO_ARMOR,
   [MELEE_WEAPON]: BAYONETE,
   [RANGED_WEAPON]: SPRINGFIELD_RIFLED_MUSKET,
@@ -37,7 +37,7 @@ export const FRESH_UNION_BRIGADE = {
   experience: 50,
   leadership: 50,
   troopType: FOOT_TROOP,
-  fullStrength: UNION_BRIGADE_SIZE,
+  fullStrength: UNION_REGIMENT_SIZE,
   baseSpeed: 0.5, // meters per second
   baseBackwardsSpeed: 0.25,
   chargeSpeed: 0.7, // TODO Use these values
@@ -85,7 +85,7 @@ export const FRESH_UNION_ARTILLERY = {
   army: UNION,
   name: 'Fresh Union Artillery (50 Cannons)',
   points: 100,
-  strength: 50,
+  strength: 20,
   morale: 100,
   energy: 100,
   stands: 2,
@@ -108,18 +108,18 @@ export const FRESH_UNION_ARTILLERY = {
   maneuverTime: 220,
 };
 
-export const FRESH_CONFEDERATE_BRIGADE = {
+export const FRESH_CONFEDERATE_REGIMENT = {
   army: CONFEDERATE,
-  name: 'Fresh Confederate Brigade',
+  name: 'Fresh Confederate Regiment',
   points: 100,
-  strength: CONFEDERATE_BRIGADE_SIZE,
+  strength: CONFEDERATE_REGIMENT_SIZE,
   morale: 100,
   energy: 100,
   stands: 8,
   openness: 20,
   minFallback: 10,
   maxFallback: 20,
-  ammunition: CONFEDERATE_BRIGADE_SIZE * 20,
+  ammunition: CONFEDERATE_REGIMENT_SIZE * 20,
   armor: NO_ARMOR,
   [MELEE_WEAPON]: BAYONETE,
   [RANGED_WEAPON]: CONFEDERATE_SMOOTH_BORE,
@@ -128,7 +128,7 @@ export const FRESH_CONFEDERATE_BRIGADE = {
   experience: 75,
   leadership: 70,
   troopType: FOOT_TROOP,
-  fullStrength: CONFEDERATE_BRIGADE_SIZE,
+  fullStrength: CONFEDERATE_REGIMENT_SIZE,
   baseSpeed: 0.5, // meters per second
   baseBackwardsSpeed: 0.25,
   chargeSpeed: 0.7,
@@ -176,7 +176,7 @@ export const FRESH_CONFEDERATE_ARTILLERY = {
   army: CONFEDERATE,
   name: 'Fresh Confederate Artillery (50 Cannons)',
   points: 100,
-  strength: 50,
+  strength: 20,
   morale: 100,
   energy: 100,
   stands: 2,
@@ -200,28 +200,28 @@ export const FRESH_CONFEDERATE_ARTILLERY = {
 };
 
 export const CIVIL_WAR_UNITS = [
-  FRESH_UNION_BRIGADE,
-  { ... FRESH_UNION_BRIGADE,
-    name: 'Tired Union Brigade',
+  FRESH_UNION_REGIMENT,
+  { ... FRESH_UNION_REGIMENT,
+    name: 'Tired Union Regiment',
     points: 80,
     energy: 50,
   },
-  { ... FRESH_UNION_BRIGADE,
-    name: 'Battered Union Brigade',
+  { ... FRESH_UNION_REGIMENT,
+    name: 'Battered Union Regiment',
     points: 60,
-    strength: UNION_BRIGADE_SIZE * 0.7,
+    strength: UNION_REGIMENT_SIZE * 0.7,
     energy: 80
   },
-  FRESH_CONFEDERATE_BRIGADE,
-  { ... FRESH_CONFEDERATE_BRIGADE,
-    name: 'Tired Confederate Brigade',
+  FRESH_CONFEDERATE_REGIMENT,
+  { ... FRESH_CONFEDERATE_REGIMENT,
+    name: 'Tired Confederate Regiment',
     points: 80,
     energy: 50,
   },
-  { ... FRESH_CONFEDERATE_BRIGADE,
-    name: 'Battered Confederate Brigade',
+  { ... FRESH_CONFEDERATE_REGIMENT,
+    name: 'Battered Confederate Regiment',
     points: 60,
-    strength: CONFEDERATE_BRIGADE_SIZE * 0.7,
+    strength: CONFEDERATE_REGIMENT_SIZE * 0.7,
     energy: 80
   },
 ];
