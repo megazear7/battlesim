@@ -81,8 +81,8 @@ class WarView extends connect(store)(PageViewElement) {
   }
 
   updateRuleset() {
-    this._selectableBattles = BATTLE_TEMPLATES
-    .map((battle, index) => ({ battleTemplate: battle, id: index}))
+    this._selectableBattles = Object.keys(BATTLE_TEMPLATES)
+    .map(battleId => ({ battleTemplate: BATTLE_TEMPLATES[battleId], id: battleId}))
     .filter(battle => battle.battleTemplate.ruleset === this.selectedRuleset);
   }
 

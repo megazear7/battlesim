@@ -12,8 +12,8 @@ import {
 import { msSinceMidnight, SECONDS_IN_AN_HOUR } from '../../math-utils.js';
 import { ANCIENTS_GENERIC_SCENARIO } from './scenarios.js';
 
-export const BATTLE_TEMPLATES = [
-  {
+export default {
+  'ANCIENTS_POINT_BASED': {
     name: "Point Based Ancient Warfare",
     ruleset: ANCIENTS_RULES_ID,
     second: 0,
@@ -70,4 +70,4 @@ export const BATTLE_TEMPLATES = [
     unitTemplates: ANCIENTS_UNITS_ID,
     rules: ANCIENTS_GENERIC_SCENARIO
   },
-];
+};

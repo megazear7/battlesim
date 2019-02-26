@@ -4,9 +4,7 @@ import ANCIENTS_RULES from './ancients/rules.js'
 export const CIVIL_WAR_RULES_ID = 'CIVIL_WAR_RULES';
 export const ANCIENTS_RULES_ID = 'ANCIENTS_RULES';
 
-const RULES = {
+export default {
   [CIVIL_WAR_RULES_ID]: CIVIL_WAR_RULES,
   [ANCIENTS_RULES_ID]: ANCIENTS_RULES,
 };
-
-export default RULES;

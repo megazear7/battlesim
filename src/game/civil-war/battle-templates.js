@@ -22,8 +22,8 @@ import {
 import { msSinceMidnight, SECONDS_IN_AN_HOUR } from '../../math-utils.js';
 import { CIVIL_WAR_BULL_RUN_SCENARIO, CIVIL_WAR_GENERIC_SCENARIO } from './scenarios.js';
 
-export const BATTLE_TEMPLATES = [
-  {
+export default {
+  'CIVIL_WAR_BULL_RUN_BATTLE': {
     name: "Bull Run",
     ruleset: CIVIL_WAR_RULES_ID,
     second: 0,
@@ -293,7 +293,7 @@ export const BATTLE_TEMPLATES = [
     unitTemplates: CIVIL_WAR_UNITS_ID,
     rules: CIVIL_WAR_BULL_RUN_SCENARIO
   },
-  {
+  'CIVIL_WAR_GENERIC_BATTLE': {
     name: "Generic Civil War",
     ruleset: CIVIL_WAR_RULES_ID,
     second: 0,
@@ -364,7 +364,7 @@ export const BATTLE_TEMPLATES = [
     unitTemplates: CIVIL_WAR_UNITS_ID,
     rules: CIVIL_WAR_GENERIC_SCENARIO
   },
-  {
+  'CIVIL_WAR_EXAMPLE_BATTLE': {
     name: "Example Civil War Battle",
     ruleset: CIVIL_WAR_RULES_ID,
     second: 0,
@@ -592,7 +592,7 @@ export const BATTLE_TEMPLATES = [
     unitTemplates: CIVIL_WAR_UNITS_ID,
     rules: CIVIL_WAR_GENERIC_SCENARIO
   },
-  {
+  'CIVIL_WAR_POINT_BASED_BATTLE': {
     name: "Point Based Civil War",
     ruleset: CIVIL_WAR_RULES_ID,
     second: 0,
@@ -677,4 +677,4 @@ export const BATTLE_TEMPLATES = [
     unitTemplates: CIVIL_WAR_UNITS_ID,
     rules: CIVIL_WAR_GENERIC_SCENARIO
   },
-];
+};
