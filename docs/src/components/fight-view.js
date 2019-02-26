@@ -1,4 +1,4 @@
-import { MELEE, statModFor, MAX_EQUIPMENT_WEIGHT, MORALE_SUCCESS, MORALE_FAILURE, DEADLYNESS, SECONDS_PER_TURN, SECONDS_PER_ROUND, YARDS_TO_FIGHT, MAX_STAT, YARDS_PER_INCH, POWER_VS_FOOT, POWER_VS_MOUNTED, RANGED, STAT_PERCENTAGE, CASUALTY_MESSAGE_DESCRIPTIVE, MINUTES_PER_TURN, ACTION_TYPE_UNIT, ACTION_TYPE_ARMY, weightedRandom, weightedRandomTowards, SECONDS_IN_AN_MINUTE, randomBellMod, dropOff, dropOffWithBoost, weightedAverage, roundToNearest, SECONDS_IN_AN_HOUR, randomMinutesBetween, prettyDateTime, FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP, MELEE_WEAPON, RANGED_WEAPON, store, html, css, repeat, classMap, PageViewElement, connect, takeAction, takeArmyAction, SharedStyles, ButtonSharedStyles, $unitDefault as Unit, $terrainDefault as TERRAIN } from './battle-sim.js';
+import { MELEE, statModFor, MAX_EQUIPMENT_WEIGHT, MORALE_SUCCESS, MORALE_FAILURE, DEADLYNESS, SECONDS_PER_TURN, SECONDS_PER_ROUND, YARDS_TO_FIGHT, MAX_STAT, YARDS_PER_INCH, POWER_VS_FOOT, POWER_VS_MOUNTED, RANGED, STAT_PERCENTAGE, CASUALTY_MESSAGE_DESCRIPTIVE, MINUTES_PER_TURN, ACTION_TYPE_UNIT, ACTION_TYPE_ARMY, ACTION_TYPE_EVENT, weightedRandom, weightedRandomTowards, SECONDS_IN_AN_MINUTE, randomBellMod, dropOff, dropOffWithBoost, weightedAverage, roundToNearest, SECONDS_IN_AN_HOUR, randomMinutesBetween, prettyDateTime, FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP, MELEE_WEAPON, RANGED_WEAPON, store, html, css, repeat, classMap, PageViewElement, connect, takeAction, takeArmyAction, finishEvent, SharedStyles, ButtonSharedStyles, $unitDefault as Unit, $terrainDefault as TERRAIN } from './battle-sim.js';
 const SLOPE_UP = "SLOPE_UP";
 const SLOPE_DOWN = "SLOPE_DOWN";
 const SLOPE_NONE$1 = "SLOPE_NONE";
@@ -1309,17 +1309,30 @@ class FightView extends connect(store)(PageViewElement) {
               </div>
             </div>
           </section>
-        ` : html`
-          <section>
-            <h2>${this._armyTakingAction.armyActionTitle}</h2>
-            <div class="muted centered">Army: ${this._armyTakingAction.name}</div>
-            <div class="muted centered">${prettyDateTime(this._date)}</div>
-            <p>${this._armyTakingAction.armyActionDesc}</p>
+        ` : this._armyTakingAction ? html`
+            <section>
+              <h2>${this._armyTakingAction.armyActionTitle}</h2>
+              <div class="muted centered">Army: ${this._armyTakingAction.name}</div>
+              <div class="muted centered">${prettyDateTime(this._date)}</div>
+              ${repeat(this._armyTakingAction.messages, message => html`<p>${message}</p>`)}
+              <div class="centered">
+                <button @click="${this._takeArmyAction}">Next Action</button>
+              </div>
+            </section>
+          ` : html`
+            <section>
+              <h2>${this._activeEvent.title}</h2>
+              <div class="muted centered">${prettyDateTime(this._date)}</div>
+              ${repeat(this._activeEvent.messages, message => html`<p>${message}</p>`)}
+              ${this._activeEvent.provideArmyOverview ? html`
+                <p>${this._activeBattle.armies[0].name} has sustained ${this.army1Casualties} casualties.</p>
+                <p>${this._activeBattle.armies[1].name} has sustained ${this.army2Casualties} casualties.</p>
+              ` : ''}
+            </section>
             <div class="centered">
-              <button @click="${this._takeArmyAction}">Next Action</button>
+              <button @click="${this._finishEvent}">Next Action</button>
             </div>
-          </section>
-        `}
+          `}
       ` : html`
         <section>
           <p>No active battle. Go to the war tab and either select a battle or create a new battle.</p>
@@ -1342,9 +1355,15 @@ class FightView extends connect(store)(PageViewElement) {
       if (this._activeBattle.activeAction.type === ACTION_TYPE_UNIT) {
         this._unit = new Unit(this._activeBattle.units[this._activeBattle.activeAction.index], this._activeBattle.activeAction.index, this._activeBattle);
         this._armyTakingAction = null;
+        this._activeEvent = null;
       } else if (this._activeBattle.activeAction.type === ACTION_TYPE_ARMY) {
         this._unit = null;
         this._armyTakingAction = this._activeBattle.armies[this._activeBattle.activeAction.index];
+        this._activeEvent = null;
+      } else if (this._activeBattle.activeAction.type === ACTION_TYPE_EVENT) {
+        this._unit = null;
+        this._armyTakingAction = null;
+        this._activeEvent = this._activeBattle.events[this._activeBattle.activeAction.index];
       }
 
       this._date = new Date(this._activeBattle.startTime + this._activeBattle.second * 1000);
@@ -1418,6 +1437,12 @@ class FightView extends connect(store)(PageViewElement) {
 
   _takeArmyAction() {
     store.dispatch(takeArmyAction());
+
+    this._resetAction();
+  }
+
+  _finishEvent() {
+    store.dispatch(finishEvent());
 
     this._resetAction();
   }
@@ -1556,6 +1581,18 @@ class FightView extends connect(store)(PageViewElement) {
     } else {
       this._targetUnit = null;
     }
+  }
+
+  armyCasualties(army) {
+    return this._activeBattle.units.filter(unit => unit.army === army).reduce((casualties, unit) => casualties + (unit.fullStrength - unit.strength), 0);
+  }
+
+  get army1Casualties() {
+    return this.armyCasualties(0);
+  }
+
+  get army2Casualties() {
+    return this.armyCasualties(1);
   }
 
   get target() {
