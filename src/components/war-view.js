@@ -8,11 +8,13 @@ import { store } from '../store.js';
 import { SharedStyles } from './shared-styles.js';
 import { ButtonSharedStyles } from './button-shared-styles.js';
 import BATTLE_TEMPLATES from '../game/battle-templates.js';
+import RULES from '../game/rules.js';
 
 class WarView extends connect(store)(PageViewElement) {
   static get properties() {
     return {
       _battles: { type: Object },
+      _selectableBattles: { type: Object },
     };
   }
 
@@ -51,12 +53,20 @@ class WarView extends connect(store)(PageViewElement) {
       `: ``}
       <section>
         <div>
+          <select id="rulesets" @change="${this.updateRuleset}">
+            <option value="">Select a ruleset</option>
+            ${repeat(this.rulesets, ({ruleset, id}) => html`
+              <option value="${id}">${ruleset.name}</option>
+            `)}
+          </select>
           <select id="battle-template">
-            ${repeat(BATTLE_TEMPLATES, (battleTemplate, index) => html`
+            <option value="">Select a battle</option>
+            ${repeat(this._selectableBattles, (battleTemplate, index) => html`
               <option value="${index}">${battleTemplate.name}</option>
             `)}
           </select>
           <button @click="${this._create}">Create</button>
+          <p class="error hidden">You must select a ruleset to play and a battle to fight.</p>
           <input id="name" type="text" placeholder="Battle name"></input>
           <input id="army1-name" type="text" placeholder="First army name"></input>
           <input id="army2-name" type="text" placeholder="Second army name"></input>
@@ -65,8 +75,41 @@ class WarView extends connect(store)(PageViewElement) {
     `;
   }
 
+  connectedCallback() {
+    super.connectedCallback();
+    this._selectableBattles = [];
+  }
+
+  updateRuleset() {
+    this._selectableBattles = BATTLE_TEMPLATES.filter(battle => battle.ruleset === this.selectedRuleset);
+  }
+
+  get rulesets() {
+    return RULES.map((ruleset, index) => ({ ruleset, id: index }));
+  }
+
+  get rulesetsElement() {
+    return this.shadowRoot.getElementById('rulesets');
+  }
+
+  get selectedRuleset() {
+    return parseInt(this.rulesetsElement.value);
+  }
+
+  set selectedRuleset(value) {
+    this.rulesetsElement.value = value;
+  }
+
+  get newBattleTemplateElement() {
+    return this.shadowRoot.getElementById('battle-template');
+  }
+
   get newBattleTemplate() {
-    return this.shadowRoot.getElementById('battle-template').value
+    return this.newBattleTemplateElement.value
+  }
+
+  set newBattleTemplate(value) {
+    this.newBattleTemplateElement.value = value;
   }
 
   get newBattleNameElement() {
@@ -114,15 +157,27 @@ class WarView extends connect(store)(PageViewElement) {
     };
   }
 
+  get createBattleFormValid() {
+    return ! isNaN(this.selectedRuleset) && ! isNaN(this.newBattleTemplate);
+  }
+
   _create() {
-    store.dispatch(createNewBattle(this.battleStats));
-    this.newBattleName = '';
-    this.newBattleArmy1Name = '';
-    this.newBattleArmy2Name = '';
+    if (this.createBattleFormValid) {
+      store.dispatch(createNewBattle(this.battleStats));
+      this.selectedRuleset = '';
+      this.newBattleTemplate = '';
+      this.newBattleName = '';
+      this.newBattleArmy1Name = '';
+      this.newBattleArmy2Name = '';
+    } else {
+      this.shadowRoot.querySelector('.error').classList.remove('hidden');
+      setTimeout(() => {
+        this.shadowRoot.querySelector('.error').classList.add('hidden');
+      }, 3000);
+    }
   }
 
   _playBattle(e) {
-
     store.dispatch(setActiveBattle(parseInt(e.target.closest('.battle').dataset.index)));
   }
 

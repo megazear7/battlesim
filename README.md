@@ -8,8 +8,6 @@
 
 ###### TODO
 
-1. Add another drop down to the create battle page with the various rulesets and then filter the battle templates drop-down by ruleset. If no ruleset is selected show a please select a ruleset message as the default value in the battle drop down.
-1. Add an empty default option to the battle drop-down that says select a battle. Add form validation if they don't select a battle.
 1. Add array of paragraphs for army actions and events
 1. Make generic event system. Make army actions fit the same format.
 1. Unit fled action details are not being saved to the log
