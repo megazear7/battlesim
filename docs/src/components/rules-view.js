@@ -1,4 +1,10 @@
-import { html, css, PageViewElement, SharedStyles, $rulesDefault as RULESETS, repeat, connect, store } from './battle-sim.js';
+import { $scenariosDefault as CIVIL_WAR_SCENARIOS, $scenariosDefault$1 as ANCIENTS_SCENARIOS, html, css, PageViewElement, SharedStyles, $rulesDefault as RULESETS, repeat, connect, store } from './battle-sim.js';
+var SCENARIOS = { ...CIVIL_WAR_SCENARIOS,
+  ...ANCIENTS_SCENARIOS
+};
+var scenarios = {
+  default: SCENARIOS
+};
 
 class RulesView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -71,7 +77,7 @@ class RulesView extends connect(store)(PageViewElement) {
   stateChanged(state) {
     if (state.battle.battles.length > state.battle.activeBattle) {
       let activeBattle = state.battle.battles[state.battle.activeBattle];
-      this._battleRules = activeBattle.rules;
+      this._battleRules = SCENARIOS[activeBattle.rules];
       this._ruleset = RULESETS[activeBattle.ruleset];
       this._hasActiveBattle = true;
     } else {
@@ -82,3 +88,4 @@ class RulesView extends connect(store)(PageViewElement) {
 }
 
 window.customElements.define('rules-view', RulesView);
+export { scenarios as $scenarios, SCENARIOS as $scenariosDefault };
