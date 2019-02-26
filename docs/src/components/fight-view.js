@@ -1007,6 +1007,9 @@ class FightView extends connect(store)(PageViewElement) {
       },
       _actionsDisabled: {
         type: Boolean
+      },
+      _hasSelection: {
+        type: Boolean
       }
     };
   }
@@ -1080,6 +1083,9 @@ class FightView extends connect(store)(PageViewElement) {
           border-style: solid;
           border-color: var(--app-primary-color);
         }
+        .has-selection button:hover {
+          background-color: white;
+        }
         .tooltip {
           position: relative;
           display: inline-block;
@@ -1128,7 +1134,7 @@ class FightView extends connect(store)(PageViewElement) {
           </section>
           <section class="unit-actions">
             <div class="${classMap({
-      'has-selection': this._actionSelected
+      'has-selection': this._hasSelection
     })}">
               <button @click="${this._rest}" id="rest" ?disabled="${this._actionsDisabled}" class="${classMap({
       selected: this._selectedAction === REST
@@ -1448,6 +1454,7 @@ class FightView extends connect(store)(PageViewElement) {
   }
 
   _resetAction() {
+    this._hasSelection = false;
     this._actionUpdates = [];
     this._showActionResult = false;
     this._actionsDisabled = false;
@@ -1457,6 +1464,7 @@ class FightView extends connect(store)(PageViewElement) {
   _rest(e) {
     this._hideInputs();
 
+    this._hasSelection = true;
     this._selectedAction = REST;
     this._showTakeAction = true;
     this._showRestTime = true;
@@ -1467,6 +1475,7 @@ class FightView extends connect(store)(PageViewElement) {
   _move(e) {
     this._hideInputs();
 
+    this._hasSelection = true;
     this._selectedAction = MOVE;
     this._showDistance = true;
     this._showHill = true;
@@ -1479,6 +1488,7 @@ class FightView extends connect(store)(PageViewElement) {
   _charge(e) {
     this._hideInputs();
 
+    this._hasSelection = true;
     this._selectedAction = CHARGE;
     this._showSeparation = true;
     this._showHill = true;
@@ -1491,6 +1501,7 @@ class FightView extends connect(store)(PageViewElement) {
   _fire(e) {
     this._hideInputs();
 
+    this._hasSelection = true;
     this._selectedAction = FIRE;
     this._showSeparation = true;
     this._showHill = true;
@@ -1601,10 +1612,6 @@ class FightView extends connect(store)(PageViewElement) {
     } else {
       return null;
     }
-  }
-
-  get _actionSelected() {
-    return ACTIONS.indexOf(this._selectedAction) >= 0;
   }
 
   get _validSituation() {
