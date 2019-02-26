@@ -4,7 +4,7 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { PageViewElement } from './page-view-element.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
-import { takeAction, takeArmyAction } from '../actions/battle.js';
+import { takeAction, takeArmyAction, finishEvent } from '../actions/battle.js';
 import { SharedStyles } from './shared-styles.js';
 import { ButtonSharedStyles } from './button-shared-styles.js';
 import Unit from '../unit.js';
@@ -14,7 +14,11 @@ import { SLOPE_UP, SLOPE_DOWN, SLOPE_NONE } from '../terrain.js';
 import TERRAIN from '../game/terrain.js';
 import Encounter from '../encounter.js';
 import Situation from '../situation.js';
-import { MINUTES_PER_TURN, ACTION_TYPE_UNIT, ACTION_TYPE_ARMY } from '../game.js';
+import {
+  MINUTES_PER_TURN,
+  ACTION_TYPE_UNIT,
+  ACTION_TYPE_ARMY,
+  ACTION_TYPE_EVENT } from '../game.js';
 
 export const REST = 'REST';
 export const MOVE = 'MOVE';
@@ -297,17 +301,31 @@ class FightView extends connect(store)(PageViewElement) {
               </div>
             </div>
           </section>
-        `:html`
-          <section>
-            <h2>${this._armyTakingAction.armyActionTitle}</h2>
-            <div class="muted centered">Army: ${this._armyTakingAction.name}</div>
-            <div class="muted centered">${prettyDateTime(this._date)}</div>
-            ${repeat(this._armyTakingAction.messages, message => html`<p>${message}</p>`)}
+        `: this._armyTakingAction ? html`
+            <section>
+              <h2>${this._armyTakingAction.armyActionTitle}</h2>
+              <div class="muted centered">Army: ${this._armyTakingAction.name}</div>
+              <div class="muted centered">${prettyDateTime(this._date)}</div>
+              ${repeat(this._armyTakingAction.messages, message => html`<p>${message}</p>`)}
+              <div class="centered">
+                <button @click="${this._takeArmyAction}">Next Action</button>
+              </div>
+            </section>
+          ` : html`
+            <section>
+              <h2>${this._activeEvent.title}</h2>
+              <div class="muted centered">${prettyDateTime(this._date)}</div>
+              ${repeat(this._activeEvent.messages, message => html`<p>${message}</p>`)}
+              ${this._activeEvent.provideArmyOverview ? html`
+                <p>${this._activeBattle.armies[0].name} has sustained ${this.army1Casualties} casualties.</p>
+                <p>${this._activeBattle.armies[1].name} has sustained ${this.army2Casualties} casualties.</p>
+              ` : ''}
+            </section>
             <div class="centered">
-              <button @click="${this._takeArmyAction}">Next Action</button>
+              <button @click="${this._finishEvent}">Next Action</button>
             </div>
-          </section>
-        `}
+          `
+        }
       `:html`
         <section>
           <p>No active battle. Go to the war tab and either select a battle or create a new battle.</p>
@@ -328,9 +346,15 @@ class FightView extends connect(store)(PageViewElement) {
       if (this._activeBattle.activeAction.type === ACTION_TYPE_UNIT) {
         this._unit = new Unit(this._activeBattle.units[this._activeBattle.activeAction.index], this._activeBattle.activeAction.index, this._activeBattle);
         this._armyTakingAction = null;
+        this._activeEvent = null;
       } else if (this._activeBattle.activeAction.type === ACTION_TYPE_ARMY) {
         this._unit = null;
         this._armyTakingAction = this._activeBattle.armies[this._activeBattle.activeAction.index];
+        this._activeEvent = null;
+      } else if (this._activeBattle.activeAction.type === ACTION_TYPE_EVENT) {
+        this._unit = null;
+        this._armyTakingAction = null;
+        this._activeEvent = this._activeBattle.events[this._activeBattle.activeAction.index];
       }
       this._date = new Date(this._activeBattle.startTime + (this._activeBattle.second * 1000));
       this._hasActiveBattle = true;
@@ -394,6 +418,11 @@ class FightView extends connect(store)(PageViewElement) {
 
   _takeArmyAction() {
     store.dispatch(takeArmyAction());
+    this._resetAction();
+  }
+
+  _finishEvent() {
+    store.dispatch(finishEvent());
     this._resetAction();
   }
 
@@ -528,6 +557,20 @@ class FightView extends connect(store)(PageViewElement) {
     } else {
       this._targetUnit =  null;
     }
+  }
+
+  armyCasualties(army) {
+    return this._activeBattle.units
+    .filter(unit => unit.army === army)
+    .reduce((casualties, unit) => casualties + (unit.fullStrength - unit.strength), 0);
+  }
+
+  get army1Casualties() {
+    return this.armyCasualties(0);
+  }
+
+  get army2Casualties() {
+    return this.armyCasualties(1);
   }
 
   get target() {

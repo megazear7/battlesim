@@ -4,10 +4,12 @@ import {
   SECONDS_PER_TURN,
   ACTION_TYPE_UNIT,
   ACTION_TYPE_ARMY,
+  ACTION_TYPE_EVENT,
   NO_PLAYER_TURNS } from '../game.js';
 import {
   TAKE_ACTION,
   TAKE_ARMY_ACTION,
+  FINISH_EVENT,
   ADD,
   REMOVE,
   CREATE_NEW_BATTLE,
@@ -55,6 +57,14 @@ const battle = (state = initialState, action) => {
     updateTime(activeBattle);
   } else if (activeBattle && action.type === TAKE_ARMY_ACTION && activeBattle.activeAction.type === ACTION_TYPE_ARMY) {
     activeBattle.armies[activeBattle.activeAction.index].nextAction += SECONDS_PER_TURN;
+    updateTime(activeBattle);
+  } else if (activeBattle && action.type === FINISH_EVENT && activeBattle.activeAction.type === ACTION_TYPE_EVENT) {
+    let activeEvent = activeBattle.events[activeBattle.activeAction.index];
+    let proceedClock = activeEvent.proceedClock ? activeEvent.proceedClock : 0;
+    activeBattle.armies.forEach(army => army.nextAction += proceedClock);
+    activeBattle.units.forEach(unit => unit.nextAction += proceedClock);
+    activeBattle.second += proceedClock;
+    activeEvent.time = undefined;
     updateTime(activeBattle);
   } else if (activeBattle && action.type === ADD) {
     let newUnit = { ...UNITS[activeBattle.unitTemplates][action.unitTemplate] };
@@ -144,6 +154,15 @@ function nextAction(battle) {
       nextTime = army.nextAction;
       nextAction = {
         type: ACTION_TYPE_ARMY,
+        index: index,
+      };
+    }
+  });
+  battle.events.forEach((event, index) => {
+    if (event.time < nextTime) {
+      nextTime = event.time;
+      nextAction = {
+        type: ACTION_TYPE_EVENT,
         index: index,
       };
     }
