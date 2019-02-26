@@ -8,7 +8,6 @@
 
 ###### TODO
 
-1. Unit fled action details are not being saved to the log
 1. Make forms tab able and submittable with the enter key.
 1. Refactor code to have the following classes Battle, War, Rules, and Army instead of referencing the json directly. Better utilize the Terrain class as well.
 1. Make battles shareable.
