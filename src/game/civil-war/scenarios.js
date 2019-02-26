@@ -25,10 +25,6 @@ export default {
     {
       heading: 'Setup',
       text: 'Currently there are no setup instructions for this battle. Setup the terrain and units however you would like.'
-    },
-    {
-      heading: 'Night time actions',
-      text: 'During night time each unit that is within 12 inches of an enemy unit must move toward their table edge. The distance they move is 12 - X where X is the distance to the closest enemy unit. They may chose to move further than this.'
     }
   ]
 };

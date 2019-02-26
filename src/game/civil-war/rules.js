@@ -22,10 +22,6 @@ export default {
         {
           heading: 'Taking casualties',
           text: 'As units take casualties you will not pick up stands. Rather you will be able to know the status of the unit based upon the status that the units leaders provide to you. While the number of stands will remain consistant as they take casualties, you will need to keep in mind that there might be less soldiers in the unit.'
-        },
-        {
-          heading: 'Unit Formation',
-          text: 'Stands in closed order units must be in contact with another stand from the unit at all times. Stands in open order units must remain within 3 inches of another stand from its own unit at all times.'
         }
       ]
     },
@@ -67,34 +63,42 @@ export default {
     },
     {
       heading: 'Movement',
-      text: 'There are four types of movements: Column, March, Maneuver, Reform',
+      text: 'When performing a normal movement you can either enter in a distance or leave the distance blank which will cause the unti to spend a full 30 minutes moving.',
       subsections: [
         {
-          heading: 'Column',
-          text: 'This consists of any movement where every stand is lined up behind each other. This movement can include a single wheel where the lead unit can turn up to 45 degrees at some point during the movement. This is the fastest type of movement.',
+          heading: 'Close Order Infantry Movement',
+          text: 'A movement constists of either a single wheel where one corner remains stationary, a single forward movement, or a single retreate move where the unit turns around and then moves.',
         },
         {
-          heading: 'March',
-          text: 'A march is of any movement where every stand in the unit is facing the same direction, and the movement is entirely forward. This is the standard type of movement to perform on the battlefield.',
+          heading: 'Open Order Infantry Movement',
+          text: 'Open order infantry can wheel, turn in place, and move forward without limitations.',
         },
         {
-          heading: 'Maneuver',
-          text: 'A maneuver is of any movement where the movement includes wheeling, or any movement that is entirely forward but where the stands are not facing the same directon. This movement is slower than a march but faster than a reform.',
+          heading: 'Mounted Movement',
+          text: 'Mounted units can wheel, turn in place, and move forward without limitations.',
         },
         {
-          heading: 'Reform',
-          text: 'A reform movement allows each stand to move entirely independantly. This allows you to change formation or perform complex movements. This movement takes the longest amount of time.',
+          heading: 'Entering a distance',
+          text: 'If you enter a distance the game will tell you if you were able to make the distance and how long it took.',
         },
         {
-          heading: 'Open and closed order',
-          text: 'Open order units may pass through friendly units of any type. Closed order units may never pass through any other unit.',
+          heading: 'Moving as far as possible',
+          text: 'If you move as far as possible you will spend a full 30 minutes moving. This reduced the complexity of the movement by limiting the number of commands that are issued. However it also exposes the unit for a full 30 minutes of time where they will not be able to react.',
         }
       ]
     },
     {
       heading: 'Ranged combat',
-      text: 'Units can take the fire action to attack an enemy unit. The enemy unit will attempt to return fire if it is able.',
+      text: 'Units can take the fire action to attack an enemy unit.',
       subsections: [
+        {
+          heading: 'Measurement',
+          text: 'Measure from the center of stand of each unit.'
+        },
+        {
+          heading: 'Inderect Line of Sight',
+          text: 'Cannons can fire indirectly without line of sight as long as the blocking unit or terrain piece is closer to the cannon than to the target unit.'
+        },
         {
           heading: 'Engaged stands',
           text: 'Each unit will have a certain number of engaged stands. This is determined by the number of stands in each unit that has line of sight on the other unit. Enter the number of engaged stands for each unit into the fight page so that the game knows how many soldiers are engaged in the conflict.'
@@ -158,24 +162,10 @@ export default {
           text: 'Maintain unit orientation but move the unit directly away from the attacking unit the number of inches specified.'
         },
         {
-          heading: 'Evade',
-          text: 'Move the unit in any direction up to the number of inches specified. You must end at least two inches away from the enemy unit.'
-        },
-        {
           heading: 'Flee',
-          text: 'Move the unit directly towards your armies table edge the number of inches specified. If you pass through any enemy unit while perform this move your unit is destroyed.'
+          text: 'Remove the unit from the battlefield.'
         }
       ]
-    },
-    {
-      heading: 'Battle outcomes',
-      text: 'The game will never declare a winner on the battlefield. Play continues until all players agree to be done. Each general can determine for themselves who won the battle.',
-      subsections: [
-        {
-          heading: 'Night time',
-          text: 'When the game clock becomes night time that usually means that the day of fighting is over. The game will alert you that the sun has set and each general will recieve an overview of the condition of their army. By this time it might be clear as to which army won the battle. If it is not then you may proceed to the next morning and continue the engagment. If you do this then the scenario will have "night time actions" that each unit of each army will need to take.'
-        }
-      ]
-    },
+    }
   ]
 };

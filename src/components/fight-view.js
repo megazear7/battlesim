@@ -135,7 +135,7 @@ class FightView extends connect(store)(PageViewElement) {
           border-style: solid;
           border-color: var(--app-primary-color);
         }
-        .has-selection button:hover {
+        .has-selection button:disabled:hover {
           background-color: white;
         }
         .tooltip {
