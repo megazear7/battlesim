@@ -16,6 +16,7 @@ export default class Battle {
     terrain,
     unitTemplates,
     rules,
+    createdAt,
     deadliness = 1, // TODO
     turnDuration = SECONDS_IN_AN_HOUR, // TODO
     playerTurnDuration = NO_PLAYER_TURNS,
@@ -28,8 +29,8 @@ export default class Battle {
     turnStarted = 0,
     armies = [ ],
     units = [ ],
-    activeAction = { }
-  }, index) {
+    activeAction = { },
+  }, id, active = false) {
     this.name = name;
     this.ruleset = ruleset;
     this.second = second;
@@ -50,7 +51,18 @@ export default class Battle {
     this.turnStarted = turnStarted;
     this.units = units;
     this.activeAction = activeAction;
+    this.createdAt = createdAt;
     this.armies = armies;
-    this.index = index;
+    this.id = id;
+    this.active = active;
+  }
+
+  get createdDate() {
+    return new Date(this.createdAt);
+  }
+
+  get createdMessage() {
+    let createdDate = this.createdDate;
+    return createdDate.getMonth()+1 + '/' + createdDate.getDate() + '/' + createdDate.getFullYear();
   }
 }

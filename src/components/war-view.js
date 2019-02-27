@@ -33,12 +33,12 @@ class WarView extends connect(store)(PageViewElement) {
 
   render() {
     return html`
-      ${repeat(this._battles, ({battle, index, active, createdAt}) => html`
+      ${repeat(this._battles, battle => html`
         <section>
-          <div class="${classMap({battle: true, active: active})}" data-index="${index}">
-            <h3 class="${classMap({selectedBattle: active})}">${battle.name}</h3>
-            <pre>Created ${createdAt}</pre>
-            ${active ? html`
+          <div class="${classMap({battle: true, active: battle.active})}" data-index="${battle.id}">
+            <h3 class="${classMap({selectedBattle: battle.active})}">${battle.name}</h3>
+            <pre>Created ${battle.createdMessage}</pre>
+            ${battle.active ? html`
               <button @click="${this._playBattle}" disabled>Playing</button>
             ` : html`
               <button @click="${this._playBattle}">Play</button>
@@ -191,15 +191,8 @@ class WarView extends connect(store)(PageViewElement) {
   }
 
   stateChanged(state) {
-    this._battles = state.battle.battles.map((battle, index) => {
-      let createdAt = new Date(battle.createdAt);
-      return {
-        battle: new Battle(battle, index),
-        index,
-        active: index === state.battle.activeBattle,
-        createdAt: createdAt.getMonth()+1 + '/' + createdAt.getDate() + '/' + createdAt.getFullYear()
-      };
-    });
+    this._battles = state.battle.battles.map((battle, index) =>
+      new Battle(battle, index, index === state.battle.activeBattle));
   }
 }
 
