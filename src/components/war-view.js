@@ -9,6 +9,7 @@ import { SharedStyles } from './shared-styles.js';
 import { ButtonSharedStyles } from './button-shared-styles.js';
 import BATTLE_TEMPLATES from '../game/battle-templates.js';
 import RULES from '../game/rules.js';
+import Battle from '../models/battle.js';
 
 class WarView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -193,7 +194,7 @@ class WarView extends connect(store)(PageViewElement) {
     this._battles = state.battle.battles.map((battle, index) => {
       let createdAt = new Date(battle.createdAt);
       return {
-        battle,
+        battle: new Battle(battle),
         index,
         active: index === state.battle.activeBattle,
         createdAt: createdAt.getMonth()+1 + '/' + createdAt.getDate() + '/' + createdAt.getFullYear()
