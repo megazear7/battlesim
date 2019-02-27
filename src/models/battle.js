@@ -4,6 +4,8 @@ import {
   CASUALTY_MESSAGE_DESCRIPTIVE,
   ACTION_TYPE_UNIT,
   NO_PLAYER_TURNS } from '../game.js';
+import UNITS from '../game/units.js';
+import Unit from '../unit.js';
 import { SECONDS_IN_AN_HOUR } from '../math-utils.js';
 
 export default class Battle {
@@ -50,6 +52,7 @@ export default class Battle {
     this.actionLog = actionLog;
     this.turnStarted = turnStarted;
     this.units = units;
+    this.unitModels = units.map((unit, index) => new Unit(unit, index, this));
     this.activeAction = activeAction;
     this.createdAt = createdAt;
     this.armies = armies;
@@ -64,5 +67,42 @@ export default class Battle {
   get createdMessage() {
     let createdDate = this.createdDate;
     return createdDate.getMonth()+1 + '/' + createdDate.getDate() + '/' + createdDate.getFullYear();
+  }
+
+  get army0Units() {
+    return this.units.filter(unit => unit.armyIndex === 0);
+  }
+
+  get army1Units() {
+    return this.units.filter(unit => unit.armyIndex === 1);
+  }
+
+  get army0() {
+    return this.armies[0];
+  }
+
+  get army1() {
+    return this.armies[1];
+  }
+
+  get allUnitTemplates() {
+    return UNITS[this.unitTemplates].map((unit, index) => ({ id: index, unit }));
+  }
+
+  unitTemplatesFor(army) {
+    return this.allUnitTemplates.filter(({unit}) => unit.army === army);
+  }
+
+  get unitsByArmy() {
+    return [
+      {
+        name: this.army0.name,
+        units: this.army0Units,
+      },
+      {
+        name: this.army1.name,
+        units: this.army1Units,
+      }
+    ];
   }
 }

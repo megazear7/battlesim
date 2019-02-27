@@ -29,8 +29,9 @@ if (! initialState) {
 
 const battle = (state = initialState, action) => {
   var newState = { ...state };
-  if (newState.battles.length-1 <= newState.activeBattle) {
-    var activeBattle = newState.battles[newState.activeBattle];
+  let activeBattle;
+  if (newState.activeBattle < newState.battles.length) {
+    activeBattle = newState.battles[newState.activeBattle];
   }
   if (activeBattle && action.type === TAKE_ACTION) {
     let actionLog = {

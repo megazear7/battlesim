@@ -6,20 +6,14 @@ import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
 import { SharedStyles } from './shared-styles.js';
 import { ButtonSharedStyles } from './button-shared-styles.js';
-import Unit from '../unit.js';
 import { prettyTime } from '../math-utils.js';
 import { MOVE, REST } from './fight-view.js';
-import UNITS from '../game/units.js';
 import Battle from '../models/battle.js';
 
 class BattleView extends connect(store)(PageViewElement) {
   static get properties() {
     return {
-      _army0Units: { type: Object },
-      _army1Units: { type: Object },
-      _allUnitTemplates: { type: Object },
       _unitTemplates: { type: Object },
-      _hasActiveBattle: { type: Boolean },
       _activeBattle: { type: Object },
     };
   }
@@ -57,15 +51,15 @@ class BattleView extends connect(store)(PageViewElement) {
 
   render() {
     return html`
-      ${this._hasActiveBattle ? html`
-        ${repeat(this.armies, ({name, units}) => html`
+      ${this._activeBattle ? html`
+        ${repeat(this._activeBattle.unitsByArmy, ({name, units}) => html`
           <section>
             <h2>${name}</h2>
             ${this._activeBattle.usesPoints ? html`
               <p>${units.map(unit => unit.unit.points).reduce((total, cost) => total + cost, 0)} points</p>
             ` : ''}
-            ${repeat(units, ({index, unit}) => html`
-              <div class="unit" data-index="${index}">
+            ${repeat(units, unit => html`
+              <div class="unit" data-index="${unit.id}">
                 <h4 class="unit-name">
                   ${unit.name}
                   ${this._activeBattle.usesPoints ? html`<small class="point-cost">${unit.points} points</small>` : ''}
@@ -82,10 +76,10 @@ class BattleView extends connect(store)(PageViewElement) {
           <div>
             <select id="army" @change="${this._armyChanged}">
               <option value="0">
-                ${this._army0Name}
+                ${this._activeBattle.army0.name}
               </option>
               <option value="1">
-                ${this._army1Name}
+                ${this._activeBattle.army1.name}
               </option>
             </select>
             <select id="unit-template">
@@ -138,19 +132,6 @@ class BattleView extends connect(store)(PageViewElement) {
     `;
   }
 
-  get armies() {
-    return [
-      {
-        name: this._army0Name,
-        units: this._army0Units,
-      },
-      {
-        name: this._army1Name,
-        units: this._army1Units,
-      }
-    ];
-  }
-
   get armyElement() {
     return this.shadowRoot.getElementById('army');
   }
@@ -172,7 +153,7 @@ class BattleView extends connect(store)(PageViewElement) {
   }
 
   _armyChanged() {
-    this._unitTemplates = this._allUnitTemplates.filter(({unit}) => unit.army === this.army);
+    this._unitTemplates = this._activeBattle.unitTemplatesFor(this.army)
   }
 
   get nameElement() {
@@ -217,20 +198,10 @@ class BattleView extends connect(store)(PageViewElement) {
   }
 
   stateChanged(state) {
-    if (state.battle.battles.length > state.battle.activeBattle) {
-      var activeBattle = new Battle(state.battle.battles[state.battle.activeBattle], state.battle.activeBattle);
-      let units = activeBattle.units.map((unit, index) => ({ index, unit: new Unit(unit, index, activeBattle) }));
-      this._army0Units = units.filter(({unit}) => unit.armyIndex === 0);
-      this._army1Units = units.filter(({unit}) => unit.armyIndex === 1);
-      this._army0Name = activeBattle.armies[0].name;
-      this._army1Name = activeBattle.armies[1].name;
-      this._allUnitTemplates = UNITS[activeBattle.unitTemplates].map((unit, index) => ({ id: index, unit }));
-      this._unitTemplates = this._allUnitTemplates.filter(({unit}) => unit.army === this.army);
-      this._activeBattle = activeBattle;
-      this._hasActiveBattle = true;
-    } else {
-      this._hasActiveBattle = false;
-    }
+    this._activeBattle = state.battle.battles.length > state.battle.activeBattle
+      ? new Battle(state.battle.battles[state.battle.activeBattle], state.battle.activeBattle)
+      : undefined;
+    this._unitTemplates = this._activeBattle ? this._activeBattle.unitTemplatesFor(0) : [ ];
   }
 }
 
