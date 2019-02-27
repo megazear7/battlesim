@@ -10,6 +10,7 @@ import Unit from '../unit.js';
 import { prettyTime } from '../math-utils.js';
 import { MOVE, REST } from './fight-view.js';
 import UNITS from '../game/units.js';
+import Battle from '../models/battle.js';
 
 class BattleView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -217,7 +218,7 @@ class BattleView extends connect(store)(PageViewElement) {
 
   stateChanged(state) {
     if (state.battle.battles.length > state.battle.activeBattle) {
-      var activeBattle = state.battle.battles[state.battle.activeBattle];
+      var activeBattle = new Battle(state.battle.battles[state.battle.activeBattle], state.battle.activeBattle);
       let units = activeBattle.units.map((unit, index) => ({ index, unit: new Unit(unit, index, activeBattle) }));
       this._army0Units = units.filter(({unit}) => unit.armyIndex === 0);
       this._army1Units = units.filter(({unit}) => unit.armyIndex === 1);

@@ -6,6 +6,7 @@ import SCENARIOS from '../game/scenarios.js';
 import { repeat } from 'lit-html/directives/repeat';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
+import Battle from '../models/battle.js';
 
 class RulesView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -62,7 +63,7 @@ class RulesView extends connect(store)(PageViewElement) {
 
   stateChanged(state) {
     if (state.battle.battles.length > state.battle.activeBattle) {
-      let activeBattle = state.battle.battles[state.battle.activeBattle];
+      let activeBattle = new Battle(state.battle.battles[state.battle.activeBattle], state.battle.activeBattle);
       this._battleRules = SCENARIOS[activeBattle.rules];
       this._ruleset= RULESETS[activeBattle.ruleset];
       this._hasActiveBattle = true;

@@ -29,7 +29,7 @@ export default class Battle {
     armies = [ ],
     units = [ ],
     activeAction = { }
-  }) {
+  }, index) {
     this.name = name;
     this.ruleset = ruleset;
     this.second = second;
@@ -51,5 +51,6 @@ export default class Battle {
     this.units = units;
     this.activeAction = activeAction;
     this.armies = armies;
+    this.index = index;
   }
 }

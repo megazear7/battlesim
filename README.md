@@ -11,7 +11,8 @@
 1. Refactor code to have the following classes Battle, War, Rules, and Army instead of referencing the json directly. Better utilize the Terrain class as well.
 1. Refactor models into /models
 1. Refactor utils into /utils
-1. refactor game.js into /game
+1. Refactor game.js into /game
+1. Get rid of anything that we are not using.
 1. Make battles shareable.
 1. Fully review the results of each action, how environment details affect the outcome, and how unit stats affect the outcome.
 1. Event sourced data for step back in time or undoing actions.

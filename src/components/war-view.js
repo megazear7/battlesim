@@ -194,7 +194,7 @@ class WarView extends connect(store)(PageViewElement) {
     this._battles = state.battle.battles.map((battle, index) => {
       let createdAt = new Date(battle.createdAt);
       return {
-        battle: new Battle(battle),
+        battle: new Battle(battle, index),
         index,
         active: index === state.battle.activeBattle,
         createdAt: createdAt.getMonth()+1 + '/' + createdAt.getDate() + '/' + createdAt.getFullYear()
