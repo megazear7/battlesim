@@ -8,9 +8,6 @@
 
 ###### TODO
 
-1. Better utilize the Terrain class as well.
-1. Create a message component for error and success messages that reveals and hides itself with a method.
-1. Get rid of anything that we are not using.
 1. Make battles shareable.
 1. Fully review the results of each action, how environment details affect the outcome, and how unit stats affect the outcome.
 1. Event sourced data for step back in time or undoing actions.
