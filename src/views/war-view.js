@@ -45,7 +45,7 @@ class WarView extends connect(store)(PageViewElement) {
             <h4 class="${classMap({selectedBattle: battle.active})}">${battle.name}</h4>
             <pre>Created ${battle.createdMessage}</pre>
             ${battle.active ? html`
-              <button @click="${this._playBattle}" disabled>Playing</button>
+              <button disabled>Playing</button>
             ` : html`
               <button @click="${this._playBattle}">Play</button>
             `}
@@ -57,12 +57,16 @@ class WarView extends connect(store)(PageViewElement) {
       <section>
         <h3>Shared Battles</h3>
       </section>
-      ${repeat(this._sharedBattles, sharedBattle => html`
+      ${repeat(this._sharedBattles, battle => html`
         <section>
-          <h4>${sharedBattle.data().battle.name}</h4>
+          <h4>${battle.name}</h4>
           <div>
-            <button @click="${() => this._playSharedBattle(sharedBattle)}">Play</button>
-            <button @click="${() => this._leaveSharedBattle(sharedBattle)}">Leave</button>
+            ${battle.active ? html`
+              <button disabled>Playing</button>
+            ` : html`
+              <button @click="${() => this._playSharedBattle(battle)}">Play</button>
+            `}
+            <button @click="${() => this._leaveSharedBattle(battle)}">Leave</button>
           </div>
         </section>
       `)}
@@ -101,19 +105,28 @@ class WarView extends connect(store)(PageViewElement) {
     this._sharedBattles = [];
 
     let sharedBattleIds = JSON.parse(localStorage.getItem("sharedBattles")) || [];
+    let state = store.getState();
+    let activeBattleId = state.battle.activeBattle.id;
 
     firebase.firestore().collection('apps/battlesim/battles').get()
     .then(querySnapshot =>
       querySnapshot
       .forEach(doc => {
         if (doc.exists && sharedBattleIds.indexOf(doc.id) >= 0) {
-          this._sharedBattles = [ ...this._sharedBattles, doc ];
+          this._sharedBattles = [
+            ...this._sharedBattles,
+            new Battle(doc.data().battle, doc.id, doc.id === activeBattleId)
+          ];
         }
       })
     ).catch(error => console.log('Error getting document:', error));
   }
 
   stateChanged(state) {
+    if (this._sharedBattles) {
+      this._sharedBattles.forEach(battle => battle.active = battle.id === state.battle.activeBattle.id);
+    }
+
     this._battles = state.battle.battles.map((battle, index) =>
       new Battle(battle, index, index === state.battle.activeBattle.id));
   }
@@ -135,7 +148,11 @@ class WarView extends connect(store)(PageViewElement) {
       store.dispatch(removeBattle(battleIndex));
       localStorage.setItem("sharedBattles", JSON.stringify([...sharedBattleIds, docRef.id]));
       docRef.get().then(doc =>
-        this._sharedBattles = [ ...this._sharedBattles, doc ]);
+        this._sharedBattles = [
+          ...this._sharedBattles,
+          new Battle(doc.data().battle, doc.id, doc.id === state.battle.activeBattle.id)
+        ]
+      );
     });
 
     if (navigator.share) {
@@ -158,7 +175,7 @@ class WarView extends connect(store)(PageViewElement) {
       if (doc.exists) {
         store.dispatch(setActiveBattle({
           type: SHARED_BATTLE,
-          id: uuid
+          id: doc.id
         }));
       } else {
         console.log('Battle does not exist');
