@@ -1,6 +1,6 @@
 import { html } from 'lit-element';
 import { PageViewElement } from './page-view-element.js';
-import { SharedStyles } from './shared-styles.js';
+import { SharedStyles } from '../styles/shared-styles.js';
 
 class View404 extends PageViewElement {
   static get styles() {
