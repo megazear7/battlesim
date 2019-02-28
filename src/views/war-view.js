@@ -157,7 +157,7 @@ class WarView extends connect(store)(PageViewElement) {
     .then(doc => {
       if (doc.exists) {
         store.dispatch(setActiveBattle({
-          type: "SHARED_BATTLE",
+          type: SHARED_BATTLE,
           id: uuid
         }));
       } else {
@@ -269,7 +269,7 @@ class WarView extends connect(store)(PageViewElement) {
 
   _playBattle(e) {
     store.dispatch(setActiveBattle({
-      type: "LOCAL_BATTLE",
+      type: LOCAL_BATTLE,
       id: parseInt(e.target.closest('.battle').dataset.index)
     }));
   }

@@ -19,7 +19,7 @@ import {
 import { LOCAL_BATTLE } from '../game.js';
 
 const INITIAL_STATE = {
-  activeBattle: { type: "LOCAL_BATTLE", id: 0 },
+  activeBattle: { type: LOCAL_BATTLE, id: 0 },
   battles: [ ],
 };
 

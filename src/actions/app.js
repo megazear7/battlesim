@@ -16,7 +16,6 @@ export const navigate = (path) => (dispatch) => {
 };
 
 const loadPage = (page) => (dispatch) => {
-  console.log(page, page.indexOf('shared'));
   if (page === 'battle') {
     import('../views/battle-view.js');
   } else if (page === 'fight') {
