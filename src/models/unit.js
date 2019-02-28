@@ -1,5 +1,5 @@
 import { store } from '../store.js';
-import { FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP } from '../units.js';
+import { FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP } from '../game.js';
 import { upperCaseFirst } from '../string-utils.js';
 import { getRandomInt, roundToNearest } from '../math-utils.js';
 import { STAT_PERCENTAGE, STAT_DESCRIPTION, STRENGTH_MESSAGE_DESCRIPTIVE } from '../game.js';

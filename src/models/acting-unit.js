@@ -1,7 +1,7 @@
 import { weightedRandom, weightedRandomTowards } from '../math-utils.js';
 import { SLOPE_UP, SLOPE_DOWN, SLOPE_NONE, MAX_TERRAIN } from '../terrain.js';
 import { statModFor, MAX_EQUIPMENT_WEIGHT, MORALE_SUCCESS, MORALE_FAILURE } from '../game.js';
-import { FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP } from '../units.js';
+import { FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP } from '../game.js';
 
 /** @class Situation
  *  This represents a single unit taking an order. */

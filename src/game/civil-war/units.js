@@ -9,7 +9,7 @@ import {
   CAVALRY_TROOP,
   ARTILLERY_TROOP,
   MELEE_WEAPON,
-  RANGED_WEAPON } from '../../units.js';
+  RANGED_WEAPON } from '../../game.js';
 const UNION = 0;
 const CONFEDERATE = 1;
 const UNION_REGIMENT_SIZE = 1000;

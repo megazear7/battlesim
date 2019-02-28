@@ -25,6 +25,11 @@ export const NO_ARMOR =  'NO_ARMOR';
 export const POWER_VS_FOOT = 'powerVsFoot';
 export const POWER_VS_MOUNTED = 'powerVsMounted';
 export const NO_WEAPON = 'NO_WEAPON';
+export const FOOT_TROOP = 0;
+export const CAVALRY_TROOP = 1;
+export const ARTILLERY_TROOP = 2;
+export const MELEE_WEAPON = 'meleeWeapon';
+export const RANGED_WEAPON = 'rangedWeapon';
 
 export function statModFor(stat) {
   return weightedRandomTowards(20, 80, stat, 2) / 100;

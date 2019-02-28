@@ -17,7 +17,7 @@ import {
   CAVALRY_TROOP,
   ARTILLERY_TROOP,
   MELEE_WEAPON,
-  RANGED_WEAPON } from '../../units.js';
+  RANGED_WEAPON } from '../../game.js';
 const ARMY_1 = 0;
 const ARMY_2 = 1;
 const STANDARD_UNIT_SIZE = 1000;
