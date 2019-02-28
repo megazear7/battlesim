@@ -7,6 +7,8 @@ import {
   ACTION_TYPE_ARMY,
   ACTION_TYPE_EVENT } from '../game.js';
 import UNITS from '../game/units.js';
+import SCENARIOS from '../game/scenarios.js';
+import RULESETS from '../game/rules.js';
 import Unit from './unit.js';
 import { prettyDateTime, SECONDS_IN_AN_HOUR, MILLISECONDS_PER_SECOND } from '../utils/math-utils.js';
 
@@ -121,6 +123,14 @@ export default class Battle {
 
   get allUnitTemplates() {
     return UNITS[this.unitTemplates].map((unit, index) => ({ id: index, unit }));
+  }
+
+  get battleRules() {
+    return SCENARIOS[this.rules];
+  }
+
+  get rulesetRules() {
+    return RULESETS[this.ruleset];
   }
 
   unitTemplatesFor(army) {

@@ -9,7 +9,6 @@
 ###### TODO
 
 1. Refactor code to have the following classes:
-    1. War
     1. Rules
     1. Army
     1. BattleTemplate
