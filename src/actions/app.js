@@ -18,20 +18,20 @@ export const navigate = (path) => (dispatch) => {
 const loadPage = (page) => (dispatch) => {
   switch(page) {
     case 'battle':
-      import('../components/battle-view.js');
+      import('../views/battle-view.js');
       break;
     case 'fight':
-      import('../components/fight-view.js');
+      import('../views/fight-view.js');
       break;
     case 'rules':
-      import('../components/rules-view.js');
+      import('../views/rules-view.js');
       break;
     case 'war':
-      import('../components/war-view.js');
+      import('../views/war-view.js');
       break;
     default:
       page = 'view-404';
-      import('../components/view-404.js');
+      import('../views/view-404.js');
   }
 
   dispatch(updatePage(page));
