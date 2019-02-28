@@ -1,4 +1,4 @@
-import { MELEE } from './game.js';
+import { MELEE } from '../game.js';
 
 export const SLOPE_UP = "SLOPE_UP";
 export const SLOPE_DOWN = "SLOPE_DOWN";

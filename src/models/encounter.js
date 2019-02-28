@@ -4,7 +4,7 @@ import { store } from '../store.js';
 import { combat } from '../utils/battle-utils.js';
 import { randomMinutesBetween, SECONDS_IN_AN_MINUTE } from '../utils/math-utils.js';
 import { FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP } from '../game.js';
-import { SLOPE_UP, SLOPE_DOWN, SLOPE_NONE } from '../terrain.js';
+import { SLOPE_UP, SLOPE_DOWN, SLOPE_NONE } from './terrain.js';
 import { SECONDS_PER_TURN, YARDS_PER_INCH, YARDS_TO_FIGHT, MORALE_SUCCESS, MORALE_FAILURE } from '../game.js';
 import Combatant from './combatant.js';
 

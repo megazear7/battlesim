@@ -1,4 +1,4 @@
-import { SLOPE_NONE } from '../terrain.js';
+import { SLOPE_NONE } from './terrain.js';
 import { SECONDS_PER_TURN, MINUTES_PER_TURN, YARDS_PER_INCH, MORALE_SUCCESS, MORALE_FAILURE } from '../game.js';
 import { SECONDS_IN_AN_MINUTE } from '../utils/math-utils.js';
 import SoloUnit from './solo-unit.js';
