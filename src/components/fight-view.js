@@ -7,7 +7,7 @@ import { store } from '../store.js';
 import { takeAction, takeArmyAction, finishEvent } from '../actions/battle.js';
 import { SharedStyles } from './shared-styles.js';
 import { ButtonSharedStyles } from './button-shared-styles.js';
-import { getRadioVal } from '../dom-utils.js';
+import { getRadioVal } from '../utils/dom-utils.js';
 import { SLOPE_UP, SLOPE_DOWN, SLOPE_NONE } from '../terrain.js';
 import TERRAIN from '../game/terrain.js';
 import Encounter from '../models/encounter.js';

@@ -1,4 +1,4 @@
-import { SECONDS_IN_AN_HOUR, weightedRandomTowards } from './math-utils.js';
+import { SECONDS_IN_AN_HOUR, weightedRandomTowards } from './utils/math-utils.js';
 
 // TODO These need to be configurable per scenario.
 export const SECONDS_PER_TURN = SECONDS_IN_AN_HOUR * 0.45;

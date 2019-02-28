@@ -1,7 +1,7 @@
 import { store } from '../store.js';
 import { FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP } from '../game.js';
-import { upperCaseFirst } from '../string-utils.js';
-import { getRandomInt, roundToNearest } from '../math-utils.js';
+import { upperCaseFirst } from '../utils/string-utils.js';
+import { getRandomInt, roundToNearest } from '../utils/math-utils.js';
 import { STAT_PERCENTAGE, STAT_DESCRIPTION, STRENGTH_MESSAGE_DESCRIPTIVE } from '../game.js';
 import WEAPONS from '../game/weapons.js';
 import ARMOR from '../game/armor.js';

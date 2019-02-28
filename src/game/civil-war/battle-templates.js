@@ -19,7 +19,7 @@ import {
   ACTION_TYPE_UNIT,
   ACTION_TYPE_ARMY,
   NO_PLAYER_TURNS } from '../../game.js';
-import { msSinceMidnight, SECONDS_IN_AN_HOUR } from '../../math-utils.js';
+import { msSinceMidnight, SECONDS_IN_AN_HOUR } from '../../utils/math-utils.js';
 import { CIVIL_WAR_BULL_RUN_SCENARIO, CIVIL_WAR_GENERIC_SCENARIO } from './scenarios.js';
 
 export default {

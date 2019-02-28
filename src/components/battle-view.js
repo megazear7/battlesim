@@ -6,7 +6,7 @@ import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
 import { SharedStyles } from './shared-styles.js';
 import { ButtonSharedStyles } from './button-shared-styles.js';
-import { prettyTime } from '../math-utils.js';
+import { prettyTime } from '../utils/math-utils.js';
 import { MOVE, REST } from './fight-view.js';
 import Battle from '../models/battle.js';
 

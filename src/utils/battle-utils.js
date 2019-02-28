@@ -1,6 +1,6 @@
-import { DEADLYNESS, SECONDS_PER_TURN, SECONDS_PER_ROUND, YARDS_TO_FIGHT, MORALE_FAILURE } from './game.js';
+import { DEADLYNESS, SECONDS_PER_TURN, SECONDS_PER_ROUND, YARDS_TO_FIGHT, MORALE_FAILURE } from '../game.js';
 import { SECONDS_IN_AN_MINUTE } from './math-utils.js';
-import { Terrain } from './terrain.js';
+import { Terrain } from '../terrain.js';
 
 export function combat(unit1, unit2, duration = SECONDS_PER_TURN) {
   let secondsOfCombat = 0;
