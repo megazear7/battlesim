@@ -314,8 +314,8 @@ class FightView extends connect(store)(PageViewElement) {
               <div class="muted centered">${this._activeBattle.currentTimeMessage}</div>
               ${repeat(this._activeBattle.occuringEvent.messages, message => html`<p>${message}</p>`)}
               ${this._activeBattle.occuringEvent.provideArmyOverview ? html`
-                <p>${this._activeBattle.armies[0].name} has sustained ${this.army1Casualties} casualties.</p>
-                <p>${this._activeBattle.armies[1].name} has sustained ${this.army2Casualties} casualties.</p>
+                <p>${this._activeBattle.army0.name} has sustained ${this.army1Casualties} casualties.</p>
+                <p>${this._activeBattle.army1.name} has sustained ${this.army2Casualties} casualties.</p>
               ` : ''}
             </section>
             <div class="centered">
@@ -467,7 +467,7 @@ class FightView extends connect(store)(PageViewElement) {
       attacker: this._activeBattle.activeUnit,
       attackerArmyLeadership: this._activeArmyLeadership,
       attackerEngagedStands: this.engagedAttackers,
-      defender: new Unit(this._activeBattle.units[this.target], this.target, this._activeBattle),
+      defender: this._activeBattle.unitModels[this.target],
       defenderArmyLeadership: this._defenderArmyLeadership,
       defenderEngagedStands: this.engagedDefenders,
       melee: this._selectedAction === CHARGE,
@@ -538,7 +538,7 @@ class FightView extends connect(store)(PageViewElement) {
 
   _updateTarget() {
     if (this.target && ! isNaN(this.target)) {
-      this._targetUnit = new Unit(this._activeBattle.units[this.target], this.target);
+      this._targetUnit = this._activeBattle.unitModels[this.target];
     } else {
       this._targetUnit =  null;
     }
