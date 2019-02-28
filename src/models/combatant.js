@@ -1,6 +1,6 @@
-import { randomBellMod, dropOff, dropOffWithBoost, weightedAverage, roundToNearest, SECONDS_IN_AN_HOUR } from './math-utils.js';
-import { SLOPE_NONE } from './terrain.js';
-import { FOOT_TROOP, MELEE_WEAPON, RANGED_WEAPON } from './units.js';
+import { randomBellMod, dropOff, dropOffWithBoost, weightedAverage, roundToNearest, SECONDS_IN_AN_HOUR } from '../math-utils.js';
+import { SLOPE_NONE } from '../terrain.js';
+import { FOOT_TROOP, MELEE_WEAPON, RANGED_WEAPON } from '../units.js';
 import ActingUnit from './acting-unit.js';
 import {
   statModFor,
@@ -16,7 +16,7 @@ import {
   STAT_DESCRIPTION,
   CASUALTY_MESSAGE_DESCRIPTIVE,
   STRENGTH_MESSAGE_DESCRIPTIVE
-} from './game.js';
+} from '../game.js';
 
 /** @class Situation
  *  This represents a unit in combat with another unit. */

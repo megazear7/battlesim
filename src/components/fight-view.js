@@ -7,13 +7,13 @@ import { store } from '../store.js';
 import { takeAction, takeArmyAction, finishEvent } from '../actions/battle.js';
 import { SharedStyles } from './shared-styles.js';
 import { ButtonSharedStyles } from './button-shared-styles.js';
-import Unit from '../unit.js';
 import { getRadioVal } from '../dom-utils.js';
 import { SLOPE_UP, SLOPE_DOWN, SLOPE_NONE } from '../terrain.js';
 import TERRAIN from '../game/terrain.js';
-import Encounter from '../encounter.js';
-import Situation from '../situation.js';
+import Encounter from '../models/encounter.js';
+import Situation from '../models/situation.js';
 import Battle from '../models/battle.js';
+import Unit from '../models/unit.js';
 import { MINUTES_PER_TURN } from '../game.js';
 
 export const REST = 'REST';

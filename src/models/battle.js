@@ -7,7 +7,7 @@ import {
   ACTION_TYPE_ARMY,
   ACTION_TYPE_EVENT } from '../game.js';
 import UNITS from '../game/units.js';
-import Unit from '../unit.js';
+import Unit from './unit.js';
 import { prettyDateTime, SECONDS_IN_AN_HOUR, MILLISECONDS_PER_SECOND } from '../math-utils.js';
 
 export default class Battle {
