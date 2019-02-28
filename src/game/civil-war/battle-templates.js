@@ -34,12 +34,12 @@ export default {
         title: 'Sun Set',
         descripton: 'The sun has set. It might be clear as to which army won the battle. If it is not then you may proceed to the next morning and continue the engagment. Each unit withdraws at least 6 inches and at most 18 inches.',
         provideArmyOverview: true,
-        proceedClock: 10000, // TODO this needs to be the seconds between sunset and sunrise.
+        proceedClock: 10000,
       }
     ],
     terrain: CIVIL_WAR_TERRAIN_ID,
-    deadliness: 1, // TODO Use this in combat calculations.
-    turnDuration: SECONDS_IN_AN_HOUR, // TODO use this value here throughout instead of the constant.
+    deadliness: 1,
+    turnDuration: SECONDS_IN_AN_HOUR,
     playerTurnDuration: NO_PLAYER_TURNS,
     strengthReporting: STRENGTH_MESSAGE_DESCRIPTIVE,
     casualtyReporting: CASUALTY_MESSAGE_DESCRIPTIVE,
@@ -354,7 +354,7 @@ export default {
     ruleset: CIVIL_WAR_RULES_ID,
     second: 0,
     startTime: Date.parse('11 May 1862 11:30:00 EST'),
-    events: [ // TODO Implement the events feature.
+    events: [
       {
         time: msSinceMidnight(new Date(Date.parse('11 May 1862 20:36:00 EST'))),
         title: 'Sun Set',
@@ -364,8 +364,8 @@ export default {
       }
     ],
     terrain: CIVIL_WAR_TERRAIN_ID,
-    deadliness: 1, // TODO Use this in combat calculations.
-    turnDuration: SECONDS_IN_AN_HOUR, // TODO use this value here throughout instead of the constant.
+    deadliness: 1,
+    turnDuration: SECONDS_IN_AN_HOUR,
     playerTurnDuration: NO_PLAYER_TURNS,
     strengthReporting: 10,
     casualtyReporting: 1,
@@ -582,7 +582,7 @@ export default {
     ruleset: CIVIL_WAR_RULES_ID,
     second: 0,
     startTime: Date.parse('11 May 1862 11:30:00 EST'),
-    events: [ // TODO Implement the events feature.
+    events: [
       {
         time: msSinceMidnight(new Date(Date.parse('11 May 1862 20:36:00 EST'))),
         title: 'Sun Set',
@@ -592,8 +592,8 @@ export default {
       }
     ],
     terrain: CIVIL_WAR_TERRAIN_ID,
-    deadliness: 1, // TODO Use this in combat calculations.
-    turnDuration: SECONDS_IN_AN_HOUR, // TODO use this value here throughout instead of the constant.
+    deadliness: 1,
+    turnDuration: SECONDS_IN_AN_HOUR,
     playerTurnDuration: NO_PLAYER_TURNS,
     strengthReporting: 10,
     casualtyReporting: 1,

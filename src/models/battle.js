@@ -21,8 +21,8 @@ export default class Battle {
     unitTemplates,
     rules,
     createdAt,
-    deadliness = 1, // TODO
-    turnDuration = SECONDS_IN_AN_HOUR, // TODO
+    deadliness = 1,
+    turnDuration = SECONDS_IN_AN_HOUR,
     playerTurnDuration = NO_PLAYER_TURNS,
     strengthReporting = STRENGTH_MESSAGE_DESCRIPTIVE,
     casualtyReporting = CASUALTY_MESSAGE_DESCRIPTIVE,
