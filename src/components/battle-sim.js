@@ -7,15 +7,10 @@ import { installOfflineWatcher } from 'pwa-helpers/network.js';
 import { installRouter } from 'pwa-helpers/router.js';
 import { updateMetadata } from 'pwa-helpers/metadata.js';
 import { store } from '../store.js';
-import {
-  navigate,
-  updateOffline,
-  updateDrawerState
-} from '../actions/app.js';
+import { navigate, updateOffline, updateDrawerState } from '../actions/app.js';
 import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-scroll-effects/effects/waterfall.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import { menuIcon } from './my-icons.js';
 import './snack-bar.js';
 
 class BattleSim extends connect(store)(LitElement) {
