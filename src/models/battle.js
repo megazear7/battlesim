@@ -83,6 +83,10 @@ export default class Battle {
     return this.unitModels[this.activeAction.index];
   }
 
+  get armyTakingAction() {
+    return this.armies[this.activeAction.index];
+  }
+
   get eventIsOccurring() {
     return this.activeAction.type === ACTION_TYPE_EVENT;
   }
