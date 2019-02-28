@@ -127,6 +127,7 @@ class WarView extends connect(store)(PageViewElement) {
     })
     .then(docRef => {
       let sharedBattleIds = JSON.parse(localStorage.getItem("sharedBattles")) || [];
+      store.dispatch(removeBattle(battleIndex));
       localStorage.setItem("sharedBattles", JSON.stringify([...sharedBattleIds, docRef.id]));
       docRef.get().then(doc =>
         this._sharedBattles = [ ...this._sharedBattles, doc.data() ]);
