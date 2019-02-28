@@ -23,12 +23,6 @@ class BattleView extends connect(store)(PageViewElement) {
       SharedStyles,
       ButtonSharedStyles,
       css`
-        #added-message {
-          opacity: 0;
-          display: none;
-          color: green;
-          transition: opacity 300ms;
-        }
         h4 {
           margin-bottom: 0.5rem;
         }
@@ -93,8 +87,8 @@ class BattleView extends connect(store)(PageViewElement) {
             </select>
             <input id="name" type="text" placeholder="Unit Name"></input>
             <button @click="${this._add}">Add</button>
-            <p class="error hidden">You must select a type of unit to add and provide the unit a unique name.</p>
-            <p id="added-message">Unit Added!</p>
+            <battle-sim-alert warning id="warning-message">You must select a type of unit to add and provide the unit a unique name.</battle-sim-alert>
+            <battle-sim-alert success id="added-message">Unit Added!</battle-sim-alert>
           </div>
         </section>
         <section>
@@ -181,19 +175,9 @@ class BattleView extends connect(store)(PageViewElement) {
       store.dispatch(add(this.unitTemplate, this.name));
       this.nameElement.value = '';
       this.unitTemplateElement.value = '';
-
-      let addedMessage = this.shadowRoot.getElementById('added-message');
-      addedMessage.style.opacity = '1';
-      addedMessage.style.display = 'block';
-      setTimeout(() => {
-        addedMessage.style.opacity = '0';
-        addedMessage.style.display = 'none';
-      }, 3000);
+      this.shadowRoot.getElementById('added-message').alert();
     } else {
-      this.shadowRoot.querySelector('.error').classList.remove('hidden');
-      setTimeout(() => {
-        this.shadowRoot.querySelector('.error').classList.add('hidden');
-      }, 3000);
+      this.shadowRoot.getElementById('warning-message').alert();
     }
   }
 
