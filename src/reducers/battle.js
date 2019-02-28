@@ -16,9 +16,10 @@ import {
   SET_ACTIVE_BATTLE,
   REMOVE_BATTLE,
 } from '../actions/battle.js';
+import { LOCAL_BATTLE } from '../game.js';
 
 const INITIAL_STATE = {
-  activeBattle: 0,
+  activeBattle: { type: "LOCAL_BATTLE", id: 0 },
   battles: [ ],
 };
 
@@ -110,7 +111,7 @@ const battle = (state = initialState, action) => {
       newState.activeBattle = 0;
     }
   } else if (action.type === SET_ACTIVE_BATTLE) {
-    newState.activeBattle = action.index;
+    newState.activeBattle = action.activeBattle;
   }
 
   localStorage.setItem("battle", JSON.stringify(newState));

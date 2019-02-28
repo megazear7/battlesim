@@ -338,8 +338,8 @@ class FightView extends connect(store)(PageViewElement) {
 
   stateChanged(state) {
     this._actionMessages = [];
-    if (state.battle.battles.length > state.battle.activeBattle) {
-      this._activeBattle = new Battle(state.battle.battles[state.battle.activeBattle], state.battle.activeBattle);
+    if (state.battle.battles.length > state.battle.activeBattle.id) {
+      this._activeBattle = new Battle(state.battle.battles[state.battle.activeBattle.id], state.battle.activeBattle.id);
     }
   }
 

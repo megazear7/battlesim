@@ -11,6 +11,7 @@ import BATTLE_TEMPLATES from '../game/battle-templates.js';
 import RULES from '../game/rules.js';
 import Battle from '../models/battle.js';
 import { makeid } from '../utils/math-utils.js';
+import { SHARED_BATTLE, LOCAL_BATTLE } from '../game.js';
 
 class WarView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -114,7 +115,7 @@ class WarView extends connect(store)(PageViewElement) {
 
   stateChanged(state) {
     this._battles = state.battle.battles.map((battle, index) =>
-      new Battle(battle, index, index === state.battle.activeBattle));
+      new Battle(battle, index, index === state.battle.activeBattle.id));
   }
 
   _shareBattle(e) {
@@ -155,9 +156,10 @@ class WarView extends connect(store)(PageViewElement) {
     .get()
     .then(doc => {
       if (doc.exists) {
-        // TODO go to the shared battle view. We need to implement the shared url
-        //store.dispatch(setActiveBattle(parseInt(e.target.closest('.battle').dataset.index)));
-        console.log('Play shared battle', doc.data().url);
+        store.dispatch(setActiveBattle({
+          type: "SHARED_BATTLE",
+          id: uuid
+        }));
       } else {
         console.log('Battle does not exist');
       }
@@ -266,7 +268,10 @@ class WarView extends connect(store)(PageViewElement) {
   }
 
   _playBattle(e) {
-    store.dispatch(setActiveBattle(parseInt(e.target.closest('.battle').dataset.index)));
+    store.dispatch(setActiveBattle({
+      type: "LOCAL_BATTLE",
+      id: parseInt(e.target.closest('.battle').dataset.index)
+    }));
   }
 
   _removeBattle(e) {

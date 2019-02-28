@@ -182,8 +182,8 @@ class BattleView extends connect(store)(PageViewElement) {
   }
 
   stateChanged(state) {
-    this._activeBattle = state.battle.battles.length > state.battle.activeBattle
-      ? new Battle(state.battle.battles[state.battle.activeBattle], state.battle.activeBattle)
+    this._activeBattle = state.battle.battles.length > state.battle.activeBattle.id
+      ? new Battle(state.battle.battles[state.battle.activeBattle.id], state.battle.activeBattle.id)
       : undefined;
     this._unitTemplates = this._activeBattle ? this._activeBattle.unitTemplatesFor(0) : [ ];
   }

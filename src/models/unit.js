@@ -84,16 +84,16 @@ export default class Unit {
 
   get targets() {
     let state = store.getState()
-    let activeBattle = state.battle.battles[state.battle.activeBattle];
-    return activeBattle.units
+    let activeBattleId = state.battle.battles[state.battle.activeBattle.id];
+    return activeBattleId.units
         .map((unit, index) => ({ id: index, unit: unit}))
         .filter(target => target.unit.army !== this.armyIndex);
   }
 
   get army() {
     let state = store.getState()
-    let activeBattle = state.battle.battles[state.battle.activeBattle];
-    return activeBattle.armies[this.armyIndex];
+    let activeBattleId = state.battle.battles[state.battle.activeBattle.id];
+    return activeBattleId.armies[this.armyIndex];
   }
 
   get troopTypeName() {

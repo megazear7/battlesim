@@ -50,10 +50,10 @@ export const createNewBattle = (battleStats) => {
   };
 };
 
-export const setActiveBattle = (index) => {
+export const setActiveBattle = (activeBattle) => {
   return {
     type: SET_ACTIVE_BATTLE,
-    index,
+    activeBattle,
   };
 };
 
