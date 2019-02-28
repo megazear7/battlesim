@@ -312,10 +312,10 @@ class FightView extends connect(store)(PageViewElement) {
             </section>
           ` : html`
             <section>
-              <h2>${this._activeEvent.title}</h2>
+              <h2>${this._activeBattle.occuringEvent.title}</h2>
               <div class="muted centered">${prettyDateTime(this._date)}</div>
-              ${repeat(this._activeEvent.messages, message => html`<p>${message}</p>`)}
-              ${this._activeEvent.provideArmyOverview ? html`
+              ${repeat(this._activeBattle.occuringEvent.messages, message => html`<p>${message}</p>`)}
+              ${this._activeBattle.occuringEvent.provideArmyOverview ? html`
                 <p>${this._activeBattle.armies[0].name} has sustained ${this.army1Casualties} casualties.</p>
                 <p>${this._activeBattle.armies[1].name} has sustained ${this.army2Casualties} casualties.</p>
               ` : ''}
@@ -342,13 +342,6 @@ class FightView extends connect(store)(PageViewElement) {
     this._actionMessages = [];
     if (state.battle.battles.length > state.battle.activeBattle) {
       this._activeBattle = new Battle(state.battle.battles[state.battle.activeBattle], state.battle.activeBattle);
-      if (this._activeBattle.unitIsActing) {
-        this._activeEvent = null;
-      } else if (this._activeBattle.armyIsActing) {
-        this._activeEvent = null;
-      } else if (this._activeBattle.eventIsOccurring) {
-        this._activeEvent = this._activeBattle.events[this._activeBattle.activeAction.index];
-      }
       this._date = new Date(this._activeBattle.startTime + (this._activeBattle.second * 1000));
     }
   }
