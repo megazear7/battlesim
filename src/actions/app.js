@@ -16,25 +16,20 @@ export const navigate = (path) => (dispatch) => {
 };
 
 const loadPage = (page) => (dispatch) => {
-  switch(page) {
-    case 'battle':
-      import('../views/battle-view.js');
-      break;
-    case 'fight':
-      import('../views/fight-view.js');
-      break;
-    case 'rules':
-      import('../views/rules-view.js');
-      break;
-    case 'war':
-      import('../views/war-view.js');
-      break;
-    case 'shared':
-      import('../views/shared-view.js');
-      break;
-    default:
-      page = 'view-404';
-      import('../views/view-404.js');
+  console.log(page, page.indexOf('shared'));
+  if (page === 'battle') {
+    import('../views/battle-view.js');
+  } else if (page === 'fight') {
+    import('../views/fight-view.js');
+  } else if (page === 'rules') {
+    import('../views/rules-view.js');
+  } else if (page === 'war') {
+    import('../views/war-view.js');
+  } else if (page.indexOf('shared') == 0) {
+    import('../views/shared-view.js');
+  } else {
+    page = 'view-404';
+    import('../views/view-404.js');
   }
 
   dispatch(updatePage(page));
