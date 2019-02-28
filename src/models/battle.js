@@ -8,7 +8,7 @@ import {
   ACTION_TYPE_EVENT } from '../game.js';
 import UNITS from '../game/units.js';
 import Unit from '../unit.js';
-import { SECONDS_IN_AN_HOUR } from '../math-utils.js';
+import { prettyDateTime, SECONDS_IN_AN_HOUR, MILLISECONDS_PER_SECOND } from '../math-utils.js';
 
 export default class Battle {
   constructor({
@@ -69,6 +69,14 @@ export default class Battle {
   get createdMessage() {
     let createdDate = this.createdDate;
     return createdDate.getMonth()+1 + '/' + createdDate.getDate() + '/' + createdDate.getFullYear();
+  }
+
+  get currentTime() {
+    return new Date(this.startTime + (this.second * MILLISECONDS_PER_SECOND));
+  }
+
+  get currentTimeMessage() {
+    return prettyDateTime(this.currentTime);
   }
 
   get unitIsActing() {

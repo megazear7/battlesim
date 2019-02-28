@@ -8,7 +8,6 @@ import { takeAction, takeArmyAction, finishEvent } from '../actions/battle.js';
 import { SharedStyles } from './shared-styles.js';
 import { ButtonSharedStyles } from './button-shared-styles.js';
 import Unit from '../unit.js';
-import { prettyDateTime } from '../math-utils.js';
 import { getRadioVal } from '../dom-utils.js';
 import { SLOPE_UP, SLOPE_DOWN, SLOPE_NONE } from '../terrain.js';
 import TERRAIN from '../game/terrain.js';
@@ -35,7 +34,6 @@ class FightView extends connect(store)(PageViewElement) {
     return {
       _targetUnit: { type: Object },
       _actionMessages: { type: Array },
-      _date: { type: Object },
       _chargeMessage: { type: String },
       _showDistance: { type: Boolean },
       _showRestTime: { type: Boolean },
@@ -175,7 +173,7 @@ class FightView extends connect(store)(PageViewElement) {
           <section>
             <h2>${this._activeBattle.activeUnit.name}</h2>
             <div class="muted centered">Army: ${this._activeBattle.activeUnit.army.name}</div>
-            <div class="muted centered">${prettyDateTime(this._date)}</div>
+            <div class="muted centered">${this._activeBattle.currentTimeMessage}</div>
             <p>${this._activeBattle.activeUnit.detailedStatus}</p>
             <hr>
             <p>${this._activeBattle.activeUnit.desc}</p>
@@ -304,7 +302,7 @@ class FightView extends connect(store)(PageViewElement) {
             <section>
               <h2>${this._activeBattle.armyTakingAction.armyActionTitle}</h2>
               <div class="muted centered">Army: ${this._activeBattle.armyTakingAction.name}</div>
-              <div class="muted centered">${prettyDateTime(this._date)}</div>
+              <div class="muted centered">${this._activeBattle.currentTimeMessage}</div>
               ${repeat(this._activeBattle.armyTakingAction.messages, message => html`<p>${message}</p>`)}
               <div class="centered">
                 <button @click="${this._takeArmyAction}">Next Action</button>
@@ -313,7 +311,7 @@ class FightView extends connect(store)(PageViewElement) {
           ` : html`
             <section>
               <h2>${this._activeBattle.occuringEvent.title}</h2>
-              <div class="muted centered">${prettyDateTime(this._date)}</div>
+              <div class="muted centered">${this._activeBattle.currentTimeMessage}</div>
               ${repeat(this._activeBattle.occuringEvent.messages, message => html`<p>${message}</p>`)}
               ${this._activeBattle.occuringEvent.provideArmyOverview ? html`
                 <p>${this._activeBattle.armies[0].name} has sustained ${this.army1Casualties} casualties.</p>
@@ -342,7 +340,6 @@ class FightView extends connect(store)(PageViewElement) {
     this._actionMessages = [];
     if (state.battle.battles.length > state.battle.activeBattle) {
       this._activeBattle = new Battle(state.battle.battles[state.battle.activeBattle], state.battle.activeBattle);
-      this._date = new Date(this._activeBattle.startTime + (this._activeBattle.second * 1000));
     }
   }
 

@@ -1,5 +1,6 @@
 export const SECONDS_IN_AN_MINUTE = 60;
 export const SECONDS_IN_AN_HOUR = SECONDS_IN_AN_MINUTE * 60;
+export const MILLISECONDS_PER_SECOND = 1000;
 
 /** @function weightedRandom
  *  A random number between 0 and 1 weighted towards the middle.
