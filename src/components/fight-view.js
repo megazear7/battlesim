@@ -15,11 +15,7 @@ import TERRAIN from '../game/terrain.js';
 import Encounter from '../encounter.js';
 import Situation from '../situation.js';
 import Battle from '../models/battle.js';
-import {
-  MINUTES_PER_TURN,
-  ACTION_TYPE_UNIT,
-  ACTION_TYPE_ARMY,
-  ACTION_TYPE_EVENT } from '../game.js';
+import { MINUTES_PER_TURN } from '../game.js';
 
 export const REST = 'REST';
 export const MOVE = 'MOVE';
@@ -348,15 +344,15 @@ class FightView extends connect(store)(PageViewElement) {
     this._actionMessages = [];
     if (state.battle.battles.length > state.battle.activeBattle) {
       this._activeBattle = new Battle(state.battle.battles[state.battle.activeBattle], state.battle.activeBattle);
-      if (this._activeBattle.activeAction.type === ACTION_TYPE_UNIT) {
+      if (this._activeBattle.unitIsActing) {
         this._unit = new Unit(this._activeBattle.units[this._activeBattle.activeAction.index], this._activeBattle.activeAction.index, this._activeBattle);
         this._armyTakingAction = null;
         this._activeEvent = null;
-      } else if (this._activeBattle.activeAction.type === ACTION_TYPE_ARMY) {
+      } else if (this._activeBattle.armyIsActing) {
         this._unit = null;
         this._armyTakingAction = this._activeBattle.armies[this._activeBattle.activeAction.index];
         this._activeEvent = null;
-      } else if (this._activeBattle.activeAction.type === ACTION_TYPE_EVENT) {
+      } else if (this._activeBattle.eventIsOccurring) {
         this._unit = null;
         this._armyTakingAction = null;
         this._activeEvent = this._activeBattle.events[this._activeBattle.activeAction.index];

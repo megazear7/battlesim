@@ -2,8 +2,10 @@ import {
   STAT_DESCRIPTION,
   STRENGTH_MESSAGE_DESCRIPTIVE,
   CASUALTY_MESSAGE_DESCRIPTIVE,
+  NO_PLAYER_TURNS,
   ACTION_TYPE_UNIT,
-  NO_PLAYER_TURNS } from '../game.js';
+  ACTION_TYPE_ARMY,
+  ACTION_TYPE_EVENT } from '../game.js';
 import UNITS from '../game/units.js';
 import Unit from '../unit.js';
 import { SECONDS_IN_AN_HOUR } from '../math-utils.js';
@@ -67,6 +69,18 @@ export default class Battle {
   get createdMessage() {
     let createdDate = this.createdDate;
     return createdDate.getMonth()+1 + '/' + createdDate.getDate() + '/' + createdDate.getFullYear();
+  }
+
+  get unitIsActing() {
+    return this.activeAction.type === ACTION_TYPE_UNIT;
+  }
+
+  get armyIsActing() {
+    return this.activeAction.type === ACTION_TYPE_ARMY;
+  }
+
+  get eventIsOccurring() {
+    return this.activeAction.type === ACTION_TYPE_EVENT;
   }
 
   get army0Units() {
