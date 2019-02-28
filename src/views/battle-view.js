@@ -9,6 +9,7 @@ import { ButtonSharedStyles } from '../styles/button-shared-styles.js';
 import { prettyTime } from '../utils/math-utils.js';
 import { MOVE, REST } from './fight-view.js';
 import Battle from '../models/battle.js';
+import { SHARED_BATTLE, LOCAL_BATTLE } from '../game.js';
 
 class BattleView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -181,11 +182,22 @@ class BattleView extends connect(store)(PageViewElement) {
     }
   }
 
+  connectedCallback() {
+    super.connectedCallback();
+    let state = store.getState();
+    if (state.battle.activeBattle.type === SHARED_BATTLE) {
+      // connect this._activeBattle to firebase
+      //activeBattleId = state.battle.activeBattle.id;
+    }
+  }
+
   stateChanged(state) {
-    this._activeBattle = state.battle.battles.length > state.battle.activeBattle.id
-      ? new Battle(state.battle.battles[state.battle.activeBattle.id], state.battle.activeBattle.id)
-      : undefined;
-    this._unitTemplates = this._activeBattle ? this._activeBattle.unitTemplatesFor(0) : [ ];
+    if (state.battle.activeBattle.type === LOCAL_BATTLE) {
+      this._activeBattle = state.battle.battles.length > state.battle.activeBattle.id
+        ? new Battle(state.battle.battles[state.battle.activeBattle.id], state.battle.activeBattle.id)
+        : undefined;
+      this._unitTemplates = this._activeBattle ? this._activeBattle.unitTemplatesFor(0) : [ ];
+    }
   }
 }
 

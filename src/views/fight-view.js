@@ -14,7 +14,7 @@ import Encounter from '../models/encounter.js';
 import Situation from '../models/situation.js';
 import Battle from '../models/battle.js';
 import Unit from '../models/unit.js';
-import { MINUTES_PER_TURN } from '../game.js';
+import { MINUTES_PER_TURN, SHARED_BATTLE, LOCAL_BATTLE } from '../game.js';
 
 export const REST = 'REST';
 export const MOVE = 'MOVE';
@@ -336,10 +336,21 @@ class FightView extends connect(store)(PageViewElement) {
     this._actionUpdates = [];
   }
 
+  connectedCallback() {
+    super.connectedCallback();
+    let state = store.getState();
+    if (state.battle.activeBattle.type === SHARED_BATTLE) {
+      // connect this._activeBattle to firebase
+      //activeBattleId = state.battle.activeBattle.id;
+    }
+  }
+
   stateChanged(state) {
     this._actionMessages = [];
-    if (state.battle.battles.length > state.battle.activeBattle.id) {
-      this._activeBattle = new Battle(state.battle.battles[state.battle.activeBattle.id], state.battle.activeBattle.id);
+    if (state.battle.activeBattle.type === LOCAL_BATTLE) {
+      if (state.battle.battles.length > state.battle.activeBattle.id) {
+        this._activeBattle = new Battle(state.battle.battles[state.battle.activeBattle.id], state.battle.activeBattle.id);
+      }
     }
   }
 
