@@ -1,6 +1,5 @@
 import { DEADLYNESS, SECONDS_PER_TURN, SECONDS_PER_ROUND, YARDS_TO_FIGHT, MORALE_FAILURE } from '../game.js';
 import { SECONDS_IN_AN_MINUTE } from './math-utils.js';
-import { Terrain } from '../models/terrain.js';
 
 export function combat(unit1, unit2, duration = SECONDS_PER_TURN) {
   let secondsOfCombat = 0;
@@ -46,8 +45,7 @@ function makeAttacks(attacker, defender, duration) {
     if (powerRoll * DEADLYNESS < defender.armorRoll()) {
       attackHits = false;
     }
-    defender.protectingTerrain.forEach(terrainConfig => {
-      let terrain = new Terrain(terrainConfig, defender.encounterType);
+    defender.protectingTerrainModel.forEach(terrain => {
       if (powerRoll * DEADLYNESS < terrain.armorRoll()) {
         attackHits = false;
       }

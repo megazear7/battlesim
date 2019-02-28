@@ -2,6 +2,7 @@ import { randomBellMod, dropOff, dropOffWithBoost, weightedAverage, roundToNeare
 import { SLOPE_NONE } from './terrain.js';
 import { FOOT_TROOP, MELEE_WEAPON, RANGED_WEAPON } from '../game.js';
 import ActingUnit from './acting-unit.js';
+import { Terrain } from './terrain.js';
 import {
   statModFor,
   MAX_STAT,
@@ -96,6 +97,10 @@ export default class Combatant extends ActingUnit {
 
   get fallbackCasualtyCount() {
     return this.unit.strength * (this.unit.fallback / 100);
+  }
+
+  get protectingTerrainModel() {
+    return this.protectingTerrain.map(terrain => new Terrain(terrain, this.encounterType));
   }
 
   get leadershipLoss() {
