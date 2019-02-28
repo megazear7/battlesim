@@ -131,7 +131,7 @@ class WarView extends connect(store)(PageViewElement) {
       store.dispatch(removeBattle(battleIndex));
       localStorage.setItem("sharedBattles", JSON.stringify([...sharedBattleIds, docRef.id]));
       docRef.get().then(doc =>
-        this._sharedBattles = [ ...this._sharedBattles, doc.data() ]);
+        this._sharedBattles = [ ...this._sharedBattles, doc ]);
     });
 
     if (navigator.share) {
@@ -142,8 +142,7 @@ class WarView extends connect(store)(PageViewElement) {
       })
       .catch((error) => console.log('Error sharing', error));
     } else {
-      // TODO copy the url and alert the user.
-      console.log('No share api');
+      alert("Share this url with a friend: " + url);
     }
   }
 
@@ -154,6 +153,7 @@ class WarView extends connect(store)(PageViewElement) {
     .then(doc => {
       if (doc.exists) {
         // TODO go to the url. We need to implement the shared url
+        //store.dispatch(setActiveBattle(parseInt(e.target.closest('.battle').dataset.index)));
         console.log('Play shared battle', doc.data().url);
       } else {
         console.log('Battle does not exist');
