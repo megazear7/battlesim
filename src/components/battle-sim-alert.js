@@ -7,16 +7,22 @@ class BattleSimAlert extends LitElement {
       success: { type: Boolean },
       warning: { type: Boolean },
       error: { type: Boolean },
+      hidden: { type: Boolean },
     };
   }
 
   static get styles() {
     return [
       css`
-        :host {
-          display: none;
-          margin: 1rem 0;
+        slot {
+          display: block;
           font-weight: 600;
+          font-size: 1rem;
+          margin: 1rem 0;
+        }
+
+        slot.hidden {
+          display: none;
         }
 
         slot.success {
@@ -34,15 +40,20 @@ class BattleSimAlert extends LitElement {
     ];
   }
 
+  constructor() {
+    super();
+    this.hidden = true;
+  }
+
   render() {
     return html`
-      <slot class="${classMap({success: this.success, warning: this.warning, error: this.error})}"></slot>
+      <slot class="${classMap({success: this.success, warning: this.warning, error: this.error, hidden: this.hidden})}"></slot>
     `;
   }
 
   alert() {
-    this.style.display = 'block';
-    setTimeout(() => this.style.display = 'none', 3000);
+    this.hidden = false;
+    setTimeout(() => this.hidden = true, 3000);
   }
 }
 

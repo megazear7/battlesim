@@ -198,6 +198,7 @@ class FightView extends connect(store)(PageViewElement) {
               </select>
               <button class="${classMap({hidden: ! this._showDoCombat, 'do-combat': true})}" @click="${this._doCombat}">Do Combat</button>
               <button class="${classMap({hidden: ! this._showTakeAction, 'take-action': true})}" @click="${this._takeAction}">Take Action</button>
+              <battle-sim-alert warning>You must provide a value for each field listed above the button</battle-sim-alert>
               <input id="distance" class="${classMap({hidden: ! this._showDistance})}" type="number" placeholder="Distance"></input>
               <input id="rest-time" class="${classMap({hidden: ! this._showRestTime})}" type="number" placeholder="Minutes to rest" max="${MINUTES_PER_TURN}"></input>
               <div class="${classMap({hidden: ! this._showEngagedAttackers && ! this._showEngagedDefenders})}">
@@ -291,7 +292,6 @@ class FightView extends connect(store)(PageViewElement) {
                   <label for="mount">Mount</label>
                 `}
               </div>
-              <p class="${classMap({hidden: ! this._showError, error: true})}">You must provide valid values for each required field.</p>
               <div class="${classMap({hidden: ! this._showActionResult})}">
                 ${repeat(this._actionMessages, message => html`<p>${message}</p>`)}
                 <button @click="${this._progressToNextAction}">Next Action</button>
@@ -354,7 +354,7 @@ class FightView extends connect(store)(PageViewElement) {
       this._showTakeAction = true;
       this._showChargeMessage = true;
     } else {
-      this._blinkError();
+      this.shadowRoot.querySelector('battle-sim-alert').alert();
     }
   }
 
@@ -387,7 +387,7 @@ class FightView extends connect(store)(PageViewElement) {
         this._showActionResult = true;
       }
     } else {
-      this._blinkError();
+      this.shadowRoot.querySelector('battle-sim-alert').alert();
     }
   }
 
@@ -521,13 +521,6 @@ class FightView extends connect(store)(PageViewElement) {
     this.get('resupply').querySelector('input').checked = false;
     this.get('target').value = '';
     TERRAIN_TYPES.forEach(type => this.get(type).querySelectorAll('input').forEach(input => input.checked = false));
-  }
-
-  _blinkError() {
-    this._showError = true;
-    setTimeout(() => {
-      this._showError = false;
-    }, 3000);
   }
 
   _selectedTerrain(typeId) {
