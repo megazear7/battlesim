@@ -12,6 +12,7 @@ import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-scroll-effects/effects/waterfall.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import './snack-bar.js';
+import './battle-sim-alert.js';
 
 class BattleSim extends connect(store)(LitElement) {
   static get properties() {

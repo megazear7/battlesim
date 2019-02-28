@@ -68,8 +68,6 @@ export const SharedStyles = css`
   }
 
   .error {
-    color: orange;
-    font-weight: 600;
   }
 
   input[type="text"], input[type="number"] {

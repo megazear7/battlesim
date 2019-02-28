@@ -67,7 +67,7 @@ class WarView extends connect(store)(PageViewElement) {
             `)}
           </select>
           <button @click="${this._create}">Create</button>
-          <p class="error hidden">You must select a ruleset to play and a battle to fight.</p>
+          <battle-sim-alert>You must select a ruleset to play and a battle to fight.</battle-sim-alert>
           <input id="name" type="text" placeholder="Battle name"></input>
           <input id="army1-name" type="text" placeholder="First army name"></input>
           <input id="army2-name" type="text" placeholder="Second army name"></input>
@@ -173,10 +173,7 @@ class WarView extends connect(store)(PageViewElement) {
       this.newBattleArmy1Name = '';
       this.newBattleArmy2Name = '';
     } else {
-      this.shadowRoot.querySelector('.error').classList.remove('hidden');
-      setTimeout(() => {
-        this.shadowRoot.querySelector('.error').classList.add('hidden');
-      }, 3000);
+      this.shadowRoot.querySelector('battle-sim-alert').alert();
     }
   }
 
