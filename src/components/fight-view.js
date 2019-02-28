@@ -33,9 +33,7 @@ export const TERRAIN_TYPES = [ TERRAIN_TYPE_MOVEMENT, TERRAIN_TYPE_DEFENDER, TER
 class FightView extends connect(store)(PageViewElement) {
   static get properties() {
     return {
-      _unit: { type: Object },
       _targetUnit: { type: Object },
-      _hasActiveBattle: { type: Boolean },
       _actionMessages: { type: Array },
       _date: { type: Object },
       _chargeMessage: { type: String },
@@ -172,15 +170,15 @@ class FightView extends connect(store)(PageViewElement) {
 
   render() {
     return html`
-      ${this._hasActiveBattle ? html`
-        ${this._unit ? html`
+      ${this._activeBattle ? html`
+        ${this._activeBattle.unitIsActing ? html`
           <section>
-            <h2>${this._unit.name}</h2>
-            <div class="muted centered">Army: ${this._unit.army.name}</div>
+            <h2>${this._activeBattle.activeUnit.name}</h2>
+            <div class="muted centered">Army: ${this._activeBattle.activeUnit.army.name}</div>
             <div class="muted centered">${prettyDateTime(this._date)}</div>
-            <p>${this._unit.detailedStatus}</p>
+            <p>${this._activeBattle.activeUnit.detailedStatus}</p>
             <hr>
-            <p>${this._unit.desc}</p>
+            <p>${this._activeBattle.activeUnit.desc}</p>
           </section>
           <section class="unit-actions">
             <div class="${classMap({'has-selection': this._hasSelection})}">
@@ -196,7 +194,7 @@ class FightView extends connect(store)(PageViewElement) {
               <input id="separation" class="${classMap({hidden: ! this._showSeparation})}" type="number" placeholder="Distance"></input>
               <select id="target" class="${classMap({hidden: ! this._showTarget})}" @change="${this._updateTarget}">
                 <option value="">Select Target</option>
-                ${repeat(this._unit.targets, target => html`
+                ${repeat(this._activeBattle.activeUnit.targets, target => html`
                   <option value="${target.id}">${target.unit.name}</option>
                 `)}
               </select>
@@ -261,8 +259,8 @@ class FightView extends connect(store)(PageViewElement) {
                 <h5>Leadership</h5>
                 <div id="leadership">
                   <radiogroup id="attacker-leader" class="${classMap({hidden: ! this._showLeader})}">
-                    <h6>${this._unit.name}</h6>
-                    ${repeat(this._unit.army.leaders, (leader, index) => html`
+                    <h6>${this._activeBattle.activeUnit.name}</h6>
+                    ${repeat(this._activeBattle.activeUnit.army.leaders, (leader, index) => html`
                       <input type="radio" name="attacker-leader" id="${'attacker-leader-'+index}" value="${leader.leadership}">
                       <label for="${'attacker-leader-'+index}">${leader.shortname}</label>
                       <br>
@@ -285,12 +283,12 @@ class FightView extends connect(store)(PageViewElement) {
               </div>
               <div class="${classMap({hidden: ! this._showMount})}">
                 <h5>Mounted Actions</h5>
-                ${this._unit.isCurrentlyMounted ? html`
-                  <div><small>${this._unit.name} is currently mounted</small></div>
+                ${this._activeBattle.activeUnit.isCurrentlyMounted ? html`
+                  <div><small>${this._activeBattle.activeUnit.name} is currently mounted</small></div>
                   <input type="checkbox" id="unmount"></input>
                   <label for="unmount">Unmount</label>
                 ` : html`
-                  <div><small>${this._unit.name} is currently unmounted</small></div>
+                  <div><small>${this._activeBattle.activeUnit.name} is currently unmounted</small></div>
                   <input type="checkbox" id="mount"></input>
                   <label for="mount">Mount</label>
                 `}
@@ -345,22 +343,16 @@ class FightView extends connect(store)(PageViewElement) {
     if (state.battle.battles.length > state.battle.activeBattle) {
       this._activeBattle = new Battle(state.battle.battles[state.battle.activeBattle], state.battle.activeBattle);
       if (this._activeBattle.unitIsActing) {
-        this._unit = new Unit(this._activeBattle.units[this._activeBattle.activeAction.index], this._activeBattle.activeAction.index, this._activeBattle);
         this._armyTakingAction = null;
         this._activeEvent = null;
       } else if (this._activeBattle.armyIsActing) {
-        this._unit = null;
         this._armyTakingAction = this._activeBattle.armies[this._activeBattle.activeAction.index];
         this._activeEvent = null;
       } else if (this._activeBattle.eventIsOccurring) {
-        this._unit = null;
         this._armyTakingAction = null;
         this._activeEvent = this._activeBattle.events[this._activeBattle.activeAction.index];
       }
       this._date = new Date(this._activeBattle.startTime + (this._activeBattle.second * 1000));
-      this._hasActiveBattle = true;
-    } else {
-      this._hasActiveBattle = false;
     }
   }
 
@@ -442,7 +434,7 @@ class FightView extends connect(store)(PageViewElement) {
     this._showTakeAction = true;
     this._showRestTime = true;
     this._showResupply = true;
-    this._showMount = this._unit.isMounted && this._unit.canUnmount;
+    this._showMount = this._activeBattle.activeUnit.isMounted && this._activeBattle.activeUnit.canUnmount;
   }
 
   _move(e) {
@@ -485,7 +477,7 @@ class FightView extends connect(store)(PageViewElement) {
 
   _createEncounter() {
     return new Encounter({
-      attacker: this._unit,
+      attacker: this._activeBattle.activeUnit,
       attackerArmyLeadership: this._activeArmyLeadership,
       attackerEngagedStands: this.engagedAttackers,
       defender: new Unit(this._activeBattle.units[this.target], this.target, this._activeBattle),
@@ -501,7 +493,7 @@ class FightView extends connect(store)(PageViewElement) {
 
   _createSituation() {
     return new Situation({
-          unit: this._unit,
+          unit: this._activeBattle.activeUnit,
           armyLeadership: this._activeArmyLeadership,
           movementTerrain: this._selectedTerrain(TERRAIN_TYPE_MOVEMENT),
           mount: this.mount,
