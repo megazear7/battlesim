@@ -75,7 +75,19 @@
     <noscript>
       Please enable JavaScript to view this website.
     </noscript>
+    <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/2.2.7/webcomponents-loader.js"></script>
+    <script>
+      // Initialize Firebase
+      var config = {
+        apiKey: "AIzaSyDbEOGC6V5EdjJ9d5hL5gronYvjXSO9R50",
+        authDomain: "alex-lockhart.firebaseapp.com",
+        databaseURL: "https://alex-lockhart.firebaseio.com",
+        projectId: "alex-lockhart",
+        storageBucket: "alex-lockhart.appspot.com",
+      };
+      firebase.initializeApp(config);
+    </script>
     <script type="module" src="src/components/battle-sim.js"></script>
   </body>
 </html>

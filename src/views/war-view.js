@@ -10,12 +10,14 @@ import { ButtonSharedStyles } from '../styles/button-shared-styles.js';
 import BATTLE_TEMPLATES from '../game/battle-templates.js';
 import RULES from '../game/rules.js';
 import Battle from '../models/battle.js';
+import { makeid } from '../utils/math-utils.js';
 
 class WarView extends connect(store)(PageViewElement) {
   static get properties() {
     return {
       _battles: { type: Object },
       _selectableBattles: { type: Object },
+      _sharedBattles: { type: Object },
     };
   }
 
@@ -33,10 +35,13 @@ class WarView extends connect(store)(PageViewElement) {
 
   render() {
     return html`
+      <section>
+        <h3>Your battles</h3>
+      </section>
       ${repeat(this._battles, battle => html`
         <section>
           <div class="${classMap({battle: true, active: battle.active})}" data-index="${battle.id}">
-            <h3 class="${classMap({selectedBattle: battle.active})}">${battle.name}</h3>
+            <h4 class="${classMap({selectedBattle: battle.active})}">${battle.name}</h4>
             <pre>Created ${battle.createdMessage}</pre>
             ${battle.active ? html`
               <button @click="${this._playBattle}" disabled>Playing</button>
@@ -44,7 +49,16 @@ class WarView extends connect(store)(PageViewElement) {
               <button @click="${this._playBattle}">Play</button>
             `}
             <button @click="${this._removeBattle}">Remove</button>
+            <button @click="${this._shareBattle}">Share</button>
           </div>
+        </section>
+      `)}
+      <section>
+        <h3>Battles shared with you</h3>
+      </section>
+      ${repeat(this._sharedBattles, sharedBattle => html`
+        <section>
+          <h4>${sharedBattle.battle.name}</h4>
         </section>
       `)}
       ${this._battles.length === 0 ? html`
@@ -79,6 +93,56 @@ class WarView extends connect(store)(PageViewElement) {
   connectedCallback() {
     super.connectedCallback();
     this._selectableBattles = [];
+    this._sharedBattles = [];
+
+    let sharedBattleIds = JSON.parse(localStorage.getItem("sharedBattles")) || [];
+
+    firebase.firestore().collection('apps/battlesim/battles').get()
+    .then(querySnapshot =>
+      querySnapshot
+      .forEach(doc => {
+        if (doc.exists && sharedBattleIds.indexOf(doc.id) >= 0) {
+          this._sharedBattles = [ ...this._sharedBattles, doc.data() ];
+        }
+      })
+    ).catch(error => console.log('Error getting document:', error));
+  }
+
+  stateChanged(state) {
+    this._battles = state.battle.battles.map((battle, index) =>
+      new Battle(battle, index, index === state.battle.activeBattle));
+  }
+
+  _shareBattle(e) {
+    let battleIndex = parseInt(e.target.closest('.battle').dataset.index);
+    let battle = store.getState().battle.battles[battleIndex];
+    let uuid = makeid();
+    let url = window.location.origin + '/shared/' + uuid;
+
+    firebase.firestore().collection('apps/battlesim/battles')
+    .add({
+      url,
+      uuid: uuid,
+      battle
+    })
+    .then(docRef => {
+      let sharedBattleIds = JSON.parse(localStorage.getItem("sharedBattles")) || [];
+      localStorage.setItem("sharedBattles", JSON.stringify([...sharedBattleIds, docRef.id]));
+      docRef.get().then(doc =>
+        this._sharedBattles = [ ...this._sharedBattles, doc.data() ]);
+    });
+
+    if (navigator.share) {
+      navigator.share({
+          title: battle.name,
+          text: 'Share ' + battle.name + ' from battlesim.',
+          url: url,
+      })
+      .catch((error) => console.log('Error sharing', error));
+    } else {
+      // TODO copy the url and alert the user.
+      console.log('No share api');
+    }
   }
 
   updateRuleset() {
@@ -185,11 +249,6 @@ class WarView extends connect(store)(PageViewElement) {
     if (confirm('Are you sure you want to delete the battle?')) {
       store.dispatch(removeBattle(parseInt(e.target.closest('.battle').dataset.index)));
     }
-  }
-
-  stateChanged(state) {
-    this._battles = state.battle.battles.map((battle, index) =>
-      new Battle(battle, index, index === state.battle.activeBattle));
   }
 }
 

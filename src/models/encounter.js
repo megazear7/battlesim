@@ -1,6 +1,5 @@
 import WEAPONS from '../game/weapons.js';
 import ARMOR from '../game/armor.js';
-import { store } from '../store.js';
 import { combat } from '../utils/battle-utils.js';
 import { randomMinutesBetween, SECONDS_IN_AN_MINUTE } from '../utils/math-utils.js';
 import { FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP } from '../game.js';
