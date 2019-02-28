@@ -29,6 +29,9 @@ const loadPage = (page) => (dispatch) => {
     case 'war':
       import('../views/war-view.js');
       break;
+    case 'shared':
+      import('../views/shared-view.js');
+      break;
     default:
       page = 'view-404';
       import('../views/view-404.js');

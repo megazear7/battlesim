@@ -235,6 +235,7 @@ class BattleSim extends connect(store)(LitElement) {
         <battle-view class="page" ?active="${this._page === 'battle'}"></battle-view>
         <fight-view class="page" ?active="${this._page === 'fight'}"></fight-view>
         <rules-view class="page" ?active="${this._page === 'rules'}"></rules-view>
+        <shared-view class="page" ?active="${this._page === 'shared'}"></shared-view>
         <view-404 class="page" ?active="${this._page === 'view-404'}"></view-404>
       </main>
 
