@@ -70,11 +70,11 @@ export default class Battle {
   }
 
   get army0Units() {
-    return this.units.filter(unit => unit.armyIndex === 0);
+    return this.unitModels.filter(unit => unit.armyIndex === 0);
   }
 
   get army1Units() {
-    return this.units.filter(unit => unit.armyIndex === 1);
+    return this.unitModels.filter(unit => unit.armyIndex === 1);
   }
 
   get army0() {
