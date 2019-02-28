@@ -340,8 +340,12 @@ class FightView extends connect(store)(PageViewElement) {
     super.connectedCallback();
     let state = store.getState();
     if (state.battle.activeBattle.type === SHARED_BATTLE) {
-      // connect this._activeBattle to firebase
-      //activeBattleId = state.battle.activeBattle.id;
+      firebase.firestore()
+      .collection('apps/battlesim/battles')
+      .doc(state.battle.activeBattle.id)
+      .onSnapshot(doc => {
+        this._activeBattle = new Battle(doc.data().battle, doc.id);
+      });
     }
   }
 

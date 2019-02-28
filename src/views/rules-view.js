@@ -66,7 +66,6 @@ class RulesView extends connect(store)(PageViewElement) {
       .collection('apps/battlesim/battles')
       .doc(state.battle.activeBattle.id)
       .onSnapshot(doc => {
-        console.log("Current data: ", doc.data().battle);
         this._activeBattle = new Battle(doc.data().battle, doc.id);
       });
     }
