@@ -54,11 +54,12 @@ class WarView extends connect(store)(PageViewElement) {
         </section>
       `)}
       <section>
-        <h3>Battles shared with you</h3>
+        <h3>Shared Battles</h3>
       </section>
       ${repeat(this._sharedBattles, sharedBattle => html`
         <section>
-          <h4>${sharedBattle.battle.name}</h4>
+          <h4>${sharedBattle.data().battle.name}</h4>
+          <div><button @click="${() => this._playSharedBattle(sharedBattle)}">Play</button></div>
         </section>
       `)}
       ${this._battles.length === 0 ? html`
@@ -102,7 +103,7 @@ class WarView extends connect(store)(PageViewElement) {
       querySnapshot
       .forEach(doc => {
         if (doc.exists && sharedBattleIds.indexOf(doc.id) >= 0) {
-          this._sharedBattles = [ ...this._sharedBattles, doc.data() ];
+          this._sharedBattles = [ ...this._sharedBattles, doc ];
         }
       })
     ).catch(error => console.log('Error getting document:', error));
@@ -144,6 +145,20 @@ class WarView extends connect(store)(PageViewElement) {
       // TODO copy the url and alert the user.
       console.log('No share api');
     }
+  }
+
+  _playSharedBattle(sharedBattle) {
+    firebase.firestore().collection('apps/battlesim/battles')
+    .doc(sharedBattle.id)
+    .get()
+    .then(doc => {
+      if (doc.exists) {
+        // TODO go to the url. We need to implement the shared url
+        console.log('Play shared battle', doc.data().url);
+      } else {
+        console.log('Battle does not exist');
+      }
+    });
   }
 
   updateRuleset() {
