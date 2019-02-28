@@ -59,7 +59,10 @@ class WarView extends connect(store)(PageViewElement) {
       ${repeat(this._sharedBattles, sharedBattle => html`
         <section>
           <h4>${sharedBattle.data().battle.name}</h4>
-          <div><button @click="${() => this._playSharedBattle(sharedBattle)}">Play</button></div>
+          <div>
+            <button @click="${() => this._playSharedBattle(sharedBattle)}">Play</button>
+            <button @click="${() => this._leaveSharedBattle(sharedBattle)}">Leave</button>
+          </div>
         </section>
       `)}
       ${this._battles.length === 0 ? html`
@@ -152,13 +155,18 @@ class WarView extends connect(store)(PageViewElement) {
     .get()
     .then(doc => {
       if (doc.exists) {
-        // TODO go to the url. We need to implement the shared url
+        // TODO go to the shared battle view. We need to implement the shared url
         //store.dispatch(setActiveBattle(parseInt(e.target.closest('.battle').dataset.index)));
         console.log('Play shared battle', doc.data().url);
       } else {
         console.log('Battle does not exist');
       }
     });
+  }
+
+  _leaveSharedBattle(sharedBattle) {
+    this._sharedBattles = this._sharedBattles.filter(battle => battle.id !== sharedBattle.id);
+    localStorage.setItem("sharedBattles", JSON.stringify(this._sharedBattles.map(battle => battle.id)));
   }
 
   updateRuleset() {
