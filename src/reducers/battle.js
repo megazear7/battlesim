@@ -40,8 +40,12 @@ if (savedActiveBattle) {
 const battle = (state = initialState, action) => {
   var newState = { ...state };
   let activeBattle;
-  if (newState.activeBattle < newState.battles.length) {
-    activeBattle = newState.battles[newState.activeBattle];
+  let activebattleIsShared = false;
+  if (newState.activeBattle.id < newState.battles.length) {
+    activeBattle = newState.battles[newState.activeBattle.id];
+  } else if (Object.keys(newState.sharedBattles).indexOf(newState.activeBattle.id) >= 0) {
+    activebattleIsShared = true;
+    activeBattle = newState.sharedBattles[newState.activeBattle.id];
   }
   if (activeBattle && action.type === TAKE_ACTION) {
     let actionLog = {
@@ -123,6 +127,12 @@ const battle = (state = initialState, action) => {
     }
   } else if (action.type === SET_ACTIVE_BATTLE) {
     newState.activeBattle = action.activeBattle;
+  }
+
+  if (activeBattle && activebattleIsShared) {
+    firebase.firestore().collection('apps/battlesim/battles')
+    .doc(newState.activeBattle.id)
+    .set({ battle: activeBattle });
   }
 
   localStorage.setItem("battles", JSON.stringify(newState.battles));
