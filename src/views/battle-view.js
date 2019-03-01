@@ -182,25 +182,15 @@ class BattleView extends connect(store)(PageViewElement) {
     }
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    let state = store.getState();
-    if (state.battle.activeBattle.type === SHARED_BATTLE) {
-      this._unitTemplates = [];
-      firebase.firestore()
-      .collection('apps/battlesim/battles')
-      .doc(state.battle.activeBattle.id)
-      .onSnapshot(doc => {
-        this._activeBattle = new Battle(doc.data().battle, doc.id);
-        this._unitTemplates = this._activeBattle.unitTemplatesFor(0);
-      });
-    }
-  }
-
   stateChanged(state) {
     if (state.battle.activeBattle.type === LOCAL_BATTLE) {
       this._activeBattle = state.battle.battles.length > state.battle.activeBattle.id
         ? new Battle(state.battle.battles[state.battle.activeBattle.id], state.battle.activeBattle.id)
+        : undefined;
+      this._unitTemplates = this._activeBattle ? this._activeBattle.unitTemplatesFor(0) : [ ];
+    } else if (state.battle.activeBattle.type === SHARED_BATTLE) {
+      this._activeBattle = Object.keys(state.battle.sharedBattles).indexOf(state.battle.activeBattle.id) >= 0
+        ? new Battle(state.battle.sharedBattles[state.battle.activeBattle.id], state.battle.activeBattle.id)
         : undefined;
       this._unitTemplates = this._activeBattle ? this._activeBattle.unitTemplatesFor(0) : [ ];
     }
