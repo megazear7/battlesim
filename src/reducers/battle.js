@@ -129,7 +129,7 @@ const battle = (state = initialState, action) => {
     newState.activeBattle = action.activeBattle;
   }
 
-  if (activeBattle && activebattleIsShared) {
+  if (activeBattle && activebattleIsShared && action.type !== ADD_SHARED_BATTLE) {
     console.log(newState.activeBattle.id);
     console.log(activeBattle);
     firebase.firestore().collection('apps/battlesim/battles')

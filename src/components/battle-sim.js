@@ -262,15 +262,15 @@ class BattleSim extends connect(store)(LitElement) {
     let sharedBattleIds = JSON.parse(localStorage.getItem("sharedBattles")) || [];
     let activeBattleId = state.battle.activeBattle.id;
 
-    firebase.firestore().collection('apps/battlesim/battles').get()
-    .then(querySnapshot =>
-      querySnapshot
-      .forEach(doc => {
-        if (doc.exists && sharedBattleIds.indexOf(doc.id) >= 0) {
+    sharedBattleIds.forEach(sharedBattleId => {
+      firebase.firestore().collection('apps/battlesim/battles')
+      .doc(sharedBattleId)
+      .onSnapshot(doc => {
+        if (doc.exists) {
           store.dispatch(addSharedBattle(doc.id, doc.data().battle));
         }
-      })
-    ).catch(error => console.log('Error getting document:', error));
+      });
+    });
   }
 
   connectedCallback() {
