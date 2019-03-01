@@ -8,6 +8,7 @@
 
 ###### TODO
 
+1. Local battles do not seem to be working and the app title is not updated to the battle name.
 1. Allow players to choose an army for shared battles so that they can only take actions for that army.
 1. Update the fight view to save data after each action so that all players can see the action results as it happens.
 1. Fully review the results of each action, how environment details affect the outcome, and how unit stats affect the outcome.
