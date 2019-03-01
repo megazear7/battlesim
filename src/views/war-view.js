@@ -37,10 +37,8 @@ class WarView extends connect(store)(PageViewElement) {
   render() {
     return html`
       <section>
-        <h3>Your battles</h3>
-      </section>
-      ${repeat(this._battles, battle => html`
-        <section>
+        <h2>Your Battles</h2>
+        ${repeat(this._battles, battle => html`
           <div class="${classMap({battle: true, active: battle.active})}" data-index="${battle.id}">
             <h4 class="${classMap({selectedBattle: battle.active})}">${battle.name}</h4>
             <pre>Created ${battle.createdMessage}</pre>
@@ -52,27 +50,28 @@ class WarView extends connect(store)(PageViewElement) {
             <button @click="${this._removeBattle}">Remove</button>
             <button @click="${this._shareBattle}">Share</button>
           </div>
-        </section>
-      `)}
-      <section>
-        <h3>Shared Battles</h3>
+        `)}
       </section>
-      ${repeat(this._sharedBattles, battle => html`
-        <section>
-          <h4>${battle.name}</h4>
+      <section>
+        <h2>Shared Battles</h2>
+        ${repeat(this._sharedBattles, battle => html`
           <div>
-            ${battle.active ? html`
-              <button disabled>Playing</button>
-            ` : html`
-              <button @click="${() => this._playSharedBattle(battle)}">Play</button>
-            `}
-            <button @click="${() => this._leaveSharedBattle(battle)}">Leave</button>
+            <h4>${battle.name}</h4>
+            <div>
+              ${battle.active ? html`
+                <button disabled>Playing</button>
+              ` : html`
+                <button @click="${() => this._playSharedBattle(battle)}">Play</button>
+              `}
+              <button @click="${() => this._leaveSharedBattle(battle)}">Leave</button>
+            </div>
+            <p>Share this url: ${battle.url}</p>
           </div>
-          <p>Share this url: ${battle.url}</p>
-        </section>
-      `)}
+        `)}
+      </section>
       <section>
         <div>
+          <h2>Create Battle</h2>
           <select id="rulesets" @change="${this.updateRuleset}">
             <option value="">Select a ruleset</option>
             ${repeat(this.rulesets, ({ruleset, id}) => html`
