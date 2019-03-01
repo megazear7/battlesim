@@ -130,9 +130,11 @@ const battle = (state = initialState, action) => {
   }
 
   if (activeBattle && activebattleIsShared) {
+    console.log(newState.activeBattle.id);
+    console.log(activeBattle);
     firebase.firestore().collection('apps/battlesim/battles')
     .doc(newState.activeBattle.id)
-    .set({ battle: activeBattle });
+    .set({ battle: JSON.parse(JSON.stringify(activeBattle)) }); // The stringify / parse gets rid of undefined attributes which firestore will complain about.
   }
 
   localStorage.setItem("battles", JSON.stringify(newState.battles));

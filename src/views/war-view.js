@@ -71,11 +71,6 @@ class WarView extends connect(store)(PageViewElement) {
           <p>Share this url: ${battle.url}</p>
         </section>
       `)}
-      ${this._battles.length === 0 ? html`
-        <section>
-          <p>No battles exist. You can create one below.</p>
-        </section>
-      `: ``}
       <section>
         <div>
           <select id="rulesets" @change="${this.updateRuleset}">

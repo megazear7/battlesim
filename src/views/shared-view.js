@@ -32,7 +32,7 @@ class SharedView extends connect(store)(PageViewElement) {
     super.connectedCallback();
 
     firebase.firestore().collection('apps/battlesim/battles')
-    .where('uuid', '==', this.uuid)
+    .where('battle.uuid', '==', this.uuid)
     .limit(1)
     .get()
     .then(querySnapshot => {
