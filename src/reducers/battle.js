@@ -15,17 +15,26 @@ import {
   CREATE_NEW_BATTLE,
   SET_ACTIVE_BATTLE,
   REMOVE_BATTLE,
+  ADD_SHARED_BATTLE,
 } from '../actions/battle.js';
 import { LOCAL_BATTLE } from '../game.js';
+import Battle from '../models/battle.js';
 
-const INITIAL_STATE = {
+const initialState = {
   activeBattle: { type: LOCAL_BATTLE, id: 0 },
   battles: [ ],
+  sharedBattles: { },
 };
 
-let initialState = JSON.parse(localStorage.getItem("battle"));
-if (! initialState) {
-  initialState = INITIAL_STATE;
+let savedBattles = JSON.parse(localStorage.getItem("battles"));
+let savedActiveBattle = JSON.parse(localStorage.getItem("activeBattle"));
+
+if (savedBattles) {
+  initialState.battles = savedBattles;
+}
+
+if (savedActiveBattle) {
+  initialState.activeBattle = savedActiveBattle;
 }
 
 const battle = (state = initialState, action) => {
@@ -102,6 +111,8 @@ const battle = (state = initialState, action) => {
 
     newState.battles.push(newBattle);
     newState.activeBattle = newState.battles.length - 1;
+  } else if (action.type === ADD_SHARED_BATTLE) {
+    newState.sharedBattles[action.id] = action.battleStats;
   } else if (action.type === REMOVE_BATTLE) {
     newState.battles.splice(action.index, 1);
     if (newState.activeBattle >= action.index) {
@@ -114,7 +125,8 @@ const battle = (state = initialState, action) => {
     newState.activeBattle = action.activeBattle;
   }
 
-  localStorage.setItem("battle", JSON.stringify(newState));
+  localStorage.setItem("battles", JSON.stringify(newState.battles));
+  localStorage.setItem("activeBattle", JSON.stringify(newState.activeBattle));
   return newState
 };
 

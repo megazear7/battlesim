@@ -102,30 +102,11 @@ class WarView extends connect(store)(PageViewElement) {
   connectedCallback() {
     super.connectedCallback();
     this._selectableBattles = [];
-    this._sharedBattles = [];
-
-    let sharedBattleIds = JSON.parse(localStorage.getItem("sharedBattles")) || [];
-    let state = store.getState();
-    let activeBattleId = state.battle.activeBattle.id;
-
-    firebase.firestore().collection('apps/battlesim/battles').get()
-    .then(querySnapshot =>
-      querySnapshot
-      .forEach(doc => {
-        if (doc.exists && sharedBattleIds.indexOf(doc.id) >= 0) {
-          this._sharedBattles = [
-            ...this._sharedBattles,
-            new Battle(doc.data().battle, doc.id, doc.id === activeBattleId)
-          ];
-        }
-      })
-    ).catch(error => console.log('Error getting document:', error));
   }
 
   stateChanged(state) {
-    if (this._sharedBattles) {
-      this._sharedBattles.forEach(battle => battle.active = battle.id === state.battle.activeBattle.id);
-    }
+    this._sharedBattles = Object.keys(state.battle.sharedBattles).map(id =>
+      new Battle(state.battle.sharedBattles[id], id, id === state.battle.activeBattle.id));
 
     this._battles = state.battle.battles.map((battle, index) =>
       new Battle(battle, index, index === state.battle.activeBattle.id));

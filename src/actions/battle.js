@@ -4,6 +4,7 @@ export const FINISH_EVENT = 'FINISH_EVENT';
 export const ADD = 'ADD';
 export const REMOVE = 'REMOVE';
 export const CREATE_NEW_BATTLE = 'CREATE_NEW_BATTLE';
+export const ADD_SHARED_BATTLE = 'ADD_SHARED_BATTLE';
 export const SET_ACTIVE_BATTLE = 'SET_ACTIVE_BATTLE';
 export const REMOVE_BATTLE = 'REMOVE_BATTLE';
 
@@ -47,6 +48,14 @@ export const createNewBattle = (battleStats) => {
   return {
     type: CREATE_NEW_BATTLE,
     battleStats
+  };
+};
+
+export const addSharedBattle = (id, battleStats) => {
+  return {
+    type: ADD_SHARED_BATTLE,
+    id,
+    battleStats,
   };
 };
 

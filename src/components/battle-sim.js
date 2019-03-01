@@ -8,6 +8,7 @@ import { installRouter } from 'pwa-helpers/router.js';
 import { updateMetadata } from 'pwa-helpers/metadata.js';
 import { store } from '../store.js';
 import { navigate, updateOffline, updateDrawerState } from '../actions/app.js';
+import { addSharedBattle } from '../actions/battle.js';
 import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-scroll-effects/effects/waterfall.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
@@ -256,6 +257,20 @@ class BattleSim extends connect(store)(LitElement) {
     // See https://www.polymer-project.org/3.0/docs/devguide/settings#setting-passive-touch-gestures
     setPassiveTouchGestures(true);
     this._showMobileNav = true;
+
+    let state = store.getState();
+    let sharedBattleIds = JSON.parse(localStorage.getItem("sharedBattles")) || [];
+    let activeBattleId = state.battle.activeBattle.id;
+
+    firebase.firestore().collection('apps/battlesim/battles').get()
+    .then(querySnapshot =>
+      querySnapshot
+      .forEach(doc => {
+        if (doc.exists && sharedBattleIds.indexOf(doc.id) >= 0) {
+          store.dispatch(addSharedBattle(doc.id, doc.data().battle));
+        }
+      })
+    ).catch(error => console.log('Error getting document:', error));
   }
 
   connectedCallback() {
