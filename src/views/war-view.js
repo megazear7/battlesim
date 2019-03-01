@@ -2,7 +2,7 @@ import { html, css } from 'lit-element';
 import { repeat } from 'lit-html/directives/repeat';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { PageViewElement } from './page-view-element.js';
-import { createNewBattle, setActiveBattle, removeBattle } from '../actions/battle.js';
+import { createNewBattle, setActiveBattle, removeBattle, addSharedBattle } from '../actions/battle.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
 import { SharedStyles } from '../styles/shared-styles.js';
@@ -68,6 +68,7 @@ class WarView extends connect(store)(PageViewElement) {
             `}
             <button @click="${() => this._leaveSharedBattle(battle)}">Leave</button>
           </div>
+          <p>Share this url: ${battle.url}</p>
         </section>
       `)}
       ${this._battles.length === 0 ? html`
@@ -115,37 +116,29 @@ class WarView extends connect(store)(PageViewElement) {
   _shareBattle(e) {
     let battleIndex = parseInt(e.target.closest('.battle').dataset.index);
     let battle = store.getState().battle.battles[battleIndex];
-    let uuid = makeid();
-    let url = window.location.origin + '/shared/' + uuid;
+    battle.uuid = makeid();
 
     firebase.firestore().collection('apps/battlesim/battles')
-    .add({
-      url,
-      uuid: uuid,
-      battle
-    })
+    .add({ battle })
     .then(docRef => {
       let sharedBattleIds = JSON.parse(localStorage.getItem("sharedBattles")) || [];
       store.dispatch(removeBattle(battleIndex));
       localStorage.setItem("sharedBattles", JSON.stringify([...sharedBattleIds, docRef.id]));
-      docRef.get().then(doc =>
-        this._sharedBattles = [
-          ...this._sharedBattles,
-          new Battle(doc.data().battle, doc.id, doc.id === state.battle.activeBattle.id)
-        ]
-      );
-    });
+      docRef.get().then(doc => store.dispatch(addSharedBattle(doc.id, doc.data().battle)));
 
-    if (navigator.share) {
-      navigator.share({
-          title: battle.name,
-          text: 'Share ' + battle.name + ' from battlesim.',
-          url: url,
-      })
-      .catch((error) => console.log('Error sharing', error));
-    } else {
-      alert("Share this url with a friend: " + url);
-    }
+      let battleModel = new Battle(battle, docRef.id);
+
+      if (navigator.share) {
+        navigator.share({
+            title: battle.name,
+            text: 'Share ' + battle.name + ' from battlesim.',
+            url: battleModel.url,
+        })
+        .catch((error) => console.log('Error sharing', error));
+      } else {
+        alert("Share this url with a friend: " + battleModel.url);
+      }
+    });
   }
 
   _playSharedBattle(sharedBattle) {

@@ -15,6 +15,7 @@ import { prettyDateTime, SECONDS_IN_AN_HOUR, MILLISECONDS_PER_SECOND } from '../
 export default class Battle {
   constructor({
     name,
+    uuid,
     ruleset,
     second = 0,
     startTime,
@@ -38,6 +39,7 @@ export default class Battle {
     activeAction = { },
   }, id, active = false) {
     this.name = name;
+    this.uuid = uuid;
     this.ruleset = ruleset;
     this.second = second;
     this.startTime = startTime;
@@ -62,6 +64,10 @@ export default class Battle {
     this.armies = armies;
     this.id = id;
     this.active = active;
+  }
+
+  get url() {
+    return window.location.origin + '/shared/' + this.uuid;
   }
 
   get createdDate() {
