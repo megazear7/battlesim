@@ -332,8 +332,10 @@ class BattleSim extends connect(store)(LitElement) {
   }
 
   stateChanged(state) {
-    if (state.battle.battles.length > state.battle.activeBattle && state.app.page !== 'war') {
-      this._title = state.battle.battles[state.battle.activeBattle].name;
+    if (state.battle.battles.length > state.battle.activeBattle.id && state.app.page !== 'war') {
+      this._title = state.battle.battles[state.battle.activeBattle.id].name;
+    } else if (Object.keys(state.battle.sharedBattles).indexOf(state.battle.activeBattle.id) >= 0 && state.app.page !== 'war') {
+      this._title = state.battle.sharedBattles[state.battle.activeBattle.id].name;
     } else {
       this._title = this.appTitle;
     }
