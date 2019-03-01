@@ -93,6 +93,10 @@ export default class Battle {
     return this.unitModels[this.activeAction.index];
   }
 
+  get activeArmyModel() {
+    return this.armies[this.activeUnit.armyIndex];
+  }
+
   get armyTakingAction() {
     return this.armies[this.activeAction.index];
   }

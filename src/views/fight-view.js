@@ -32,6 +32,7 @@ export const TERRAIN_TYPES = [ TERRAIN_TYPE_MOVEMENT, TERRAIN_TYPE_DEFENDER, TER
 class FightView extends connect(store)(PageViewElement) {
   static get properties() {
     return {
+      _activeBattle: { type: Object },
       _targetUnit: { type: Object },
       _actionMessages: { type: Array },
       _chargeMessage: { type: String },
@@ -172,7 +173,7 @@ class FightView extends connect(store)(PageViewElement) {
         ${this._activeBattle.unitIsActing ? html`
           <section>
             <h2>${this._activeBattle.activeUnit.name}</h2>
-            <div class="muted centered">Army: ${this._activeBattle.activeUnit.army.name}</div>
+            <div class="muted centered">Army: ${this._activeBattle.activeArmyModel.name}</div>
             <div class="muted centered">${this._activeBattle.currentTimeMessage}</div>
             <p>${this._activeBattle.activeUnit.detailedStatus}</p>
             <hr>

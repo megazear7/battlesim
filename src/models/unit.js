@@ -1,4 +1,3 @@
-import { store } from '../store.js';
 import { FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP } from '../game.js';
 import { upperCaseFirst } from '../utils/string-utils.js';
 import { getRandomInt, roundToNearest } from '../utils/math-utils.js';
@@ -83,17 +82,13 @@ export default class Unit {
   }
 
   get targets() {
-    let state = store.getState()
-    let activeBattleId = state.battle.battles[state.battle.activeBattle.id];
-    return activeBattleId.units
+    return this.battle.units
         .map((unit, index) => ({ id: index, unit: unit}))
         .filter(target => target.unit.army !== this.armyIndex);
   }
 
   get army() {
-    let state = store.getState()
-    let activeBattleId = state.battle.battles[state.battle.activeBattle.id];
-    return activeBattleId.armies[this.armyIndex];
+    return this.battle.armies[this.armyIndex];
   }
 
   get troopTypeName() {
