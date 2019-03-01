@@ -1,4 +1,4 @@
-import { MELEE, statModFor, MAX_EQUIPMENT_WEIGHT, MORALE_SUCCESS, MORALE_FAILURE, FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP, MELEE_WEAPON, RANGED_WEAPON, MAX_STAT, SECONDS_PER_TURN, YARDS_PER_INCH, POWER_VS_FOOT, POWER_VS_MOUNTED, RANGED, STAT_PERCENTAGE, CASUALTY_MESSAGE_DESCRIPTIVE, DEADLYNESS, SECONDS_PER_ROUND, YARDS_TO_FIGHT, MINUTES_PER_TURN, weightedRandom, weightedRandomTowards, randomBellMod, dropOff, dropOffWithBoost, weightedAverage, roundToNearest, SECONDS_IN_AN_HOUR, SECONDS_IN_AN_MINUTE, randomMinutesBetween, store, html, css, repeat, classMap, PageViewElement, connect, takeAction, takeArmyAction, finishEvent, SharedStyles, ButtonSharedStyles, $terrainDefault as TERRAIN, $battleDefault as Battle } from '../components/battle-sim.js';
+import { MELEE, statModFor, MAX_EQUIPMENT_WEIGHT, MORALE_SUCCESS, MORALE_FAILURE, FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP, MELEE_WEAPON, RANGED_WEAPON, MAX_STAT, SECONDS_PER_TURN, YARDS_PER_INCH, POWER_VS_FOOT, POWER_VS_MOUNTED, RANGED, STAT_PERCENTAGE, CASUALTY_MESSAGE_DESCRIPTIVE, DEADLYNESS, SECONDS_PER_ROUND, YARDS_TO_FIGHT, MINUTES_PER_TURN, SHARED_BATTLE, LOCAL_BATTLE, weightedRandom, weightedRandomTowards, randomBellMod, dropOff, dropOffWithBoost, weightedAverage, roundToNearest, SECONDS_IN_AN_HOUR, SECONDS_IN_AN_MINUTE, randomMinutesBetween, html, css, repeat, classMap, PageViewElement, connect, store, takeAction, takeArmyAction, finishEvent, SharedStyles, ButtonSharedStyles, $terrainDefault as TERRAIN, $battleDefault as Battle } from '../components/battle-sim.js';
 const SLOPE_UP = "SLOPE_UP";
 const SLOPE_DOWN = "SLOPE_DOWN";
 const SLOPE_NONE$1 = "SLOPE_NONE";
@@ -941,6 +941,9 @@ const TERRAIN_TYPES = [TERRAIN_TYPE_MOVEMENT, TERRAIN_TYPE_DEFENDER, TERRAIN_TYP
 class FightView extends connect(store)(PageViewElement) {
   static get properties() {
     return {
+      _activeBattle: {
+        type: Object
+      },
       _targetUnit: {
         type: Object
       },
@@ -1119,7 +1122,7 @@ class FightView extends connect(store)(PageViewElement) {
         ${this._activeBattle.unitIsActing ? html`
           <section>
             <h2>${this._activeBattle.activeUnit.name}</h2>
-            <div class="muted centered">Army: ${this._activeBattle.activeUnit.army.name}</div>
+            <div class="muted centered">Army: ${this._activeBattle.activeArmyModel.name}</div>
             <div class="muted centered">${this._activeBattle.currentTimeMessage}</div>
             <p>${this._activeBattle.activeUnit.detailedStatus}</p>
             <hr>
@@ -1345,8 +1348,13 @@ class FightView extends connect(store)(PageViewElement) {
   stateChanged(state) {
     this._actionMessages = [];
 
-    if (state.battle.battles.length > state.battle.activeBattle) {
-      this._activeBattle = new Battle(state.battle.battles[state.battle.activeBattle], state.battle.activeBattle);
+    if (state.battle.activeBattle.type === LOCAL_BATTLE) {
+      if (state.battle.battles.length > state.battle.activeBattle.id) {
+        this._activeBattle = new Battle(state.battle.battles[state.battle.activeBattle.id], state.battle.activeBattle.id);
+      }
+    } else if (state.battle.activeBattle.type === SHARED_BATTLE) {
+      this._activeBattle = Object.keys(state.battle.sharedBattles).indexOf(state.battle.activeBattle.id) >= 0 ? new Battle(state.battle.sharedBattles[state.battle.activeBattle.id], state.battle.activeBattle.id) : undefined;
+      this._unitTemplates = this._activeBattle ? this._activeBattle.unitTemplatesFor(0) : [];
     }
   }
 

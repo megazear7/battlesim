@@ -1,4 +1,4 @@
-import { html, css, repeat, PageViewElement, add, remove, connect, store, SharedStyles, ButtonSharedStyles, prettyTime, $battleDefault as Battle } from '../components/battle-sim.js';
+import { html, css, repeat, PageViewElement, add, remove, connect, store, SharedStyles, ButtonSharedStyles, prettyTime, $battleDefault as Battle, SHARED_BATTLE, LOCAL_BATTLE } from '../components/battle-sim.js';
 import { MOVE, REST } from './fight-view.js';
 
 class BattleView extends connect(store)(PageViewElement) {
@@ -180,8 +180,13 @@ class BattleView extends connect(store)(PageViewElement) {
   }
 
   stateChanged(state) {
-    this._activeBattle = state.battle.battles.length > state.battle.activeBattle ? new Battle(state.battle.battles[state.battle.activeBattle], state.battle.activeBattle) : undefined;
-    this._unitTemplates = this._activeBattle ? this._activeBattle.unitTemplatesFor(0) : [];
+    if (state.battle.activeBattle.type === LOCAL_BATTLE) {
+      this._activeBattle = state.battle.battles.length > state.battle.activeBattle.id ? new Battle(state.battle.battles[state.battle.activeBattle.id], state.battle.activeBattle.id) : undefined;
+      this._unitTemplates = this._activeBattle ? this._activeBattle.unitTemplatesFor(0) : [];
+    } else if (state.battle.activeBattle.type === SHARED_BATTLE) {
+      this._activeBattle = Object.keys(state.battle.sharedBattles).indexOf(state.battle.activeBattle.id) >= 0 ? new Battle(state.battle.sharedBattles[state.battle.activeBattle.id], state.battle.activeBattle.id) : undefined;
+      this._unitTemplates = this._activeBattle ? this._activeBattle.unitTemplatesFor(0) : [];
+    }
   }
 
 }

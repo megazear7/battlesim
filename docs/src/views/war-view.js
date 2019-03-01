@@ -1,4 +1,4 @@
-import { html, css, repeat, classMap, PageViewElement, createNewBattle, setActiveBattle, removeBattle, connect, store, SharedStyles, ButtonSharedStyles, $battleTemplatesDefault as BATTLE_TEMPLATES, $rulesDefault as RULES, $battleDefault as Battle } from '../components/battle-sim.js';
+import { html, css, repeat, classMap, PageViewElement, createNewBattle, setActiveBattle, removeBattle, addSharedBattle, connect, store, SharedStyles, ButtonSharedStyles, $battleTemplatesDefault as BATTLE_TEMPLATES, $rulesDefault as RULES, $battleDefault as Battle, makeid, SHARED_BATTLE, LOCAL_BATTLE } from '../components/battle-sim.js';
 
 class WarView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -7,6 +7,9 @@ class WarView extends connect(store)(PageViewElement) {
         type: Object
       },
       _selectableBattles: {
+        type: Object
+      },
+      _sharedBattles: {
         type: Object
       }
     };
@@ -22,32 +25,47 @@ class WarView extends connect(store)(PageViewElement) {
 
   render() {
     return html`
-      ${repeat(this._battles, battle => html`
-        <section>
+      <section>
+        <h2>Your Battles</h2>
+        ${repeat(this._battles, battle => html`
           <div class="${classMap({
       battle: true,
       active: battle.active
     })}" data-index="${battle.id}">
-            <h3 class="${classMap({
+            <h4 class="${classMap({
       selectedBattle: battle.active
-    })}">${battle.name}</h3>
+    })}">${battle.name}</h4>
             <pre>Created ${battle.createdMessage}</pre>
             ${battle.active ? html`
-              <button @click="${this._playBattle}" disabled>Playing</button>
+              <button disabled>Playing</button>
             ` : html`
               <button @click="${this._playBattle}">Play</button>
             `}
             <button @click="${this._removeBattle}">Remove</button>
+            <button @click="${this._shareBattle}">Share</button>
           </div>
-        </section>
-      `)}
-      ${this._battles.length === 0 ? html`
-        <section>
-          <p>No battles exist. You can create one below.</p>
-        </section>
-      ` : ``}
+        `)}
+      </section>
+      <section>
+        <h2>Shared Battles</h2>
+        ${repeat(this._sharedBattles, battle => html`
+          <div>
+            <h4>${battle.name}</h4>
+            <div>
+              ${battle.active ? html`
+                <button disabled>Playing</button>
+              ` : html`
+                <button @click="${() => this._playSharedBattle(battle)}">Play</button>
+              `}
+              <button @click="${() => this._leaveSharedBattle(battle)}">Leave</button>
+            </div>
+            <p>Share this url: ${battle.url}</p>
+          </div>
+        `)}
+      </section>
       <section>
         <div>
+          <h2>Create Battle</h2>
           <select id="rulesets" @change="${this.updateRuleset}">
             <option value="">Select a ruleset</option>
             ${repeat(this.rulesets, ({
@@ -79,6 +97,48 @@ class WarView extends connect(store)(PageViewElement) {
   connectedCallback() {
     super.connectedCallback();
     this._selectableBattles = [];
+  }
+
+  stateChanged(state) {
+    this._sharedBattles = Object.keys(state.battle.sharedBattles).map(id => new Battle(state.battle.sharedBattles[id], id, id === state.battle.activeBattle.id));
+    this._battles = state.battle.battles.map((battle, index) => new Battle(battle, index, index === state.battle.activeBattle.id));
+  }
+
+  _shareBattle(e) {
+    let battleIndex = parseInt(e.target.closest('.battle').dataset.index);
+    let battle = store.getState().battle.battles[battleIndex];
+    battle.uuid = makeid();
+    firebase.firestore().collection('apps/battlesim/battles').add({
+      battle
+    }).then(docRef => {
+      let sharedBattleIds = JSON.parse(localStorage.getItem("sharedBattles")) || [];
+      store.dispatch(removeBattle(battleIndex));
+      localStorage.setItem("sharedBattles", JSON.stringify([...sharedBattleIds, docRef.id]));
+      docRef.get().then(doc => store.dispatch(addSharedBattle(doc.id, doc.data().battle)));
+      let battleModel = new Battle(battle, docRef.id);
+
+      if (navigator.share) {
+        navigator.share({
+          title: battle.name,
+          text: 'Share ' + battle.name + ' from battlesim.',
+          url: battleModel.url
+        }).catch(error => console.log('Error sharing', error));
+      } else {
+        alert("Share this url with a friend: " + battleModel.url);
+      }
+    });
+  }
+
+  _playSharedBattle(sharedBattle) {
+    store.dispatch(setActiveBattle({
+      type: SHARED_BATTLE,
+      id: sharedBattle.id
+    }));
+  }
+
+  _leaveSharedBattle(sharedBattle) {
+    this._sharedBattles = this._sharedBattles.filter(battle => battle.id !== sharedBattle.id);
+    localStorage.setItem("sharedBattles", JSON.stringify(this._sharedBattles.map(battle => battle.id)));
   }
 
   updateRuleset() {
@@ -182,17 +242,16 @@ class WarView extends connect(store)(PageViewElement) {
   }
 
   _playBattle(e) {
-    store.dispatch(setActiveBattle(parseInt(e.target.closest('.battle').dataset.index)));
+    store.dispatch(setActiveBattle({
+      type: LOCAL_BATTLE,
+      id: parseInt(e.target.closest('.battle').dataset.index)
+    }));
   }
 
   _removeBattle(e) {
     if (confirm('Are you sure you want to delete the battle?')) {
       store.dispatch(removeBattle(parseInt(e.target.closest('.battle').dataset.index)));
     }
-  }
-
-  stateChanged(state) {
-    this._battles = state.battle.battles.map((battle, index) => new Battle(battle, index, index === state.battle.activeBattle));
   }
 
 }

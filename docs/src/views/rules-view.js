@@ -1,4 +1,4 @@
-import { html, css, PageViewElement, SharedStyles, repeat, connect, store, $battleDefault as Battle } from '../components/battle-sim.js';
+import { html, css, PageViewElement, SharedStyles, repeat, connect, store, $battleDefault as Battle, SHARED_BATTLE, LOCAL_BATTLE } from '../components/battle-sim.js';
 
 class RulesView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -63,8 +63,13 @@ class RulesView extends connect(store)(PageViewElement) {
   }
 
   stateChanged(state) {
-    if (state.battle.battles.length > state.battle.activeBattle) {
-      this._activeBattle = new Battle(state.battle.battles[state.battle.activeBattle], state.battle.activeBattle);
+    if (state.battle.activeBattle.type === LOCAL_BATTLE) {
+      if (state.battle.battles.length > state.battle.activeBattle.id) {
+        this._activeBattle = new Battle(state.battle.battles[state.battle.activeBattle.id], state.battle.activeBattle.id);
+      }
+    } else if (state.battle.activeBattle.type === SHARED_BATTLE) {
+      this._activeBattle = Object.keys(state.battle.sharedBattles).indexOf(state.battle.activeBattle.id) >= 0 ? new Battle(state.battle.sharedBattles[state.battle.activeBattle.id], state.battle.activeBattle.id) : undefined;
+      this._unitTemplates = this._activeBattle ? this._activeBattle.unitTemplatesFor(0) : [];
     }
   }
 
