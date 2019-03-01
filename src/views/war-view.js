@@ -149,19 +149,10 @@ class WarView extends connect(store)(PageViewElement) {
   }
 
   _playSharedBattle(sharedBattle) {
-    firebase.firestore().collection('apps/battlesim/battles')
-    .doc(sharedBattle.id)
-    .get()
-    .then(doc => {
-      if (doc.exists) {
-        store.dispatch(setActiveBattle({
-          type: SHARED_BATTLE,
-          id: doc.id
-        }));
-      } else {
-        console.log('Battle does not exist');
-      }
-    });
+    store.dispatch(setActiveBattle({
+      type: SHARED_BATTLE,
+      id: sharedBattle.id
+    }));
   }
 
   _leaveSharedBattle(sharedBattle) {
