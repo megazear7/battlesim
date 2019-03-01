@@ -186,11 +186,13 @@ class BattleView extends connect(store)(PageViewElement) {
     super.connectedCallback();
     let state = store.getState();
     if (state.battle.activeBattle.type === SHARED_BATTLE) {
+      this._unitTemplates = [];
       firebase.firestore()
       .collection('apps/battlesim/battles')
       .doc(state.battle.activeBattle.id)
       .onSnapshot(doc => {
         this._activeBattle = new Battle(doc.data().battle, doc.id);
+        this._unitTemplates = this._activeBattle.unitTemplatesFor(0);
       });
     }
   }
