@@ -17,7 +17,7 @@ import {
   REMOVE_BATTLE,
   ADD_SHARED_BATTLE,
 } from '../actions/battle.js';
-import { LOCAL_BATTLE } from '../game.js';
+import { LOCAL_BATTLE, SHARED_BATTLE } from '../game.js';
 import Battle from '../models/battle.js';
 
 const initialState = {
@@ -40,11 +40,9 @@ if (savedActiveBattle) {
 const battle = (state = initialState, action) => {
   var newState = { ...state };
   let activeBattle;
-  let activebattleIsShared = false;
   if (newState.activeBattle.id < newState.battles.length) {
     activeBattle = newState.battles[newState.activeBattle.id];
   } else if (Object.keys(newState.sharedBattles).indexOf(newState.activeBattle.id) >= 0) {
-    activebattleIsShared = true;
     activeBattle = newState.sharedBattles[newState.activeBattle.id];
   }
   if (activeBattle && action.type === TAKE_ACTION) {
@@ -129,9 +127,7 @@ const battle = (state = initialState, action) => {
     newState.activeBattle = action.activeBattle;
   }
 
-  if (activeBattle && activebattleIsShared && action.type !== ADD_SHARED_BATTLE) {
-    console.log(newState.activeBattle.id);
-    console.log(activeBattle);
+  if (activeBattle && newState.activeBattle.type === SHARED_BATTLE && action.type !== ADD_SHARED_BATTLE) {
     firebase.firestore().collection('apps/battlesim/battles')
     .doc(newState.activeBattle.id)
     .set({ battle: JSON.parse(JSON.stringify(activeBattle)) }); // The stringify / parse gets rid of undefined attributes which firestore will complain about.
