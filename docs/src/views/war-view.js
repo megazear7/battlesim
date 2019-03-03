@@ -36,13 +36,15 @@ class WarView extends connect(store)(PageViewElement) {
       selectedBattle: battle.active
     })}">${battle.name}</h4>
             <pre>Created ${battle.createdMessage}</pre>
-            ${battle.active ? html`
-              <button disabled>Playing</button>
-            ` : html`
-              <button @click="${this._playBattle}">Play</button>
-            `}
-            <button @click="${this._removeBattle}">Remove</button>
-            <button @click="${this._shareBattle}">Share</button>
+            <button-tray>
+              ${battle.active ? html`
+                <button disabled>Playing</button>
+              ` : html`
+                <button @click="${this._playBattle}">Play</button>
+              `}
+              <button @click="${this._removeBattle}">Remove</button>
+              <button @click="${this._shareBattle}">Share</button>
+            </button-tray>
           </div>
         `)}
       </section>
@@ -51,14 +53,14 @@ class WarView extends connect(store)(PageViewElement) {
         ${repeat(this._sharedBattles, battle => html`
           <div>
             <h4>${battle.name}</h4>
-            <div>
+            <button-tray>
               ${battle.active ? html`
                 <button disabled>Playing</button>
               ` : html`
                 <button @click="${() => this._playSharedBattle(battle)}">Play</button>
               `}
               <button @click="${() => this._leaveSharedBattle(battle)}">Leave</button>
-            </div>
+            </button-tray>
             <p>Share this url: ${battle.url}</p>
           </div>
         `)}
