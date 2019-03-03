@@ -86,30 +86,6 @@ class FightView extends connect(store)(PageViewElement) {
           width: 100% !important;
           margin-right: 0;
         }
-        .has-selection button {
-          opacity: 0.6;
-        }
-        .unit-actions button {
-          opacity: 1;
-        }
-        .unit-actions button:hover {
-          background-color: var(--app-primary-color);
-        }
-        .unit-actions button.selected {
-          background-color: var(--app-primary-color);
-        }
-        .unit-actions button:disabled {
-          border-color: grey;
-        }
-        .unit-actions button.selected {
-          color: white;
-          border-width: 3px 1.5px;
-          border-style: solid;
-          border-color: var(--app-primary-color);
-        }
-        .has-selection button:disabled:hover {
-          background-color: white;
-        }
         .tooltip {
           position: relative;
           display: inline-block;
@@ -159,7 +135,7 @@ class FightView extends connect(store)(PageViewElement) {
           </section>
           <section>
             <div>
-              <button-tray class="${classMap({'has-selection': this._hasSelection, 'unit-actions': true})}">
+              <button-tray ?has-selection="${this._hasSelection}">
                 <button @click="${this._rest}" id="rest" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === REST})}">Rest</button>
                 <button @click="${this._move}" id="move" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === MOVE})}">Move</button>
                 <button @click="${this._charge}" id="charge" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === CHARGE})}">Charge</button>

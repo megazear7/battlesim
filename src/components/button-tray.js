@@ -1,6 +1,12 @@
 import { LitElement, html, css } from 'lit-element';
 import { classMap } from 'lit-html/directives/class-map.js';
 
+/**
+ * This component should only have buttons as child elements.
+ * The buttons will take up an even amount of horizontal space, filling the container.
+ * If the has-selection attribute is the buttons will be greyed out other than the
+ * buttons with the "selected" class.
+ */
 class ButtonTray extends LitElement {
   static get properties() {
     return {
@@ -52,6 +58,12 @@ class ButtonTray extends LitElement {
           border-width: 3px 1.5px;
           border-style: solid;
           border-color: var(--app-primary-color);
+        }
+        [has-selection] button {
+          opacity: 0.6;
+        }
+        [has-selection] button:disabled:hover {
+          background-color: white;
         }
       `
     ];

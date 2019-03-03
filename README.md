@@ -23,7 +23,6 @@ git push origin master
 
 ###### TODO
 
-1. Make War view buttons similar to fight view
 1. Auto start playing shared battle
 1. Fix share API
 1. Add auto copy url button for shared battles
