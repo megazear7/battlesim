@@ -89,28 +89,6 @@ class FightView extends connect(store)(PageViewElement) {
         .has-selection button {
           opacity: 0.6;
         }
-        .unit-actions {
-          font-size: 0;
-          padding-top: 0;
-          padding-bottom: 0;
-        }
-        .unit-actions button {
-          width: 25%;
-          box-sizing: border-box;
-          background-color: white;
-          margin: 0;
-          display: inline-block;
-          padding: 1rem 0.25rem;
-          font-size: 0.8rem;
-          border-left: 1.5px solid var(--app-primary-color);
-          border-right: 1.5px solid var(--app-primary-color);
-        }
-        .unit-actions button:first-child {
-          border-left: 3px solid var(--app-primary-color);
-        }
-        .unit-actions button:last-child {
-          border-right: 3px solid var(--app-primary-color);
-        }
         .unit-actions button {
           opacity: 1;
         }
@@ -179,12 +157,14 @@ class FightView extends connect(store)(PageViewElement) {
             <hr>
             <p>${this._activeBattle.activeUnit.desc}</p>
           </section>
-          <section class="unit-actions">
-            <div class="${classMap({'has-selection': this._hasSelection})}">
-              <button @click="${this._rest}" id="rest" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === REST})}">Rest</button>
-              <button @click="${this._move}" id="move" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === MOVE})}">Move</button>
-              <button @click="${this._charge}" id="charge" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === CHARGE})}">Charge</button>
-              <button @click="${this._fire}" id="fire" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === FIRE})}">Fire</button>
+          <section>
+            <div>
+              <button-tray class="${classMap({'has-selection': this._hasSelection, 'unit-actions': true})}">
+                <button @click="${this._rest}" id="rest" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === REST})}">Rest</button>
+                <button @click="${this._move}" id="move" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === MOVE})}">Move</button>
+                <button @click="${this._charge}" id="charge" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === CHARGE})}">Charge</button>
+                <button @click="${this._fire}" id="fire" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === FIRE})}">Fire</button>
+              </button-tray>
             </div>
           </section>
           <section>
