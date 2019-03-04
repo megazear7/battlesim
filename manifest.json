@@ -1,7 +1,7 @@
 {
   "name": "Battle Sim",
   "short_name": "Battle Sim",
-  "description": "Computer managed historical combat for tabletop gaming.",
+  "description": "Mass combat simulation for tabletop gaming.",
   "start_url": "/",
   "display": "standalone",
   "theme_color": "#3f51b5",

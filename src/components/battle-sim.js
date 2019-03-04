@@ -243,7 +243,7 @@ class BattleSim extends connect(store)(LitElement) {
 
       <footer>
         <h1>${this.appTitle}</h1>
-        <p>Computer managed historical combat for tabletop gaming.</p>
+        <p>Mass combat simulation for tabletop gaming.</p>
       </footer>
 
       <snack-bar ?active="${this._snackbarOpened}">
