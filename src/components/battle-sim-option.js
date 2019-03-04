@@ -13,6 +13,7 @@ class BattleSimOption extends LitElement {
     return [
       css`
         :host {
+          outline: none;
           display: flex;
           flex-direction: row;
           box-sizing: border-box;
@@ -22,6 +23,9 @@ class BattleSimOption extends LitElement {
           position: relative;
         }
         :host(:hover) {
+          color: var(--app-primary-color);
+        }
+        :host(:focus) {
           color: var(--app-primary-color);
         }
         #box {
@@ -67,6 +71,13 @@ class BattleSimOption extends LitElement {
     super();
 
     this.selected = false;
+    this.tabIndex = 0;
+    this.onkeypress = (event) => {
+      if (event.code == "Enter") {
+        event.stopPropagation();
+        this.toggle();
+      }
+    };
   }
 
   toggle() {
