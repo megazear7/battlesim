@@ -8,7 +8,7 @@ import SoloUnit from './solo-unit.js';
 export default class Situation {
   constructor({ unit,
                 armyLeadership = 0,
-                movementTerrain = 0,
+                movementTerrain = [],
                 mount = false,
                 unmount = false,
                 pace = 1,

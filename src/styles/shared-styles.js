@@ -114,6 +114,19 @@ export const SharedStyles = css`
     h2 {
       font-size: 36px;
     }
+
+    .row {
+      display: flex;
+    }
+
+    .row > * {
+      flex-grow: 1;
+      margin-right: 1rem;
+    }
+
+    .row > *:last-child {
+      margin-right: 0;
+    }
   }
 
   .circle {

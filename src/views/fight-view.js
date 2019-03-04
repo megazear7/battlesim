@@ -7,7 +7,6 @@ import { store } from '../store.js';
 import { takeAction, takeArmyAction, finishEvent } from '../actions/battle.js';
 import { SharedStyles } from '../styles/shared-styles.js';
 import { ButtonSharedStyles } from '../styles/button-shared-styles.js';
-import { getRadioVal } from '../utils/dom-utils.js';
 import { SLOPE_UP, SLOPE_DOWN, SLOPE_NONE } from '../models/terrain.js';
 import TERRAIN from '../game/terrain.js';
 import Encounter from '../models/encounter.js';
@@ -63,57 +62,11 @@ class FightView extends connect(store)(PageViewElement) {
       SharedStyles,
       ButtonSharedStyles,
       css`
-        input.stands {
-          width: calc(50% - 0.5rem);
-          box-sizing: border-box;
-        }
-        input.stands:nth-child(odd) {
-          margin-right: 1rem;
-        }
-        .options-container {
-          font-size: 0; /* This solves the side by side inline-block element issue but be careful it might introduce other problems. */
-        }
-        .options-block {
-          font-size: 1rem;
-          width: 50%;
-          box-sizing: border-box;
-          display: inline-block;
-          vertical-align: top;
-        }
-        label {
-          font-size: 1rem;
-        }
-        .full {
-          width: 100% !important;
-          margin-right: 0;
+        battle-sim-selector {
+          margin-bottom: 1rem;
         }
         .unit-actions button {
           margin-bottom: 0;
-        }
-        .tooltip {
-          position: relative;
-          display: inline-block;
-        }
-        .tooltip .tooltiptext {
-          visibility: hidden;
-          width: 10rem;
-          background-color: var(--app-primary-color);
-          color: var(--app-light-text-color);
-          text-align: center;
-          padding: 10px;
-          border-radius: 6px;
-          position: absolute;
-          z-index: 1;
-        }
-        .tooltip:hover .tooltiptext {
-          visibility: visible;
-        }
-        #separation {
-          width: calc(50% - 0.5rem);
-          margin-right: 1rem;
-        }
-        #target {
-          width: calc(50% - 0.5rem);
         }
         [has-selection] button {
           opacity: 0.6;
@@ -148,15 +101,17 @@ class FightView extends connect(store)(PageViewElement) {
             </div>
           </section>
           <section>
-            <div class="options-container">
+            <div>
               <p class="${classMap({hidden: ! this._showChargeMessage})}">${this._chargeMessage}</p>
-              <input id="separation" class="${classMap({hidden: ! this._showSeparation})}" type="number" placeholder="Distance"></input>
-              <select id="target" class="${classMap({hidden: ! this._showTarget})}" @change="${this._updateTarget}">
-                <option value="">Select Target</option>
-                ${repeat(this._activeBattle.activeUnit.targets, target => html`
-                  <option value="${target.id}">${target.unit.name}</option>
-                `)}
-              </select>
+              <div class="row">
+                <input id="separation" class="${classMap({hidden: ! this._showSeparation})}" type="number" placeholder="Distance"></input>
+                <select id="target" class="${classMap({hidden: ! this._showTarget})}" @change="${this._updateTarget}">
+                  <option value="">Select Target</option>
+                  ${repeat(this._activeBattle.activeUnit.targets, target => html`
+                    <option value="${target.id}">${target.unit.name}</option>
+                  `)}
+                </select>
+              </div>
               <button-tray class="${classMap({hidden: ! this._showDoCombat})}">
                 <button @click="${this._doCombat}">Do Combat</button>
               </button-tray>
@@ -171,92 +126,50 @@ class FightView extends connect(store)(PageViewElement) {
                 <input id="engaged-defenders" class="${classMap({hidden: ! this._showEngagedDefenders, stands: true})}" type="number" placeholder="Defending Stands"></input>
               </div>
               <br>
-              <div class="${classMap({"options-block": true, hidden: ! this._showTerrain})}">
-                ${repeat(this._typesOfTerrain, terrainType => html`
-                  <div id="${terrainType.id}" class="${classMap({hidden: ! terrainType.show})}">
-                    <h5 class="tooltip">
-                      ${terrainType.name}
-                      <span class="tooltiptext">${terrainType.description}</span>
-                    </h5>
-                    ${repeat(terrainType.terrain, ({terrain, index}) => html`
-                      <div>
-                        <input type="checkbox" id="${terrainType.id+index}" data-terrain-index="${index}"></input>
-                        <label for="${terrainType.id+index}">
-                          ${terrain.name}
-                          <span class="tooltip">
-                            ...
-                            <span class="tooltiptext">${terrain.descripton}</span>
-                          <span>
-                        </label>
-                      </div>
-                    `)}
-                  </div>
-                `)}
-                <div class="${classMap({hidden: this.showPace})}">
-                  <radiogroup id="pace" class="${classMap({hidden: ! this._showPace})}">
-                    <h5>Pace</h5>
-                    <input type="radio" name="pace" id="pace-fast" value="1">
-                    <label for="pace-fast">Fast</label>
-                    <br>
-                    <input type="radio" name="pace" id="pace-march" value="0.75" checked>
-                    <label for="pace-march">March</label>
-                    <br>
-                    <input type="radio" name="pace" id="pace-rest" value="0.5">
-                    <label for="pace-rest">Rest</label>
-                    <br><br>
-                  </radiogroup>
-                </div>
-              </div>
-              <div class="${classMap({"options-block": true, hidden: ! this._showHill && ! this._showLeader})}">
-                <radiogroup id="hill" class="${classMap({hidden: ! this._showHill})}">
-                  <h5>Hills</h5>
-                  <input type="radio" name="hill" id="${SLOPE_UP}" value="${SLOPE_UP}">
-                  <label for="${SLOPE_UP}">Uphill</label>
-                  <br>
-                  <input type="radio" name="hill" id="${SLOPE_DOWN}" value="${SLOPE_DOWN}">
-                  <label for="${SLOPE_DOWN}">Downhill</label>
-                  <br>
-                  <input type="radio" name="hill" id="${SLOPE_NONE}" value="${SLOPE_NONE}">
-                  <label for="${SLOPE_NONE}">Neither</label>
-                  <br><br>
-                </radiogroup>
-                <h5>Leadership</h5>
-                <div id="leadership">
-                  <radiogroup id="attacker-leader" class="${classMap({hidden: ! this._showLeader})}">
-                    <h6>${this._activeBattle.activeUnit.name}</h6>
-                    ${repeat(this._activeBattle.activeUnit.army.leaders, (leader, index) => html`
-                      <input type="radio" name="attacker-leader" id="${'attacker-leader-'+index}" value="${leader.leadership}">
-                      <label for="${'attacker-leader-'+index}">${leader.shortname}</label>
-                      <br>
-                    `)}
-                    ${this._targetUnit ? html`
-                      <h6>${this._targetUnit.name}</h6>
-                      ${repeat(this._targetUnit.army.leaders, (leader, index) => html`
-                        <input type="radio" name="defender-leader" id="${'defender-leader-'+index}" value="${leader.leadership}">
-                        <label for="${'defender-leader-'+index}">${leader.shortname}</label>
-                        <br>
+              <div class="row">
+                <div class="${classMap({hidden: ! this._showTerrain})}">
+                  ${repeat(this._typesOfTerrain, terrainType => html`
+                    <battle-sim-selector integer id="${terrainType.id}" class="${classMap({hidden: ! terrainType.show})}" title="${terrainType.name}">
+                      ${repeat(terrainType.terrain, ({terrain, index}) => html`
+                        <battle-sim-option value="${index}" details="${terrain.descripton}">${terrain.name}</battle-sim-option>
                       `)}
-                    `: ``}
-                  </radiogroup>
+                    </battle-sim-selector>
+                  `)}
+                  <battle-sim-selector radio number id="pace" class="${classMap({hidden: ! this._showPace})}" title="Pace">
+                      <battle-sim-option value="1">Fast</battle-sim-option>
+                      <battle-sim-option value="0.75">March</battle-sim-option>
+                      <battle-sim-option value="0.5">Rest</battle-sim-option>
+                  </battle-sim-selector>
+                </div>
+                <div class="${classMap({hidden: ! this._showHill && ! this._showLeader})}">
+                  <battle-sim-selector radio id="hill" none="${SLOPE_NONE}" class="${classMap({hidden: ! this._showHill})}" title="Hill">
+                    <battle-sim-option value="${SLOPE_UP}">Uphill</battle-sim-option>
+                    <battle-sim-option value="${SLOPE_DOWN}">Downhill</battle-sim-option>
+                    <battle-sim-option value="${SLOPE_NONE}">Neither</battle-sim-option>
+                  </battle-sim-selector>
+                  <battle-sim-selector radio number id="attacker-leadership" class="${classMap({hidden: ! this._showLeader})}" title="Attacker Leaders">
+                    ${repeat(this._activeBattle.activeUnit.army.leaders, (leader, index) => html`
+                      <battle-sim-option value="${leader.leadership}">${leader.shortname}</battle-sim-option>
+                    `)}
+                  </battle-sim-selector>
+                  ${this._targetUnit ? html`
+                    <battle-sim-selector radio number id="defender-leadership" class="${classMap({hidden: ! this._showLeader})}" title="Attacker Leaders">
+                      ${repeat(this._targetUnit.army.leaders, (leader, index) => html`
+                        <battle-sim-option value="${leader.leadership}">${leader.shortname}</battle-sim-option>
+                      `)}
+                    </battle-sim-selector>
+                  ` : ''}
                 </div>
               </div>
-              <div id="resupply" class="${classMap({hidden: ! this._showResupply})}">
-                <h5>Supply</h5>
-                <input type="checkbox" id="resupply-checkbox"></input>
-                <label for="resupply-checkbox">Resupply</label>
-              </div>
-              <div class="${classMap({hidden: ! this._showMount})}">
-                <h5>Mounted Actions</h5>
-                ${this._activeBattle.activeUnit.isCurrentlyMounted ? html`
-                  <div><small>${this._activeBattle.activeUnit.name} is currently mounted</small></div>
-                  <input type="checkbox" id="unmount"></input>
-                  <label for="unmount">Unmount</label>
-                ` : html`
-                  <div><small>${this._activeBattle.activeUnit.name} is currently unmounted</small></div>
-                  <input type="checkbox" id="mount"></input>
-                  <label for="mount">Mount</label>
-                `}
-              </div>
+              <battle-sim-selector id="resupply" radio class="${classMap({hidden: ! this._showResupply})}">
+                <battle-sim-option>Resupply</battle-sim-option>
+              </battle-sim-selector>
+              <battle-sim-selector radio id="unmount" class="${classMap({hidden: ! this._showMount || this._activeBattle.activeUnit.isCurrentlyMounted})}">
+                <battle-sim-option>Unmount</battle-sim-option>
+              </battle-sim-selector>
+              <battle-sim-selector radio id="mount" class="${classMap({hidden: ! this._showMount || ! this._activeBattle.activeUnit.isCurrentlyMounted})}">
+                <battle-sim-option>Mount</battle-sim-option>
+              </battle-sim-selector>
               <div class="${classMap({hidden: ! this._showActionResult})}">
                 ${repeat(this._actionMessages, message => html`<p>${message}</p>`)}
                 <button-tray>
@@ -447,7 +360,6 @@ class FightView extends connect(store)(PageViewElement) {
     this._showTakeAction = true;
   }
 
-
   _createEncounter() {
     return new Encounter({
       attacker: this._activeBattle.activeUnit,
@@ -499,20 +411,11 @@ class FightView extends connect(store)(PageViewElement) {
     this.get('separation').value = '';
     this.get('engaged-attackers').value = '';
     this.get('engaged-defenders').value = '';
-    if (this.get('pace-fast')) this.get('pace-fast').checked = false;
-    if (this.get('pace-march')) this.get('pace-march').checked = true;
-    if (this.get('pace-slow')) this.get('pace-slow').checked = false;
-    this.get('hill').querySelectorAll('input').forEach(input => input.checked = false);
-    this.get('leadership').querySelectorAll('input').forEach(input => input.checked = false);
-    this.get('resupply').querySelector('input').checked = false;
-    this.get('target').value = '';
-    TERRAIN_TYPES.forEach(type => this.get(type).querySelectorAll('input').forEach(input => input.checked = false));
+    [...this.shadowRoot.querySelectorAll('battle-sim-option')].forEach(option => option.selected = false);
   }
 
   _selectedTerrain(typeId) {
-    return [...this.get(typeId).querySelectorAll('input')]
-    .filter(input => input.checked)
-    .map(input => TERRAIN[this._activeBattle.terrain][input.dataset.terrainIndex]);
+    return this.get(typeId).value.map(index => TERRAIN[this._activeBattle.terrain][index]);
   }
 
   _updateTarget() {
@@ -584,25 +487,24 @@ class FightView extends connect(store)(PageViewElement) {
   }
 
   get slope() {
-    const radioVal = getRadioVal(this.get('hill'), 'hill');
-    return radioVal ? radioVal : SLOPE_NONE;
+    return this.get('hill').value;
   }
 
   get pace() {
     if (this._selectedAction === REST) {
       return 0;
     } else {
-      const radioVal = getRadioVal(this.get('pace'), 'pace');
-      return radioVal ? parseFloat(radioVal) : 1;
+      const pace = this.get('pace').value;
+      return parseFloat(pace) ? pace && parseFloat(pace) : 1;
     }
   }
 
   get _activeArmyLeadership() {
-    return getRadioVal(this.get('leadership'), 'attacker-leader');
+    return this.get('attacker-leadership') && this.get('attacker-leadership').value;
   }
 
   get _defenderArmyLeadership() {
-    return getRadioVal(this.get('leadership'), 'defender-leader');
+    return this.get('defender-leadership') && this.get('defender-leadership').value;
   }
 
   get _typesOfTerrain() {
@@ -667,15 +569,15 @@ class FightView extends connect(store)(PageViewElement) {
   }
 
   get resupply() {
-    return this.get('resupply').querySelector('input').checked;
+    return this.get('resupply').value
   }
 
   get mount() {
-    return this.get('mount') && this.get('mount').checked;
+    return this.get('mount').value
   }
 
   get unmount() {
-    return this.get('unmount') && this.get('unmount').checked;
+    return this.get('unmount').value
   }
 
   get(id) {
