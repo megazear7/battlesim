@@ -14,6 +14,7 @@ import { SHARED_BATTLE, LOCAL_BATTLE } from '../game.js';
 class BattleView extends connect(store)(PageViewElement) {
   static get properties() {
     return {
+      _battleIsShared: { type: Boolean },
       _unitTemplates: { type: Object },
       _activeBattle: { type: Object },
     };
@@ -122,9 +123,15 @@ class BattleView extends connect(store)(PageViewElement) {
           `)}
         </section>
       `:html`
-        <section>
-          <p>No active battle. Go to the war tab and either select a battle or create a new battle.</p>
-        </section>
+        ${this._battleIsShared ? html`
+          <section>
+            <p>Loading battle...</p>
+          </section>
+        `: html`
+          <section>
+            <p>No active battle. Go to the war tab and either select a battle or create a new battle.</p>
+          </section>
+        `}
       `}
     `;
   }
@@ -186,11 +193,13 @@ class BattleView extends connect(store)(PageViewElement) {
 
   stateChanged(state) {
     if (state.battle.activeBattle.type === LOCAL_BATTLE) {
+      this._battleIsShared = false;
       this._activeBattle = state.battle.battles.length > state.battle.activeBattle.id
         ? new Battle(state.battle.battles[state.battle.activeBattle.id], state.battle.activeBattle.id)
         : undefined;
       this._unitTemplates = this._activeBattle ? this._activeBattle.unitTemplatesFor(0) : [ ];
     } else if (state.battle.activeBattle.type === SHARED_BATTLE) {
+      this._battleIsShared = true;
       this._activeBattle = Object.keys(state.battle.sharedBattles).indexOf(state.battle.activeBattle.id) >= 0
         ? new Battle(state.battle.sharedBattles[state.battle.activeBattle.id], state.battle.activeBattle.id)
         : undefined;
