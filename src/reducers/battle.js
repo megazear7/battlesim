@@ -112,7 +112,10 @@ const battle = (state = initialState, action) => {
     updateTime(newBattle);
 
     newState.battles.push(newBattle);
-    newState.activeBattle = newState.battles.length - 1;
+    newState.activeBattle = {
+      type: LOCAL_BATTLE,
+      id: newState.battles.length - 1
+    };
   } else if (action.type === ADD_SHARED_BATTLE) {
     newState.sharedBattles[action.id] = action.battleStats;
   } else if (action.type === REMOVE_BATTLE) {
@@ -127,7 +130,7 @@ const battle = (state = initialState, action) => {
     newState.activeBattle = action.activeBattle;
   }
 
-  if (activeBattle && newState.activeBattle.type === SHARED_BATTLE && action.type !== ADD_SHARED_BATTLE) {
+  if (activeBattle && newState.activeBattle.type === SHARED_BATTLE && action.type !== ADD_SHARED_BATTLE && action.type !== SET_ACTIVE_BATTLE) {
     firebase.firestore().collection('apps/battlesim/battles')
     .doc(newState.activeBattle.id)
     .set({ battle: JSON.parse(JSON.stringify(activeBattle)) }); // The stringify / parse gets rid of undefined attributes which firestore will complain about.

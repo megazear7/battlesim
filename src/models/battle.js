@@ -66,6 +66,10 @@ export default class Battle {
     this.active = active;
   }
 
+  get prettyUrl() {
+    return window.location.host + '/shared/' + this.uuid;
+  }
+
   get url() {
     return window.location.origin + '/shared/' + this.uuid;
   }
