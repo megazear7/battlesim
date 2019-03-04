@@ -26,6 +26,7 @@ class ButtonTray extends LitElement {
         }
         ::slotted(button) {
           outline: none;
+          cursor: pointer;
           width: var(--button-width);
           box-sizing: border-box;
           background-color: white;

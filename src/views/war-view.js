@@ -45,10 +45,10 @@ class WarView extends connect(store)(PageViewElement) {
   render() {
     return html`
       <section>
-        <h2>Your Battles</h2>
+        <h2>Private Battles</h2>
         ${repeat(this._battles, battle => html`
           <div class="${classMap({battle: true, active: battle.active})}" data-index="${battle.id}">
-            <h4>${battle.name}</h4>
+            <h3>${battle.name}</h3>
             <pre>Created ${battle.createdMessage}</pre>
             <button-tray>
               ${battle.active ? html`
@@ -61,12 +61,15 @@ class WarView extends connect(store)(PageViewElement) {
             </button-tray>
           </div>
         `)}
+        ${this._battles.length === 0 ? html`
+          <p>You have no private battles. Create one below.</p>
+        ` : ''}
       </section>
       <section>
         <h2>Shared Battles</h2>
         ${repeat(this._sharedBattles, battle => html`
           <div class="shared-battle">
-            <h4>${battle.name}</h4>
+            <h3>${battle.name}</h3>
             <p class="battle-url">${battle.prettyUrl}</p>
             <button-tray>
               ${battle.active ? html`
@@ -79,6 +82,9 @@ class WarView extends connect(store)(PageViewElement) {
             </button-tray>
           </div>
         `)}
+        ${this._sharedBattles.length === 0 ? html`
+          <p>You have not joined any shared battles. You can join a shared battle by publishing a private battle or if someone else shares a battle with you.</p>
+        ` : ''}
       </section>
       <section>
         <div>
