@@ -120,6 +120,17 @@ class WarView extends connect(store)(PageViewElement) {
       new Battle(battle, index, index === state.battle.activeBattle.id));
   }
 
+  _alertShare(button, battle) {
+    var text = button.closest('.shared-battle').querySelector('.battle-url');
+    var selection = window.getSelection();
+    var range = document.createRange();
+    range.selectNodeContents(text);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    document.execCommand('copy');
+    alert(`Battle url copied! Share it with your friends.\n\n${battle.prettyUrl}`);
+  }
+
   _shareBattle(button, battle) {
     if (navigator.share) {
       navigator.share({
@@ -127,21 +138,14 @@ class WarView extends connect(store)(PageViewElement) {
           text: 'Battlesim: Play ' + battle.name,
           url: battleModel.url,
       })
-      .catch((error) => console.log('Error sharing', error));
+      .catch((error) => this._alertShare(button, battle));
     } else {
-      var text = button.closest('.shared-battle').querySelector('.battle-url');
-      var selection = window.getSelection();
-      var range = document.createRange();
-      range.selectNodeContents(text);
-      selection.removeAllRanges();
-      selection.addRange(range);
-      document.execCommand('copy');
-      alert(`Battle url copied! Share it with your friends.\n\n${battle.prettyUrl}`);
+      this._alertShare(button, battle);
     }
   }
 
   _makeBattleShared(e) {
-    if (confirm('Are you sure you want to share this battle?')) {
+    if (confirm('Are you sure you want to publish this battle?')) {
       let battleIndex = parseInt(e.target.closest('.battle').dataset.index);
       let battle = store.getState().battle.battles[battleIndex];
       battle.uuid = makeid();
