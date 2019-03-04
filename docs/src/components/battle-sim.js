@@ -9244,7 +9244,7 @@ store.addReducers({app:app$1,battle:battle$2});var store$1={store:store};class S
 
       <footer>
         <h1>${this.appTitle}</h1>
-        <p>Computer managed historical combat for tabletop gaming.</p>
+        <p>Mass combat simulation for tabletop gaming.</p>
       </footer>
 
       <snack-bar ?active="${this._snackbarOpened}">
