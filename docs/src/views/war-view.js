@@ -40,10 +40,10 @@ class WarView extends connect(store)(PageViewElement) {
               ${battle.active ? html`
                 <button disabled>Playing</button>
               ` : html`
-                <button @click="${this._playBattle}">Play</button>
+                <button @click="${e => this._playBattle(parseInt(e.target.closest('.battle').dataset.index))}">Play</button>
               `}
               <button @click="${this._removeBattle}">Remove</button>
-              <button @click="${this._shareBattle}">Share</button>
+              <button @click="${this._makeBattleShared}">Share</button>
             </button-tray>
           </div>
         `)}
@@ -51,8 +51,9 @@ class WarView extends connect(store)(PageViewElement) {
       <section>
         <h2>Shared Battles</h2>
         ${repeat(this._sharedBattles, battle => html`
-          <div>
+          <div class="shared-battle">
             <h4>${battle.name}</h4>
+            <p class="battle-url">${battle.prettyUrl}</p>
             <button-tray>
               ${battle.active ? html`
                 <button disabled>Playing</button>
@@ -60,8 +61,8 @@ class WarView extends connect(store)(PageViewElement) {
                 <button @click="${() => this._playSharedBattle(battle)}">Play</button>
               `}
               <button @click="${() => this._leaveSharedBattle(battle)}">Leave</button>
+              <button @click="${e => this._shareBattle(e.target, battle)}">Share</button>
             </button-tray>
-            <p>Share this url: ${battle.url}</p>
           </div>
         `)}
       </section>
@@ -86,7 +87,9 @@ class WarView extends connect(store)(PageViewElement) {
               <option value="${id}">${battleTemplate.name}</option>
             `)}
           </select>
-          <button @click="${this._create}">Create</button>
+          <button-tray>
+            <button @click="${this._create}">Create</button>
+          </button-tray>
           <battle-sim-alert warning>You must select a ruleset to play and a battle to fight.</battle-sim-alert>
           <input id="name" type="text" placeholder="Battle name"></input>
           <input id="army1-name" type="text" placeholder="First army name"></input>
@@ -106,29 +109,52 @@ class WarView extends connect(store)(PageViewElement) {
     this._battles = state.battle.battles.map((battle, index) => new Battle(battle, index, index === state.battle.activeBattle.id));
   }
 
-  _shareBattle(e) {
-    let battleIndex = parseInt(e.target.closest('.battle').dataset.index);
-    let battle = store.getState().battle.battles[battleIndex];
-    battle.uuid = makeid();
-    firebase.firestore().collection('apps/battlesim/battles').add({
-      battle
-    }).then(docRef => {
-      let sharedBattleIds = JSON.parse(localStorage.getItem("sharedBattles")) || [];
-      store.dispatch(removeBattle(battleIndex));
-      localStorage.setItem("sharedBattles", JSON.stringify([...sharedBattleIds, docRef.id]));
-      docRef.get().then(doc => store.dispatch(addSharedBattle(doc.id, doc.data().battle)));
-      let battleModel = new Battle(battle, docRef.id);
+  _shareBattle(button, battle) {
+    if (navigator.share) {
+      navigator.share({
+        title: battle.name,
+        text: 'Share ' + battle.name + ' from battlesim.',
+        url: battleModel.url
+      }).catch(error => console.log('Error sharing', error));
+    } else {
+      var text = button.closest('.shared-battle').querySelector('.battle-url');
+      var selection = window.getSelection();
+      var range = document.createRange();
+      range.selectNodeContents(text);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      document.execCommand('copy');
+      alert('Battle url copied');
+    }
+  }
 
-      if (navigator.share) {
-        navigator.share({
-          title: battle.name,
-          text: 'Share ' + battle.name + ' from battlesim.',
-          url: battleModel.url
-        }).catch(error => console.log('Error sharing', error));
-      } else {
-        alert("Share this url with a friend: " + battleModel.url);
-      }
-    });
+  _makeBattleShared(e) {
+    if (confirm('Are you sure you want to share this battle?')) {
+      let battleIndex = parseInt(e.target.closest('.battle').dataset.index);
+      let battle = store.getState().battle.battles[battleIndex];
+      battle.uuid = makeid();
+      firebase.firestore().collection('apps/battlesim/battles').add({
+        battle
+      }).then(docRef => {
+        let sharedBattleIds = JSON.parse(localStorage.getItem("sharedBattles")) || [];
+        store.dispatch(removeBattle(battleIndex));
+        localStorage.setItem("sharedBattles", JSON.stringify([...sharedBattleIds, docRef.id]));
+        docRef.get().then(doc => store.dispatch(addSharedBattle(doc.id, doc.data().battle)));
+        let battleModel = new Battle(battle, docRef.id);
+
+        this._playSharedBattle(battleModel);
+
+        if (navigator.share) {
+          navigator.share({
+            title: battle.name,
+            text: 'Share ' + battle.name + ' from battlesim.',
+            url: battleModel.url
+          }).catch(error => console.log('Error sharing', error));
+        } else {
+          alert("Share this url with a friend: " + battleModel.url);
+        }
+      });
+    }
   }
 
   _playSharedBattle(sharedBattle) {
@@ -148,6 +174,32 @@ class WarView extends connect(store)(PageViewElement) {
       battleTemplate: BATTLE_TEMPLATES[battleId],
       id: battleId
     })).filter(battle => battle.battleTemplate.ruleset === this.selectedRuleset);
+  }
+
+  _create() {
+    if (this.createBattleFormValid) {
+      store.dispatch(createNewBattle(this.battleStats));
+      this.selectedRuleset = '';
+      this.newBattleTemplate = '';
+      this.newBattleName = '';
+      this.newBattleArmy1Name = '';
+      this.newBattleArmy2Name = '';
+    } else {
+      this.shadowRoot.querySelector('battle-sim-alert').alert();
+    }
+  }
+
+  _playBattle(localBattleId) {
+    store.dispatch(setActiveBattle({
+      type: LOCAL_BATTLE,
+      id: localBattleId
+    }));
+  }
+
+  _removeBattle(e) {
+    if (confirm('Are you sure you want to delete the battle?')) {
+      store.dispatch(removeBattle(parseInt(e.target.closest('.battle').dataset.index)));
+    }
   }
 
   get rulesets() {
@@ -228,32 +280,6 @@ class WarView extends connect(store)(PageViewElement) {
 
   get createBattleFormValid() {
     return this.selectedRuleset && this.newBattleTemplate;
-  }
-
-  _create() {
-    if (this.createBattleFormValid) {
-      store.dispatch(createNewBattle(this.battleStats));
-      this.selectedRuleset = '';
-      this.newBattleTemplate = '';
-      this.newBattleName = '';
-      this.newBattleArmy1Name = '';
-      this.newBattleArmy2Name = '';
-    } else {
-      this.shadowRoot.querySelector('battle-sim-alert').alert();
-    }
-  }
-
-  _playBattle(e) {
-    store.dispatch(setActiveBattle({
-      type: LOCAL_BATTLE,
-      id: parseInt(e.target.closest('.battle').dataset.index)
-    }));
-  }
-
-  _removeBattle(e) {
-    if (confirm('Are you sure you want to delete the battle?')) {
-      store.dispatch(removeBattle(parseInt(e.target.closest('.battle').dataset.index)));
-    }
   }
 
 }
