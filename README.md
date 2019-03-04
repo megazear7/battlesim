@@ -10,17 +10,14 @@ Requires Node.js version 11.0.0 or higher.
 
 ### Development
 
-This will do a git commit in order to deploy to github pages.
-
-`npm deploy`
+`npm start`
 
 ### Deployment
 
+This will do a git commit of the docs folder and a push in order to deploy to github pages.
+
 ```
-npm run build
-git add docs
-git commit -m "Updated build"
-git push origin master
+npm run deploy
 ```
 
 ### Technical Overview
