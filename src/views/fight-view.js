@@ -7,26 +7,12 @@ import { store } from '../store.js';
 import { takeAction, takeArmyAction, finishEvent } from '../actions/battle.js';
 import { SharedStyles } from '../styles/shared-styles.js';
 import { ButtonSharedStyles } from '../styles/button-shared-styles.js';
-import { SLOPE_UP, SLOPE_DOWN, SLOPE_NONE } from '../models/terrain.js';
-import TERRAIN from '../game/terrain.js';
 import Encounter from '../models/encounter.js';
 import Situation from '../models/situation.js';
 import Battle from '../models/battle.js';
 import Unit from '../models/unit.js';
-import { MINUTES_PER_TURN, SHARED_BATTLE, LOCAL_BATTLE } from '../game.js';
-
-export const REST = 'REST';
-export const MOVE = 'MOVE';
-export const CHARGE = 'CHARGE';
-export const FIRE = 'FIRE';
-export const ACTIONS = [ REST, MOVE, CHARGE, FIRE ];
-export const NO_ACTION = 'NO_ACTION';
-
-export const TERRAIN_TYPE_MOVEMENT = 'movement-terrain';
-export const TERRAIN_TYPE_DEFENDER = 'defender-terrain';
-export const TERRAIN_TYPE_MELEE_COMBAT = 'melee-combat-terrain';
-export const TERRAIN_TYPE_RANGED_DEFENDER = 'ranged-defender-terrain';
-export const TERRAIN_TYPES = [ TERRAIN_TYPE_MOVEMENT, TERRAIN_TYPE_DEFENDER, TERRAIN_TYPE_MELEE_COMBAT, TERRAIN_TYPE_RANGED_DEFENDER ];
+import { MINUTES_PER_TURN, SHARED_BATTLE, LOCAL_BATTLE, REST, MOVE, CHARGE, FIRE, NO_ACTION } from '../game.js';
+import { TERRAIN_TYPE_MOVEMENT, TERRAIN_TYPE_MELEE_COMBAT } from '../components/fight-selectors.js';
 
 class FightView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -40,17 +26,10 @@ class FightView extends connect(store)(PageViewElement) {
       _showRestTime: { type: Boolean },
       _showSeparation: { type: Boolean },
       _showTarget: { type: Boolean },
-      _showHill: { type: Boolean },
-      _showPace: { type: Boolean },
-      _showLeader: { type: Boolean },
-      _showTerrain: { type: Boolean },
-      _showResupply: { type: Boolean },
-      _showMount: { type: Boolean },
       _showChargeMessage: { type: Boolean },
       _showEngagedAttackers: { type: Boolean },
       _showDoCombat: { type: Boolean },
       _showTakeAction: { type: Boolean },
-      _showError: { type: Boolean },
       _showActionResult: { type: Boolean },
       _actionsDisabled: { type: Boolean },
       _hasSelection: { type: Boolean },
@@ -62,9 +41,6 @@ class FightView extends connect(store)(PageViewElement) {
       SharedStyles,
       ButtonSharedStyles,
       css`
-        battle-sim-selector {
-          margin-bottom: 1rem;
-        }
         .unit-actions button {
           margin-bottom: 0;
         }
@@ -125,51 +101,7 @@ class FightView extends connect(store)(PageViewElement) {
                 <input id="engaged-attackers" class="${classMap({hidden: ! this._showEngagedAttackers, full: this._showEngagedAttackers && ! this._showEngagedDefenders, stands: true})}" type="number" placeholder="Attacking Stands"></input>
                 <input id="engaged-defenders" class="${classMap({hidden: ! this._showEngagedDefenders, stands: true})}" type="number" placeholder="Defending Stands"></input>
               </div>
-              <br>
-              <div class="row">
-                <div class="${classMap({hidden: ! this._showTerrain})}">
-                  ${repeat(this._typesOfTerrain, terrainType => html`
-                    <battle-sim-selector integer id="${terrainType.id}" class="${classMap({hidden: ! terrainType.show})}" title="${terrainType.name}">
-                      ${repeat(terrainType.terrain, ({terrain, index}) => html`
-                        <battle-sim-option value="${index}" details="${terrain.descripton}">${terrain.name}</battle-sim-option>
-                      `)}
-                    </battle-sim-selector>
-                  `)}
-                  <battle-sim-selector radio number id="pace" class="${classMap({hidden: ! this._showPace})}" title="Pace">
-                      <battle-sim-option value="1">Fast</battle-sim-option>
-                      <battle-sim-option value="0.75">March</battle-sim-option>
-                      <battle-sim-option value="0.5">Rest</battle-sim-option>
-                  </battle-sim-selector>
-                </div>
-                <div class="${classMap({hidden: ! this._showHill && ! this._showLeader})}">
-                  <battle-sim-selector radio id="hill" none="${SLOPE_NONE}" class="${classMap({hidden: ! this._showHill})}" title="Hill">
-                    <battle-sim-option value="${SLOPE_UP}">Uphill</battle-sim-option>
-                    <battle-sim-option value="${SLOPE_DOWN}">Downhill</battle-sim-option>
-                    <battle-sim-option value="${SLOPE_NONE}">Neither</battle-sim-option>
-                  </battle-sim-selector>
-                  <battle-sim-selector radio number id="attacker-leadership" class="${classMap({hidden: ! this._showLeader})}" title="Attacker Leaders">
-                    ${repeat(this._activeBattle.activeUnit.army.leaders, (leader, index) => html`
-                      <battle-sim-option value="${leader.leadership}">${leader.shortname}</battle-sim-option>
-                    `)}
-                  </battle-sim-selector>
-                  ${this._targetUnit ? html`
-                    <battle-sim-selector radio number id="defender-leadership" class="${classMap({hidden: ! this._showLeader})}" title="Attacker Leaders">
-                      ${repeat(this._targetUnit.army.leaders, (leader, index) => html`
-                        <battle-sim-option value="${leader.leadership}">${leader.shortname}</battle-sim-option>
-                      `)}
-                    </battle-sim-selector>
-                  ` : ''}
-                </div>
-              </div>
-              <battle-sim-selector id="resupply" radio class="${classMap({hidden: ! this._showResupply})}">
-                <battle-sim-option>Resupply</battle-sim-option>
-              </battle-sim-selector>
-              <battle-sim-selector radio id="unmount" class="${classMap({hidden: ! this._showMount || this._activeBattle.activeUnit.isCurrentlyMounted})}">
-                <battle-sim-option>Unmount</battle-sim-option>
-              </battle-sim-selector>
-              <battle-sim-selector radio id="mount" class="${classMap({hidden: ! this._showMount || ! this._activeBattle.activeUnit.isCurrentlyMounted})}">
-                <battle-sim-option>Mount</battle-sim-option>
-              </battle-sim-selector>
+              <fight-selectors .battle="${this._activeBattle}" action="${this._selectedAction}"></fight-selectors>
               <div class="${classMap({hidden: ! this._showActionResult})}">
                 ${repeat(this._actionMessages, message => html`<p>${message}</p>`)}
                 <button-tray>
@@ -319,8 +251,8 @@ class FightView extends connect(store)(PageViewElement) {
     this._selectedAction = REST;
     this._showTakeAction = true;
     this._showRestTime = true;
-    this._showResupply = true;
-    this._showMount = this._activeBattle.activeUnit.isMounted && this._activeBattle.activeUnit.canUnmount;
+    this._fightSelectors.showResupply = true;
+    this._fightSelectors.showMount = this._activeBattle.activeUnit.isMounted && this._activeBattle.activeUnit.canUnmount;
   }
 
   _move(e) {
@@ -328,11 +260,11 @@ class FightView extends connect(store)(PageViewElement) {
     this._hasSelection = true;
     this._selectedAction = MOVE;
     this._showDistance = true;
-    this._showHill = true;
-    this._showPace = true;
-    this._showLeader = true;
-    this._showTerrain = true;
     this._showTakeAction = true;
+    this._fightSelectors.showHill = true;
+    this._fightSelectors.showPace = true;
+    this._fightSelectors.showLeader = true;
+    this._fightSelectors.showTerrain = true;
   }
 
   _charge(e) {
@@ -340,11 +272,11 @@ class FightView extends connect(store)(PageViewElement) {
     this._hasSelection = true;
     this._selectedAction = CHARGE;
     this._showSeparation = true;
-    this._showHill = true;
-    this._showLeader = true;
-    this._showTerrain = true;
     this._showTarget = true;
     this._showDoCombat = true;
+    this._fightSelectors.showHill = true;
+    this._fightSelectors.showLeader = true;
+    this._fightSelectors.showTerrain = true;
   }
 
   _fire(e) {
@@ -352,12 +284,12 @@ class FightView extends connect(store)(PageViewElement) {
     this._hasSelection = true;
     this._selectedAction = FIRE;
     this._showSeparation = true;
-    this._showHill = true;
-    this._showLeader = true;
-    this._showTerrain = true;
     this._showTarget = true;
     this._showEngagedAttackers = true;
     this._showTakeAction = true;
+    this._fightSelectors.showHill = true;
+    this._fightSelectors.showLeader = true;
+    this._fightSelectors.showTerrain = true;
   }
 
   _createEncounter() {
@@ -370,21 +302,21 @@ class FightView extends connect(store)(PageViewElement) {
       defenderEngagedStands: this.engagedDefenders,
       melee: this._selectedAction === CHARGE,
       separation: this.separation,
-      attackerChargeTerrain: this._selectedTerrain(TERRAIN_TYPE_MOVEMENT),
-      defenderTerrain: this._defenderTerrain,
-      meleeCombatTerrain: this._selectedTerrain(TERRAIN_TYPE_MELEE_COMBAT),
-      slope: this.slope });
+      attackerChargeTerrain: this._fightSelectors._selectedTerrain(TERRAIN_TYPE_MOVEMENT),
+      defenderTerrain: this._fightSelectors._defenderTerrain,
+      meleeCombatTerrain: this._fightSelectors._selectedTerrain(TERRAIN_TYPE_MELEE_COMBAT),
+      slope: this._fightSelectors.slope });
   }
 
   _createSituation() {
     return new Situation({
           unit: this._activeBattle.activeUnit,
           armyLeadership: this._activeArmyLeadership,
-          movementTerrain: this._selectedTerrain(TERRAIN_TYPE_MOVEMENT),
-          mount: this.mount,
-          unmount: this.unmount,
-          pace: this.pace,
-          slope: this.slope });
+          movementTerrain: this._fightSelectors._selectedTerrain(TERRAIN_TYPE_MOVEMENT),
+          mount: this._fightSelectors.mount,
+          unmount: this._fightSelectors.unmount,
+          pace: this._fightSelectors.pace,
+          slope: this._fightSelectors.slope });
   }
 
   _hideInputs() {
@@ -393,16 +325,11 @@ class FightView extends connect(store)(PageViewElement) {
     this._showSeparation = false;
     this._showEngagedAttackers = false;
     this._showEngagedDefenders = false;
-    this._showHill = false;
-    this._showPace = false;
-    this._showLeader = false;
-    this._showTerrain = false;
-    this._showResupply = false;
-    this._showMount = false;
     this._showTarget = false;
     this._showChargeMessage = false;
     this._showDoCombat = false;
     this._showTakeAction = false;
+    this._fightSelectors.hide();
   }
 
   _resetInputs() {
@@ -411,11 +338,9 @@ class FightView extends connect(store)(PageViewElement) {
     this.get('separation').value = '';
     this.get('engaged-attackers').value = '';
     this.get('engaged-defenders').value = '';
+    this.get('target').value = '';
+    this._fightSelectors.reset();
     [...this.shadowRoot.querySelectorAll('battle-sim-option')].forEach(option => option.selected = false);
-  }
-
-  _selectedTerrain(typeId) {
-    return this.get(typeId).value.map(index => TERRAIN[this._activeBattle.terrain][index]);
   }
 
   _updateTarget() {
@@ -486,19 +411,6 @@ class FightView extends connect(store)(PageViewElement) {
     }
   }
 
-  get slope() {
-    return this.get('hill').value;
-  }
-
-  get pace() {
-    if (this._selectedAction === REST) {
-      return 0;
-    } else {
-      const pace = this.get('pace').value;
-      return parseFloat(pace) ? pace && parseFloat(pace) : 1;
-    }
-  }
-
   get _activeArmyLeadership() {
     return this.get('attacker-leadership') && this.get('attacker-leadership').value;
   }
@@ -507,54 +419,15 @@ class FightView extends connect(store)(PageViewElement) {
     return this.get('defender-leadership') && this.get('defender-leadership').value;
   }
 
-  get _typesOfTerrain() {
-    return [
-      {
-        id: TERRAIN_TYPE_MOVEMENT,
-        name: "Movement",
-        description: "This is the terrain that applys to the movement or charge.",
-        terrain: TERRAIN[this._activeBattle.terrain].map((terrain, index) => ({ terrain, index })),
-        show: this._showTerrain && (this._selectedAction === CHARGE || this._selectedAction === MOVE)
-      },
-      {
-        id: TERRAIN_TYPE_DEFENDER,
-        name: "Defender",
-        description: "This is the terrain that the defender is defending.",
-        terrain: TERRAIN[this._activeBattle.terrain].map((terrain, index) => ({ terrain, index })).filter(({terrain}) => terrain.defendable),
-        show: this._showTerrain && this._selectedAction === CHARGE
-      },
-      {
-        id: TERRAIN_TYPE_MELEE_COMBAT,
-        name: "Combat",
-        description: "This is the terrain that the combat that is taking place.",
-        terrain: TERRAIN[this._activeBattle.terrain].map((terrain, index) => ({ terrain, index })).filter(({terrain}) => terrain.areaTerrain),
-        show: this._showTerrain &&  this._selectedAction === CHARGE
-      },
-      {
-        id: TERRAIN_TYPE_RANGED_DEFENDER,
-        name: "Terrain",
-        description: "This is the terrain that the defender recieves the benefit of.",
-        terrain: TERRAIN[this._activeBattle.terrain].map((terrain, index) => ({ terrain, index })),
-        show: this._showTerrain && this._selectedAction === FIRE
-      },
-    ];
-  }
-
-  get _defenderTerrain() {
-    return this._selectedAction === CHARGE
-      ? this._selectedTerrain(TERRAIN_TYPE_DEFENDER)
-      : this._selectedTerrain(TERRAIN_TYPE_RANGED_DEFENDER);
-  }
-
   get _environment() {
     return {
-      resupply: this.resupply,
-      mount: this.mount,
-      unmount: this.unmount,
+      resupply: this._fightSelectors.resupply,
+      mount: this._fightSelectors.mount,
+      unmount: this._fightSelectors.unmount,
       defenderArmyLeadership: this._defenderArmyLeadership,
       activeArmyLeadership: this._activeArmyLeadership,
-      pace: this.pace,
-      slope: this.slope,
+      pace: this._fightSelectors.pace,
+      slope: this._fightSelectors.slope,
       engagedDefenders: this.engagedDefenders,
       engagedAttackers: this.engagedAttackers,
       separation: this.separation,
@@ -562,22 +435,14 @@ class FightView extends connect(store)(PageViewElement) {
       distance: this.distance,
       selectedAction: this._selectedAction,
       target: this.target,
-      defenderTerrain: this._defenderTerrain,
-      attackerChargeTerrain: this._selectedTerrain(TERRAIN_TYPE_MOVEMENT),
-      meleeCombatTerrain: this._selectedTerrain(TERRAIN_TYPE_MELEE_COMBAT),
+      defenderTerrain: this._fightSelectors._defenderTerrain,
+      attackerChargeTerrain: this._fightSelectors._selectedTerrain(TERRAIN_TYPE_MOVEMENT),
+      meleeCombatTerrain: this._fightSelectors._selectedTerrain(TERRAIN_TYPE_MELEE_COMBAT),
     }
   }
 
-  get resupply() {
-    return this.get('resupply').value
-  }
-
-  get mount() {
-    return this.get('mount').value
-  }
-
-  get unmount() {
-    return this.get('unmount').value
+  get _fightSelectors() {
+    return this.shadowRoot.querySelector('fight-selectors');
   }
 
   get(id) {

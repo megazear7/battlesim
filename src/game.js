@@ -36,6 +36,12 @@ export const CAVALRY_TROOP = 1;
 export const ARTILLERY_TROOP = 2;
 export const MELEE_WEAPON = 'meleeWeapon';
 export const RANGED_WEAPON = 'rangedWeapon';
+export const REST = 'REST';
+export const MOVE = 'MOVE';
+export const CHARGE = 'CHARGE';
+export const FIRE = 'FIRE';
+export const ACTIONS = [ REST, MOVE, CHARGE, FIRE ];
+export const NO_ACTION = 'NO_ACTION';
 
 export function statModFor(stat) {
   return weightedRandomTowards(20, 80, stat, 2) / 100;

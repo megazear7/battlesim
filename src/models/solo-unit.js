@@ -105,7 +105,7 @@ export default class SoloUnit extends ActingUnit {
 
   get energyRecoveredMessage() {
     return this.unit.battle.statReporting === STAT_PERCENTAGE
-      ? `and ${this.energyGain}% of their energy.`
+      ? `and ${Math.floor(this.energyGain)}% of their energy.`
       : this.energyRecoveredDesc;
   }
 
@@ -133,7 +133,7 @@ export default class SoloUnit extends ActingUnit {
 
   get moraleRecoveredMessage() {
     return this.unit.battle.statReporting === STAT_PERCENTAGE
-      ? `In ${this.situation.minutesSpentResting} minutes ${this.unit.name} recovered ${this.moraleGain}% of their morale `
+      ? `In ${this.situation.minutesSpentResting} minutes ${this.unit.name} recovered ${Math.floor(this.moraleGain)}% of their morale `
       : this.moraleRecoveredDesc;
   }
 

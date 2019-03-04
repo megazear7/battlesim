@@ -17,6 +17,7 @@ import './battle-sim-alert.js';
 import './battle-sim-selector.js';
 import './battle-sim-option.js';
 import './button-tray.js';
+import './fight-selectors.js';
 
 class BattleSim extends connect(store)(LitElement) {
   static get properties() {

@@ -32,7 +32,6 @@ class BattleSimOption extends LitElement {
           width: 1.75rem;
           height: 1.75rem;
           font-size: 1.75rem;
-          margin: 0.125rem;
           margin-right: 0.5rem;
           background-color: white;
           color: var(--app-primary-color);

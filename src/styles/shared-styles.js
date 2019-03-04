@@ -21,6 +21,10 @@ export const SharedStyles = css`
     margin-bottom: 1rem;
   }
 
+  battle-sim-selector {
+    margin-bottom: 1rem;
+  }
+
   section:nth-of-type(even) {
     background: var(--app-section-even-color);
   }
