@@ -56,8 +56,8 @@ class WarView extends connect(store)(PageViewElement) {
               ` : html`
                 <button @click="${e => this._playBattle(parseInt(e.target.closest('.battle').dataset.index))}">Play</button>
               `}
-              <button @click="${this._removeBattle}">Remove</button>
-              <button @click="${this._makeBattleShared}">Share</button>
+              <button @click="${this._removeBattle}">Delete</button>
+              <button @click="${this._makeBattleShared}">Publish</button>
             </button-tray>
           </div>
         `)}
@@ -124,7 +124,7 @@ class WarView extends connect(store)(PageViewElement) {
     if (navigator.share) {
       navigator.share({
           title: battle.name,
-          text: 'Share ' + battle.name + ' from battlesim.',
+          text: 'Battlesim: Play ' + battle.name,
           url: battleModel.url,
       })
       .catch((error) => console.log('Error sharing', error));
@@ -136,7 +136,7 @@ class WarView extends connect(store)(PageViewElement) {
       selection.removeAllRanges();
       selection.addRange(range);
       document.execCommand('copy');
-      alert('Battle url copied');
+      alert(`Battle url copied! Share it with your friends.\n\n${battle.prettyUrl}`);
     }
   }
 
@@ -156,17 +156,6 @@ class WarView extends connect(store)(PageViewElement) {
 
         let battleModel = new Battle(battle, docRef.id);
         this._playSharedBattle(battleModel);
-
-        if (navigator.share) {
-          navigator.share({
-              title: battle.name,
-              text: 'Share ' + battle.name + ' from battlesim.',
-              url: battleModel.url,
-          })
-          .catch((error) => console.log('Error sharing', error));
-        } else {
-          alert("Share this url with a friend: " + battleModel.url);
-        }
       });
     }
   }
