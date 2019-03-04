@@ -86,6 +86,9 @@ class FightView extends connect(store)(PageViewElement) {
           width: 100% !important;
           margin-right: 0;
         }
+        .unit-actions button {
+          margin-bottom: 0;
+        }
         .tooltip {
           position: relative;
           display: inline-block;
@@ -104,18 +107,18 @@ class FightView extends connect(store)(PageViewElement) {
         .tooltip:hover .tooltiptext {
           visibility: visible;
         }
-        .take-action {
-          margin-top: 0;
-        }
-        .do-combat {
-          margin-top: 0;
-        }
         #separation {
           width: calc(50% - 0.5rem);
           margin-right: 1rem;
         }
         #target {
           width: calc(50% - 0.5rem);
+        }
+        [has-selection] button {
+          opacity: 0.6;
+        }
+        [has-selection] button.selected {
+          opacity: 1;
         }
       `
     ];
@@ -134,7 +137,7 @@ class FightView extends connect(store)(PageViewElement) {
             <p>${this._activeBattle.activeUnit.desc}</p>
           </section>
           <section>
-            <div>
+            <div class="unit-actions">
               <button-tray ?has-selection="${this._hasSelection}">
                 <button @click="${this._rest}" id="rest" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === REST})}">Rest</button>
                 <button @click="${this._move}" id="move" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === MOVE})}">Move</button>
@@ -153,8 +156,12 @@ class FightView extends connect(store)(PageViewElement) {
                   <option value="${target.id}">${target.unit.name}</option>
                 `)}
               </select>
-              <button class="${classMap({hidden: ! this._showDoCombat, 'do-combat': true})}" @click="${this._doCombat}">Do Combat</button>
-              <button class="${classMap({hidden: ! this._showTakeAction, 'take-action': true})}" @click="${this._takeAction}">Take Action</button>
+              <button-tray class="${classMap({hidden: ! this._showDoCombat})}">
+                <button @click="${this._doCombat}">Do Combat</button>
+              </button-tray>
+              <button-tray class="${classMap({hidden: ! this._showTakeAction})}">
+                <button @click="${this._takeAction}">Take Action</button>
+              </button-tray>
               <battle-sim-alert warning>You must provide a value for each field listed above the button</battle-sim-alert>
               <input id="distance" class="${classMap({hidden: ! this._showDistance})}" type="number" placeholder="Distance"></input>
               <input id="rest-time" class="${classMap({hidden: ! this._showRestTime})}" type="number" placeholder="Minutes to rest" max="${MINUTES_PER_TURN}"></input>
@@ -251,7 +258,9 @@ class FightView extends connect(store)(PageViewElement) {
               </div>
               <div class="${classMap({hidden: ! this._showActionResult})}">
                 ${repeat(this._actionMessages, message => html`<p>${message}</p>`)}
-                <button @click="${this._progressToNextAction}">Next Action</button>
+                <button-tray>
+                  <button @click="${this._progressToNextAction}">Next Action</button>
+                </button-tray>
               </div>
             </div>
           </section>
@@ -261,8 +270,10 @@ class FightView extends connect(store)(PageViewElement) {
               <div class="muted centered">Army: ${this._activeBattle.armyTakingAction.name}</div>
               <div class="muted centered">${this._activeBattle.currentTimeMessage}</div>
               ${repeat(this._activeBattle.armyTakingAction.messages, message => html`<p>${message}</p>`)}
-              <div class="centered">
-                <button @click="${this._takeArmyAction}">Next Action</button>
+              <div>
+                <button-tray>
+                  <button @click="${this._takeArmyAction}">Next Action</button>
+                </button-tray>
               </div>
             </section>
           ` : html`
@@ -275,8 +286,10 @@ class FightView extends connect(store)(PageViewElement) {
                 <p>${this._activeBattle.army1.name} has sustained ${this.army2Casualties} casualties.</p>
               ` : ''}
             </section>
-            <div class="centered">
-              <button @click="${this._finishEvent}">Next Action</button>
+            <div>
+              <button-tray>
+                <button @click="${this._finishEvent}">Next Action</button>
+              </button-tray>
             </div>
           `
         }

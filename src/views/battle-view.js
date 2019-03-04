@@ -87,7 +87,9 @@ class BattleView extends connect(store)(PageViewElement) {
               `)}
             </select>
             <input id="name" type="text" placeholder="Unit Name"></input>
-            <button @click="${this._add}">Add</button>
+            <button-tray>
+              <button @click="${this._add}">Add</button>
+            </button-tray>
             <battle-sim-alert warning id="warning-message">You must select a type of unit to add and provide the unit a unique name.</battle-sim-alert>
             <battle-sim-alert success id="added-message">Unit Added!</battle-sim-alert>
           </div>

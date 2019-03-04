@@ -17,6 +17,10 @@ export const SharedStyles = css`
     margin-left: auto;
   }
 
+  button {
+    margin-bottom: 1rem;
+  }
+
   section:nth-of-type(even) {
     background: var(--app-section-even-color);
   }
@@ -71,6 +75,7 @@ export const SharedStyles = css`
   }
 
   input[type="text"], input[type="number"] {
+    outline-color: var(--app-primary-color);
     padding: 1rem;
     border: none;
     width: 100%;
@@ -81,6 +86,7 @@ export const SharedStyles = css`
   }
 
   select {
+    outline-color: var(--app-primary-color);
     -webkit-appearance: none;
     background: white;
     width: 100%;
@@ -92,6 +98,7 @@ export const SharedStyles = css`
   }
 
   input[type="checkbox"] {
+    outline-color: var(--app-primary-color);
     margin-bottom: 1rem;
   }
 
@@ -99,6 +106,7 @@ export const SharedStyles = css`
   }
 
   radio {
+    outline-color: var(--app-primary-color);
     -webkit-appearance: radio;
   }
 

@@ -86,7 +86,9 @@ class WarView extends connect(store)(PageViewElement) {
               <option value="${id}">${battleTemplate.name}</option>
             `)}
           </select>
-          <button @click="${this._create}">Create</button>
+          <button-tray>
+            <button @click="${this._create}">Create</button>
+          </button-tray>
           <battle-sim-alert warning>You must select a ruleset to play and a battle to fight.</battle-sim-alert>
           <input id="name" type="text" placeholder="Battle name"></input>
           <input id="army1-name" type="text" placeholder="First army name"></input>

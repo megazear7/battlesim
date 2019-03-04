@@ -25,15 +25,20 @@ class ButtonTray extends LitElement {
           padding-bottom: 0;
         }
         ::slotted(button) {
+          outline: none;
           width: var(--button-width);
           box-sizing: border-box;
           background-color: white;
           margin: 0;
           display: inline-block;
-          padding: 1rem 0.25rem;
-          font-size: 0.8rem;
-          border-left: 1.5px solid var(--app-primary-color);
-          border-right: 1.5px solid var(--app-primary-color);
+          padding: 1rem 0;
+          font-size: 1rem;
+          border-style: solid;
+          border-color: var(--app-primary-color);
+          border-width: 3px 1.5px;
+        }
+        ::slotted(button:focus) {
+          text-decoration: underline;
         }
         ::slotted(button:first-child) {
           border-left: 3px solid var(--app-primary-color);
@@ -41,29 +46,19 @@ class ButtonTray extends LitElement {
         ::slotted(button:last-child) {
           border-right: 3px solid var(--app-primary-color);
         }
-        ::slotted(button) {
-          opacity: 1;
-        }
         ::slotted(button:hover) {
           background-color: var(--app-primary-color);
-        }
-        ::slotted(button.selected) {
-          background-color: var(--app-primary-color);
+          color: var(--app-light-text-color);
         }
         ::slotted(button:disabled) {
           border-color: grey;
         }
         ::slotted(button.selected) {
-          color: white;
+          background-color: var(--app-primary-color);
+          color: var(--app-light-text-color);
           border-width: 3px 1.5px;
           border-style: solid;
           border-color: var(--app-primary-color);
-        }
-        [has-selection] button {
-          opacity: 0.6;
-        }
-        [has-selection] button:disabled:hover {
-          background-color: white;
         }
       `
     ];
