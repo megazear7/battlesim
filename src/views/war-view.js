@@ -27,8 +27,16 @@ class WarView extends connect(store)(PageViewElement) {
       SharedStyles,
       ButtonSharedStyles,
       css`
-        .selectedBattle {
-          color: var(--app-primary-color);
+        button.playing {
+          background-color: var(--app-primary-color);
+          border-color: var(--app-primary-color);
+          color: var(--app-light-text-color);
+        }
+
+        button.playing:hover {
+          background-color: var(--app-primary-color);
+          border-color: var(--app-primary-color);
+          color: var(--app-light-text-color);
         }
       `
     ];
@@ -40,11 +48,11 @@ class WarView extends connect(store)(PageViewElement) {
         <h2>Your Battles</h2>
         ${repeat(this._battles, battle => html`
           <div class="${classMap({battle: true, active: battle.active})}" data-index="${battle.id}">
-            <h4 class="${classMap({selectedBattle: battle.active})}">${battle.name}</h4>
+            <h4>${battle.name}</h4>
             <pre>Created ${battle.createdMessage}</pre>
             <button-tray>
               ${battle.active ? html`
-                <button disabled>Playing</button>
+                <button disabled class="playing">Playing</button>
               ` : html`
                 <button @click="${e => this._playBattle(parseInt(e.target.closest('.battle').dataset.index))}">Play</button>
               `}
@@ -62,7 +70,7 @@ class WarView extends connect(store)(PageViewElement) {
             <p class="battle-url">${battle.prettyUrl}</p>
             <button-tray>
               ${battle.active ? html`
-                <button disabled>Playing</button>
+                <button disabled class="playing">Playing</button>
               ` : html`
                 <button @click="${() => this._playSharedBattle(battle)}">Play</button>
               `}
