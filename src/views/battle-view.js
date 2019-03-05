@@ -36,9 +36,6 @@ class BattleView extends BattleViewWrapper {
         .unit:last-child {
           border-bottom: 0;
         }
-        .unit:hover h5 {
-          color: var(--app-primary-color);
-        }
         .point-cost {
           float: right;
         }

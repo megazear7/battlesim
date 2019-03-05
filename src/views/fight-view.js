@@ -94,7 +94,7 @@ class FightView extends BattleViewWrapper {
             <battle-sim-alert warning>You must provide a value for each field listed above the button</battle-sim-alert>
             <input id="distance" class="${classMap({hidden: ! this._showDistance})}" type="number" placeholder="Distance"></input>
             <input id="rest-time" class="${classMap({hidden: ! this._showRestTime})}" type="number" placeholder="Minutes to rest" max="${MINUTES_PER_TURN}"></input>
-            <div class="${classMap({hidden: ! this._showEngagedAttackers && ! this._showEngagedDefenders})}">
+            <div class="${classMap({'row': true, hidden: ! this._showEngagedAttackers && ! this._showEngagedDefenders})}">
               <input id="engaged-attackers" class="${classMap({hidden: ! this._showEngagedAttackers, full: this._showEngagedAttackers && ! this._showEngagedDefenders, stands: true})}" type="number" placeholder="Attacking Stands"></input>
               <input id="engaged-defenders" class="${classMap({hidden: ! this._showEngagedDefenders, stands: true})}" type="number" placeholder="Defending Stands"></input>
             </div>
