@@ -1,4 +1,4 @@
-import { html, css } from 'lit-element';
+import { html } from 'lit-element';
 import { PageViewElement } from './page-view-element.js';
 import { SharedStyles } from '../styles/shared-styles.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
@@ -9,7 +9,6 @@ import { SHARED_BATTLE } from '../game.js';
 class SharedView extends connect(store)(PageViewElement) {
   static get properties() {
     return {
-      _uuid: { type: String },
       _message: { type: String },
     };
   }
@@ -17,22 +16,14 @@ class SharedView extends connect(store)(PageViewElement) {
   static get styles() {
     return [
       SharedStyles,
-      css`
-      `
     ];
-  }
-
-  constructor() {
-    super();
-
-    this.uuid = window.location.pathname.split('/')[2];
   }
 
   connectedCallback() {
     super.connectedCallback();
 
     firebase.firestore().collection('apps/battlesim/battles')
-    .where('battle.uuid', '==', this.uuid)
+    .where('battle.uuid', '==', window.location.pathname.split('/')[2])
     .limit(1)
     .get()
     .then(querySnapshot => {
@@ -61,9 +52,6 @@ class SharedView extends connect(store)(PageViewElement) {
         <p>${this._message}</p>
       </section>
     `;
-  }
-
-  stateChanged(state) {
   }
 }
 

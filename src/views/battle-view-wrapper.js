@@ -10,6 +10,7 @@ export default class BattleViewWrapper extends connect(store)(PageViewElement) {
     return {
       _activeBattle: { type: Object },
       _battleIsShared: { type: Boolean },
+      _unitTemplates: { type: Object },
     }
   }
 
@@ -29,6 +30,11 @@ export default class BattleViewWrapper extends connect(store)(PageViewElement) {
         `}
       `}
     `;
+  }
+
+  constructor() {
+    super();
+    this._unitTemplates = [];
   }
 
   stateChanged(state) {

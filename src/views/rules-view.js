@@ -9,13 +9,6 @@ import Battle from '../models/battle.js';
 import { SHARED_BATTLE, LOCAL_BATTLE } from '../game.js';
 
 class RulesView extends BattleViewWrapper {
-  static get properties() {
-    return {
-      _battleIsShared: { type: Boolean },
-      _activeBattle: { type: Object },
-    };
-  }
-
   static get styles() {
     return [
       SharedStyles,

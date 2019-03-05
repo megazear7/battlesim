@@ -13,14 +13,6 @@ import Battle from '../models/battle.js';
 import { SHARED_BATTLE, LOCAL_BATTLE } from '../game.js';
 
 class BattleView extends BattleViewWrapper {
-  static get properties() {
-    return {
-      _battleIsShared: { type: Boolean },
-      _unitTemplates: { type: Object },
-      _activeBattle: { type: Object },
-    };
-  }
-
   static get styles() {
     return [
       SharedStyles,
@@ -174,22 +166,6 @@ class BattleView extends BattleViewWrapper {
       this.shadowRoot.getElementById('added-message').alert();
     } else {
       this.shadowRoot.getElementById('warning-message').alert();
-    }
-  }
-
-  stateChanged(state) {
-    if (state.battle.activeBattle.type === LOCAL_BATTLE) {
-      this._battleIsShared = false;
-      this._activeBattle = state.battle.battles.length > state.battle.activeBattle.id
-        ? new Battle(state.battle.battles[state.battle.activeBattle.id], state.battle.activeBattle.id)
-        : undefined;
-      this._unitTemplates = this._activeBattle ? this._activeBattle.unitTemplatesFor(0) : [ ];
-    } else if (state.battle.activeBattle.type === SHARED_BATTLE) {
-      this._battleIsShared = true;
-      this._activeBattle = Object.keys(state.battle.sharedBattles).indexOf(state.battle.activeBattle.id) >= 0
-        ? new Battle(state.battle.sharedBattles[state.battle.activeBattle.id], state.battle.activeBattle.id)
-        : undefined;
-      this._unitTemplates = this._activeBattle ? this._activeBattle.unitTemplatesFor(0) : [ ];
     }
   }
 }
