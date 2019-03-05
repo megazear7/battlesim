@@ -66,7 +66,7 @@ class BattleView extends BattleViewWrapper {
               </option>
             `)}
           </select>
-          <input id="name" type="text" placeholder="Unit Name"></input>
+          <input id="unit-name-input" type="text" placeholder="Unit Name"></input>
           <button-tray>
             <button @click="${this._add}">Add</button>
           </button-tray>
@@ -129,7 +129,7 @@ class BattleView extends BattleViewWrapper {
   }
 
   get nameElement() {
-    return this.shadowRoot.getElementById('name');
+    return this.shadowRoot.getElementById('unit-name-input');
   }
 
   get name() {
