@@ -19,6 +19,7 @@ import './battle-sim-option.js';
 import './button-tray.js';
 import './fight-selectors.js';
 import './army-action.js';
+import './battle-event.js';
 
 class BattleSim extends connect(store)(LitElement) {
   static get properties() {

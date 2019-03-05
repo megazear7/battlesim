@@ -116,19 +116,8 @@ class FightView extends connect(store)(PageViewElement) {
             </section>
           ` : html`
             <section>
-              <h2>${this._activeBattle.occuringEvent.title}</h2>
-              <div class="muted centered">${this._activeBattle.currentTimeMessage}</div>
-              ${repeat(this._activeBattle.occuringEvent.messages, message => html`<p>${message}</p>`)}
-              ${this._activeBattle.occuringEvent.provideArmyOverview ? html`
-                <p>${this._activeBattle.army0.name} has sustained ${this.army1Casualties} casualties.</p>
-                <p>${this._activeBattle.army1.name} has sustained ${this.army2Casualties} casualties.</p>
-              ` : ''}
+              <battle-event .battle="${this._activeBattle}" @done="${this._finishEvent}"></battle-event>
             </section>
-            <div>
-              <button-tray>
-                <button @click="${this._finishEvent}">Next Action</button>
-              </button-tray>
-            </div>
           `
         }
       `:html`
@@ -341,20 +330,6 @@ class FightView extends connect(store)(PageViewElement) {
     } else {
       this._targetUnit =  null;
     }
-  }
-
-  armyCasualties(army) {
-    return this._activeBattle.units
-    .filter(unit => unit.army === army)
-    .reduce((casualties, unit) => casualties + (unit.fullStrength - unit.strength), 0);
-  }
-
-  get army1Casualties() {
-    return this.armyCasualties(0);
-  }
-
-  get army2Casualties() {
-    return this.armyCasualties(1);
   }
 
   get target() {

@@ -285,7 +285,7 @@ export default {
     startTime: Date.parse('20 June 1862 9:03:00 EST'),
     events: [
       {
-        time: 60 * 60,
+        time: 1,
         title: 'Example Event',
         messages: [
           'Some example message. Here we could tell the players of the game to do a certain thing or whatever we want.',
