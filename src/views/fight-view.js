@@ -112,15 +112,7 @@ class FightView extends connect(store)(PageViewElement) {
           </section>
         `: this._activeBattle.armyIsActing ? html`
             <section>
-              <h2>${this._activeBattle.armyTakingAction.armyActionTitle}</h2>
-              <div class="muted centered">Army: ${this._activeBattle.armyTakingAction.name}</div>
-              <div class="muted centered">${this._activeBattle.currentTimeMessage}</div>
-              ${repeat(this._activeBattle.armyTakingAction.messages, message => html`<p>${message}</p>`)}
-              <div>
-                <button-tray>
-                  <button @click="${this._takeArmyAction}">Next Action</button>
-                </button-tray>
-              </div>
+              <army-action .battle="${this._activeBattle}" @done="${this._takeArmyAction}"></army-action>
             </section>
           ` : html`
             <section>
