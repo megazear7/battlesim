@@ -1,4 +1,4 @@
-import { html, PageViewElement, SharedStyles, connect, store, setActiveBattle, SHARED_BATTLE } from '../components/battle-sim.js';
+import { html, PageViewElement, SharedStyles, connect, store, setActiveBattle, SHARED_BATTLE, ARMY_BOTH } from '../components/battle-sim.js';
 
 class SharedView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -21,7 +21,10 @@ class SharedView extends connect(store)(PageViewElement) {
         let sharedBattleIds = JSON.parse(localStorage.getItem("sharedBattles")) || [];
 
         if (sharedBattleIds.indexOf(doc.id) === -1) {
-          localStorage.setItem("sharedBattles", JSON.stringify([...sharedBattleIds, doc.id]));
+          localStorage.setItem("sharedBattles", JSON.stringify([...sharedBattleIds, {
+            playingArmy: ARMY_BOTH,
+            id: doc.id
+          }]));
         }
 
         store.dispatch(setActiveBattle({
