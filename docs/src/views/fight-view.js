@@ -933,7 +933,6 @@ class FightView extends BattleViewWrapper {
   }
 
   battleViewRender() {
-    console.log(this._activeBattle.messages);
     return html`
       ${this._activeBattle.unitIsActing ? html`
         <section>
@@ -945,6 +944,7 @@ class FightView extends BattleViewWrapper {
           <p>${this._activeBattle.activeUnit.desc}</p>
         </section>
         <section>
+          ${this._activeBattle.playingArmyIsActive ? html`
           <button-tray ?has-selection="${this._hasSelection}" class="unit-actions">
             <button @click="${this._rest}" id="rest" ?disabled="${this._actionsDisabled}" class="${classMap({
       selected: this._selectedAction === REST
@@ -959,6 +959,9 @@ class FightView extends BattleViewWrapper {
       selected: this._selectedAction === FIRE
     })}">Fire</button>
           </button-tray>
+          ` : html`
+            <p>This unit does not belong to the army that you are playing.</p>
+          `}
         </section>
         <section>
           <div>
@@ -967,38 +970,40 @@ class FightView extends BattleViewWrapper {
                 <p>${message}</p>
               `)}
             ` : ''}
-            <div class="row">
-              <input id="separation" class="${classMap({
+            ${this._activeBattle.playingArmyIsActive ? html`
+              <div class="row">
+                <input id="separation" class="${classMap({
       hidden: !this._showSeparation
     })}" type="number" placeholder="Distance"></input>
-              <select id="target" class="${classMap({
+                <select id="target" class="${classMap({
       hidden: !this._showTarget
     })}" @change="${this._updateTarget}">
-                <option value="">Select Target</option>
-                ${repeat(this._activeBattle.activeUnit.targets, target => html`
-                  <option value="${target.id}">${target.unit.name}</option>
-                `)}
-              </select>
-            </div>
-            <button-tray class="${classMap({
+                  <option value="">Select Target</option>
+                  ${repeat(this._activeBattle.activeUnit.targets, target => html`
+                    <option value="${target.id}">${target.unit.name}</option>
+                  `)}
+                </select>
+              </div>
+              <button-tray class="${classMap({
       hidden: !this._showDoCombat
     })}">
-              <button @click="${this._doCombat}">Do Combat</button>
-            </button-tray>
-            <button-tray class="${classMap({
+                <button @click="${this._doCombat}">Do Combat</button>
+              </button-tray>
+              <button-tray class="${classMap({
       hidden: !this._showTakeAction
     })}">
-              <button @click="${this._takeAction}">Take Action</button>
-            </button-tray>
-            <battle-sim-alert warning>You must provide a value for each field listed above the button</battle-sim-alert>
-            <environment-options .battle="${this._activeBattle}" action="${this._selectedAction}"></environment-options>
-            <div class="${classMap({
+                <button @click="${this._takeAction}">Take Action</button>
+              </button-tray>
+              <battle-sim-alert warning>You must provide a value for each field listed above the button</battle-sim-alert>
+              <environment-options .battle="${this._activeBattle}" action="${this._selectedAction}"></environment-options>
+              <div class="${classMap({
       hidden: !this._showActionResult
     })}">
-              <button-tray>
-                <button @click="${this._progressToNextAction}">Next Action</button>
-              </button-tray>
-            </div>
+                <button-tray>
+                  <button @click="${this._progressToNextAction}">Next Action</button>
+                </button-tray>
+              </div>
+            ` : ''}
           </div>
         </section>
       ` : this._activeBattle.armyIsActing ? html`
