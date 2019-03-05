@@ -1,4 +1,4 @@
-import { html, css, repeat, classMap, PageViewElement, createNewBattle, setActiveBattle, removeBattle, addSharedBattle, playArmy, connect, store, SharedStyles, ButtonSharedStyles, $battleTemplatesDefault as BATTLE_TEMPLATES, $rulesDefault as RULES, $battleDefault as Battle, makeid, SHARED_BATTLE, LOCAL_BATTLE, ARMY_0, ARMY_1, ARMY_BOTH } from '../components/battle-sim.js';
+import { html, css, repeat, classMap, PageViewElement, createNewBattle, setActiveBattle, removeBattle, addSharedBattle, playArmy, removeSharedBattle, connect, store, SharedStyles, ButtonSharedStyles, $battleTemplatesDefault as BATTLE_TEMPLATES, $rulesDefault as RULES, $battleDefault as Battle, makeid, SHARED_BATTLE, LOCAL_BATTLE, ARMY_0, ARMY_1, ARMY_BOTH } from '../components/battle-sim.js';
 
 class WarView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -190,8 +190,7 @@ class WarView extends connect(store)(PageViewElement) {
   }
 
   _leaveSharedBattle(sharedBattle) {
-    this._sharedBattles = this._sharedBattles.filter(battle => battle.id !== sharedBattle.id);
-    localStorage.setItem("sharedBattles", JSON.stringify(this._sharedBattles.map(battle => battle.id)));
+    store.dispatch(removeSharedBattle(sharedBattle.id));
   }
 
   updateRuleset() {
