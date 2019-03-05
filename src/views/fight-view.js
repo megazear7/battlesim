@@ -61,14 +61,12 @@ class FightView extends BattleViewWrapper {
           <p>${this._activeBattle.activeUnit.desc}</p>
         </section>
         <section>
-          <div class="unit-actions">
-            <button-tray ?has-selection="${this._hasSelection}">
-              <button @click="${this._rest}" id="rest" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === REST})}">Rest</button>
-              <button @click="${this._move}" id="move" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === MOVE})}">Move</button>
-              <button @click="${this._charge}" id="charge" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === CHARGE})}">Charge</button>
-              <button @click="${this._fire}" id="fire" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === FIRE})}">Fire</button>
-            </button-tray>
-          </div>
+          <button-tray ?has-selection="${this._hasSelection}" class="unit-actions">
+            <button @click="${this._rest}" id="rest" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === REST})}">Rest</button>
+            <button @click="${this._move}" id="move" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === MOVE})}">Move</button>
+            <button @click="${this._charge}" id="charge" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === CHARGE})}">Charge</button>
+            <button @click="${this._fire}" id="fire" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === FIRE})}">Fire</button>
+          </button-tray>
         </section>
         <section>
           <div>
@@ -89,7 +87,6 @@ class FightView extends BattleViewWrapper {
               <button @click="${this._takeAction}">Take Action</button>
             </button-tray>
             <battle-sim-alert warning>You must provide a value for each field listed above the button</battle-sim-alert>
-
             <environment-options .battle="${this._activeBattle}" action="${this._selectedAction}"></environment-options>
             <div class="${classMap({hidden: ! this._showActionResult})}">
               ${repeat(this._actionMessages, message => html`<p>${message}</p>`)}

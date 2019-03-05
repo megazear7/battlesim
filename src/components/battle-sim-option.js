@@ -17,10 +17,16 @@ class BattleSimOption extends LitElement {
           display: flex;
           flex-direction: row;
           box-sizing: border-box;
-          line-height: 2rem;
+          line-height: 1.25rem;
           cursor: pointer;
           background-color: white;
           position: relative;
+        }
+        :host(:first-child) #box {
+          border-top-width: 2px;
+        }
+        :host(:last-child) #box {
+          border-bottom-width: 2px;
         }
         :host(:hover) {
           color: var(--app-primary-color);
@@ -29,14 +35,16 @@ class BattleSimOption extends LitElement {
           color: var(--app-primary-color);
         }
         #box {
-          width: 1.75rem;
-          height: 1.75rem;
-          font-size: 1.75rem;
+          width: 1.25rem;
+          height: 1.25rem;
+          font-size: 1.25rem;
           margin-right: 0.5rem;
           background-color: white;
           color: var(--app-primary-color);
           text-align: center;
-          border: 2px solid var(--app-primary-color);
+          border-style: solid;
+          border-color: var(--app-primary-color);
+          border-width: 1px 2px;
         }
         slot {
           display: block;

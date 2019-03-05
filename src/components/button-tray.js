@@ -18,6 +18,9 @@ class ButtonTray extends LitElement {
     let buttonCount = this._buttonCount | 1;
     return [
       css`
+        :host {
+          display: block;
+        }
         slot {
           --button-width: 100%;
           font-size: 0;
