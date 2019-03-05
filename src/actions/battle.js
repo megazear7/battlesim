@@ -9,6 +9,7 @@ export const ADD_SHARED_BATTLE = 'ADD_SHARED_BATTLE';
 export const SET_ACTIVE_BATTLE = 'SET_ACTIVE_BATTLE';
 export const REMOVE_BATTLE = 'REMOVE_BATTLE';
 export const PLAY_ARMY = 'PLAY_ARMY';
+export const REMOVE_SHARED_BATTLE = 'REMOVE_SHARED_BATTLE';
 
 export const takeAction = (updates, message, environment) => {
   return {
@@ -79,6 +80,13 @@ export const removeBattle = (index) => {
   return {
     type: REMOVE_BATTLE,
     index,
+  };
+};
+
+export const removeSharedBattle = (id) => {
+  return {
+    type: REMOVE_SHARED_BATTLE,
+    id,
   };
 };
 

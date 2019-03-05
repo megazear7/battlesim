@@ -2,7 +2,7 @@ import { html, css } from 'lit-element';
 import { repeat } from 'lit-html/directives/repeat';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { PageViewElement } from './page-view-element.js';
-import { createNewBattle, setActiveBattle, removeBattle, addSharedBattle, playArmy } from '../actions/battle.js';
+import { createNewBattle, setActiveBattle, removeBattle, addSharedBattle, playArmy, removeSharedBattle } from '../actions/battle.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
 import { SharedStyles } from '../styles/shared-styles.js';
@@ -188,11 +188,7 @@ class WarView extends connect(store)(PageViewElement) {
   }
 
   _leaveSharedBattle(sharedBattle) {
-    this._sharedBattles = this._sharedBattles.filter(battle => battle.id !== sharedBattle.id);
-    localStorage.setItem("sharedBattles", JSON.stringify(this._sharedBattles.map(battle => ({
-      playingArmy: battle.playingArmy,
-      id: battle.id
-    }))));
+    store.dispatch(removeSharedBattle(sharedBattle.id));
   }
 
   updateRuleset() {

@@ -18,6 +18,7 @@ import {
   REMOVE_BATTLE,
   ADD_SHARED_BATTLE,
   PLAY_ARMY,
+  REMOVE_SHARED_BATTLE
 } from '../actions/battle.js';
 import { LOCAL_BATTLE, SHARED_BATTLE } from '../game.js';
 import Battle from '../models/battle.js';
@@ -140,8 +141,14 @@ const battle = (state = initialState, action) => {
       newState.activeBattle -= 1;
     }
     if (newState.activeBattle < 0) {
-      newState.activeBattle = 0;
+      newState.activeBattle = { };
     }
+  } else if (action.type === REMOVE_SHARED_BATTLE) {
+    delete newState.sharedBattles[action.id];
+    newState.activeBattle = { };
+    let sharedBattles = JSON.parse(localStorage.getItem("sharedBattles")) || [];
+    sharedBattles = sharedBattles.filter(battle => battle.id !== action.id);
+    localStorage.setItem("sharedBattles", JSON.stringify(sharedBattles));
   } else if (action.type === SET_ACTIVE_BATTLE) {
     newState.activeBattle = action.activeBattle;
   }
