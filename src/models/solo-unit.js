@@ -103,29 +103,33 @@ export default class SoloUnit extends ActingUnit {
     }
   }
 
+  get energyAndMoraleMessage() {
+    return ``;
+  }
+
   get energyRecoveredMessage() {
     return this.unit.battle.statReporting === STAT_PERCENTAGE
-      ? `and ${Math.floor(this.energyGain)}% of their energy.`
+      ? `They recovered ${Math.floor(this.energyGain)}% of their energy.`
       : this.energyRecoveredDesc;
   }
 
   get energyRecoveredDesc() {
     if (this.energyGain > 80) {
-      return `and they got back all of there energy.`;
+      return `They got back all of there energy.`;
     } else if (this.energyGain > 60) {
-      return `and they recovered almost all of their strength.`;
+      return `They recovered almost all of their strength.`;
     } else if (this.energyGain > 40) {
-      return `and they made a great recovery. The rest was very helpful.`;
+      return `They made a great recovery. The rest was very helpful.`;
     } else if (this.energyGain > 20) {
-      return `and they recovered a lot of their strength`;
+      return `They recovered a lot of their strength`;
     } else if (this.energyGain > 15) {
-      return `and they recovered much of their strength`;
+      return `They recovered much of their strength`;
     } else if (this.energyGain > 9) {
-      return `and they recovered some of their strength`;
+      return `They recovered some of their strength`;
     } else if (this.energyGain > 6) {
-      return `and they recovered a bit of their strength.`;
+      return `They recovered a bit of their strength.`;
     } else if (this.energyGain > 3) {
-      return `and they recovered a bit of their strength.`;
+      return `They recovered a little bit of their strength.`;
     } else {
       return `but the rest was hardly worth it.`;
     }
