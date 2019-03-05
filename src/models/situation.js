@@ -73,7 +73,11 @@ export default class Situation {
   }
 
   get totalSecondsSpent() {
-    return this.secondsSpentMoving + this.secondsToIssueOrder;
+    return this.secondsSpentMoving + this.soloUnit.unit.secondsToIssueOrder;
+  }
+
+  get percentageOfATurnSpent() {
+    return (this.totalSecondsSpent / SECONDS_PER_TURN) * 100;
   }
 
   get percentageOfATurnSpentMoving() {
