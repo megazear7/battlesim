@@ -9177,6 +9177,7 @@ if(offline!==getState().app.offline){dispatch(showSnackbar());}dispatch({type:UP
           top: 0px;
           right: 3rem;
           color: var(--app-dark-text-color);
+          padding: 1rem;
           background-color: white;
           text-align: center;
           border: 3px solid var(--app-primary-color);
