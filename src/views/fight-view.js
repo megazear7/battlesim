@@ -12,7 +12,7 @@ import Situation from '../models/situation.js';
 import Battle from '../models/battle.js';
 import Unit from '../models/unit.js';
 import { MINUTES_PER_TURN, REST, MOVE, CHARGE, FIRE, NO_ACTION } from '../game.js';
-import { TERRAIN_TYPE_MOVEMENT, TERRAIN_TYPE_MELEE_COMBAT } from '../components/fight-selectors.js';
+import { TERRAIN_TYPE_MOVEMENT, TERRAIN_TYPE_MELEE_COMBAT } from '../components/environment-options.js';
 
 class FightView extends BattleViewWrapper {
   static get properties() {
@@ -20,12 +20,9 @@ class FightView extends BattleViewWrapper {
       _targetUnit: { type: Object },
       _actionMessages: { type: Array },
       _chargeMessage: { type: String },
-      _showDistance: { type: Boolean },
-      _showRestTime: { type: Boolean },
       _showSeparation: { type: Boolean },
       _showTarget: { type: Boolean },
       _showChargeMessage: { type: Boolean },
-      _showEngagedAttackers: { type: Boolean },
       _showDoCombat: { type: Boolean },
       _showTakeAction: { type: Boolean },
       _showActionResult: { type: Boolean },
@@ -92,13 +89,8 @@ class FightView extends BattleViewWrapper {
               <button @click="${this._takeAction}">Take Action</button>
             </button-tray>
             <battle-sim-alert warning>You must provide a value for each field listed above the button</battle-sim-alert>
-            <input id="distance" class="${classMap({hidden: ! this._showDistance})}" type="number" placeholder="Distance"></input>
-            <input id="rest-time" class="${classMap({hidden: ! this._showRestTime})}" type="number" placeholder="Minutes to rest" max="${MINUTES_PER_TURN}"></input>
-            <div class="${classMap({'row': true, hidden: ! this._showEngagedAttackers && ! this._showEngagedDefenders})}">
-              <input id="engaged-attackers" class="${classMap({hidden: ! this._showEngagedAttackers, full: this._showEngagedAttackers && ! this._showEngagedDefenders, stands: true})}" type="number" placeholder="Attacking Stands"></input>
-              <input id="engaged-defenders" class="${classMap({hidden: ! this._showEngagedDefenders, stands: true})}" type="number" placeholder="Defending Stands"></input>
-            </div>
-            <fight-selectors .battle="${this._activeBattle}" action="${this._selectedAction}"></fight-selectors>
+
+            <environment-options .battle="${this._activeBattle}" action="${this._selectedAction}"></environment-options>
             <div class="${classMap({hidden: ! this._showActionResult})}">
               ${repeat(this._actionMessages, message => html`<p>${message}</p>`)}
               <button-tray>
@@ -130,8 +122,8 @@ class FightView extends BattleViewWrapper {
       this._hideInputs();
       const encounter = this._createEncounter();
       this._chargeMessage = encounter.chargeMessage;
-      this._showEngagedAttackers = encounter.attackerReachedDefender;
-      this._showEngagedDefenders = encounter.attackerReachedDefender;
+      this._options.showEngagedAttackers = encounter.attackerReachedDefender;
+      this._options.showEngagedDefenders = encounter.attackerReachedDefender;
       this._actionsDisabled = true;
       this._showTakeAction = true;
       this._showChargeMessage = true;
@@ -146,7 +138,7 @@ class FightView extends BattleViewWrapper {
       let skipResults;
       if (this._selectedAction === REST || this._selectedAction === MOVE) {
         const situation = this._createSituation();
-        actionResult = this._selectedAction === REST ? situation.rest(this.restTime) : situation.move(this.distance);
+        actionResult = this._selectedAction === REST ? situation.rest(this._options.restTime) : situation.move(this._options.distance);
         skipResults = false;
       } else {
         let encounter = this._createEncounter()
@@ -201,21 +193,21 @@ class FightView extends BattleViewWrapper {
     this._hasSelection = true;
     this._selectedAction = REST;
     this._showTakeAction = true;
-    this._showRestTime = true;
-    this._fightSelectors.showResupply = true;
-    this._fightSelectors.showMount = this._activeBattle.activeUnit.isMounted && this._activeBattle.activeUnit.canUnmount;
+    this._options.showRestTime = true;
+    this._options.showResupply = true;
+    this._options.showMount = this._activeBattle.activeUnit.isMounted && this._activeBattle.activeUnit.canUnmount;
   }
 
   _move(e) {
     this._hideInputs();
     this._hasSelection = true;
     this._selectedAction = MOVE;
-    this._showDistance = true;
     this._showTakeAction = true;
-    this._fightSelectors.showHill = true;
-    this._fightSelectors.showPace = true;
-    this._fightSelectors.showLeader = true;
-    this._fightSelectors.showTerrain = true;
+    this._options.showDistance = true;
+    this._options.showHill = true;
+    this._options.showPace = true;
+    this._options.showLeader = true;
+    this._options.showTerrain = true;
   }
 
   _charge(e) {
@@ -225,9 +217,9 @@ class FightView extends BattleViewWrapper {
     this._showSeparation = true;
     this._showTarget = true;
     this._showDoCombat = true;
-    this._fightSelectors.showHill = true;
-    this._fightSelectors.showLeader = true;
-    this._fightSelectors.showTerrain = true;
+    this._options.showHill = true;
+    this._options.showLeader = true;
+    this._options.showTerrain = true;
   }
 
   _fire(e) {
@@ -236,61 +228,54 @@ class FightView extends BattleViewWrapper {
     this._selectedAction = FIRE;
     this._showSeparation = true;
     this._showTarget = true;
-    this._showEngagedAttackers = true;
     this._showTakeAction = true;
-    this._fightSelectors.showHill = true;
-    this._fightSelectors.showLeader = true;
-    this._fightSelectors.showTerrain = true;
+    this._options.showEngagedAttackers = true;
+    this._options.showEngagedDefenders = true;
+    this._options.showHill = true;
+    this._options.showLeader = true;
+    this._options.showTerrain = true;
   }
 
   _createEncounter() {
     return new Encounter({
       attacker: this._activeBattle.activeUnit,
-      attackerArmyLeadership: this._activeArmyLeadership,
-      attackerEngagedStands: this.engagedAttackers,
+      attackerArmyLeadership: this._options._activeArmyLeadership,
+      attackerEngagedStands: this._options.engagedAttackers,
       defender: this._activeBattle.unitModels[this.target],
-      defenderArmyLeadership: this._defenderArmyLeadership,
-      defenderEngagedStands: this.engagedDefenders,
+      defenderArmyLeadership: this._options._defenderArmyLeadership,
+      defenderEngagedStands: this._options.engagedDefenders,
       melee: this._selectedAction === CHARGE,
       separation: this.separation,
-      attackerChargeTerrain: this._fightSelectors._selectedTerrain(TERRAIN_TYPE_MOVEMENT),
-      defenderTerrain: this._fightSelectors._defenderTerrain,
-      meleeCombatTerrain: this._fightSelectors._selectedTerrain(TERRAIN_TYPE_MELEE_COMBAT),
-      slope: this._fightSelectors.slope });
+      attackerChargeTerrain: this._options._selectedTerrain(TERRAIN_TYPE_MOVEMENT),
+      defenderTerrain: this._options._defenderTerrain,
+      meleeCombatTerrain: this._options._selectedTerrain(TERRAIN_TYPE_MELEE_COMBAT),
+      slope: this._options.slope });
   }
 
   _createSituation() {
     return new Situation({
       unit: this._activeBattle.activeUnit,
-      armyLeadership: this._activeArmyLeadership,
-      movementTerrain: this._fightSelectors._selectedTerrain(TERRAIN_TYPE_MOVEMENT),
-      mount: this._fightSelectors.mount,
-      unmount: this._fightSelectors.unmount,
-      pace: this._fightSelectors.pace,
-      slope: this._fightSelectors.slope });
+      armyLeadership: this._options._activeArmyLeadership,
+      movementTerrain: this._options._selectedTerrain(TERRAIN_TYPE_MOVEMENT),
+      mount: this._options.mount,
+      unmount: this._options.unmount,
+      pace: this._options.pace,
+      slope: this._options.slope });
   }
 
   _hideInputs() {
-    this._showDistance = false;
-    this._showRestTime = false;
     this._showSeparation = false;
-    this._showEngagedAttackers = false;
-    this._showEngagedDefenders = false;
     this._showTarget = false;
     this._showChargeMessage = false;
     this._showDoCombat = false;
     this._showTakeAction = false;
-    this._fightSelectors.hide();
+    this._options.hide();
   }
 
   _resetInputs() {
-    this.get('distance').value = '';
-    this.get('rest-time').value = '';
     this.get('separation').value = '';
-    this.get('engaged-attackers').value = '';
-    this.get('engaged-defenders').value = '';
     this.get('target').value = '';
-    this._fightSelectors.reset();
+    this._options.reset();
     [...this.shadowRoot.querySelectorAll('battle-sim-option')].forEach(option => option.selected = false);
   }
 
@@ -324,62 +309,30 @@ class FightView extends BattleViewWrapper {
     }
   }
 
-  get distance() {
-    return parseInt(this.get('distance').value === '' ? -1 : this.get('distance').value);
-  }
-
-  get restTime() {
-    return Math.min(parseInt(this.get('rest-time').value === '' ? MINUTES_PER_TURN : this.get('rest-time').value), MINUTES_PER_TURN);
-  }
-
-  get separation() {
-    return parseInt(this.get('separation').value ? this.get('separation').value : 0);
-  }
-
-  get engagedAttackers() {
-    return parseInt(this.get('engaged-attackers').value === '' ? -1 : this.get('engaged-attackers').value);
-  }
-
-  get engagedDefenders() {
-    if (this._selectedAction === CHARGE) {
-      return parseInt(this.get('engaged-defenders').value === '' ? -1 : this.get('engaged-defenders').value);
-    } else {
-      return 0;
-    }
-  }
-
-  get _activeArmyLeadership() {
-    return this.get('attacker-leadership') && this.get('attacker-leadership').value;
-  }
-
-  get _defenderArmyLeadership() {
-    return this.get('defender-leadership') && this.get('defender-leadership').value;
-  }
-
   get _environment() {
     return {
-      resupply: this._fightSelectors.resupply,
-      mount: this._fightSelectors.mount,
-      unmount: this._fightSelectors.unmount,
-      defenderArmyLeadership: this._defenderArmyLeadership,
-      activeArmyLeadership: this._activeArmyLeadership,
-      pace: this._fightSelectors.pace,
-      slope: this._fightSelectors.slope,
-      engagedDefenders: this.engagedDefenders,
-      engagedAttackers: this.engagedAttackers,
+      resupply: this._options.resupply,
+      mount: this._options.mount,
+      unmount: this._options.unmount,
+      defenderArmyLeadership: this._options._defenderArmyLeadership,
+      activeArmyLeadership: this._options._activeArmyLeadership,
+      pace: this._options.pace,
+      slope: this._options.slope,
+      engagedDefenders: this._options.engagedDefenders,
+      engagedAttackers: this._options.engagedAttackers,
       separation: this.separation,
-      restTime: this.restTime,
-      distance: this.distance,
+      restTime: this._options._restTime,
+      distance: this._options.distance,
       selectedAction: this._selectedAction,
       target: this.target,
-      defenderTerrain: this._fightSelectors._defenderTerrain,
-      attackerChargeTerrain: this._fightSelectors._selectedTerrain(TERRAIN_TYPE_MOVEMENT),
-      meleeCombatTerrain: this._fightSelectors._selectedTerrain(TERRAIN_TYPE_MELEE_COMBAT),
+      defenderTerrain: this._options._defenderTerrain,
+      attackerChargeTerrain: this._options._selectedTerrain(TERRAIN_TYPE_MOVEMENT),
+      meleeCombatTerrain: this._options._selectedTerrain(TERRAIN_TYPE_MELEE_COMBAT),
     }
   }
 
-  get _fightSelectors() {
-    return this.shadowRoot.querySelector('fight-selectors');
+  get _options() {
+    return this.shadowRoot.querySelector('environment-options');
   }
 
   get(id) {

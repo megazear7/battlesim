@@ -5,7 +5,7 @@ import { SharedStyles } from '../styles/shared-styles.js';
 import { ButtonSharedStyles } from '../styles/button-shared-styles.js';
 import TERRAIN from '../game/terrain.js';
 import { SLOPE_UP, SLOPE_DOWN, SLOPE_NONE } from '../models/terrain.js';
-import { REST, MOVE, CHARGE, FIRE } from '../game.js';
+import { MINUTES_PER_TURN, REST, MOVE, CHARGE, FIRE } from '../game.js';
 
 export const TERRAIN_TYPE_MOVEMENT = 'movement-terrain';
 export const TERRAIN_TYPE_DEFENDER = 'defender-terrain';
@@ -13,7 +13,7 @@ export const TERRAIN_TYPE_MELEE_COMBAT = 'melee-combat-terrain';
 export const TERRAIN_TYPE_RANGED_DEFENDER = 'ranged-defender-terrain';
 export const TERRAIN_TYPES = [ TERRAIN_TYPE_MOVEMENT, TERRAIN_TYPE_DEFENDER, TERRAIN_TYPE_MELEE_COMBAT, TERRAIN_TYPE_RANGED_DEFENDER ];
 
-class FightSelectors extends LitElement {
+class EnvironmentOptions extends LitElement {
   static get properties() {
     return {
       battle: { type: Object },
@@ -24,6 +24,10 @@ class FightSelectors extends LitElement {
       showLeader: { type: Boolean },
       showMount: { type: Boolean },
       showResupply: { type: Boolean },
+      showDistance: { type: Boolean },
+      showRestTime: { type: Boolean },
+      showEngagedAttackers: { type: Boolean },
+      showEngagedDefenders: { type: Boolean },
     };
   }
 
@@ -38,6 +42,12 @@ class FightSelectors extends LitElement {
 
   render() {
     return html`
+      <input id="distance" class="${classMap({hidden: ! this.showDistance})}" type="number" placeholder="Distance"></input>
+      <input id="rest-time" class="${classMap({hidden: ! this.showRestTime})}" type="number" placeholder="Minutes to rest" max="${MINUTES_PER_TURN}"></input>
+      <div class="${classMap({'row': true, hidden: ! this.showEngagedAttackers && ! this.showEngagedDefenders})}">
+        <input id="engaged-attackers" class="${classMap({hidden: ! this.showEngagedAttackers, full: this.showEngagedAttackers && ! this.showEngagedDefenders, stands: true})}" type="number" placeholder="Attacking Stands"></input>
+        <input id="engaged-defenders" class="${classMap({hidden: ! this.showEngagedDefenders, stands: true})}" type="number" placeholder="Defending Stands"></input>
+      </div>
       <battle-sim-selector id="resupply" radio class="${classMap({hidden: ! this.showResupply})}">
         <battle-sim-option>Resupply</battle-sim-option>
       </battle-sim-selector>
@@ -117,9 +127,17 @@ class FightSelectors extends LitElement {
     this.showHill = false;
     this.showMount = false;
     this.showResupply = false;
+    this.showEngagedAttackers = false;
+    this.showEngagedDefenders = false;
+    this.showDistance = false;
+    this.showRestTime = false;
   }
 
   reset() {
+    this.shadowRoot.getElementById('distance').value = '';
+    this.shadowRoot.getElementById('engaged-attackers').value = '';
+    this.shadowRoot.getElementById('engaged-defenders').value = '';
+    this.shadowRoot.getElementById('rest-time').value = '';
     [...this.shadowRoot.querySelectorAll('battle-sim-option')].forEach(option => option.selected = false);
   }
 
@@ -127,6 +145,45 @@ class FightSelectors extends LitElement {
     return this.shadowRoot.getElementById(typeId).value.map(index => TERRAIN[this.battle.terrain][index]);
   }
 
+  get _activeArmyLeadership() {
+    return this.shadowRoot.getElementById('attacker-leadership') && this.shadowRoot.getElementById('attacker-leadership').value;
+  }
+
+  get _defenderArmyLeadership() {
+    return this.shadowRoot.getElementById('defender-leadership') && this.shadowRoot.getElementById('defender-leadership').value;
+  }
+
+  get distance() {
+    return parseInt(this.shadowRoot.getElementById('distance').value === ''
+      ? -1
+      : this.shadowRoot.getElementById('distance').value);
+  }
+
+  get restTime() {
+    return Math.min(parseInt(this.shadowRoot.getElementById('rest-time').value === ''
+      ? MINUTES_PER_TURN
+      : this.shadowRoot.getElementById('rest-time').value), MINUTES_PER_TURN);
+  }
+
+  get separation() {
+    return parseInt(this.shadowRoot.getElementById('separation').value
+      ? this.shadowRoot.getElementById('separation').value
+      : 0);
+  }
+
+  get engagedAttackers() {
+    return parseInt(this.shadowRoot.getElementById('engaged-attackers').value === ''
+      ? -1
+      : this.shadowRoot.getElementById('engaged-attackers').value);
+  }
+
+  get engagedDefenders() {
+    if (this._selectedAction === CHARGE) {
+      return parseInt(this.get('engaged-defenders').value === '' ? -1 : this.get('engaged-defenders').value);
+    } else {
+      return 0;
+    }
+  }
   get _defenderTerrain() {
     return this.action === CHARGE
       ? this._selectedTerrain(TERRAIN_TYPE_DEFENDER)
@@ -167,4 +224,4 @@ class FightSelectors extends LitElement {
   }
 }
 
-window.customElements.define('fight-selectors', FightSelectors);
+window.customElements.define('environment-options', EnvironmentOptions);

@@ -17,7 +17,7 @@ import './battle-sim-alert.js';
 import './battle-sim-selector.js';
 import './battle-sim-option.js';
 import './button-tray.js';
-import './fight-selectors.js';
+import './environment-options.js';
 import './army-action.js';
 import './battle-event.js';
 
