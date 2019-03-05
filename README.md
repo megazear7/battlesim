@@ -31,5 +31,8 @@ npm run deploy
 
 ###### TODO
 
-1. Allow players to choose an army for shared battles so that they can only take actions for that army.
+1. Auto add shared battle to redux in the /shared url
+1. /shared url is not working from github hosting
+1. When no battle exists the "battle loading" message appears instead of the "no battle selected" message.
+1. Somehow add redirects from /war to the index.html so absolute urls work from github hosting.
 1. Fully review the results of each action, how environment details affect the outcome, and how unit stats affect the outcome.
