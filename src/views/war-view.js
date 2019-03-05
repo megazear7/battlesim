@@ -80,6 +80,9 @@ class WarView extends connect(store)(PageViewElement) {
               <button @click="${() => this._leaveSharedBattle(battle)}">Leave</button>
               <button @click="${e => this._shareBattle(e.target, battle)}">Share</button>
             </button-tray>
+            <button class="btn-link">Play ${battle.army0.name}</button>
+            <button class="btn-link">Play ${battle.army1.name}</button>
+            <button class="btn-link">Play both armies</button>
           </div>
         `)}
         ${this._sharedBattles.length === 0 ? html`

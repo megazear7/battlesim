@@ -146,7 +146,7 @@ class FightView extends BattleViewWrapper {
         skipResults = this._selectedAction === CHARGE && ! encounter.attackerReachedDefender;
       }
 
-      store.dispatch(updateMessage([actionResult.messages]));
+      store.dispatch(updateMessage([actionResult.messages.join('')]));
 
       this._actionMessages = actionResult.messages;
       this._actionUpdates = actionResult.updates;
