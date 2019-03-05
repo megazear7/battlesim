@@ -34,13 +34,13 @@ class WarView extends connect(store)(PageViewElement) {
   render() {
     return html`
       <section>
-        <h2>Your Battles</h2>
+        <h2>Private Battles</h2>
         ${repeat(this._battles, battle => html`
           <div class="${classMap({
       battle: true,
       active: battle.active
     })}" data-index="${battle.id}">
-            <h4>${battle.name}</h4>
+            <h3>${battle.name}</h3>
             <pre>Created ${battle.createdMessage}</pre>
             <button-tray>
               ${battle.active ? html`
@@ -48,17 +48,20 @@ class WarView extends connect(store)(PageViewElement) {
               ` : html`
                 <button @click="${e => this._playBattle(parseInt(e.target.closest('.battle').dataset.index))}">Play</button>
               `}
-              <button @click="${this._removeBattle}">Remove</button>
-              <button @click="${this._makeBattleShared}">Share</button>
+              <button @click="${this._removeBattle}">Delete</button>
+              <button @click="${this._makeBattleShared}">Publish</button>
             </button-tray>
           </div>
         `)}
+        ${this._battles.length === 0 ? html`
+          <p>You have no private battles. Create one below.</p>
+        ` : ''}
       </section>
       <section>
         <h2>Shared Battles</h2>
         ${repeat(this._sharedBattles, battle => html`
           <div class="shared-battle">
-            <h4>${battle.name}</h4>
+            <h3>${battle.name}</h3>
             <p class="battle-url">${battle.prettyUrl}</p>
             <button-tray>
               ${battle.active ? html`
@@ -71,6 +74,9 @@ class WarView extends connect(store)(PageViewElement) {
             </button-tray>
           </div>
         `)}
+        ${this._sharedBattles.length === 0 ? html`
+          <p>You have not joined any shared battles. You can join a shared battle by publishing a private battle or if someone else shares a battle with you.</p>
+        ` : ''}
       </section>
       <section>
         <div>
@@ -115,27 +121,31 @@ class WarView extends connect(store)(PageViewElement) {
     this._battles = state.battle.battles.map((battle, index) => new Battle(battle, index, index === state.battle.activeBattle.id));
   }
 
+  _alertShare(button, battle) {
+    var text = button.closest('.shared-battle').querySelector('.battle-url');
+    var selection = window.getSelection();
+    var range = document.createRange();
+    range.selectNodeContents(text);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    document.execCommand('copy');
+    alert(`Battle url copied! Share it with your friends.\n\n${battle.prettyUrl}`);
+  }
+
   _shareBattle(button, battle) {
     if (navigator.share) {
       navigator.share({
         title: battle.name,
-        text: 'Share ' + battle.name + ' from battlesim.',
+        text: 'Battlesim: Play ' + battle.name,
         url: battleModel.url
-      }).catch(error => console.log('Error sharing', error));
+      }).catch(error => this._alertShare(button, battle));
     } else {
-      var text = button.closest('.shared-battle').querySelector('.battle-url');
-      var selection = window.getSelection();
-      var range = document.createRange();
-      range.selectNodeContents(text);
-      selection.removeAllRanges();
-      selection.addRange(range);
-      document.execCommand('copy');
-      alert('Battle url copied');
+      this._alertShare(button, battle);
     }
   }
 
   _makeBattleShared(e) {
-    if (confirm('Are you sure you want to share this battle?')) {
+    if (confirm('Are you sure you want to publish this battle?')) {
       let battleIndex = parseInt(e.target.closest('.battle').dataset.index);
       let battle = store.getState().battle.battles[battleIndex];
       battle.uuid = makeid();
@@ -149,16 +159,6 @@ class WarView extends connect(store)(PageViewElement) {
         let battleModel = new Battle(battle, docRef.id);
 
         this._playSharedBattle(battleModel);
-
-        if (navigator.share) {
-          navigator.share({
-            title: battle.name,
-            text: 'Share ' + battle.name + ' from battlesim.',
-            url: battleModel.url
-          }).catch(error => console.log('Error sharing', error));
-        } else {
-          alert("Share this url with a friend: " + battleModel.url);
-        }
       });
     }
   }
