@@ -8,6 +8,7 @@ import {
   NO_PLAYER_TURNS } from '../game.js';
 import {
   TAKE_ACTION,
+  UPDATE_MESSAGE,
   TAKE_ARMY_ACTION,
   FINISH_EVENT,
   ADD,
@@ -66,8 +67,11 @@ const battle = (state = initialState, action) => {
         after: {...unit}
       });
     });
+    activeBattle.messages = [ ];
     activeBattle.actionLog.push(actionLog);
     updateTime(activeBattle);
+  } else if (activeBattle && action.type === UPDATE_MESSAGE) {
+    activeBattle.messages = action.messages;
   } else if (activeBattle && action.type === TAKE_ARMY_ACTION && activeBattle.activeAction.type === ACTION_TYPE_ARMY) {
     activeBattle.armies[activeBattle.activeAction.index].nextAction += SECONDS_PER_TURN;
     updateTime(activeBattle);

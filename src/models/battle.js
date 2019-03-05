@@ -19,6 +19,7 @@ export default class Battle {
     ruleset,
     second = 0,
     startTime,
+    messages = [ ],
     events = [ ],
     terrain,
     unitTemplates,
@@ -43,6 +44,7 @@ export default class Battle {
     this.ruleset = ruleset;
     this.second = second;
     this.startTime = startTime;
+    this.messages = messages;
     this.events = events ;
     this.terrain = terrain;
     this.unitTemplates = unitTemplates;

@@ -4,7 +4,7 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import BattleViewWrapper from './battle-view-wrapper.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
-import { takeAction, takeArmyAction, finishEvent } from '../actions/battle.js';
+import { takeAction, takeArmyAction, finishEvent, updateMessage } from '../actions/battle.js';
 import { SharedStyles } from '../styles/shared-styles.js';
 import { ButtonSharedStyles } from '../styles/button-shared-styles.js';
 import Encounter from '../models/encounter.js';
@@ -19,7 +19,6 @@ class FightView extends BattleViewWrapper {
     return {
       _targetUnit: { type: Object },
       _actionMessages: { type: Array },
-      _chargeMessage: { type: String },
       _showSeparation: { type: Boolean },
       _showTarget: { type: Boolean },
       _showChargeMessage: { type: Boolean },
@@ -50,6 +49,7 @@ class FightView extends BattleViewWrapper {
   }
 
   battleViewRender() {
+    console.log(this._activeBattle.messages);
     return html`
       ${this._activeBattle.unitIsActing ? html`
         <section>
@@ -70,7 +70,11 @@ class FightView extends BattleViewWrapper {
         </section>
         <section>
           <div>
-            <p class="${classMap({hidden: ! this._showChargeMessage})}">${this._chargeMessage}</p>
+            ${this._activeBattle.messages ? html`
+              ${repeat(this._activeBattle.messages, message => html`
+                <p>${message}</p>
+              `)}
+            ` : ''}
             <div class="row">
               <input id="separation" class="${classMap({hidden: ! this._showSeparation})}" type="number" placeholder="Distance"></input>
               <select id="target" class="${classMap({hidden: ! this._showTarget})}" @change="${this._updateTarget}">
@@ -89,7 +93,6 @@ class FightView extends BattleViewWrapper {
             <battle-sim-alert warning>You must provide a value for each field listed above the button</battle-sim-alert>
             <environment-options .battle="${this._activeBattle}" action="${this._selectedAction}"></environment-options>
             <div class="${classMap({hidden: ! this._showActionResult})}">
-              ${repeat(this._actionMessages, message => html`<p>${message}</p>`)}
               <button-tray>
                 <button @click="${this._progressToNextAction}">Next Action</button>
               </button-tray>
@@ -118,7 +121,7 @@ class FightView extends BattleViewWrapper {
     if (this._validSituation) {
       this._hideInputs();
       const encounter = this._createEncounter();
-      this._chargeMessage = encounter.chargeMessage;
+      store.dispatch(updateMessage([encounter.chargeMessage]));
       this._options.showEngagedAttackers = encounter.attackerReachedDefender;
       this._options.showEngagedDefenders = encounter.attackerReachedDefender;
       this._actionsDisabled = true;
@@ -142,6 +145,8 @@ class FightView extends BattleViewWrapper {
         actionResult = encounter.fight();
         skipResults = this._selectedAction === CHARGE && ! encounter.attackerReachedDefender;
       }
+
+      store.dispatch(updateMessage([actionResult.messages]));
 
       this._actionMessages = actionResult.messages;
       this._actionUpdates = actionResult.updates;

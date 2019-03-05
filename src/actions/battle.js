@@ -1,4 +1,5 @@
 export const TAKE_ACTION = 'TAKE_ACTION';
+export const UPDATE_MESSAGE = 'UPDATE_MESSAGE';
 export const TAKE_ARMY_ACTION = 'TAKE_ARMY_ACTION';
 export const FINISH_EVENT = 'FINISH_EVENT';
 export const ADD = 'ADD';
@@ -14,6 +15,13 @@ export const takeAction = (updates, message, environment) => {
     updates,
     message,
     environment
+  };
+};
+
+export const updateMessage = (messages) => {
+  return {
+    type: UPDATE_MESSAGE,
+    messages,
   };
 };
 
