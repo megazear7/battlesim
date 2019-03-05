@@ -1,17 +1,6 @@
 import { html, SharedStyles, $battleViewWrapperDefault as BattleViewWrapper, repeat } from '../components/battle-sim.js';
 
 class RulesView extends BattleViewWrapper {
-  static get properties() {
-    return {
-      _battleIsShared: {
-        type: Boolean
-      },
-      _activeBattle: {
-        type: Object
-      }
-    };
-  }
-
   static get styles() {
     return [SharedStyles];
   }

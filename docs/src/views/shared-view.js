@@ -1,11 +1,8 @@
-import { html, css, PageViewElement, SharedStyles, connect, store, setActiveBattle, SHARED_BATTLE } from '../components/battle-sim.js';
+import { html, PageViewElement, SharedStyles, connect, store, setActiveBattle, SHARED_BATTLE } from '../components/battle-sim.js';
 
 class SharedView extends connect(store)(PageViewElement) {
   static get properties() {
     return {
-      _uuid: {
-        type: String
-      },
       _message: {
         type: String
       }
@@ -13,18 +10,12 @@ class SharedView extends connect(store)(PageViewElement) {
   }
 
   static get styles() {
-    return [SharedStyles, css`
-      `];
-  }
-
-  constructor() {
-    super();
-    this.uuid = window.location.pathname.split('/')[2];
+    return [SharedStyles];
   }
 
   connectedCallback() {
     super.connectedCallback();
-    firebase.firestore().collection('apps/battlesim/battles').where('battle.uuid', '==', this.uuid).limit(1).get().then(querySnapshot => {
+    firebase.firestore().collection('apps/battlesim/battles').where('battle.uuid', '==', window.location.pathname.split('/')[2]).limit(1).get().then(querySnapshot => {
       if (querySnapshot.docs.length > 0) {
         let doc = querySnapshot.docs[0];
         let sharedBattleIds = JSON.parse(localStorage.getItem("sharedBattles")) || [];
@@ -51,8 +42,6 @@ class SharedView extends connect(store)(PageViewElement) {
       </section>
     `;
   }
-
-  stateChanged(state) {}
 
 }
 
