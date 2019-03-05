@@ -189,7 +189,10 @@ class WarView extends connect(store)(PageViewElement) {
 
   _leaveSharedBattle(sharedBattle) {
     this._sharedBattles = this._sharedBattles.filter(battle => battle.id !== sharedBattle.id);
-    localStorage.setItem("sharedBattles", JSON.stringify(this._sharedBattles.map(battle => battle.id)));
+    localStorage.setItem("sharedBattles", JSON.stringify(this._sharedBattles.map(battle => ({
+      playingArmy: battle.playingArmy,
+      id: battle.id
+    }))));
   }
 
   updateRuleset() {
