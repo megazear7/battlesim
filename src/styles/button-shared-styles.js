@@ -19,6 +19,10 @@ export const ButtonSharedStyles = css`
     color: var(--app-primary-color);
   }
 
+  .btn-link.active-link {
+    color: var(--app-primary-color);
+  }
+
   button:disabled {
     cursor: unset;
     border-color: grey;

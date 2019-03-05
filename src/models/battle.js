@@ -5,7 +5,8 @@ import {
   NO_PLAYER_TURNS,
   ACTION_TYPE_UNIT,
   ACTION_TYPE_ARMY,
-  ACTION_TYPE_EVENT } from '../game.js';
+  ACTION_TYPE_EVENT,
+  ARMY_BOTH } from '../game.js';
 import UNITS from '../game/units.js';
 import SCENARIOS from '../game/scenarios.js';
 import RULESETS from '../game/rules.js';
@@ -36,6 +37,7 @@ export default class Battle {
     actionLog = [ ],
     turnStarted = 0,
     armies = [ ],
+    playingArmy = ARMY_BOTH,
     units = [ ],
     activeAction = { },
   }, id, active = false) {
@@ -64,6 +66,7 @@ export default class Battle {
     this.activeAction = activeAction;
     this.createdAt = createdAt;
     this.armies = armies;
+    this.playingArmy = playingArmy;
     this.id = id;
     this.active = active;
   }
@@ -78,6 +81,16 @@ export default class Battle {
 
   get createdDate() {
     return new Date(this.createdAt);
+  }
+
+  get playingArmyIsActive() {
+    if (this.activeAction.type === ACTION_TYPE_ARMY) {
+      return this.playingArmy === ARMY_BOTH || this.playingArmy === this.activeAction.index;
+    } else if (this.activeAction.type === ACTION_TYPE_UNIT) {
+      return this.playingArmy === ARMY_BOTH || this.playingArmy === this.activeUnit.armyIndex;
+    } else {
+      return true;
+    }
   }
 
   get createdMessage() {

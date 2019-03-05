@@ -265,15 +265,17 @@ class BattleSim extends connect(store)(LitElement) {
     this._showMobileNav = true;
 
     let state = store.getState();
-    let sharedBattleIds = JSON.parse(localStorage.getItem("sharedBattles")) || [];
+    let sharedBattles = JSON.parse(localStorage.getItem("sharedBattles")) || [];
     let activeBattleId = state.battle.activeBattle.id;
 
-    sharedBattleIds.forEach(sharedBattleId => {
+    sharedBattles.forEach(sharedBattle => {
       firebase.firestore().collection('apps/battlesim/battles')
-      .doc(sharedBattleId)
+      .doc(sharedBattle.id)
       .onSnapshot(doc => {
         if (doc.exists) {
-          store.dispatch(addSharedBattle(doc.id, doc.data().battle));
+          let battle = doc.data().battle;
+          battle.playingArmy = sharedBattle.playingArmy;
+          store.dispatch(addSharedBattle(doc.id, battle));
         }
       });
     });

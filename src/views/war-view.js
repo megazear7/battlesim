@@ -2,7 +2,7 @@ import { html, css } from 'lit-element';
 import { repeat } from 'lit-html/directives/repeat';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { PageViewElement } from './page-view-element.js';
-import { createNewBattle, setActiveBattle, removeBattle, addSharedBattle } from '../actions/battle.js';
+import { createNewBattle, setActiveBattle, removeBattle, addSharedBattle, playArmy } from '../actions/battle.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
 import { SharedStyles } from '../styles/shared-styles.js';
@@ -11,7 +11,7 @@ import BATTLE_TEMPLATES from '../game/battle-templates.js';
 import RULES from '../game/rules.js';
 import Battle from '../models/battle.js';
 import { makeid } from '../utils/math-utils.js';
-import { SHARED_BATTLE, LOCAL_BATTLE } from '../game.js';
+import { SHARED_BATTLE, LOCAL_BATTLE, ARMY_0, ARMY_1, ARMY_BOTH } from '../game.js';
 
 class WarView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -80,9 +80,9 @@ class WarView extends connect(store)(PageViewElement) {
               <button @click="${() => this._leaveSharedBattle(battle)}">Leave</button>
               <button @click="${e => this._shareBattle(e.target, battle)}">Share</button>
             </button-tray>
-            <button class="btn-link">Play ${battle.army0.name}</button>
-            <button class="btn-link">Play ${battle.army1.name}</button>
-            <button class="btn-link">Play both armies</button>
+            <button @click="${() => this._playArmy(battle, ARMY_0)}" class="${classMap({'btn-link': true, 'active-link': battle.playingArmy === ARMY_0})}">Play ${battle.army0.name}</button>
+            <button @click="${() => this._playArmy(battle, ARMY_1)}" class="${classMap({'btn-link': true, 'active-link': battle.playingArmy === ARMY_1})}">Play ${battle.army1.name}</button>
+            <button @click="${() => this._playArmy(battle, ARMY_BOTH)}" class="${classMap({'btn-link': true, 'active-link': battle.playingArmy === ARMY_BOTH})}">Play both armies</button>
           </div>
         `)}
         ${this._sharedBattles.length === 0 ? html`
@@ -129,6 +129,10 @@ class WarView extends connect(store)(PageViewElement) {
       new Battle(battle, index, index === state.battle.activeBattle.id));
   }
 
+  _playArmy(battle, army) {
+    store.dispatch(playArmy(battle.id, army));
+  }
+
   _alertShare(button, battle) {
     var text = button.closest('.shared-battle').querySelector('.battle-url');
     var selection = window.getSelection();
@@ -164,7 +168,10 @@ class WarView extends connect(store)(PageViewElement) {
       .then(docRef => {
         let sharedBattleIds = JSON.parse(localStorage.getItem("sharedBattles")) || [];
         store.dispatch(removeBattle(battleIndex));
-        localStorage.setItem("sharedBattles", JSON.stringify([...sharedBattleIds, docRef.id]));
+        localStorage.setItem("sharedBattles", JSON.stringify([...sharedBattleIds, {
+          playingArmy: ARMY_BOTH,
+          id: docRef.id,
+        }]));
         docRef.get().then(doc => store.dispatch(addSharedBattle(doc.id, doc.data().battle)));
 
         let battleModel = new Battle(battle, docRef.id);

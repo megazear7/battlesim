@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit-element';
 import { SharedStyles } from '../styles/shared-styles.js';
 import { ButtonSharedStyles } from '../styles/button-shared-styles.js';
 import { repeat } from 'lit-html/directives/repeat';
+import { ARMY_BOTH } from '../game.js';
 
 class ArmyAction extends LitElement {
   static get properties() {
@@ -29,9 +30,11 @@ class ArmyAction extends LitElement {
       <div class="muted centered">${this.battle.currentTimeMessage}</div>
       ${repeat(this.battle.armyTakingAction.messages, message => html`<p>${message}</p>`)}
       <div>
-        <button-tray>
-          <button @click="${this.done}">Next Action</button>
-        </button-tray>
+        ${this.battle.playingArmyIsActive ? html`
+          <button-tray>
+            <button @click="${this.done}">Next Action</button>
+          </button-tray>
+        ` : ''}
       </div>
     `;
   }

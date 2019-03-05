@@ -24,8 +24,8 @@ npm run deploy
 
 1. LitElement for UI
 1. Redux for state management
-1. Local storage for local state persistence
 1. Firestore for remote state persistence
+1. Local storage for local state persistence
 1. Service worker for offline availability
 1. Web manifest for for installability
 

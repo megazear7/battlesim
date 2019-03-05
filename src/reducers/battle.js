@@ -17,6 +17,7 @@ import {
   SET_ACTIVE_BATTLE,
   REMOVE_BATTLE,
   ADD_SHARED_BATTLE,
+  PLAY_ARMY,
 } from '../actions/battle.js';
 import { LOCAL_BATTLE, SHARED_BATTLE } from '../game.js';
 import Battle from '../models/battle.js';
@@ -92,6 +93,17 @@ const battle = (state = initialState, action) => {
     activeBattle.units.push(newUnit);
   } else if (activeBattle && action.type === REMOVE) {
     activeBattle.units.splice(action.index, 1);
+  } else if (activeBattle && action.type === PLAY_ARMY) {
+    if (newState.activeBattle.type === SHARED_BATTLE) {
+      let sharedBattles = JSON.parse(localStorage.getItem("sharedBattles")) || [];
+      sharedBattles.forEach(battle => {
+        if (battle.id === action.battleId) {
+          battle.playingArmy = action.army;
+        }
+      });
+      localStorage.setItem("sharedBattles", JSON.stringify(sharedBattles));
+    }
+    activeBattle.playingArmy = action.army;
   } else if (action.type === CREATE_NEW_BATTLE) {
     let newBattle = {
       ...BATTLE_TEMPLATES[action.battleStats.templateIndex],
@@ -134,7 +146,7 @@ const battle = (state = initialState, action) => {
     newState.activeBattle = action.activeBattle;
   }
 
-  if (activeBattle && newState.activeBattle.type === SHARED_BATTLE && action.type !== ADD_SHARED_BATTLE && action.type !== SET_ACTIVE_BATTLE) {
+  if (activeBattle && newState.activeBattle.type === SHARED_BATTLE && action.type !== ADD_SHARED_BATTLE && action.type !== SET_ACTIVE_BATTLE && action.type !== PLAY_ARMY) {
     firebase.firestore().collection('apps/battlesim/battles')
     .doc(newState.activeBattle.id)
     .set({ battle: JSON.parse(JSON.stringify(activeBattle)) }); // The stringify / parse gets rid of undefined attributes which firestore will complain about.
