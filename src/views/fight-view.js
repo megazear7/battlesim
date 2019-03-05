@@ -11,7 +11,7 @@ import Encounter from '../models/encounter.js';
 import Situation from '../models/situation.js';
 import Battle from '../models/battle.js';
 import Unit from '../models/unit.js';
-import { MINUTES_PER_TURN, REST, MOVE, CHARGE, FIRE, NO_ACTION } from '../game.js';
+import { REST, MOVE, CHARGE, FIRE, NO_ACTION } from '../game.js';
 import { TERRAIN_TYPE_MOVEMENT, TERRAIN_TYPE_MELEE_COMBAT } from '../components/environment-options.js';
 
 class FightView extends BattleViewWrapper {
