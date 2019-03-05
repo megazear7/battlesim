@@ -31,7 +31,6 @@ npm run deploy
 
 ###### TODO
 
-1. Max strength is off for the example civil war battle.
 1. Melee combat results don't seem to be showing up
 1. Moving even at the fastest pace takes no energy by the looks of it.
 1. Auto add shared battle to redux in the /shared url
