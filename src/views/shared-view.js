@@ -4,7 +4,7 @@ import { SharedStyles } from '../styles/shared-styles.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
 import { setActiveBattle } from '../actions/battle.js';
-import { SHARED_BATTLE } from '../game.js';
+import { SHARED_BATTLE, ARMY_BOTH } from '../game.js';
 
 class SharedView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -31,7 +31,10 @@ class SharedView extends connect(store)(PageViewElement) {
         let doc = querySnapshot.docs[0];
         let sharedBattleIds = JSON.parse(localStorage.getItem("sharedBattles")) || [];
         if (sharedBattleIds.indexOf(doc.id) === -1) {
-          localStorage.setItem("sharedBattles", JSON.stringify([...sharedBattleIds, doc.id ]));
+          localStorage.setItem("sharedBattles", JSON.stringify([...sharedBattleIds, {
+            playingArmy: ARMY_BOTH,
+            id: doc.id
+          } ]));
         }
 
         store.dispatch(setActiveBattle({
