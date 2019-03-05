@@ -1,7 +1,7 @@
 import { html, css } from 'lit-element';
 import { repeat } from 'lit-html/directives/repeat';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { PageViewElement } from './page-view-element.js';
+import BattleViewWrapper from './battle-view-wrapper.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
 import { takeAction, takeArmyAction, finishEvent } from '../actions/battle.js';
@@ -11,14 +11,12 @@ import Encounter from '../models/encounter.js';
 import Situation from '../models/situation.js';
 import Battle from '../models/battle.js';
 import Unit from '../models/unit.js';
-import { MINUTES_PER_TURN, SHARED_BATTLE, LOCAL_BATTLE, REST, MOVE, CHARGE, FIRE, NO_ACTION } from '../game.js';
+import { MINUTES_PER_TURN, REST, MOVE, CHARGE, FIRE, NO_ACTION } from '../game.js';
 import { TERRAIN_TYPE_MOVEMENT, TERRAIN_TYPE_MELEE_COMBAT } from '../components/fight-selectors.js';
 
-class FightView extends connect(store)(PageViewElement) {
+class FightView extends BattleViewWrapper {
   static get properties() {
     return {
-      _battleIsShared: { type: Boolean },
-      _activeBattle: { type: Object },
       _targetUnit: { type: Object },
       _actionMessages: { type: Array },
       _chargeMessage: { type: String },
@@ -54,105 +52,77 @@ class FightView extends connect(store)(PageViewElement) {
     ];
   }
 
-  render() {
+  battleViewRender() {
     return html`
-      ${this._activeBattle ? html`
-        ${this._activeBattle.unitIsActing ? html`
-          <section>
-            <h2>${this._activeBattle.activeUnit.name}</h2>
-            <div class="muted centered">Army: ${this._activeBattle.activeArmyModel.name}</div>
-            <div class="muted centered">${this._activeBattle.currentTimeMessage}</div>
-            <p>${this._activeBattle.activeUnit.detailedStatus}</p>
-            <hr>
-            <p>${this._activeBattle.activeUnit.desc}</p>
-          </section>
-          <section>
-            <div class="unit-actions">
-              <button-tray ?has-selection="${this._hasSelection}">
-                <button @click="${this._rest}" id="rest" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === REST})}">Rest</button>
-                <button @click="${this._move}" id="move" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === MOVE})}">Move</button>
-                <button @click="${this._charge}" id="charge" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === CHARGE})}">Charge</button>
-                <button @click="${this._fire}" id="fire" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === FIRE})}">Fire</button>
+      ${this._activeBattle.unitIsActing ? html`
+        <section>
+          <h2>${this._activeBattle.activeUnit.name}</h2>
+          <div class="muted centered">Army: ${this._activeBattle.activeArmyModel.name}</div>
+          <div class="muted centered">${this._activeBattle.currentTimeMessage}</div>
+          <p>${this._activeBattle.activeUnit.detailedStatus}</p>
+          <hr>
+          <p>${this._activeBattle.activeUnit.desc}</p>
+        </section>
+        <section>
+          <div class="unit-actions">
+            <button-tray ?has-selection="${this._hasSelection}">
+              <button @click="${this._rest}" id="rest" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === REST})}">Rest</button>
+              <button @click="${this._move}" id="move" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === MOVE})}">Move</button>
+              <button @click="${this._charge}" id="charge" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === CHARGE})}">Charge</button>
+              <button @click="${this._fire}" id="fire" ?disabled="${this._actionsDisabled}" class="${classMap({selected: this._selectedAction === FIRE})}">Fire</button>
+            </button-tray>
+          </div>
+        </section>
+        <section>
+          <div>
+            <p class="${classMap({hidden: ! this._showChargeMessage})}">${this._chargeMessage}</p>
+            <div class="row">
+              <input id="separation" class="${classMap({hidden: ! this._showSeparation})}" type="number" placeholder="Distance"></input>
+              <select id="target" class="${classMap({hidden: ! this._showTarget})}" @change="${this._updateTarget}">
+                <option value="">Select Target</option>
+                ${repeat(this._activeBattle.activeUnit.targets, target => html`
+                  <option value="${target.id}">${target.unit.name}</option>
+                `)}
+              </select>
+            </div>
+            <button-tray class="${classMap({hidden: ! this._showDoCombat})}">
+              <button @click="${this._doCombat}">Do Combat</button>
+            </button-tray>
+            <button-tray class="${classMap({hidden: ! this._showTakeAction})}">
+              <button @click="${this._takeAction}">Take Action</button>
+            </button-tray>
+            <battle-sim-alert warning>You must provide a value for each field listed above the button</battle-sim-alert>
+            <input id="distance" class="${classMap({hidden: ! this._showDistance})}" type="number" placeholder="Distance"></input>
+            <input id="rest-time" class="${classMap({hidden: ! this._showRestTime})}" type="number" placeholder="Minutes to rest" max="${MINUTES_PER_TURN}"></input>
+            <div class="${classMap({hidden: ! this._showEngagedAttackers && ! this._showEngagedDefenders})}">
+              <input id="engaged-attackers" class="${classMap({hidden: ! this._showEngagedAttackers, full: this._showEngagedAttackers && ! this._showEngagedDefenders, stands: true})}" type="number" placeholder="Attacking Stands"></input>
+              <input id="engaged-defenders" class="${classMap({hidden: ! this._showEngagedDefenders, stands: true})}" type="number" placeholder="Defending Stands"></input>
+            </div>
+            <fight-selectors .battle="${this._activeBattle}" action="${this._selectedAction}"></fight-selectors>
+            <div class="${classMap({hidden: ! this._showActionResult})}">
+              ${repeat(this._actionMessages, message => html`<p>${message}</p>`)}
+              <button-tray>
+                <button @click="${this._progressToNextAction}">Next Action</button>
               </button-tray>
             </div>
-          </section>
+          </div>
+        </section>
+      `: this._activeBattle.armyIsActing ? html`
           <section>
-            <div>
-              <p class="${classMap({hidden: ! this._showChargeMessage})}">${this._chargeMessage}</p>
-              <div class="row">
-                <input id="separation" class="${classMap({hidden: ! this._showSeparation})}" type="number" placeholder="Distance"></input>
-                <select id="target" class="${classMap({hidden: ! this._showTarget})}" @change="${this._updateTarget}">
-                  <option value="">Select Target</option>
-                  ${repeat(this._activeBattle.activeUnit.targets, target => html`
-                    <option value="${target.id}">${target.unit.name}</option>
-                  `)}
-                </select>
-              </div>
-              <button-tray class="${classMap({hidden: ! this._showDoCombat})}">
-                <button @click="${this._doCombat}">Do Combat</button>
-              </button-tray>
-              <button-tray class="${classMap({hidden: ! this._showTakeAction})}">
-                <button @click="${this._takeAction}">Take Action</button>
-              </button-tray>
-              <battle-sim-alert warning>You must provide a value for each field listed above the button</battle-sim-alert>
-              <input id="distance" class="${classMap({hidden: ! this._showDistance})}" type="number" placeholder="Distance"></input>
-              <input id="rest-time" class="${classMap({hidden: ! this._showRestTime})}" type="number" placeholder="Minutes to rest" max="${MINUTES_PER_TURN}"></input>
-              <div class="${classMap({hidden: ! this._showEngagedAttackers && ! this._showEngagedDefenders})}">
-                <input id="engaged-attackers" class="${classMap({hidden: ! this._showEngagedAttackers, full: this._showEngagedAttackers && ! this._showEngagedDefenders, stands: true})}" type="number" placeholder="Attacking Stands"></input>
-                <input id="engaged-defenders" class="${classMap({hidden: ! this._showEngagedDefenders, stands: true})}" type="number" placeholder="Defending Stands"></input>
-              </div>
-              <fight-selectors .battle="${this._activeBattle}" action="${this._selectedAction}"></fight-selectors>
-              <div class="${classMap({hidden: ! this._showActionResult})}">
-                ${repeat(this._actionMessages, message => html`<p>${message}</p>`)}
-                <button-tray>
-                  <button @click="${this._progressToNextAction}">Next Action</button>
-                </button-tray>
-              </div>
-            </div>
+            <army-action .battle="${this._activeBattle}" @done="${this._takeArmyAction}"></army-action>
           </section>
-        `: this._activeBattle.armyIsActing ? html`
-            <section>
-              <army-action .battle="${this._activeBattle}" @done="${this._takeArmyAction}"></army-action>
-            </section>
-          ` : html`
-            <section>
-              <battle-event .battle="${this._activeBattle}" @done="${this._finishEvent}"></battle-event>
-            </section>
-          `
-        }
-      `:html`
-        ${this._battleIsShared ? html`
+        ` : html`
           <section>
-            <p>Loading battle...</p>
+            <battle-event .battle="${this._activeBattle}" @done="${this._finishEvent}"></battle-event>
           </section>
-        `: html`
-          <section>
-            <p>No active battle. Go to the war tab and either select a battle or create a new battle.</p>
-          </section>
-        `}
-      `}
+        `
+      }
     `;
   }
 
   constructor() {
-    super()
+    super();
     this._actionUpdates = [];
-  }
-
-  stateChanged(state) {
-    this._actionMessages = [];
-    if (state.battle.activeBattle.type === LOCAL_BATTLE) {
-      this._battleIsShared = false;
-      if (state.battle.battles.length > state.battle.activeBattle.id) {
-        this._activeBattle = new Battle(state.battle.battles[state.battle.activeBattle.id], state.battle.activeBattle.id);
-      }
-    } else if (state.battle.activeBattle.type === SHARED_BATTLE) {
-      this._battleIsShared = true;
-      this._activeBattle = Object.keys(state.battle.sharedBattles).indexOf(state.battle.activeBattle.id) >= 0
-        ? new Battle(state.battle.sharedBattles[state.battle.activeBattle.id], state.battle.activeBattle.id)
-        : undefined;
-      this._unitTemplates = this._activeBattle ? this._activeBattle.unitTemplatesFor(0) : [ ];
-    }
   }
 
   _doCombat() {
@@ -291,13 +261,13 @@ class FightView extends connect(store)(PageViewElement) {
 
   _createSituation() {
     return new Situation({
-          unit: this._activeBattle.activeUnit,
-          armyLeadership: this._activeArmyLeadership,
-          movementTerrain: this._fightSelectors._selectedTerrain(TERRAIN_TYPE_MOVEMENT),
-          mount: this._fightSelectors.mount,
-          unmount: this._fightSelectors.unmount,
-          pace: this._fightSelectors.pace,
-          slope: this._fightSelectors.slope });
+      unit: this._activeBattle.activeUnit,
+      armyLeadership: this._activeArmyLeadership,
+      movementTerrain: this._fightSelectors._selectedTerrain(TERRAIN_TYPE_MOVEMENT),
+      mount: this._fightSelectors.mount,
+      unmount: this._fightSelectors.unmount,
+      pace: this._fightSelectors.pace,
+      slope: this._fightSelectors.slope });
   }
 
   _hideInputs() {

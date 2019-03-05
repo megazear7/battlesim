@@ -70,6 +70,10 @@ export const SharedStyles = css`
     font-size: 0.75rem;
     line-height: 1rem;
   }
+  
+  img {
+    max-width: 100%;
+  }
 
   hr {
     border: 0.5px solid var(--app-secondary-color);
