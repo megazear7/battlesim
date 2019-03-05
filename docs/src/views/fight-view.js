@@ -1,4 +1,4 @@
-import { weightedRandom, weightedRandomTowards, randomBellMod, dropOff, dropOffWithBoost, weightedAverage, roundToNearest, SECONDS_IN_AN_HOUR, SECONDS_IN_AN_MINUTE, randomMinutesBetween, SLOPE_UP, SLOPE_DOWN, SLOPE_NONE as SLOPE_NONE$1, MAX_TERRAIN, Terrain, statModFor, MAX_EQUIPMENT_WEIGHT, MORALE_SUCCESS, MORALE_FAILURE, FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP, MELEE_WEAPON, RANGED_WEAPON, MAX_STAT, SECONDS_PER_TURN, YARDS_PER_INCH, POWER_VS_FOOT, POWER_VS_MOUNTED, MELEE, RANGED, STAT_PERCENTAGE, CASUALTY_MESSAGE_DESCRIPTIVE, DEADLYNESS, SECONDS_PER_ROUND, YARDS_TO_FIGHT, MINUTES_PER_TURN, REST, MOVE, CHARGE, FIRE, NO_ACTION, html, css, repeat, classMap, $battleViewWrapperDefault as BattleViewWrapper, store, takeAction, takeArmyAction, finishEvent, SharedStyles, ButtonSharedStyles, TERRAIN_TYPE_MOVEMENT, TERRAIN_TYPE_MELEE_COMBAT } from '../components/battle-sim.js';
+import { weightedRandom, weightedRandomTowards, randomBellMod, dropOff, dropOffWithBoost, weightedAverage, roundToNearest, SECONDS_IN_AN_HOUR, SECONDS_IN_AN_MINUTE, randomMinutesBetween, SLOPE_UP, SLOPE_DOWN, SLOPE_NONE as SLOPE_NONE$1, MAX_TERRAIN, Terrain, statModFor, MAX_EQUIPMENT_WEIGHT, MORALE_SUCCESS, MORALE_FAILURE, FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP, MELEE_WEAPON, RANGED_WEAPON, MAX_STAT, SECONDS_PER_TURN, YARDS_PER_INCH, POWER_VS_FOOT, POWER_VS_MOUNTED, MELEE, RANGED, STAT_PERCENTAGE, CASUALTY_MESSAGE_DESCRIPTIVE, DEADLYNESS, SECONDS_PER_ROUND, YARDS_TO_FIGHT, MINUTES_PER_TURN, REST, MOVE, CHARGE, FIRE, NO_ACTION, html, css, repeat, classMap, $battleViewWrapperDefault as BattleViewWrapper, store, takeAction, takeArmyAction, finishEvent, updateMessage, SharedStyles, ButtonSharedStyles, TERRAIN_TYPE_MOVEMENT, TERRAIN_TYPE_MELEE_COMBAT } from '../components/battle-sim.js';
 
 class ActingUnit {
   constructor({
@@ -891,9 +891,6 @@ class FightView extends BattleViewWrapper {
       _actionMessages: {
         type: Array
       },
-      _chargeMessage: {
-        type: String
-      },
       _showSeparation: {
         type: Boolean
       },
@@ -936,6 +933,7 @@ class FightView extends BattleViewWrapper {
   }
 
   battleViewRender() {
+    console.log(this._activeBattle.messages);
     return html`
       ${this._activeBattle.unitIsActing ? html`
         <section>
@@ -964,9 +962,11 @@ class FightView extends BattleViewWrapper {
         </section>
         <section>
           <div>
-            <p class="${classMap({
-      hidden: !this._showChargeMessage
-    })}">${this._chargeMessage}</p>
+            ${this._activeBattle.messages ? html`
+              ${repeat(this._activeBattle.messages, message => html`
+                <p>${message}</p>
+              `)}
+            ` : ''}
             <div class="row">
               <input id="separation" class="${classMap({
       hidden: !this._showSeparation
@@ -995,7 +995,6 @@ class FightView extends BattleViewWrapper {
             <div class="${classMap({
       hidden: !this._showActionResult
     })}">
-              ${repeat(this._actionMessages, message => html`<p>${message}</p>`)}
               <button-tray>
                 <button @click="${this._progressToNextAction}">Next Action</button>
               </button-tray>
@@ -1025,7 +1024,7 @@ class FightView extends BattleViewWrapper {
 
       const encounter = this._createEncounter();
 
-      this._chargeMessage = encounter.chargeMessage;
+      store.dispatch(updateMessage([encounter.chargeMessage]));
       this._options.showEngagedAttackers = encounter.attackerReachedDefender;
       this._options.showEngagedDefenders = encounter.attackerReachedDefender;
       this._actionsDisabled = true;
@@ -1053,6 +1052,7 @@ class FightView extends BattleViewWrapper {
         skipResults = this._selectedAction === CHARGE && !encounter.attackerReachedDefender;
       }
 
+      store.dispatch(updateMessage([actionResult.messages]));
       this._actionMessages = actionResult.messages;
       this._actionUpdates = actionResult.updates;
       this._savedEnvironment = this._environment;
