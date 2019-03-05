@@ -105,7 +105,7 @@ class WarView extends connect(store)(PageViewElement) {
             <button @click="${this._create}">Create</button>
           </button-tray>
           <battle-sim-alert warning>You must select a ruleset to play and a battle to fight.</battle-sim-alert>
-          <input id="name" type="text" placeholder="Battle name"></input>
+          <input id="battle-name" type="text" placeholder="Battle name"></input>
           <input id="army1-name" type="text" placeholder="First army name"></input>
           <input id="army2-name" type="text" placeholder="Second army name"></input>
         </div>
@@ -243,7 +243,7 @@ class WarView extends connect(store)(PageViewElement) {
   }
 
   get newBattleNameElement() {
-    return this.shadowRoot.getElementById('name');
+    return this.shadowRoot.getElementById('battle-name');
   }
 
   get newBattleArmy1NameElement() {
