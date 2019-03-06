@@ -1,4 +1,4 @@
-import { html, PageViewElement, SharedStyles, connect, store, setActiveBattle, SHARED_BATTLE, ARMY_BOTH } from '../components/battle-sim.js';
+import { html, PageViewElement, SharedStyles, connect, store, setActiveBattle, addSharedBattle, SHARED_BATTLE, ARMY_BOTH } from '../components/battle-sim.js';
 
 class SharedView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -27,6 +27,7 @@ class SharedView extends connect(store)(PageViewElement) {
           }]));
         }
 
+        store.dispatch(addSharedBattle(doc.id, doc.data().battle));
         store.dispatch(setActiveBattle({
           type: SHARED_BATTLE,
           id: doc.id
@@ -41,7 +42,7 @@ class SharedView extends connect(store)(PageViewElement) {
   render() {
     return html`
       <section>
-        <p>${this._message}</p>
+        <p class="centered">${this._message}</p>
       </section>
     `;
   }
