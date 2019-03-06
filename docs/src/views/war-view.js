@@ -154,6 +154,8 @@ class WarView extends connect(store)(PageViewElement) {
   }
 
   _shareBattle(button, battle) {
+    alert(`Share this battle url with your friends!\n\n${battle.prettyUrl}`);
+
     if (navigator.share) {
       navigator.share({
         title: battle.name,
