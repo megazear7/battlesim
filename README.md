@@ -32,6 +32,5 @@ npm run deploy
 ###### TODO
 
 1. Melee combat results occasionally don't seem to be showing up
-1. You can take army actions for the other army.
 1. When no battle exists the "battle loading" message appears instead of the "no battle selected" message.
 1. Fully review the results of each action, how environment details affect the outcome, and how unit stats affect the outcome.
