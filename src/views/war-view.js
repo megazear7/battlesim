@@ -146,7 +146,7 @@ class WarView extends connect(store)(PageViewElement) {
 
   _shareBattle(button, battle) {
     try {
-      if (navigator.share) {
+      if (navigator.share !== undefined) {
         navigator.share({
             title: battle.name,
             text: 'Battlesim: Play ' + battle.name,
