@@ -134,14 +134,19 @@ class WarView extends connect(store)(PageViewElement) {
   }
 
   _alertShare(button, battle) {
-    var text = button.closest('.shared-battle').querySelector('.battle-url');
-    var selection = window.getSelection();
-    var range = document.createRange();
-    range.selectNodeContents(text);
-    selection.removeAllRanges();
-    selection.addRange(range);
-    document.execCommand('copy');
-    alert(`Battle url copied! Share it with your friends.\n\n${battle.prettyUrl}`);
+    try {
+      var text = button.closest('.shared-battle').querySelector('.battle-url');
+      var selection = window.getSelection();
+      var range = document.createRange();
+      range.selectNodeContents(text);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      document.execCommand('copy');
+      alert(`Battle url copied! Share it with your friends.\n\n${battle.prettyUrl}`);
+    } catch(e) {
+      console.error(e);
+      alert(`Share this battle url with your friends!\n\n${battle.prettyUrl}`);
+    }
   }
 
   _shareBattle(button, battle) {
@@ -151,7 +156,10 @@ class WarView extends connect(store)(PageViewElement) {
           text: 'Battlesim: Play ' + battle.name,
           url: battleModel.url,
       })
-      .catch((error) => this._alertShare(button, battle));
+      .catch(e => {
+        console.error(e);
+        this._alertShare(button, battle)
+      });
     } else {
       this._alertShare(button, battle);
     }
