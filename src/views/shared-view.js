@@ -3,7 +3,7 @@ import { PageViewElement } from './page-view-element.js';
 import { SharedStyles } from '../styles/shared-styles.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
-import { setActiveBattle } from '../actions/battle.js';
+import { setActiveBattle, addSharedBattle } from '../actions/battle.js';
 import { SHARED_BATTLE, ARMY_BOTH } from '../game.js';
 
 class SharedView extends connect(store)(PageViewElement) {
@@ -37,6 +37,8 @@ class SharedView extends connect(store)(PageViewElement) {
           } ]));
         }
 
+        store.dispatch(addSharedBattle(doc.id, doc.data().battle));
+
         store.dispatch(setActiveBattle({
           type: SHARED_BATTLE,
           id: doc.id
@@ -52,7 +54,7 @@ class SharedView extends connect(store)(PageViewElement) {
   render() {
     return html`
       <section>
-        <p>${this._message}</p>
+        <p class="centered">${this._message}</p>
       </section>
     `;
   }
