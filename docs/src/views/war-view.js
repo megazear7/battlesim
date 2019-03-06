@@ -154,7 +154,7 @@ class WarView extends connect(store)(PageViewElement) {
         navigator.share({
           title: battle.name,
           text: 'Battlesim: Play ' + battle.name,
-          url: battleModel.url
+          url: battle.url
         }).catch(e => {
           console.error(e);
 
