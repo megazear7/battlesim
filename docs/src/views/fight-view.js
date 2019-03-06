@@ -672,7 +672,7 @@ class SoloUnit extends ActingUnit {
     this.unmount = unmount;
     this.slope = slope;
     this.pace = pace;
-    this.energyModRoll = weightedRandomTowards(0, 100, 30, 2);
+    this.energyModRoll = weightedRandomTowards(0, 100, 1, 2);
     this.moraleModRoll = weightedRandomTowards(0, 100, 1, 2);
   }
 
@@ -684,16 +684,16 @@ class SoloUnit extends ActingUnit {
     return Math.min(MAX_STAT - this.unit.morale, this.maxMoraleRecovered);
   }
 
-  get paceAdjustment() {
-    return (1 - this.pace) * 100;
+  get pacePercentage() {
+    return this.pace * 100;
   }
 
   get maxMoraleRecovered() {
-    return weightedAverage(this.paceAdjustment, this.moraleModRoll, 0);
+    return weightedAverage(100 - this.pacePercentage, this.moraleModRoll, 0) * (100 / this.situation.percentageOfATurnSpent);
   }
 
   get maxEnergyRecovered() {
-    return weightedAverage(this.paceAdjustment, this.energyModRoll, this.situation.percentageOfATurnSpentResting);
+    return weightedAverage(50 - this.pacePercentage, this.energyModRoll) * (100 / this.situation.percentageOfATurnSpent);
   }
 
   updates(delay) {
@@ -751,27 +751,31 @@ class SoloUnit extends ActingUnit {
     }
   }
 
+  get energyAndMoraleMessage() {
+    return ``;
+  }
+
   get energyRecoveredMessage() {
-    return this.unit.battle.statReporting === STAT_PERCENTAGE ? `and ${Math.floor(this.energyGain)}% of their energy.` : this.energyRecoveredDesc;
+    return this.unit.battle.statReporting === STAT_PERCENTAGE ? `They recovered ${Math.floor(this.energyGain)}% of their energy.` : this.energyRecoveredDesc;
   }
 
   get energyRecoveredDesc() {
     if (this.energyGain > 80) {
-      return `and they got back all of there energy.`;
+      return `They got back all of there energy.`;
     } else if (this.energyGain > 60) {
-      return `and they recovered almost all of their strength.`;
+      return `They recovered almost all of their strength.`;
     } else if (this.energyGain > 40) {
-      return `and they made a great recovery. The rest was very helpful.`;
+      return `They made a great recovery. The rest was very helpful.`;
     } else if (this.energyGain > 20) {
-      return `and they recovered a lot of their strength`;
+      return `They recovered a lot of their strength`;
     } else if (this.energyGain > 15) {
-      return `and they recovered much of their strength`;
+      return `They recovered much of their strength`;
     } else if (this.energyGain > 9) {
-      return `and they recovered some of their strength`;
+      return `They recovered some of their strength`;
     } else if (this.energyGain > 6) {
-      return `and they recovered a bit of their strength.`;
+      return `They recovered a bit of their strength.`;
     } else if (this.energyGain > 3) {
-      return `and they recovered a bit of their strength.`;
+      return `They recovered a little bit of their strength.`;
     } else {
       return `but the rest was hardly worth it.`;
     }
@@ -861,7 +865,11 @@ class Situation {
   }
 
   get totalSecondsSpent() {
-    return this.secondsSpentMoving + this.secondsToIssueOrder;
+    return this.secondsSpentMoving + this.soloUnit.unit.secondsToIssueOrder;
+  }
+
+  get percentageOfATurnSpent() {
+    return this.totalSecondsSpent / SECONDS_PER_TURN * 100;
   }
 
   get percentageOfATurnSpentMoving() {
