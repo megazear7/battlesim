@@ -340,12 +340,10 @@ export default {
       {
         ...FRESH_UNION_REGIMENT,
         name: "Tyler's 3rd Regiment",
-        morale: 30,
       },
       {
         ...FRESH_CONFEDERATE_REGIMENT,
         name: "1st Potomac Regiment",
-        morale: 30,
       },
     ],
     unitTemplates: CIVIL_WAR_UNITS_ID,

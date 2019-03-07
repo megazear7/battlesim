@@ -178,8 +178,10 @@ class EnvironmentOptions extends LitElement {
   }
 
   get engagedDefenders() {
-    if (this._selectedAction === CHARGE) {
-      return parseInt(this.get('engaged-defenders').value === '' ? -1 : this.get('engaged-defenders').value);
+    if (this.action === CHARGE) {
+      return parseInt(this.shadowRoot.getElementById('engaged-defenders').value === ''
+        ? -1
+        : this.shadowRoot.getElementById('engaged-defenders').value);
     } else {
       return 0;
     }

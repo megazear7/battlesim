@@ -3,7 +3,7 @@ import { SECONDS_IN_AN_HOUR, weightedRandomTowards } from './utils/math-utils.js
 // TODO Some of these need to be configurable per battle.
 export const SECONDS_PER_TURN = SECONDS_IN_AN_HOUR * 0.45;
 export const YARDS_TO_FIGHT = 100;
-export const DEADLYNESS = 1;
+export const DEADLYNESS = 0.1;
 export const SECONDS_PER_ROUND = SECONDS_PER_TURN / 30;
 
 // TODO These should be calculated in the battle model.

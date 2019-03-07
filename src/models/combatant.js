@@ -189,10 +189,7 @@ export default class Combatant extends ActingUnit {
   }
 
   attacksForTime(duration) {
-    return this.unit.strength *
-           this.engagedMod *
-           this.modifiedVolume *
-           (duration / SECONDS_IN_AN_HOUR);
+    return this.unit.strength * this.modifiedVolume * (duration / SECONDS_IN_AN_HOUR);
   }
 
   battleReport() {
