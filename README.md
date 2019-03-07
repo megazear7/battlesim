@@ -31,5 +31,4 @@ npm run deploy
 
 ###### TODO
 
-1. Melee combat results occasionally don't seem to be showing up. I think it has something to do with the unit hitting 0 morale.
 1. Fully review the results of each action, how environment details affect the outcome, and how unit stats affect the outcome.
