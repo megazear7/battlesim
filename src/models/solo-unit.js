@@ -39,11 +39,11 @@ export default class SoloUnit extends ActingUnit {
   }
 
   get maxMoraleRecovered() {
-    return weightedAverage(100 - this.pacePercentage, this.moraleModRoll, 0) * (100 / this.situation.percentageOfATurnSpent);
+    return weightedAverage(100 - this.pacePercentage, this.moraleModRoll, 0) * (this.situation.percentageOfATurnSpent / 100);
   }
 
   get maxEnergyRecovered() {
-    return weightedAverage(50 - this.pacePercentage, this.energyModRoll) * (100 / this.situation.percentageOfATurnSpent);
+    return weightedAverage(50 - this.pacePercentage, this.energyModRoll) * (this.situation.percentageOfATurnSpent / 100);
   }
 
   updates(delay) {
