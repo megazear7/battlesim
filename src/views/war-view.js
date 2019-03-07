@@ -149,7 +149,7 @@ class WarView extends connect(store)(PageViewElement) {
       if (navigator.share !== undefined) {
         navigator.share({
             title: battle.name,
-            text: 'Battlesim: Play ' + battle.name,
+            text: `${battle.name}\nPlay Battlesim by clicking this link`,
             url: battle.url,
         })
         .catch(e => {
