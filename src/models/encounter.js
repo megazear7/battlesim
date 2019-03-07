@@ -75,7 +75,7 @@ export default class Encounter {
     }
 
     if (this.inchesDefenderFled > 1) {
-      return `${actionMessage} ${attackerMessage} ${this.defender.unit.name} fled ${this.inchesDefenderFled} inches but was then caught by ${this.attacker.unit.name}. ${this.timeEngagedMessage(secondsOfCombat)}`;
+      return `${actionMessage} ${this.defender.unit.name} fled ${this.inchesDefenderFled} inches but was then caught by ${this.attacker.unit.name}. ${this.timeEngagedMessage(secondsOfCombat)}`;
     } else if (this.defenderFled) {
       return `${actionMessage} ${this.defender.unit.name} attempted to fall back but was quickly caught by ${this.attacker.unit.name}. ${this.timeEngagedMessage(secondsOfCombat)}`;
     } else {
