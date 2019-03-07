@@ -137,7 +137,6 @@ const battle = (state = initialState, action) => {
     newState.sharedBattles[action.id] = action.battleStats;
   } else if (action.type === REMOVE_BATTLE) {
     newState.battles.splice(action.index, 1);
-    console.log(newState.activeBattle);
     if (newState.activeBattle.type === LOCAL_BATTLE) {
       if (newState.activeBattle.id >= action.index) {
         newState.activeBattle.id -= 1;
@@ -145,7 +144,6 @@ const battle = (state = initialState, action) => {
       if (newState.activeBattle.id < 0) {
         newState.activeBattle = { };
       }
-      console.log(newState.activeBattle);
     }
   } else if (action.type === REMOVE_SHARED_BATTLE) {
     delete newState.sharedBattles[action.id];
