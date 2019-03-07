@@ -68,10 +68,9 @@ export default class Combatant extends ActingUnit {
         value: this.encounter.melee ? 0.2 : 0.1,
         weight: 2
       },
-      this.encounter.secondsSpentFighting / SECONDS_PER_TURN,
       this.energyModRoll,
       this.unit.carriedWeight / MAX_EQUIPMENT_WEIGHT
-    ) * 50;
+    ) * 50 * this.timeSpentFightingMod;
   }
 
   get moraleLoss() {
@@ -80,7 +79,11 @@ export default class Combatant extends ActingUnit {
       this.hardinessMod,
       this.casualties / this.unit.strength,
       this.unit.strength / this.unit.fullStrength
-    ) * 50;
+    ) * 50 * this.timeSpentFightingMod;
+  }
+
+  get timeSpentFightingMod() {
+    return this.encounter.secondsSpentFighting / SECONDS_PER_TURN;
   }
 
   get attacksRequireAmmunition() {

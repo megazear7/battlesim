@@ -25,7 +25,7 @@ export default class ActingUnit {
   }
 
   moraleRoll() {
-    return weightedRandom(2) * 100;
+    return weightedRandomTowards(0, 100, 1, 2);
   }
 
   get terrainMovePenalty() {
