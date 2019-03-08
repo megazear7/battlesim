@@ -54,8 +54,10 @@ export default class Situation {
     if (this.distance < 0) {
       // This implys that the users wants to move as far as possible.
       return this.secondsAvailableToMove;
-    } else {
+    } else if (this.soloUnit.speed > 0) {
       return Math.min(this.distance / this.soloUnit.speed, this.secondsAvailableToMove);
+    } else {
+      return 0;
     }
   }
 

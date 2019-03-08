@@ -22,7 +22,8 @@ export default class SoloUnit extends ActingUnit {
     this.unmount = unmount;
     this.slope = slope;
     this.pace = pace;
-    this.energyModRoll = weightedRandomTowards(0, 100, 1, 2);
+    this.energyMoveModRoll = weightedRandomTowards(0, 1, 0.1, 3);
+    this.energyRestModRoll = weightedRandomTowards(0, 1, 0.3, 3);
     this.moraleModRoll = weightedRandomTowards(0, 100, 1, 2);
   }
 
@@ -43,7 +44,8 @@ export default class SoloUnit extends ActingUnit {
   }
 
   get maxEnergyChange() {
-    return weightedAverage(50 - this.pacePercentage, this.energyModRoll) * (this.situation.percentageOfATurnSpent / 100);
+    return   (this.situation.percentageOfATurnSpentResting * this.energyRestModRoll)
+           + (this.situation.percentageOfATurnSpentMoving * this.energyMoveModRoll * (0.5 - this.pace));
   }
 
   get updates() {

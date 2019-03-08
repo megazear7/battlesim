@@ -91,11 +91,19 @@ export function randomMinutesBetween(x, y) {
  *  @returns A random number between x and y weight towards z with a weight as given.
  */
 export function weightedRandomTowards(x, y, z, weight) {
-  return (getRandomInt(x, y) + (z * weight)) / (weight + 1);
+  return (getRandomNumber(x, y) + (z * weight)) / (weight + 1);
 }
 
 export function randomBellMod(weight = 2) {
   return weightedRandomTowards(0, 1, 0.5, weight);
+}
+
+/**
+ * Returns a random number between min (inclusive) and max (inclusive).
+ * The value is no lower than min and no greater than max
+ */
+export function getRandomNumber(min, max) {
+    return (Math.random() * (max - min)) + min;
 }
 
 /**

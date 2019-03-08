@@ -30,5 +30,3 @@ npm run deploy
 1. Web manifest for for installability
 
 ###### TODO
-
-1. Energy drop due to movement is too significant.
