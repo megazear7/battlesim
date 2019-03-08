@@ -31,5 +31,4 @@ npm run deploy
 
 ###### TODO
 
-1. Movement can drop energy below 0.
 1. Energy drop due to movement is too significant.

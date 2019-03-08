@@ -26,23 +26,23 @@ export default class SoloUnit extends ActingUnit {
     this.moraleModRoll = weightedRandomTowards(0, 100, 1, 2);
   }
 
-  get energyGain() {
-    return Math.min(MAX_STAT - this.unit.energy, this.maxEnergyRecovered);
+  get energyChange() {
+    return Math.max(Math.min(MAX_STAT - this.unit.energy, this.maxEnergyChange), -this.unit.energy);
   }
 
-  get moraleGain() {
-    return Math.min(MAX_STAT - this.unit.morale, this.maxMoraleRecovered);
+  get moraleChange() {
+    return Math.max(Math.min(MAX_STAT - this.unit.morale, this.maxMoraleChange), -this.unit.morale);
   }
 
   get pacePercentage() {
     return this.pace * 100;
   }
 
-  get maxMoraleRecovered() {
+  get maxMoraleChange() {
     return weightedAverage(100 - this.pacePercentage, this.moraleModRoll, 0) * (this.situation.percentageOfATurnSpent / 100);
   }
 
-  get maxEnergyRecovered() {
+  get maxEnergyChange() {
     return weightedAverage(50 - this.pacePercentage, this.energyModRoll) * (this.situation.percentageOfATurnSpent / 100);
   }
 
@@ -57,10 +57,10 @@ export default class SoloUnit extends ActingUnit {
     let changes = [
       {
         prop: "energy",
-        value: this.unit.energy + this.energyGain
+        value: this.unit.energy + this.energyChange
       }, {
         prop: "morale",
-        value: this.unit.morale + this.moraleGain
+        value: this.unit.morale + this.moraleChange
       }, {
         prop: 'nextAction',
         value: this.unit.nextAction + this.situation.totalSecondsSpent
@@ -85,8 +85,8 @@ export default class SoloUnit extends ActingUnit {
   get desc() {
     return ` ${this.situation.yardsTravelled > 0 ? this.moveDesc : ''}
              ${this.situation.yardsTravelled > 0 ? this.battlefieldMoveDesc : ''}
-             ${this.moraleGain > 0 && this.situation.minutesSpentResting > 0 ? this.moraleRecoveredMessage : ''}
-             ${this.energyGain > 0 && this.situation.minutesSpentResting > 0 ? this.energyRecoveredMessage : ''}`;
+             ${this.moraleChange > 0 && this.situation.minutesSpentResting > 0 ? this.moraleRecoveredMessage : ''}
+             ${this.energyChange > 0 && this.situation.minutesSpentResting > 0 ? this.energyRecoveredMessage : ''}`;
   }
 
   get battlefieldMoveDesc() {
@@ -109,26 +109,26 @@ export default class SoloUnit extends ActingUnit {
 
   get energyRecoveredMessage() {
     return this.unit.battle.statReporting === STAT_PERCENTAGE
-      ? `They recovered ${Math.floor(this.energyGain)}% of their energy.`
+      ? `They recovered ${Math.floor(this.energyChange)}% of their energy.`
       : this.energyRecoveredDesc;
   }
 
   get energyRecoveredDesc() {
-    if (this.energyGain > 80) {
+    if (this.energyChange > 80) {
       return `They got back all of there energy.`;
-    } else if (this.energyGain > 60) {
+    } else if (this.energyChange > 60) {
       return `They recovered almost all of their strength.`;
-    } else if (this.energyGain > 40) {
+    } else if (this.energyChange > 40) {
       return `They made a great recovery. The rest was very helpful.`;
-    } else if (this.energyGain > 20) {
+    } else if (this.energyChange > 20) {
       return `They recovered a lot of their strength`;
-    } else if (this.energyGain > 15) {
+    } else if (this.energyChange > 15) {
       return `They recovered much of their strength`;
-    } else if (this.energyGain > 9) {
+    } else if (this.energyChange > 9) {
       return `They recovered some of their strength`;
-    } else if (this.energyGain > 6) {
+    } else if (this.energyChange > 6) {
       return `They recovered a bit of their strength.`;
-    } else if (this.energyGain > 3) {
+    } else if (this.energyChange > 3) {
       return `They recovered a little bit of their strength.`;
     } else {
       return `but the rest was hardly worth it.`;
@@ -137,14 +137,14 @@ export default class SoloUnit extends ActingUnit {
 
   get moraleRecoveredMessage() {
     return this.unit.battle.statReporting === STAT_PERCENTAGE
-      ? `In ${this.situation.minutesSpentResting} minutes ${this.unit.name} recovered ${Math.floor(this.moraleGain)}% of their morale `
+      ? `In ${this.situation.minutesSpentResting} minutes ${this.unit.name} recovered ${Math.floor(this.moraleChange)}% of their morale `
       : this.moraleRecoveredDesc;
   }
 
   get moraleRecoveredDesc() {
-    if (this.moraleGain > 20) {
+    if (this.moraleChange > 20) {
       return `${this.unit.name} have been greatly encouraged`;
-    } else if (this.moraleGain > 10) {
+    } else if (this.moraleChange > 10) {
       return `${this.unit.name} have been encouraged`;
     } else {
       return `${this.unit.name} seem to be more willing to fight than before`;
