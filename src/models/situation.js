@@ -27,14 +27,14 @@ export default class Situation {
 
   rest(minutesSpent = MINUTES_PER_TURN) {
     this.distance = 0;
-    this.secondsSpentResting = minutesSpent * SECONDS_IN_AN_MINUTE;
+    this.minutesSpent = minutesSpent;
 
     return this.actionResult;
   }
 
   move(distance) {
     this.distance = distance;
-    this.secondsSpentResting = 0;
+    this.minutesSpent = 0;
 
     return this.actionResult;
   }
@@ -48,6 +48,10 @@ export default class Situation {
         this.soloUnit.updates
       ]
     };
+  }
+
+  get secondsSpentResting() {
+    return Math.max(Math.min(this.minutesSpent * SECONDS_IN_AN_MINUTE , SECONDS_PER_TURN) - this.soloUnit.unit.secondsToIssueOrder, 0);
   }
 
   get secondsSpentMoving() {
