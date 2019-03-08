@@ -1,4 +1,4 @@
-import { weightedRandomTowards, randomBellMod, dropOff, dropOffWithBoost, weightedAverage, roundToNearest, SECONDS_IN_AN_HOUR, SECONDS_IN_AN_MINUTE, randomMinutesBetween, SLOPE_UP, SLOPE_DOWN, SLOPE_NONE as SLOPE_NONE$1, MAX_TERRAIN, Terrain, statModFor, MAX_EQUIPMENT_WEIGHT, MORALE_SUCCESS, MORALE_FAILURE, FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP, MELEE_WEAPON, RANGED_WEAPON, MAX_STAT, SECONDS_PER_TURN, YARDS_PER_INCH, POWER_VS_FOOT, POWER_VS_MOUNTED, MELEE, RANGED, STAT_PERCENTAGE, CASUALTY_MESSAGE_DESCRIPTIVE, DEADLYNESS, SECONDS_PER_ROUND, YARDS_TO_FIGHT, MINUTES_PER_TURN, REST, MOVE, CHARGE, FIRE, NO_ACTION, html, css, repeat, classMap, $battleViewWrapperDefault as BattleViewWrapper, store, takeAction, takeArmyAction, finishEvent, updateMessage, SharedStyles, ButtonSharedStyles, TERRAIN_TYPE_MOVEMENT, TERRAIN_TYPE_MELEE_COMBAT } from '../components/battle-sim.js';
+import { weightedRandomTowards, weightedAverage, randomBellMod, dropOff, dropOffWithBoost, roundToNearest, SECONDS_IN_AN_HOUR, SECONDS_IN_AN_MINUTE, randomMinutesBetween, SLOPE_UP, SLOPE_DOWN, SLOPE_NONE as SLOPE_NONE$1, MAX_TERRAIN, Terrain, statModFor, MAX_EQUIPMENT_WEIGHT, MORALE_SUCCESS, MORALE_FAILURE, FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP, MELEE_WEAPON, RANGED_WEAPON, MAX_STAT, SECONDS_PER_TURN, YARDS_PER_INCH, POWER_VS_FOOT, POWER_VS_MOUNTED, MELEE, RANGED, STAT_PERCENTAGE, CASUALTY_MESSAGE_DESCRIPTIVE, DEADLYNESS, SECONDS_PER_ROUND, YARDS_TO_FIGHT, MINUTES_PER_TURN, REST, MOVE, CHARGE, FIRE, NO_ACTION, html, css, repeat, classMap, $battleViewWrapperDefault as BattleViewWrapper, store, takeAction, takeArmyAction, finishEvent, updateMessage, SharedStyles, ButtonSharedStyles, TERRAIN_TYPE_MOVEMENT, TERRAIN_TYPE_MELEE_COMBAT } from '../components/battle-sim.js';
 
 class ActingUnit {
   constructor({
@@ -26,7 +26,7 @@ class ActingUnit {
   }
 
   get terrainMovePenalty() {
-    // This should be based upon this.unit.openness and this.unit.isMounted
+    // TODO This should be based upon this.unit.openness and this.unit.isMounted
     return Math.min(this.environment.movementTerrain.reduce((sum, terrain) => sum += terrain.movePenalty, 0), 100);
   }
 
@@ -38,20 +38,24 @@ class ActingUnit {
     return (MAX_EQUIPMENT_WEIGHT - this.unit.carriedWeight) / MAX_EQUIPMENT_WEIGHT;
   }
 
+  get speedMod() {
+    return this.terrainSpeedMod * this.energySpeedMod * this.equipmentMod * this.pace;
+  }
+
   get speed() {
     if (this.unit.canMounted) {
       if (this.unit.isMounted) {
-        return this.unit.mountedSpeed.baseSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod * this.pace;
+        return this.unit.mountedSpeed.baseSpeed * this.speedMod;
       } else {
-        return this.unit.unmountedSpeed.baseSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod * this.pace;
+        return this.unit.unmountedSpeed.baseSpeed * this.speedMod;
       }
     } else {
-      return this.unit.baseSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod * this.pace;
+      return this.unit.baseSpeed * this.speedMod;
     }
   }
 
   get backwardsSpeed() {
-    return this.unit.baseBackwardSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod * this.pace;
+    return this.unit.baseBackwardSpeed * this.speedMod;
   }
 
   get armor() {
@@ -68,6 +72,14 @@ class ActingUnit {
 
   get terrainMod() {
     return (MAX_TERRAIN - this.terrainMovePenalty) / MAX_TERRAIN * statModFor(this.unit.openness) * this.unitTypeTerrainMod;
+  }
+
+  get energySpeedMod() {
+    return weightedAverage(this.energyMod, 1);
+  }
+
+  get energyMod() {
+    return this.unit.energy / 100;
   }
 
   get slopeMod() {
@@ -700,14 +712,14 @@ class SoloUnit extends ActingUnit {
     return weightedAverage(50 - this.pacePercentage, this.energyModRoll) * (this.situation.percentageOfATurnSpent / 100);
   }
 
-  updates(delay) {
+  get updates() {
     return {
       id: this.unit.id,
-      changes: this.changes(delay)
+      changes: this.changes
     };
   }
 
-  changes(delay) {
+  get changes() {
     let changes = [{
       prop: "energy",
       value: this.unit.energy + this.energyGain
@@ -716,7 +728,7 @@ class SoloUnit extends ActingUnit {
       value: this.unit.morale + this.moraleGain
     }, {
       prop: 'nextAction',
-      value: this.unit.nextAction + delay
+      value: this.unit.nextAction + this.situation.totalSecondsSpent
     }];
 
     if (this.mount) {
@@ -742,7 +754,7 @@ class SoloUnit extends ActingUnit {
   }
 
   get battlefieldMoveDesc() {
-    return `in ${Math.floor(this.situation.secondsSpentMoving / SECONDS_IN_AN_MINUTE)} minutes.`;
+    return `in ${Math.ceil(this.situation.totalSecondsSpent / SECONDS_IN_AN_MINUTE)} minutes.`;
   }
 
   get moveDesc() {
@@ -829,14 +841,12 @@ class Situation {
 
   rest(minutesSpent = MINUTES_PER_TURN) {
     this.distance = 0;
-    this.secondsSpentMoving = 0;
     this.secondsSpentResting = minutesSpent * SECONDS_IN_AN_MINUTE;
     return this.actionResult;
   }
 
   move(distance) {
     this.distance = distance;
-    this.secondsSpentMoving = this.yardsTravelled / this.soloUnit.speed;
     this.secondsSpentResting = 0;
     return this.actionResult;
   }
@@ -844,8 +854,17 @@ class Situation {
   get actionResult() {
     return {
       messages: [this.soloUnit.desc],
-      updates: [this.soloUnit.updates(SECONDS_PER_TURN)]
+      updates: [this.soloUnit.updates]
     };
+  }
+
+  get secondsSpentMoving() {
+    if (this.distance < 0) {
+      // This implys that the users wants to move as far as possible.
+      return this.secondsAvailableToMove;
+    } else {
+      return Math.min(this.distance / this.soloUnit.speed, this.secondsAvailableToMove);
+    }
   }
 
   get maxYardsTravelled() {
@@ -869,7 +888,7 @@ class Situation {
   }
 
   get totalSecondsSpent() {
-    return this.secondsSpentMoving + this.soloUnit.unit.secondsToIssueOrder;
+    return this.secondsSpentResting + this.secondsSpentMoving + this.soloUnit.unit.secondsToIssueOrder;
   }
 
   get percentageOfATurnSpent() {
