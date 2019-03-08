@@ -749,12 +749,12 @@ class SoloUnit extends ActingUnit {
 
   get desc() {
     return ` ${this.situation.yardsTravelled > 0 ? this.moveDesc : ''}
-             ${this.situation.yardsTravelled > 0 ? this.battlefieldMoveDesc : ''}
              ${this.moraleChange > 0 && this.situation.minutesSpentResting > 0 ? this.moraleRecoveredMessage : ''}
-             ${this.energyChange > 0 && this.situation.minutesSpentResting > 0 ? this.energyRecoveredMessage : ''}`;
+             ${this.energyChange > 0 && this.situation.minutesSpentResting > 0 ? this.energyRecoveredMessage : ''}
+             ${this.situation.totalSecondsSpent > 0 ? this.timeDesc : ''}`;
   }
 
-  get battlefieldMoveDesc() {
+  get timeDesc() {
     return `in ${Math.ceil(this.situation.totalSecondsSpent / SECONDS_IN_AN_MINUTE)} minutes.`;
   }
 
@@ -773,16 +773,16 @@ class SoloUnit extends ActingUnit {
   }
 
   get energyRecoveredMessage() {
-    return this.unit.battle.statReporting === STAT_PERCENTAGE ? `They recovered ${Math.floor(this.energyChange)}% of their energy.` : this.energyRecoveredDesc;
+    return this.unit.battle.statReporting === STAT_PERCENTAGE ? `They recovered ${Math.floor(this.energyChange)}% of their energy` : this.energyRecoveredDesc;
   }
 
   get energyRecoveredDesc() {
     if (this.energyChange > 80) {
-      return `They got back all of there energy.`;
+      return `They got back all of there energy`;
     } else if (this.energyChange > 60) {
-      return `They recovered almost all of their strength.`;
+      return `They recovered almost all of their strength`;
     } else if (this.energyChange > 40) {
-      return `They made a great recovery. The rest was very helpful.`;
+      return `They made a great recovery. The rest was very helpful`;
     } else if (this.energyChange > 20) {
       return `They recovered a lot of their strength`;
     } else if (this.energyChange > 15) {
@@ -790,11 +790,11 @@ class SoloUnit extends ActingUnit {
     } else if (this.energyChange > 9) {
       return `They recovered some of their strength`;
     } else if (this.energyChange > 6) {
-      return `They recovered a bit of their strength.`;
+      return `They recovered a bit of their strength`;
     } else if (this.energyChange > 3) {
       return `They recovered a little bit of their strength.`;
     } else {
-      return `but the rest was hardly worth it.`;
+      return `They recovered almost no strength`;
     }
   }
 
@@ -842,13 +842,13 @@ class Situation {
 
   rest(minutesSpent = MINUTES_PER_TURN) {
     this.distance = 0;
-    this.secondsSpentResting = minutesSpent * SECONDS_IN_AN_MINUTE;
+    this.minutesSpent = minutesSpent;
     return this.actionResult;
   }
 
   move(distance) {
     this.distance = distance;
-    this.secondsSpentResting = 0;
+    this.minutesSpent = 0;
     return this.actionResult;
   }
 
@@ -857,6 +857,10 @@ class Situation {
       messages: [this.soloUnit.desc],
       updates: [this.soloUnit.updates]
     };
+  }
+
+  get secondsSpentResting() {
+    return Math.max(Math.min(this.minutesSpent * SECONDS_IN_AN_MINUTE, SECONDS_PER_TURN) - this.soloUnit.unit.secondsToIssueOrder, 0);
   }
 
   get secondsSpentMoving() {
