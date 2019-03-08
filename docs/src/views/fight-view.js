@@ -1,4 +1,4 @@
-import { weightedRandom, weightedRandomTowards, randomBellMod, dropOff, dropOffWithBoost, weightedAverage, roundToNearest, SECONDS_IN_AN_HOUR, SECONDS_IN_AN_MINUTE, randomMinutesBetween, SLOPE_UP, SLOPE_DOWN, SLOPE_NONE as SLOPE_NONE$1, MAX_TERRAIN, Terrain, statModFor, MAX_EQUIPMENT_WEIGHT, MORALE_SUCCESS, MORALE_FAILURE, FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP, MELEE_WEAPON, RANGED_WEAPON, MAX_STAT, SECONDS_PER_TURN, YARDS_PER_INCH, POWER_VS_FOOT, POWER_VS_MOUNTED, MELEE, RANGED, STAT_PERCENTAGE, CASUALTY_MESSAGE_DESCRIPTIVE, DEADLYNESS, SECONDS_PER_ROUND, YARDS_TO_FIGHT, MINUTES_PER_TURN, REST, MOVE, CHARGE, FIRE, NO_ACTION, html, css, repeat, classMap, $battleViewWrapperDefault as BattleViewWrapper, store, takeAction, takeArmyAction, finishEvent, updateMessage, SharedStyles, ButtonSharedStyles, TERRAIN_TYPE_MOVEMENT, TERRAIN_TYPE_MELEE_COMBAT } from '../components/battle-sim.js';
+import { weightedRandomTowards, randomBellMod, dropOff, dropOffWithBoost, weightedAverage, roundToNearest, SECONDS_IN_AN_HOUR, SECONDS_IN_AN_MINUTE, randomMinutesBetween, SLOPE_UP, SLOPE_DOWN, SLOPE_NONE as SLOPE_NONE$1, MAX_TERRAIN, Terrain, statModFor, MAX_EQUIPMENT_WEIGHT, MORALE_SUCCESS, MORALE_FAILURE, FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP, MELEE_WEAPON, RANGED_WEAPON, MAX_STAT, SECONDS_PER_TURN, YARDS_PER_INCH, POWER_VS_FOOT, POWER_VS_MOUNTED, MELEE, RANGED, STAT_PERCENTAGE, CASUALTY_MESSAGE_DESCRIPTIVE, DEADLYNESS, SECONDS_PER_ROUND, YARDS_TO_FIGHT, MINUTES_PER_TURN, REST, MOVE, CHARGE, FIRE, NO_ACTION, html, css, repeat, classMap, $battleViewWrapperDefault as BattleViewWrapper, store, takeAction, takeArmyAction, finishEvent, updateMessage, SharedStyles, ButtonSharedStyles, TERRAIN_TYPE_MOVEMENT, TERRAIN_TYPE_MELEE_COMBAT } from '../components/battle-sim.js';
 
 class ActingUnit {
   constructor({
@@ -22,7 +22,7 @@ class ActingUnit {
   }
 
   moraleRoll() {
-    return weightedRandom(2) * 100;
+    return weightedRandomTowards(0, 100, 1, 2);
   }
 
   get terrainMovePenalty() {
@@ -135,11 +135,15 @@ class Combatant extends ActingUnit {
     return weightedAverage({
       value: this.encounter.melee ? 0.2 : 0.1,
       weight: 2
-    }, this.encounter.secondsSpentFighting / SECONDS_PER_TURN, this.energyModRoll, this.unit.carriedWeight / MAX_EQUIPMENT_WEIGHT) * 50;
+    }, this.energyModRoll, this.unit.carriedWeight / MAX_EQUIPMENT_WEIGHT) * 50 * this.timeSpentFightingMod;
   }
 
   get moraleLoss() {
-    return weightedAverage(this.moraleModRoll, this.hardinessMod, this.casualties / this.unit.strength, this.unit.strength / this.unit.fullStrength) * 50;
+    return weightedAverage(this.moraleModRoll, this.hardinessMod, this.casualties / this.unit.strength, this.unit.strength / this.unit.fullStrength) * 50 * this.timeSpentFightingMod;
+  }
+
+  get timeSpentFightingMod() {
+    return this.encounter.secondsSpentFighting / SECONDS_PER_TURN;
   }
 
   get attacksRequireAmmunition() {
@@ -243,7 +247,7 @@ class Combatant extends ActingUnit {
   }
 
   attacksForTime(duration) {
-    return this.unit.strength * this.engagedMod * this.modifiedVolume * (duration / SECONDS_IN_AN_HOUR);
+    return this.unit.strength * this.modifiedVolume * (duration / SECONDS_IN_AN_HOUR);
   }
 
   battleReport() {
@@ -483,7 +487,7 @@ class Encounter {
     }
 
     if (this.inchesDefenderFled > 1) {
-      return `${actionMessage} ${attackerMessage} ${this.defender.unit.name} fled ${this.inchesDefenderFled} inches but was then caught by ${this.attacker.unit.name}. ${this.timeEngagedMessage(secondsOfCombat)}`;
+      return `${actionMessage} ${this.defender.unit.name} fled ${this.inchesDefenderFled} inches but was then caught by ${this.attacker.unit.name}. ${this.timeEngagedMessage(secondsOfCombat)}`;
     } else if (this.defenderFled) {
       return `${actionMessage} ${this.defender.unit.name} attempted to fall back but was quickly caught by ${this.attacker.unit.name}. ${this.timeEngagedMessage(secondsOfCombat)}`;
     } else {
@@ -689,11 +693,11 @@ class SoloUnit extends ActingUnit {
   }
 
   get maxMoraleRecovered() {
-    return weightedAverage(100 - this.pacePercentage, this.moraleModRoll, 0) * (100 / this.situation.percentageOfATurnSpent);
+    return weightedAverage(100 - this.pacePercentage, this.moraleModRoll, 0) * (this.situation.percentageOfATurnSpent / 100);
   }
 
   get maxEnergyRecovered() {
-    return weightedAverage(50 - this.pacePercentage, this.energyModRoll) * (100 / this.situation.percentageOfATurnSpent);
+    return weightedAverage(50 - this.pacePercentage, this.energyModRoll) * (this.situation.percentageOfATurnSpent / 100);
   }
 
   updates(delay) {
@@ -1065,7 +1069,7 @@ class FightView extends BattleViewWrapper {
         skipResults = this._selectedAction === CHARGE && !encounter.attackerReachedDefender;
       }
 
-      store.dispatch(updateMessage([actionResult.messages.join('')]));
+      store.dispatch(updateMessage([actionResult.messages.join(' ')]));
       this._actionMessages = actionResult.messages;
       this._actionUpdates = actionResult.updates;
       this._savedEnvironment = this._environment;
