@@ -39,7 +39,7 @@ class ActingUnit {
   }
 
   get speedMod() {
-    return this.terrainSpeedMod * this.energySpeedMod * this.equipmentMod * this.pace;
+    return this.terrainSpeedMod * this.energySpeedMod * this.equipmentMod * this.pace * this.slopeMod;
   }
 
   get speed() {
@@ -85,7 +85,7 @@ class ActingUnit {
   get slopeMod() {
     return {
       [SLOPE_UP]: 0.75,
-      [SLOPE_DOWN]: 1.25,
+      [SLOPE_DOWN]: 1.1,
       [SLOPE_NONE$1]: 1
     }[this.slope];
   }
