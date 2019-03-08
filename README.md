@@ -30,5 +30,3 @@ npm run deploy
 1. Web manifest for for installability
 
 ###### TODO
-
-1. Units do not seem to recover energy when moving at a resting pace.
