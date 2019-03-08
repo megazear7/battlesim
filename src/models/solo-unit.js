@@ -46,14 +46,14 @@ export default class SoloUnit extends ActingUnit {
     return weightedAverage(50 - this.pacePercentage, this.energyModRoll) * (this.situation.percentageOfATurnSpent / 100);
   }
 
-  updates(delay) {
+  get updates() {
     return {
       id: this.unit.id,
-      changes: this.changes(delay)
+      changes: this.changes
     };
   }
 
-  changes(delay) {
+  get changes() {
     let changes = [
       {
         prop: "energy",
@@ -63,7 +63,7 @@ export default class SoloUnit extends ActingUnit {
         value: this.unit.morale + this.moraleGain
       }, {
         prop: 'nextAction',
-        value: this.unit.nextAction + delay
+        value: this.unit.nextAction + this.situation.totalSecondsSpent
       }
     ];
 
@@ -90,7 +90,7 @@ export default class SoloUnit extends ActingUnit {
   }
 
   get battlefieldMoveDesc() {
-    return `in ${Math.floor(this.situation.secondsSpentMoving / SECONDS_IN_AN_MINUTE)} minutes.`;
+    return `in ${Math.ceil(this.situation.totalSecondsSpent / SECONDS_IN_AN_MINUTE)} minutes.`;
   }
 
   get moveDesc() {

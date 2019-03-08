@@ -27,7 +27,6 @@ export default class Situation {
 
   rest(minutesSpent = MINUTES_PER_TURN) {
     this.distance = 0;
-    this.secondsSpentMoving = 0;
     this.secondsSpentResting = minutesSpent * SECONDS_IN_AN_MINUTE;
 
     return this.actionResult;
@@ -35,7 +34,6 @@ export default class Situation {
 
   move(distance) {
     this.distance = distance;
-    this.secondsSpentMoving = this.yardsTravelled / this.soloUnit.speed;
     this.secondsSpentResting = 0;
 
     return this.actionResult;
@@ -44,12 +42,21 @@ export default class Situation {
   get actionResult() {
     return {
       messages: [
-        this.soloUnit.desc,
+        this.soloUnit.desc
       ],
       updates: [
-        this.soloUnit.updates(SECONDS_PER_TURN)
+        this.soloUnit.updates
       ]
     };
+  }
+
+  get secondsSpentMoving() {
+    if (this.distance < 0) {
+      // This implys that the users wants to move as far as possible.
+      return this.secondsAvailableToMove;
+    } else {
+      return Math.min(this.distance / this.soloUnit.speed, this.secondsAvailableToMove);
+    }
   }
 
   get maxYardsTravelled() {
@@ -73,7 +80,7 @@ export default class Situation {
   }
 
   get totalSecondsSpent() {
-    return this.secondsSpentMoving + this.soloUnit.unit.secondsToIssueOrder;
+    return this.secondsSpentResting + this.secondsSpentMoving + this.soloUnit.unit.secondsToIssueOrder;
   }
 
   get percentageOfATurnSpent() {
