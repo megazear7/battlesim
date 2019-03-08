@@ -688,7 +688,7 @@ class SoloUnit extends ActingUnit {
     this.unmount = unmount;
     this.slope = slope;
     this.pace = pace;
-    this.energyMoveModRoll = weightedRandomTowards(0, 1, 0.1, 3);
+    this.energyMoveModRoll = weightedRandomTowards(0, 1, 0.5, 3);
     this.energyRestModRoll = weightedRandomTowards(0, 1, 0.3, 3);
     this.moraleModRoll = weightedRandomTowards(0, 100, 1, 2);
   }
@@ -710,7 +710,7 @@ class SoloUnit extends ActingUnit {
   }
 
   get maxEnergyChange() {
-    return this.situation.percentageOfATurnSpentResting * this.energyRestModRoll + this.situation.percentageOfATurnSpentMoving * this.energyMoveModRoll * (0.5 - this.pace);
+    return this.situation.percentageOfATurnSpentResting * this.energyRestModRoll + this.situation.percentageOfATurnSpentMoving * this.energyMoveModRoll * (0.75 - this.pace);
   }
 
   get updates() {
@@ -749,8 +749,8 @@ class SoloUnit extends ActingUnit {
 
   get desc() {
     return ` ${this.situation.yardsTravelled > 0 ? this.moveDesc : ''}
-             ${this.moraleChange > 0 && this.situation.minutesSpentResting > 0 ? this.moraleRecoveredMessage : ''}
-             ${this.energyChange > 0 && this.situation.minutesSpentResting > 0 ? this.energyRecoveredMessage : ''}
+             ${this.moraleChange > 0 ? this.moraleRecoveredMessage : ''}
+             ${this.energyChange > 0 ? this.energyRecoveredMessage : ''}
              ${this.situation.totalSecondsSpent > 0 ? this.timeDesc : ''}`;
   }
 
