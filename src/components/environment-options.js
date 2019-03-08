@@ -67,7 +67,7 @@ class EnvironmentOptions extends LitElement {
             </battle-sim-selector>
           `)}
           <battle-sim-selector radio number id="pace" class="${classMap({hidden: ! this.showPace})}" title="Pace">
-              <battle-sim-option value="1">Fast</battle-sim-option>
+              <battle-sim-option value="1" selected>Fast</battle-sim-option>
               <battle-sim-option value="0.75">March</battle-sim-option>
               <battle-sim-option value="0.5">Rest</battle-sim-option>
           </battle-sim-selector>
@@ -76,7 +76,7 @@ class EnvironmentOptions extends LitElement {
           <battle-sim-selector radio id="hill" none="${SLOPE_NONE}" class="${classMap({hidden: ! this.showHill})}" title="Hill">
             <battle-sim-option value="${SLOPE_UP}">Uphill</battle-sim-option>
             <battle-sim-option value="${SLOPE_DOWN}">Downhill</battle-sim-option>
-            <battle-sim-option value="${SLOPE_NONE}">Neither</battle-sim-option>
+            <battle-sim-option value="${SLOPE_NONE}" selected>Neither</battle-sim-option>
           </battle-sim-selector>
           <battle-sim-selector radio number id="attacker-leadership" class="${classMap({hidden: ! this.showLeader})}" title="Attacker Leaders">
             ${repeat(this.battle.activeUnit.army.leaders, (leader, index) => html`
