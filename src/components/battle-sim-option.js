@@ -35,9 +35,11 @@ class BattleSimOption extends LitElement {
           color: var(--app-primary-color);
         }
         #box {
-          width: 1.25rem;
-          height: 1.25rem;
-          font-size: 1.25rem;
+          box-sizing: border-box;
+          width: 1.5rem;
+          height: 1.5rem;
+          font-size: 1.5rem;
+          line-height: 1.5rem;
           margin-right: 0.5rem;
           background-color: white;
           color: var(--app-primary-color);
@@ -47,6 +49,11 @@ class BattleSimOption extends LitElement {
           border-width: 1px 2px;
         }
         slot {
+          box-sizing: border-box;
+          height: 1.5rem;
+          font-size: 1rem;
+          line-height: 1rem;
+          padding: calc(0.25rem + 1.5px) 0;
           display: block;
           flex-grow: 1;
           margin-right: 1rem;
