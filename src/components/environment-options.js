@@ -28,6 +28,7 @@ class EnvironmentOptions extends LitElement {
       showRestTime: { type: Boolean },
       showEngagedAttackers: { type: Boolean },
       showEngagedDefenders: { type: Boolean },
+      targetUnit: { type: Object },
     };
   }
 
@@ -83,9 +84,9 @@ class EnvironmentOptions extends LitElement {
               <battle-sim-option value="${leader.leadership}">${leader.shortname}</battle-sim-option>
             `)}
           </battle-sim-selector>
-          ${this._targetUnit ? html`
-            <battle-sim-selector radio number id="defender-leadership" class="${classMap({hidden: ! this.showLeader})}" title="Attacker Leaders">
-              ${repeat(this._targetUnit.army.leaders, (leader, index) => html`
+          ${this.targetUnit ? html`
+            <battle-sim-selector radio number id="defender-leadership" class="${classMap({hidden: ! this.showLeader})}" title="Defender Leaders">
+              ${repeat(this.targetUnit.army.leaders, (leader, index) => html`
                 <battle-sim-option value="${leader.leadership}">${leader.shortname}</battle-sim-option>
               `)}
             </battle-sim-selector>

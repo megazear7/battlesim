@@ -95,7 +95,7 @@ class FightView extends BattleViewWrapper {
                 <button @click="${this._takeAction}">Take Action</button>
               </button-tray>
               <battle-sim-alert warning>You must provide a value for each field listed above the button</battle-sim-alert>
-              <environment-options .battle="${this._activeBattle}" action="${this._selectedAction}"></environment-options>
+              <environment-options .targetUnit="${this._targetUnit}" .battle="${this._activeBattle}" action="${this._selectedAction}"></environment-options>
               <div class="${classMap({hidden: ! this._showActionResult})}">
                 <button-tray>
                   <button @click="${this._progressToNextAction}">Next Action</button>
@@ -287,7 +287,7 @@ class FightView extends BattleViewWrapper {
   }
 
   _updateTarget() {
-    if (this.target && ! isNaN(this.target)) {
+    if (this.target !== undefined && ! isNaN(this.target)) {
       this._targetUnit = this._activeBattle.unitModels[this.target];
     } else {
       this._targetUnit =  null;
