@@ -31,4 +31,5 @@ npm run deploy
 
 ###### TODO
 
-1. Fully review the results of each action, how environment details affect the outcome, and how unit stats affect the outcome.
+1. Movement can drop energy below 0.
+1. Energy drop due to movement is too significant.

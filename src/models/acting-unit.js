@@ -1,4 +1,4 @@
-import { weightedRandom, weightedRandomTowards } from '../utils/math-utils.js';
+import { weightedRandom, weightedRandomTowards, weightedAverage } from '../utils/math-utils.js';
 import { SLOPE_UP, SLOPE_DOWN, SLOPE_NONE, MAX_TERRAIN } from './terrain.js';
 import { statModFor, MAX_EQUIPMENT_WEIGHT, MORALE_SUCCESS, MORALE_FAILURE } from '../game.js';
 import { FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP } from '../game.js';
@@ -29,7 +29,7 @@ export default class ActingUnit {
   }
 
   get terrainMovePenalty() {
-    // This should be based upon this.unit.openness and this.unit.isMounted
+    // TODO This should be based upon this.unit.openness and this.unit.isMounted
     return Math.min(this.environment.movementTerrain.reduce((sum, terrain) => sum += terrain.movePenalty, 0), 100);
   }
 
@@ -41,20 +41,24 @@ export default class ActingUnit {
     return (MAX_EQUIPMENT_WEIGHT - this.unit.carriedWeight) / MAX_EQUIPMENT_WEIGHT;
   }
 
+  get speedMod() {
+    return this.terrainSpeedMod * this.energySpeedMod * this.equipmentMod * this.pace;
+  }
+
   get speed() {
     if (this.unit.canMounted) {
       if (this.unit.isMounted) {
-        return this.unit.mountedSpeed.baseSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod * this.pace;
+        return this.unit.mountedSpeed.baseSpeed * this.speedMod;
       } else {
-        return this.unit.unmountedSpeed.baseSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod * this.pace;
+        return this.unit.unmountedSpeed.baseSpeed * this.speedMod;
       }
     } else {
-        return this.unit.baseSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod * this.pace;
+        return this.unit.baseSpeed * this.speedMod;
     }
   }
 
   get backwardsSpeed() {
-    return this.unit.baseBackwardSpeed * this.terrainSpeedMod * statModFor(this.unit.energy) * this.equipmentMod * this.pace;
+    return this.unit.baseBackwardSpeed * this.speedMod;
   }
 
   get armor() {
@@ -71,6 +75,14 @@ export default class ActingUnit {
 
   get terrainMod() {
     return ((MAX_TERRAIN - this.terrainMovePenalty) / MAX_TERRAIN) * statModFor(this.unit.openness) * this.unitTypeTerrainMod;
+  }
+
+  get energySpeedMod() {
+    return weightedAverage(this.energyMod, 1);
+  }
+
+  get energyMod() {
+    return this.unit.energy / 100;
   }
 
   get slopeMod() {

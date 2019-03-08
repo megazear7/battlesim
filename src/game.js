@@ -47,5 +47,5 @@ export const ARMY_1 = 1;
 export const ARMY_BOTH = 'ARMY_BOTH';
 
 export function statModFor(stat) {
-  return weightedRandomTowards(20, 80, stat, 2) / 100;
+  return weightedRandomTowards(20, 100, stat, 2) / 100;
 }
