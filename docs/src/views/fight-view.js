@@ -748,67 +748,66 @@ class SoloUnit extends ActingUnit {
   }
 
   get desc() {
-    return ` ${this.situation.yardsTravelled > 0 ? this.moveDesc : ''}
+    return ` ${this.unit.name}
+             ${this.situation.yardsTravelled > 0 ? this.moveDesc : ''}
+             ${this.situation.yardsTravelled > 0 && (this.moraleChange > 0 || this.energyChange > 0) ? 'and' : ''}
              ${this.moraleChange > 0 ? this.moraleRecoveredMessage : ''}
+             ${(this.situation.yardsTravelled > 0 || this.moraleChange > 0) && this.energyChange > 0 ? 'and' : ''}
              ${this.energyChange > 0 ? this.energyRecoveredMessage : ''}
-             ${this.situation.totalSecondsSpent > 0 ? this.timeDesc : ''}`;
+             ${this.timeDesc}.`;
   }
 
   get timeDesc() {
-    return `in ${Math.ceil(this.situation.totalSecondsSpent / SECONDS_IN_AN_MINUTE)} minutes.`;
+    return `in ${Math.ceil(this.situation.totalSecondsSpent / SECONDS_IN_AN_MINUTE)} minutes`;
   }
 
   get moveDesc() {
     if (this.situation.distance === -1) {
-      return `${this.unit.name} moves ${Math.floor(this.situation.yardsTravelled / YARDS_PER_INCH)} inches `;
+      return `moves ${Math.floor(this.situation.yardsTravelled / YARDS_PER_INCH)} inches`;
     } else if (this.situation.yardsTravelled < this.situation.distanceInYards) {
-      return `${this.unit.name} could only move ${Math.floor(this.situation.yardsTravelled / YARDS_PER_INCH)} inches `;
+      return `could only move ${Math.floor(this.situation.yardsTravelled / YARDS_PER_INCH)} inches`;
     } else {
-      return `${this.unit.name} moves the full ${Math.floor(this.situation.yardsTravelled / YARDS_PER_INCH)} inches `;
+      return `moves the full ${Math.floor(this.situation.yardsTravelled / YARDS_PER_INCH)} inches`;
     }
   }
 
-  get energyAndMoraleMessage() {
-    return ``;
-  }
-
   get energyRecoveredMessage() {
-    return this.unit.battle.statReporting === STAT_PERCENTAGE ? `They recovered ${Math.floor(this.energyChange)}% of their energy` : this.energyRecoveredDesc;
+    return this.unit.battle.statReporting === STAT_PERCENTAGE ? `recovered ${Math.floor(this.energyChange)}% of their energy` : this.energyRecoveredDesc;
   }
 
   get energyRecoveredDesc() {
     if (this.energyChange > 80) {
-      return `They got back all of there energy`;
+      return `recovered all of there energy`;
     } else if (this.energyChange > 60) {
-      return `They recovered almost all of their strength`;
+      return `recovered most of their strength`;
     } else if (this.energyChange > 40) {
-      return `They made a great recovery. The rest was very helpful`;
+      return `made a great recovery`;
     } else if (this.energyChange > 20) {
-      return `They recovered a lot of their strength`;
+      return `recovered a lot of their strength`;
     } else if (this.energyChange > 15) {
-      return `They recovered much of their strength`;
+      return `recovered much of their strength`;
     } else if (this.energyChange > 9) {
-      return `They recovered some of their strength`;
+      return `recovered some of their strength`;
     } else if (this.energyChange > 6) {
-      return `They recovered a bit of their strength`;
+      return `recovered a bit of their strength`;
     } else if (this.energyChange > 3) {
-      return `They recovered a little bit of their strength.`;
+      return `recovered a little bit of their strength.`;
     } else {
-      return `They recovered almost no strength`;
+      return `recovered almost no strength`;
     }
   }
 
   get moraleRecoveredMessage() {
-    return this.unit.battle.statReporting === STAT_PERCENTAGE ? `In ${this.situation.minutesSpentResting} minutes ${this.unit.name} recovered ${Math.floor(this.moraleChange)}% of their morale ` : this.moraleRecoveredDesc;
+    return this.unit.battle.statReporting === STAT_PERCENTAGE ? `recovered ${Math.floor(this.moraleChange)}% of their morale` : this.moraleRecoveredDesc;
   }
 
   get moraleRecoveredDesc() {
     if (this.moraleChange > 20) {
-      return `${this.unit.name} have been greatly encouraged`;
+      return `have been greatly encouraged`;
     } else if (this.moraleChange > 10) {
-      return `${this.unit.name} have been encouraged`;
+      return `have been encouraged`;
     } else {
-      return `${this.unit.name} seem to be more willing to fight than before`;
+      return `seem to be more willing to fight than before`;
     }
   }
 
@@ -1033,7 +1032,7 @@ class FightView extends BattleViewWrapper {
                 <button @click="${this._takeAction}">Take Action</button>
               </button-tray>
               <battle-sim-alert warning>You must provide a value for each field listed above the button</battle-sim-alert>
-              <environment-options .battle="${this._activeBattle}" action="${this._selectedAction}"></environment-options>
+              <environment-options .targetUnit="${this._targetUnit}" .battle="${this._activeBattle}" action="${this._selectedAction}"></environment-options>
               <div class="${classMap({
       hidden: !this._showActionResult
     })}">
@@ -1245,7 +1244,7 @@ class FightView extends BattleViewWrapper {
   }
 
   _updateTarget() {
-    if (this.target && !isNaN(this.target)) {
+    if (this.target !== undefined && !isNaN(this.target)) {
       this._targetUnit = this._activeBattle.unitModels[this.target];
     } else {
       this._targetUnit = null;
