@@ -9,6 +9,7 @@ export const SPEAR = 'SPEAR';
 export const PIKE = 'PIKE';
 export const BOW = 'LONGBOW';
 export const LONGBOW = 'LONGBOW';
+export const KNIGHT = 'KNIGHT';
 
 export const WEAPONS = {
   [NO_WEAPON]: {
@@ -65,4 +66,13 @@ export const WEAPONS = {
     range: 200,
     dropoff: 10,
   },
+  [KNIGHT]: {
+    name: 'Blade and Lance',
+    [POWER_VS_FOOT]: 70,
+    [POWER_VS_MOUNTED]: 70,
+    volume: 6,
+    weight: 3,
+    range: 0,
+    dropoff: 10,
+  }
 };

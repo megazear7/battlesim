@@ -7,7 +7,8 @@ import {
   PIKE,
   BLADE,
   BOW,
-  LONGBOW } from './weapons.js';
+  LONGBOW,
+  KNIGHT, } from './weapons.js';
 import {
   STANDARD_GAMBESON,
   IRON_PARTIAL_CHAINMAIL,
@@ -95,7 +96,7 @@ export const UNIT_LIGHT_CAVALRY = {
 export const UNIT_KNIGHTS = {
   ...BASIC_MOUNTED_UNIT,
   name: 'Knights',
-  [MELEE_WEAPON]: BLADE,
+  [MELEE_WEAPON]: KNIGHT,
   armor: STEEL_COMPLETE_PLATEMAIL,
   rangedSkill: 20,
   baseBackwardsSpeed: 0.3,

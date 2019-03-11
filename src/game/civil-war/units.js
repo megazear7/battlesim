@@ -3,7 +3,8 @@ import {
   BAYONETE,
   SPRINGFIELD_RIFLED_MUSKET,
   CANNON_24_POUNDER_CIVIL_WAR,
-  CONFEDERATE_SMOOTH_BORE } from './weapons.js';
+  CONFEDERATE_SMOOTH_BORE,
+  SWORD, } from './weapons.js';
 import {
   FOOT_TROOP,
   CAVALRY_TROOP,
@@ -57,7 +58,7 @@ export const FRESH_UNION_CAVALRY_REGIMENT = {
   maxFallback: 20,
   ammunition: UNION_CAVALRY_REGIMENT_SIZE * 20,
   armor: NO_ARMOR,
-  [MELEE_WEAPON]: BAYONETE,
+  [MELEE_WEAPON]: SWORD,
   [RANGED_WEAPON]: SPRINGFIELD_RIFLED_MUSKET,
   meleeSkill: 60,
   rangedSkill: 50,
@@ -148,7 +149,7 @@ export const FRESH_CONFEDERATE_CAVALRY_REGIMENT = {
   maxFallback: 20,
   ammunition: CONFEDERATE_CAVALRY_REGIMENT_SIZE * 20,
   armor: NO_ARMOR,
-  [MELEE_WEAPON]: BAYONETE,
+  [MELEE_WEAPON]: SWORD,
   [RANGED_WEAPON]: CONFEDERATE_SMOOTH_BORE,
   meleeSkill: 60,
   rangedSkill: 50,
