@@ -94,8 +94,9 @@ const battle = (state = initialState, action) => {
     activeBattle.units.push(newUnit);
   } else if (activeBattle && action.type === REMOVE) {
     activeBattle.units.splice(action.index, 1);
-  } else if (activeBattle && action.type === PLAY_ARMY) {
-    if (newState.activeBattle.type === SHARED_BATTLE) {
+  } else if (action.type === PLAY_ARMY) {
+    let sharedBattle = newState.sharedBattles[action.battleId];
+    if (sharedBattle) {
       let sharedBattles = JSON.parse(localStorage.getItem("sharedBattles")) || [];
       sharedBattles.forEach(battle => {
         if (battle.id === action.battleId) {
@@ -103,8 +104,8 @@ const battle = (state = initialState, action) => {
         }
       });
       localStorage.setItem("sharedBattles", JSON.stringify(sharedBattles));
+      sharedBattle.playingArmy = action.army;
     }
-    activeBattle.playingArmy = action.army;
   } else if (action.type === CREATE_NEW_BATTLE) {
     let newBattle = {
       ...BATTLE_TEMPLATES[action.battleStats.templateIndex],

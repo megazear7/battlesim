@@ -266,7 +266,6 @@ class BattleSim extends connect(store)(LitElement) {
 
     let state = store.getState();
     let sharedBattles = JSON.parse(localStorage.getItem("sharedBattles")) || [];
-    let activeBattleId = state.battle.activeBattle.id;
 
     sharedBattles.forEach(sharedBattle => {
       firebase.firestore().collection('apps/battlesim/battles')
