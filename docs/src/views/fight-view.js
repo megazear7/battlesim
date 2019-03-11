@@ -262,16 +262,6 @@ class Combatant extends ActingUnit {
     return this.unit.strength * this.modifiedVolume * (duration / SECONDS_IN_AN_HOUR);
   }
 
-  battleReport() {
-    if (this.unit.strength - this.casualties <= 0) {
-      return `They were destroyed. ${this.moraleMessage} ${this.energyMessage}`;
-    } else if (this.unit.morale - this.moraleLoss <= 0) {
-      return `They fled the battlefield. ${this.moraleMessage} ${this.energyMessage}`;
-    } else {
-      return `${this.casualtyMessage} ${this.leadershipMessage} ${this.moraleMessage} ${this.energyMessage}`;
-    }
-  }
-
   updates(delay) {
     return {
       id: this.unit.id,
@@ -298,59 +288,76 @@ class Combatant extends ActingUnit {
     }];
   }
 
+  battleReport() {
+    if (this.unit.strength - this.casualties <= 0) {
+      return `${this.unit.name} ${this.casualtyMessage}.`;
+    } else if (this.unit.morale - this.moraleLoss <= 0) {
+      return `${this.unit.name} fled the battlefield.`;
+    } else {
+      return `${this.unit.name}
+              ${this.casualtyMessage}${this.leadershipMessage ? ' and' : '.'}
+              ${this.leadershipMessage}${this.leadershipMessage ? '.' : ''}
+              ${this.moraleMessage || this.energyMessage ? 'They lost' : ''}
+              ${this.moraleMessage}${this.moraleMessage && !this.energyMessage ? '.' : ''}
+              ${this.moraleMessage && this.energyMessage ? 'and' : ''}
+              ${this.energyMessage}${this.energyMessage ? '.' : ''}`;
+    }
+  }
+
   get casualtyMessage() {
-    return this.unit.battle.casualtyReporting === CASUALTY_MESSAGE_DESCRIPTIVE ? this.casualtyDesc : `${this.unit.name} lost ${roundToNearest(this.casualties, this.unit.battle.casualtyReporting)} of their ${roundToNearest(this.unit.strength, this.unit.battle.strengthReporting)} men during the fight.`;
+    return this.unit.battle.casualtyReporting === CASUALTY_MESSAGE_DESCRIPTIVE ? this.casualtyDesc : `lost ${roundToNearest(this.casualties, this.unit.battle.casualtyReporting)} of their ${roundToNearest(this.unit.strength, this.unit.battle.strengthReporting)} men`;
   }
 
   get casualtyDesc() {
     if (this.casualties > this.unit.strength) {
-      return `${this.unit.name} lost all of their men.`;
+      return `lost the entire unit`;
     } else if (this.casualties > this.unit.strength * 0.75) {
-      return `${this.unit.name} sustained terrible casualties. Almost the whole unit was destroyed.`;
+      return `lost almost the entire unit`;
     } else if (this.casualties > this.unit.strength * 0.50) {
-      return `${this.unit.name} sustained terrible casualties. Over half the unit is destroyed.`;
+      return `lost over half the unit`;
     } else if (this.casualties > this.unit.strength * 0.30) {
-      return `${this.unit.name} sustained terrible casualties.`;
+      return `sustained grave casualties`;
     } else if (this.casualties > this.unit.strength * 0.20) {
-      return `${this.unit.name} sustained grave casualties.`;
+      return `sustained terrible casualties`;
     } else if (this.casualties > this.unit.strength * 0.15) {
-      return `${this.unit.name} sustained massive casualties.`;
+      return `sustained massive casualties`;
     } else if (this.casualties > this.unit.strength * 0.10) {
-      return `${this.unit.name} sustained major casualties.`;
+      return `sustained major casualties`;
     } else if (this.casualties > this.unit.strength * 0.5) {
-      return `${this.unit.name} sustained significant casualties.`;
+      return `sustained significant casualties`;
     } else if (this.casualties > this.unit.strength * 0.03) {
-      return `${this.unit.name} sustained noticable casualties.`;
+      return `sustained noticable casualties`;
     } else if (this.casualties > this.unit.strength * 0.02) {
-      return `${this.unit.name} sustained minor casualties.`;
+      return `sustained minor casualties`;
     } else if (this.casualties > 0) {
-      return `${this.unit.name} sustained almost no casualties.`;
+      return `sustained almost no casualties`;
     } else {
-      return `${this.unit.name} sustained no casualties.`;
+      return `sustained no casualties`;
     }
   }
 
   get moraleMessage() {
-    return this.unit.battle.statReporting === STAT_PERCENTAGE ? `They lost ${Math.ceil(this.moraleLoss)}% morale` : ``;
+    return this.unit.battle.statReporting === STAT_PERCENTAGE ? `${Math.ceil(this.moraleLoss)}% morale` : ``;
   }
 
   get energyMessage() {
-    return this.unit.battle.statReporting === STAT_PERCENTAGE ? ` and ${Math.ceil(this.energyLoss)}% energy.` : ``;
+    return this.unit.battle.statReporting === STAT_PERCENTAGE ? `${Math.ceil(this.energyLoss)}% energy` : ``;
   }
 
   get leadershipMessage() {
-    return this.unit.battle.statReporting === STAT_PERCENTAGE && this.leadershipLoss > 0 ? `They lost a leader during the fight and have suffered a ${this.leadershipLoss}% leadership penalty.` : this.leadershipDescription;
+    return this.unit.battle.statReporting === STAT_PERCENTAGE && this.leadershipLoss > 0 ? `have suffered a ${this.leadershipLoss}% leadership penalty` : this.leadershipDescription;
   }
 
   get leadershipDescription() {
+    // TODO leader titles should come from the battle / army.
     if (this.leadershipLoss > this.unit.leadership) {
-      return `They lost all of their leaders during the fight. They have no one to command them.`;
+      return `lost a captain`;
     } else if (this.leadershipLoss > this.unit.leadership * 0.5) {
-      return `They lost their captain during the fight.`;
+      return `lost a second lieutenant`;
     } else if (this.leadershipLoss > this.unit.leadership * 0.25) {
-      return `They lost a lieutenant during the fight.`;
+      return `lost a first lieutenant`;
     } else if (this.leadershipLoss > 0) {
-      return `They lost some of their sergeant's during the fight.`;
+      return `lost a sergeant`;
     } else {
       return ``;
     }
@@ -518,7 +525,7 @@ class Encounter {
   }
 
   get chargeMovementMessage() {
-    return `${this.attacker.unit.name} may move his stands ${this.attackerMovementInches} inches in order to make it into combat. Then the defender may follow this by moving his unengaged stands ${this.defenderMovementInches} inches.`;
+    return `${this.attacker.unit.name} may move his stands ${this.attackerMovementInches} inches in order to make it into combat. Then ${this.defender.unit.name} may follow this by moving his unengaged stands ${this.defenderMovementInches} inches.`;
   }
 
   get attackerMovementInches() {
@@ -690,7 +697,8 @@ class SoloUnit extends ActingUnit {
     this.pace = pace;
     this.energyMoveModRoll = weightedRandomTowards(0, 1, 0.5, 3);
     this.energyRestModRoll = weightedRandomTowards(0, 1, 0.3, 3);
-    this.moraleModRoll = weightedRandomTowards(0, 100, 1, 2);
+    this.moraleMoveModRoll = weightedRandomTowards(0, 1, 0.1, 3);
+    this.moraleRestModRoll = weightedRandomTowards(0, 1, 0.1, 3);
   }
 
   get energyChange() {
@@ -706,7 +714,7 @@ class SoloUnit extends ActingUnit {
   }
 
   get maxMoraleChange() {
-    return weightedAverage(100 - this.pacePercentage, this.moraleModRoll, 0) * (this.situation.percentageOfATurnSpent / 100);
+    return this.situation.percentageOfATurnSpentResting * this.moraleRestModRoll + this.situation.percentageOfATurnSpentMoving * this.moraleMoveModRoll * Math.max(0.75 - this.pace, 0);
   }
 
   get maxEnergyChange() {
@@ -791,7 +799,7 @@ class SoloUnit extends ActingUnit {
     } else if (this.energyChange > 6) {
       return `recovered a bit of their strength`;
     } else if (this.energyChange > 3) {
-      return `recovered a little bit of their strength.`;
+      return `recovered a little bit of their strength`;
     } else {
       return `recovered almost no strength`;
     }

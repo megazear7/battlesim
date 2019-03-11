@@ -1,4 +1,4 @@
-import { html, css, repeat, classMap, PageViewElement, createNewBattle, setActiveBattle, removeBattle, addSharedBattle, playArmy, removeSharedBattle, connect, store, SharedStyles, ButtonSharedStyles, $battleTemplatesDefault as BATTLE_TEMPLATES, $rulesDefault as RULES, $battleDefault as Battle, makeid, SHARED_BATTLE, LOCAL_BATTLE, ARMY_0, ARMY_1, ARMY_BOTH } from '../components/battle-sim.js';
+import { html, css, repeat, classMap, PageViewElement, createNewBattle, setActiveBattle, removeBattle, addSharedBattle, playArmy, removeSharedBattle, updateDisplayName, connect, store, SharedStyles, ButtonSharedStyles, $battleTemplatesDefault as BATTLE_TEMPLATES, $rulesDefault as RULES, $battleDefault as Battle, makeid, SHARED_BATTLE, LOCAL_BATTLE, ARMY_0, ARMY_1, ARMY_BOTH } from '../components/battle-sim.js';
 
 class WarView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -11,6 +11,9 @@ class WarView extends connect(store)(PageViewElement) {
       },
       _sharedBattles: {
         type: Object
+      },
+      _displayName: {
+        type: String
       }
     };
   }
@@ -27,6 +30,9 @@ class WarView extends connect(store)(PageViewElement) {
           background-color: var(--app-primary-color);
           border-color: var(--app-primary-color);
           color: var(--app-light-text-color);
+        }
+        .play {
+          font-size: 0.8rem;
         }
       `];
   }
@@ -59,6 +65,8 @@ class WarView extends connect(store)(PageViewElement) {
       </section>
       <section>
         <h2>Shared Battles</h2>
+        <label for="display-name">Display Name</label>
+        <input type="text" id="display-name" @change="${e => this._updateDisplayName(e.target.value)}" placeholder="Leave blank to remain anonymous" value="${this._displayName}"></input>
         ${repeat(this._sharedBattles, battle => html`
           <div class="shared-battle">
             <h3>${battle.name}</h3>
@@ -72,18 +80,19 @@ class WarView extends connect(store)(PageViewElement) {
               <button @click="${() => this._leaveSharedBattle(battle)}">Leave</button>
               <button @click="${e => this._shareBattle(e.target, battle)}">Share</button>
             </button-tray>
+            <span class="play">Play:</span>
             <button @click="${() => this._playArmy(battle, ARMY_0)}" class="${classMap({
       'btn-link': true,
       'active-link': battle.playingArmy === ARMY_0
-    })}">Play ${battle.army0.name}</button>
+    })}">${battle.army0.name}</button>
             <button @click="${() => this._playArmy(battle, ARMY_1)}" class="${classMap({
       'btn-link': true,
       'active-link': battle.playingArmy === ARMY_1
-    })}">Play ${battle.army1.name}</button>
+    })}">${battle.army1.name}</button>
             <button @click="${() => this._playArmy(battle, ARMY_BOTH)}" class="${classMap({
       'btn-link': true,
       'active-link': battle.playingArmy === ARMY_BOTH
-    })}">Play both armies</button>
+    })}">Both armies</button>
           </div>
         `)}
         ${this._sharedBattles.length === 0 ? html`
@@ -131,6 +140,7 @@ class WarView extends connect(store)(PageViewElement) {
   stateChanged(state) {
     this._sharedBattles = Object.keys(state.battle.sharedBattles).map(id => new Battle(state.battle.sharedBattles[id], id, id === state.battle.activeBattle.id));
     this._battles = state.battle.battles.map((battle, index) => new Battle(battle, index, index === state.battle.activeBattle.id));
+    this._displayName = state.battle.battlesimDevice.displayName;
   }
 
   _playArmy(battle, army) {
@@ -146,6 +156,10 @@ class WarView extends connect(store)(PageViewElement) {
     selection.addRange(range);
     document.execCommand('copy');
     alert(`Battle url copied! Share it with your friends.\n\n${battle.prettyUrl}`);
+  }
+
+  _updateDisplayName(displayName) {
+    store.dispatch(updateDisplayName(displayName));
   }
 
   _shareBattle(button, battle) {

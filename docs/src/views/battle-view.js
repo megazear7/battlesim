@@ -21,6 +21,16 @@ class BattleView extends BattleViewWrapper {
 
   battleViewRender() {
     return html`
+      ${this._activeBattle.connectedDevices && this._activeBattle.connectedDevices.length > 0 ? html`
+        <section>
+          <h2>Players</h2>
+          <ul>
+          ${repeat(this._activeBattle.connectedDevices, device => html`
+            <li><h4>${device.displayName}</h4></li>
+          `)}
+          </ul>
+        </section>
+      ` : ''}
       ${repeat(this._activeBattle.unitsByArmy, ({
       name,
       units
@@ -66,12 +76,12 @@ class BattleView extends BattleViewWrapper {
               </option>
             `)}
           </select>
-          <input id="unit-name-input" type="text" placeholder="Unit Name"></input>
           <button-tray>
             <button @click="${this._add}">Add</button>
           </button-tray>
           <battle-sim-alert warning id="warning-message">You must select a type of unit to add and provide the unit a unique name.</battle-sim-alert>
           <battle-sim-alert success id="added-message">Unit Added!</battle-sim-alert>
+          <input id="unit-name-input" type="text" placeholder="Unit Name"></input>
         </div>
       </section>
       <section>
@@ -132,12 +142,28 @@ class BattleView extends BattleViewWrapper {
     return this.shadowRoot.getElementById('unit-name-input');
   }
 
+  get selectedUnit() {
+    if (this.unitTemplate) {
+      return this._activeBattle.allUnitTemplates[this.unitTemplate];
+    } else {
+      return undefined;
+    }
+  }
+
+  get incrementedName() {
+    return this._activeBattle.unitModels.filter(unit => unit.armyIndex === this.army).map(unit => unit.name).filter(name => this.newUnitBaseName && name.startsWith(this.newUnitBaseName)).map(name => name.match(/(.*?)(\d*)$/)).filter(match => match && match.length === 3).sort((match1, match2) => parseInt(match1[2]) - parseInt(match2[2] || 0)).map(match => match[1] + (match[2] ? '' : ' ') + (parseInt(match[2] || 0) + 1)).pop();
+  }
+
+  get newUnitBaseName() {
+    return this.nameElement.value || (this.selectedUnit ? this.selectedUnit.unit.name : '');
+  }
+
   get name() {
-    return this.nameElement.value;
+    return this.incrementedName || this.newUnitBaseName;
   }
 
   get statsValid() {
-    return !isNaN(this.unitTemplate) && this.nameElement.value != '';
+    return !isNaN(this.unitTemplate);
   }
 
   _remove(e) {
@@ -152,6 +178,7 @@ class BattleView extends BattleViewWrapper {
   _add() {
     if (this.statsValid) {
       store.dispatch(add(this.unitTemplate, this.name));
+      this.armyElement.value = '0';
       this.nameElement.value = '';
       this.unitTemplateElement.value = '';
       this.shadowRoot.getElementById('added-message').alert();
