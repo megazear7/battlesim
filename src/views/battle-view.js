@@ -142,12 +142,36 @@ class BattleView extends BattleViewWrapper {
     return this.shadowRoot.getElementById('unit-name-input')
   }
 
+  get selectedUnit() {
+    if (this.unitTemplate) {
+      return this._activeBattle.allUnitTemplates[this.unitTemplate];
+    } else {
+      return undefined;
+    }
+  }
+
+  get incrementedName() {
+    return this._activeBattle.unitModels
+    .filter(unit => unit.armyIndex === this.army)
+    .map(unit => unit.name)
+    .filter(name => this.newUnitBaseName && name.startsWith(this.newUnitBaseName))
+    .map(name => name.match(/(.*?)(\d*)$/))
+    .filter(match => match && match.length === 3)
+    .sort((match1, match2) => parseInt(match1[2]) - parseInt(match2[2] || 0))
+    .map(match => match[1] + (match[2] ? '' : ' ') + (parseInt(match[2] || 0) + 1))
+    .pop()
+  }
+
+  get newUnitBaseName() {
+    return this.nameElement.value || (this.selectedUnit ? this.selectedUnit.unit.name : '');
+  }
+
   get name() {
-    return this.nameElement.value;
+    return this.incrementedName || this.newUnitBaseName;
   }
 
   get statsValid() {
-    return ! isNaN(this.unitTemplate) && this.nameElement.value != '';
+    return ! isNaN(this.unitTemplate);
   }
 
   _remove(e) {
@@ -161,6 +185,7 @@ class BattleView extends BattleViewWrapper {
   _add() {
     if (this.statsValid) {
       store.dispatch(add(this.unitTemplate, this.name));
+      this.armyElement.value = '0';
       this.nameElement.value = '';
       this.unitTemplateElement.value = '';
       this.shadowRoot.getElementById('added-message').alert();
