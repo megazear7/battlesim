@@ -44,6 +44,7 @@ export default class BattleViewWrapper extends connect(store)(PageViewElement) {
       if (state.battle.battles.length > state.battle.activeBattle.id) {
         this._activeBattle = new Battle(state.battle.battles[state.battle.activeBattle.id], state.battle.activeBattle.id);
       }
+      this._unitTemplates = this._activeBattle ? this._activeBattle.unitTemplatesFor(0) : [ ];
     } else if (state.battle.activeBattle.type === SHARED_BATTLE) {
       this._battleIsShared = true;
       this._activeBattle = Object.keys(state.battle.sharedBattles).indexOf(state.battle.activeBattle.id) >= 0
