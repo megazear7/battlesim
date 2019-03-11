@@ -140,6 +140,8 @@ class EnvironmentOptions extends LitElement {
     this.shadowRoot.getElementById('engaged-defenders').value = '';
     this.shadowRoot.getElementById('rest-time').value = '';
     [...this.shadowRoot.querySelectorAll('battle-sim-option')].forEach(option => option.selected = false);
+    this.shadowRoot.querySelector(`#hill [value="${SLOPE_NONE}"]`).selected = true;
+    this.shadowRoot.querySelector('#pace [value="1"]').selected = true;
   }
 
   _selectedTerrain(typeId) {
