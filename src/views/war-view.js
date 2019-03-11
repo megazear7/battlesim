@@ -38,6 +38,9 @@ class WarView extends connect(store)(PageViewElement) {
           border-color: var(--app-primary-color);
           color: var(--app-light-text-color);
         }
+        .play {
+          font-size: 0.8rem;
+        }
       `
     ];
   }
@@ -80,9 +83,10 @@ class WarView extends connect(store)(PageViewElement) {
               <button @click="${() => this._leaveSharedBattle(battle)}">Leave</button>
               <button @click="${e => this._shareBattle(e.target, battle)}">Share</button>
             </button-tray>
-            <button @click="${() => this._playArmy(battle, ARMY_0)}" class="${classMap({'btn-link': true, 'active-link': battle.playingArmy === ARMY_0})}">Play ${battle.army0.name}</button>
-            <button @click="${() => this._playArmy(battle, ARMY_1)}" class="${classMap({'btn-link': true, 'active-link': battle.playingArmy === ARMY_1})}">Play ${battle.army1.name}</button>
-            <button @click="${() => this._playArmy(battle, ARMY_BOTH)}" class="${classMap({'btn-link': true, 'active-link': battle.playingArmy === ARMY_BOTH})}">Play both armies</button>
+            <span class="play">Play:</span>
+            <button @click="${() => this._playArmy(battle, ARMY_0)}" class="${classMap({'btn-link': true, 'active-link': battle.playingArmy === ARMY_0})}">${battle.army0.name}</button>
+            <button @click="${() => this._playArmy(battle, ARMY_1)}" class="${classMap({'btn-link': true, 'active-link': battle.playingArmy === ARMY_1})}">${battle.army1.name}</button>
+            <button @click="${() => this._playArmy(battle, ARMY_BOTH)}" class="${classMap({'btn-link': true, 'active-link': battle.playingArmy === ARMY_BOTH})}">Both armies</button>
           </div>
         `)}
         ${this._sharedBattles.length === 0 ? html`
