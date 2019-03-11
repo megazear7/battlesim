@@ -94,7 +94,7 @@ export default class Encounter {
   }
 
   get chargeMovementMessage() {
-    return `${this.attacker.unit.name} may move his stands ${this.attackerMovementInches} inches in order to make it into combat. Then the defender may follow this by moving his unengaged stands ${this.defenderMovementInches} inches.`;
+    return `${this.attacker.unit.name} may move his stands ${this.attackerMovementInches} inches in order to make it into combat. Then ${this.defender.unit.name} may follow this by moving his unengaged stands ${this.defenderMovementInches} inches.`;
   }
 
   get attackerMovementInches() {
