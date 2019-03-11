@@ -37,6 +37,16 @@ class BattleView extends BattleViewWrapper {
 
   battleViewRender() {
     return html`
+      ${this._activeBattle.connectedDevices && this._activeBattle.connectedDevices.length > 0 ? html`
+        <section>
+          <h2>Players</h2>
+          <ul>
+          ${repeat(this._activeBattle.connectedDevices, device => html`
+            <li><h4>${device.displayName}</h4></li>
+          `)}
+          </ul>
+        </section>
+      ` : ''}
       ${repeat(this._activeBattle.unitsByArmy, ({name, units}) => html`
         <section>
           <h2>${name}</h2>

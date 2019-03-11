@@ -18,27 +18,39 @@ import {
   REMOVE_BATTLE,
   ADD_SHARED_BATTLE,
   PLAY_ARMY,
-  REMOVE_SHARED_BATTLE
+  REMOVE_SHARED_BATTLE,
+  UPDATE_DISPLAY_NAME,
 } from '../actions/battle.js';
 import { LOCAL_BATTLE, SHARED_BATTLE } from '../game.js';
+import { makeid } from '../utils/math-utils.js';
 import Battle from '../models/battle.js';
 
 const initialState = {
   activeBattle: { type: LOCAL_BATTLE, id: 0 },
   battles: [ ],
   sharedBattles: { },
+  battlesimUserId: { },
 };
 
 let savedBattles = JSON.parse(localStorage.getItem("battles"));
-let savedActiveBattle = JSON.parse(localStorage.getItem("activeBattle"));
-
 if (savedBattles) {
   initialState.battles = savedBattles;
 }
 
+let savedActiveBattle = JSON.parse(localStorage.getItem("activeBattle"));
 if (savedActiveBattle) {
   initialState.activeBattle = savedActiveBattle;
 }
+
+let battlesimDevice = JSON.parse(localStorage.getItem("battlesimDevice"));
+if (! battlesimDevice) {
+  battlesimDevice = {
+    id: makeid(10),
+    displayName: "",
+  }
+  localStorage.setItem("battlesimDevice", JSON.stringify(battlesimDevice));
+}
+initialState.battlesimDevice = battlesimDevice;
 
 const battle = (state = initialState, action) => {
   var newState = { ...state };
@@ -154,6 +166,35 @@ const battle = (state = initialState, action) => {
     localStorage.setItem("sharedBattles", JSON.stringify(sharedBattles));
   } else if (action.type === SET_ACTIVE_BATTLE) {
     newState.activeBattle = action.activeBattle;
+  } else if (action.type === UPDATE_DISPLAY_NAME) {
+    newState.battlesimDevice.displayName = action.displayName;
+    let battlesimDevice = JSON.parse(localStorage.getItem("battlesimDevice"));
+    battlesimDevice.displayName = action.displayName;
+    localStorage.setItem("battlesimDevice", JSON.stringify(battlesimDevice));
+
+    Object.keys(newState.sharedBattles).forEach(battleId => {
+      firebase.firestore().collection('apps/battlesim/battles')
+      .doc(battleId)
+      .get()
+      .then(docSnapshot => {
+        let connectedDevices = docSnapshot.get('connectedDevices') || [ ];
+
+        if (action.displayName) {
+          let foundDevice = connectedDevices.find(device => device.id === newState.battlesimDevice.id);
+          if (foundDevice) {
+            foundDevice.name = action.displayName;
+          } else {
+            connectedDevices.push(newState.battlesimDevice);
+          }
+        } else {
+          connectedDevices = connectedDevices.filter(device => device.id !== newState.battlesimDevice.id);
+        }
+
+        firebase.firestore().collection('apps/battlesim/battles')
+        .doc(battleId)
+        .update({'battle.connectedDevices': connectedDevices});
+      });
+    });
   }
 
   if (activeBattle && newState.activeBattle.type === SHARED_BATTLE && action.type !== ADD_SHARED_BATTLE && action.type !== SET_ACTIVE_BATTLE && action.type !== PLAY_ARMY) {

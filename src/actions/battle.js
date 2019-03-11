@@ -10,6 +10,7 @@ export const SET_ACTIVE_BATTLE = 'SET_ACTIVE_BATTLE';
 export const REMOVE_BATTLE = 'REMOVE_BATTLE';
 export const PLAY_ARMY = 'PLAY_ARMY';
 export const REMOVE_SHARED_BATTLE = 'REMOVE_SHARED_BATTLE';
+export const UPDATE_DISPLAY_NAME = 'UPDATE_DISPLAY_NAME';
 
 export const takeAction = (updates, message, environment) => {
   return {
@@ -95,5 +96,12 @@ export const playArmy = (battleId, army) => {
     type: PLAY_ARMY,
     army,
     battleId,
+  };
+};
+
+export const updateDisplayName = (displayName) => {
+  return {
+    type: UPDATE_DISPLAY_NAME,
+    displayName
   };
 };

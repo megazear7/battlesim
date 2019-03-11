@@ -2,7 +2,7 @@ import { html, css } from 'lit-element';
 import { repeat } from 'lit-html/directives/repeat';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { PageViewElement } from './page-view-element.js';
-import { createNewBattle, setActiveBattle, removeBattle, addSharedBattle, playArmy, removeSharedBattle } from '../actions/battle.js';
+import { createNewBattle, setActiveBattle, removeBattle, addSharedBattle, playArmy, removeSharedBattle, updateDisplayName } from '../actions/battle.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
 import { SharedStyles } from '../styles/shared-styles.js';
@@ -19,6 +19,7 @@ class WarView extends connect(store)(PageViewElement) {
       _battles: { type: Object },
       _selectableBattles: { type: Object },
       _sharedBattles: { type: Object },
+      _displayName: { type: String },
     };
   }
 
@@ -70,6 +71,8 @@ class WarView extends connect(store)(PageViewElement) {
       </section>
       <section>
         <h2>Shared Battles</h2>
+        <label for="display-name">Display Name</label>
+        <input type="text" id="display-name" @change="${e => this._updateDisplayName(e.target.value)}" placeholder="Leave blank to remain anonymous" value="${this._displayName}"></input>
         ${repeat(this._sharedBattles, battle => html`
           <div class="shared-battle">
             <h3>${battle.name}</h3>
@@ -131,6 +134,8 @@ class WarView extends connect(store)(PageViewElement) {
 
     this._battles = state.battle.battles.map((battle, index) =>
       new Battle(battle, index, index === state.battle.activeBattle.id));
+
+    this._displayName = state.battle.battlesimDevice.displayName;
   }
 
   _playArmy(battle, army) {
@@ -146,6 +151,10 @@ class WarView extends connect(store)(PageViewElement) {
     selection.addRange(range);
     document.execCommand('copy');
     alert(`Battle url copied! Share it with your friends.\n\n${battle.prettyUrl}`);
+  }
+
+  _updateDisplayName(displayName) {
+    store.dispatch(updateDisplayName(displayName));
   }
 
   _shareBattle(button, battle) {

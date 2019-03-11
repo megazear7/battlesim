@@ -70,7 +70,7 @@ export const SharedStyles = css`
     font-size: 0.75rem;
     line-height: 1rem;
   }
-  
+
   img {
     max-width: 100%;
   }
