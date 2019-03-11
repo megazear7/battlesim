@@ -52,10 +52,10 @@ class EnvironmentOptions extends LitElement {
       <battle-sim-selector id="resupply" radio class="${classMap({hidden: ! this.showResupply})}">
         <battle-sim-option>Resupply</battle-sim-option>
       </battle-sim-selector>
-      <battle-sim-selector radio id="unmount" class="${classMap({hidden: ! this.showMount || this._activeBattle.activeUnit.isCurrentlyMounted})}">
+      <battle-sim-selector radio id="unmount" class="${classMap({hidden: ! this.showMount || ! this.battle.activeUnit.isCurrentlyMounted})}">
         <battle-sim-option>Unmount</battle-sim-option>
       </battle-sim-selector>
-      <battle-sim-selector radio id="mount" class="${classMap({hidden: ! this.showMount || ! this._activeBattle.activeUnit.isCurrentlyMounted})}">
+      <battle-sim-selector radio id="mount" class="${classMap({hidden: ! this.showMount || this.battle.activeUnit.isCurrentlyMounted})}">
         <battle-sim-option>Mount</battle-sim-option>
       </battle-sim-selector>
       <div class="row">

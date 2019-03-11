@@ -374,6 +374,9 @@ export default {
         rangedWeapon: CANNON_12_POUNDER_CIVIL_WAR,
         stands: 3,
       },
+      { ...FRESH_CONFEDERATE_CAVALRY_REGIMENT,
+        name: "Harrison's Cavalry",
+      },
     ],
     unitTemplates: CIVIL_WAR_UNITS_ID,
     rules: CIVIL_WAR_GENERIC_SCENARIO
