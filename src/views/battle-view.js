@@ -76,12 +76,12 @@ class BattleView extends BattleViewWrapper {
               </option>
             `)}
           </select>
-          <input id="unit-name-input" type="text" placeholder="Unit Name"></input>
           <button-tray>
             <button @click="${this._add}">Add</button>
           </button-tray>
           <battle-sim-alert warning id="warning-message">You must select a type of unit to add and provide the unit a unique name.</battle-sim-alert>
           <battle-sim-alert success id="added-message">Unit Added!</battle-sim-alert>
+          <input id="unit-name-input" type="text" placeholder="Unit Name"></input>
         </div>
       </section>
       <section>
