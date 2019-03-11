@@ -132,7 +132,7 @@ export default class SoloUnit extends ActingUnit {
     } else if (this.energyChange > 6) {
       return `recovered a bit of their strength`;
     } else if (this.energyChange > 3) {
-      return `recovered a little bit of their strength.`;
+      return `recovered a little bit of their strength`;
     } else {
       return `recovered almost no strength`;
     }
