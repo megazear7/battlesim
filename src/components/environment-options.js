@@ -168,12 +168,6 @@ class EnvironmentOptions extends LitElement {
       : this.shadowRoot.getElementById('rest-time').value), MINUTES_PER_TURN);
   }
 
-  get separation() {
-    return parseInt(this.shadowRoot.getElementById('separation').value
-      ? this.shadowRoot.getElementById('separation').value
-      : 0);
-  }
-
   get engagedAttackers() {
     return parseInt(this.shadowRoot.getElementById('engaged-attackers').value === ''
       ? -1
