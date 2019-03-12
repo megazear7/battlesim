@@ -65,8 +65,10 @@ class WarView extends connect(store)(PageViewElement) {
       </section>
       <section>
         <h2>Shared Battles</h2>
-        <label for="display-name">Display Name</label>
-        <input type="text" id="display-name" @change="${e => this._updateDisplayName(e.target.value)}" placeholder="Leave blank to remain anonymous" value="${this._displayName}"></input>
+        <div>
+          <label for="display-name">Display Name</label>
+          <input type="text" id="display-name" @change="${e => this._updateDisplayName(e.target.value)}" placeholder="Leave blank to remain anonymous" value="${this._displayName}"></input>
+        </div>
         ${repeat(this._sharedBattles, battle => html`
           <div class="shared-battle">
             <h3>${battle.name}</h3>
