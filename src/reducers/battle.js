@@ -172,29 +172,7 @@ const battle = (state = initialState, action) => {
     battlesimDevice.displayName = action.displayName;
     localStorage.setItem("battlesimDevice", JSON.stringify(battlesimDevice));
 
-    Object.keys(newState.sharedBattles).forEach(battleId => {
-      firebase.firestore().collection('apps/battlesim/battles')
-      .doc(battleId)
-      .get()
-      .then(docSnapshot => {
-        let connectedDevices = docSnapshot.get('battle.connectedDevices') || [ ];
-
-        if (action.displayName) {
-          let foundDevice = connectedDevices.find(device => device.id === newState.battlesimDevice.id);
-          if (foundDevice) {
-            foundDevice.displayName = action.displayName;
-          } else {
-            connectedDevices.push(newState.battlesimDevice);
-          }
-        } else {
-          connectedDevices = connectedDevices.filter(device => device.id !== newState.battlesimDevice.id);
-        }
-
-        firebase.firestore().collection('apps/battlesim/battles')
-        .doc(battleId)
-        .update({'battle.connectedDevices': connectedDevices});
-      });
-    });
+    Object.keys(newState.sharedBattles).forEach(battleId => addDevice(battleId, battlesimDevice));
   }
 
   if (activeBattle && newState.activeBattle.type === SHARED_BATTLE && action.type !== ADD_SHARED_BATTLE && action.type !== SET_ACTIVE_BATTLE && action.type !== PLAY_ARMY) {
@@ -207,6 +185,30 @@ const battle = (state = initialState, action) => {
   localStorage.setItem("activeBattle", JSON.stringify(newState.activeBattle));
   return newState
 };
+
+export function addDevice(battleId, battlsimDevice) {
+  firebase.firestore().collection('apps/battlesim/battles')
+  .doc(battleId)
+  .get()
+  .then(docSnapshot => {
+    let connectedDevices = docSnapshot.get('battle.connectedDevices') || [ ];
+
+    if (battlsimDevice.displayName) {
+      let foundDevice = connectedDevices.find(device => device.id === battlsimDevice.id);
+      if (foundDevice) {
+        foundDevice.displayName = battlsimDevice.displayName;
+      } else {
+        connectedDevices.push(battlsimDevice);
+      }
+    } else {
+      connectedDevices = connectedDevices.filter(device => device.id !== battlsimDevice.id);
+    }
+
+    firebase.firestore().collection('apps/battlesim/battles')
+    .doc(battleId)
+    .update({'battle.connectedDevices': connectedDevices});
+  });
+}
 
 function updateTime(battle) {
   let next = nextAction(battle);
