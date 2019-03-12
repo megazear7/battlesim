@@ -1,4 +1,4 @@
-import { html, PageViewElement, SharedStyles, connect, store, setActiveBattle, addSharedBattle, SHARED_BATTLE, ARMY_BOTH } from '../components/battle-sim.js';
+import { html, PageViewElement, SharedStyles, connect, store, setActiveBattle, addSharedBattle, SHARED_BATTLE, ARMY_BOTH, addDeviceToList, addDevice } from '../components/battle-sim.js';
 
 class SharedView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -18,6 +18,7 @@ class SharedView extends connect(store)(PageViewElement) {
     firebase.firestore().collection('apps/battlesim/battles').where('battle.uuid', '==', window.location.pathname.split('/')[2]).limit(1).get().then(querySnapshot => {
       if (querySnapshot.docs.length > 0) {
         let doc = querySnapshot.docs[0];
+        let battle = doc.data().battle;
         let sharedBattleIds = JSON.parse(localStorage.getItem("sharedBattles")) || [];
 
         if (sharedBattleIds.indexOf(doc.id) === -1) {
@@ -27,12 +28,19 @@ class SharedView extends connect(store)(PageViewElement) {
           }]));
         }
 
-        store.dispatch(addSharedBattle(doc.id, doc.data().battle));
+        let battlesimDevice = JSON.parse(localStorage.getItem("battlesimDevice"));
+
+        if (battlesimDevice) {
+          addDevice(doc.id, battlesimDevice);
+          battle.connectedDevices = addDeviceToList(battle.connectedDevices, battlesimDevice);
+        }
+
+        store.dispatch(addSharedBattle(doc.id, battle));
         store.dispatch(setActiveBattle({
           type: SHARED_BATTLE,
           id: doc.id
         }));
-        this._message = `You have been added to ${doc.data().battle.name}`;
+        this._message = `You have been added to ${battle.name}`;
       } else {
         this._message = 'Could not join battle. That battle does not exist.';
       }
