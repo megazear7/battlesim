@@ -275,6 +275,10 @@ class BattleSim extends connect(store)(LitElement) {
           let battle = doc.data().battle;
           battle.playingArmy = sharedBattle.playingArmy;
           store.dispatch(addSharedBattle(doc.id, battle));
+        } else {
+          let sharedBattles = JSON.parse(localStorage.getItem("sharedBattles")) || [];
+          sharedBattles = sharedBattles.filter(battle => battle.id !== sharedBattle.id);
+          localStorage.setItem("sharedBattles", JSON.stringify(sharedBattles));
         }
       });
     });
