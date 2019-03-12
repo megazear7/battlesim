@@ -28,10 +28,6 @@ export default class ActingUnit {
     return weightedRandomTowards(0, 100, 1, 2);
   }
 
-  get terrainPenalty() {
-    return Math.max(Math.min(this.environment.movementTerrain.reduce((sum, terrain) => sum += terrain.movePenalty, 0), 100) - (this.unit.openness * this.unitTypeTerrainMod), 0);
-  }
-
   get equipmentMod() {
     return (MAX_EQUIPMENT_WEIGHT - this.unit.carriedWeight) / MAX_EQUIPMENT_WEIGHT;
   }
@@ -66,6 +62,10 @@ export default class ActingUnit {
       [CAVALRY_TROOP]: 0.5,
       [ARTILLERY_TROOP]: 0.25
     }[this.unit.unitType];
+  }
+
+  get terrainPenalty() {
+    return Math.max(Math.min(this.environment.movementTerrain.reduce((sum, terrain) => sum + terrain.movePenalty, 0), 100) - (this.unit.openness * this.unitTypeTerrainMod), 0);
   }
 
   get terrainMod() {

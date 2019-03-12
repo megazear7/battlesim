@@ -143,7 +143,15 @@ export default class Combatant extends ActingUnit {
   }
 
   get volumeModifier() {
-    return statModFor(this.unit.energy) * this.engagedMod * this.terrainMod;
+    return statModFor(this.unit.energy) * this.engagedMod * this.combatTerrainMod;
+  }
+
+  get terrainModSum() {
+    return this.areaTerrain.reduce((mod, terrain) => mod + (this.encounter.melee ? terrain.melee.volumeMod : terrain.ranged.volumeMod), 0)
+  }
+
+  get combatTerrainMod() {
+    return Math.max(Math.min(1 - (this.terrainModSum - (this.unit.openness / 100)), 1), 0);
   }
 
   get targetTroopType() {

@@ -364,6 +364,7 @@ export default {
       {
         ...FRESH_UNION_REGIMENT,
         name: "Tyler's 3rd Regiment",
+        openness: 100,
       },
       /*{
         ...FRESH_CONFEDERATE_REGIMENT,
@@ -376,6 +377,7 @@ export default {
       },*/
       { ...FRESH_CONFEDERATE_CAVALRY_REGIMENT,
         name: "Harrison's Cavalry",
+        openness: 0,
       },
     ],
     unitTemplates: CIVIL_WAR_UNITS_ID,
