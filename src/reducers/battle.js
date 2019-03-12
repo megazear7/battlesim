@@ -177,12 +177,12 @@ const battle = (state = initialState, action) => {
       .doc(battleId)
       .get()
       .then(docSnapshot => {
-        let connectedDevices = docSnapshot.get('connectedDevices') || [ ];
+        let connectedDevices = docSnapshot.get('battle.connectedDevices') || [ ];
 
         if (action.displayName) {
           let foundDevice = connectedDevices.find(device => device.id === newState.battlesimDevice.id);
           if (foundDevice) {
-            foundDevice.name = action.displayName;
+            foundDevice.displayName = action.displayName;
           } else {
             connectedDevices.push(newState.battlesimDevice);
           }
