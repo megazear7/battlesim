@@ -190,6 +190,13 @@ class WarView extends connect(store)(PageViewElement) {
       let battleIndex = parseInt(e.target.closest('.battle').dataset.index);
       let battle = store.getState().battle.battles[battleIndex];
       battle.uuid = makeid();
+      battle.connectedDevices = [];
+      let battlesimDevice = JSON.parse(localStorage.getItem("battlesimDevice"));
+
+      if (battlesimDevice) {
+        battle.connectedDevices.push(battlesimDevice);
+      }
+
       firebase.firestore().collection('apps/battlesim/battles').add({
         battle
       }).then(docRef => {
