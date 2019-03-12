@@ -1,4 +1,4 @@
-import { html, css, repeat, $battleViewWrapperDefault as BattleViewWrapper, add, remove, store, SharedStyles, ButtonSharedStyles, prettyTime, MOVE, REST } from '../components/battle-sim.js';
+import { html, css, repeat, $battleViewWrapperDefault as BattleViewWrapper, add, remove, store, SharedStyles, ButtonSharedStyles, prettyTime, REST, MOVE, CHARGE, FIRE } from '../components/battle-sim.js';
 
 class BattleView extends BattleViewWrapper {
   static get styles() {
@@ -90,7 +90,7 @@ class BattleView extends BattleViewWrapper {
         ${repeat(this._activeBattle.actionLog, log => html`
           <p><small>${prettyTime(new Date(this._activeBattle.startTime + log.time * 1000))}</small></p>
           <p>
-            ${log.environment.selectedAction ? html`The selected action was ${log.environment.selectedAction}. ` : ''}
+            ${log.environment.selectedAction ? html`${this.logAction(log.units, log.environment.selectedAction)}. ` : ''}
             ${log.environment.resupply ? html`They were resupplying. ` : ''}
             ${log.environment.mount ? html`They were mounting. ` : ''}
             ${log.environment.unmount ? html`They were unmounting. ` : ''}
@@ -99,7 +99,7 @@ class BattleView extends BattleViewWrapper {
             ${log.environment.pace > 0 && log.environment.selectedAction === MOVE ? html`Pace was ${Math.ceil(log.environment.pace * 100)}%. ` : ''}
             ${log.environment.slope > 0 ? html`Slope was ${log.environment.slope}. ` : ''}
             ${log.environment.engagedDefenders > 0 ? html`${log.environment.engagedDefenders} defending stands were engaged. ` : ''}
-            ${log.environment.engagedAttackers > 0 ? html`${log.environment.engagedAttackers} defending stands were engaged. ` : ''}
+            ${log.environment.engagedAttackers > 0 ? html`${log.environment.engagedAttackers} attacking stands were engaged. ` : ''}
             ${log.environment.separation > 0 ? html`Distance to defending stand was ${log.environment.separation}. ` : ''}
             ${log.environment.restTime && log.environment.selectedAction === REST > 0 ? html`${log.environment.restTime} minutes spent resting. ` : ''}
             ${log.environment.distance > 0 ? html`${log.environment.distance} inches was set as the distance. ` : ''}
@@ -112,6 +112,22 @@ class BattleView extends BattleViewWrapper {
         `)}
       </section>
     `;
+  }
+
+  logAction(units, action) {
+    const actingUnit = units[0].before;
+
+    if (action === REST) {
+      return `${actingUnit.name} rested`;
+    } else if (action === MOVE) {
+      return `${actingUnit.name} moved`;
+    } else if (action === CHARGE) {
+      const targetUnit = units[0].before;
+      return `${actingUnit.name} charged ${targetUnit.name}`;
+    } else if (action === FIRE) {
+      const targetUnit = units[0].before;
+      return `${actingUnit.name} fired upon ${targetUnit.name}`;
+    }
   }
 
   get armyElement() {
