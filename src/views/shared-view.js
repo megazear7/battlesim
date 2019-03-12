@@ -5,6 +5,7 @@ import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
 import { setActiveBattle, addSharedBattle } from '../actions/battle.js';
 import { SHARED_BATTLE, ARMY_BOTH } from '../game.js';
+import { addDeviceToList, addDevice } from '../reducers/battle.js';
 
 class SharedView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -29,6 +30,7 @@ class SharedView extends connect(store)(PageViewElement) {
     .then(querySnapshot => {
       if (querySnapshot.docs.length > 0) {
         let doc = querySnapshot.docs[0];
+        let battle = doc.data().battle;
         let sharedBattleIds = JSON.parse(localStorage.getItem("sharedBattles")) || [];
         if (sharedBattleIds.indexOf(doc.id) === -1) {
           localStorage.setItem("sharedBattles", JSON.stringify([...sharedBattleIds, {
@@ -37,14 +39,20 @@ class SharedView extends connect(store)(PageViewElement) {
           } ]));
         }
 
-        store.dispatch(addSharedBattle(doc.id, doc.data().battle));
+        let battlesimDevice = JSON.parse(localStorage.getItem("battlesimDevice"));
+        if (battlesimDevice) {
+          addDevice(doc.id, battlesimDevice);
+          battle.connectedDevices = addDeviceToList(battle.connectedDevices, battlesimDevice);
+        }
+
+        store.dispatch(addSharedBattle(doc.id, battle));
 
         store.dispatch(setActiveBattle({
           type: SHARED_BATTLE,
           id: doc.id
         }));
 
-        this._message = `You have been added to ${doc.data().battle.name}`
+        this._message = `You have been added to ${battle.name}`
       } else {
         this._message = 'Could not join battle. That battle does not exist.';
       }

@@ -159,6 +159,17 @@ const battle = (state = initialState, action) => {
       }
     }
   } else if (action.type === REMOVE_SHARED_BATTLE) {
+
+    let battlesimDevice = JSON.parse(localStorage.getItem("battlesimDevice"));
+    if (battlesimDevice) {
+      let connectedDevices = newState.sharedBattles[action.id].connectedDevices
+      .filter(device => device.id !== battlesimDevice.id);
+      
+      firebase.firestore().collection('apps/battlesim/battles')
+      .doc(action.id)
+      .update({'battle.connectedDevices': connectedDevices});
+    }
+
     delete newState.sharedBattles[action.id];
     newState.activeBattle = { };
     let sharedBattles = JSON.parse(localStorage.getItem("sharedBattles")) || [];
@@ -193,21 +204,27 @@ export function addDevice(battleId, battlsimDevice) {
   .then(docSnapshot => {
     let connectedDevices = docSnapshot.get('battle.connectedDevices') || [ ];
 
-    if (battlsimDevice.displayName) {
-      let foundDevice = connectedDevices.find(device => device.id === battlsimDevice.id);
-      if (foundDevice) {
-        foundDevice.displayName = battlsimDevice.displayName;
-      } else {
-        connectedDevices.push(battlsimDevice);
-      }
-    } else {
-      connectedDevices = connectedDevices.filter(device => device.id !== battlsimDevice.id);
-    }
+    addDeviceToList(connectedDevices, battlsimDevice);
 
     firebase.firestore().collection('apps/battlesim/battles')
     .doc(battleId)
     .update({'battle.connectedDevices': connectedDevices});
   });
+}
+
+export function addDeviceToList(connectedDevices = [], battlsimDevice) {
+  if (battlsimDevice.displayName) {
+    let foundDevice = connectedDevices.find(device => device.id === battlsimDevice.id);
+    if (foundDevice) {
+      foundDevice.displayName = battlsimDevice.displayName;
+    } else {
+      connectedDevices.push(battlsimDevice);
+    }
+  } else {
+    connectedDevices = connectedDevices.filter(device => device.id !== battlsimDevice.id);
+  }
+
+  return connectedDevices;
 }
 
 function updateTime(battle) {
