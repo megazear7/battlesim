@@ -37,7 +37,7 @@
 /* eslint-disable indent, no-unused-vars, no-multiple-empty-lines, max-nested-callbacks, space-before-function-paren, quotes, comma-spacing */
 'use strict';
 
-var precacheConfig = [["index.html","dfef6429f9e84f27c4952a2fd771125b"],["manifest.json","c4b645f48284ac07bf1eaeaa9b25a7fd"],["src/components/battle-sim.js","e6609c55662cf0f1a5be73160d899381"],["src/views/battle-view.js","6fdbc56fd96a66ad839a28d68182ebda"],["src/views/fight-view.js","9adf3683b38ad735888e963270d7b5b9"],["src/views/rules-view.js","1b37e2acd4bc191b6c1ada851e38f92f"],["src/views/shared-view.js","8ef6eb286c1942251e3713c684e04929"],["src/views/view-404.js","485c0c9df57dc79fab44ea33444faf67"],["src/views/war-view.js","f90919b91c85f3463398a45eeec0db0c"]];
+var precacheConfig = [["index.html","dfef6429f9e84f27c4952a2fd771125b"],["manifest.json","c4b645f48284ac07bf1eaeaa9b25a7fd"],["src/components/battle-sim.js","e6609c55662cf0f1a5be73160d899381"],["src/views/battle-view.js","0b2de27c18e65bf41bade4db49bac0e0"],["src/views/fight-view.js","9adf3683b38ad735888e963270d7b5b9"],["src/views/rules-view.js","1b37e2acd4bc191b6c1ada851e38f92f"],["src/views/shared-view.js","8ef6eb286c1942251e3713c684e04929"],["src/views/view-404.js","485c0c9df57dc79fab44ea33444faf67"],["src/views/war-view.js","f90919b91c85f3463398a45eeec0db0c"]];
 var cacheName = 'sw-precache-v3--' + (self.registration ? self.registration.scope : '');
 
 

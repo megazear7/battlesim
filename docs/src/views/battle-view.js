@@ -38,7 +38,7 @@ class BattleView extends BattleViewWrapper {
         <section>
           <h2>${name}</h2>
           ${this._activeBattle.usesPoints ? html`
-            <p>${units.map(unit => unit.unit.points).reduce((total, cost) => total + cost, 0)} points</p>
+            <p>${units.map(unit => unit.points).reduce((total, cost) => total + cost, 0)} points</p>
           ` : ''}
           ${repeat(units, unit => html`
             <div class="unit" data-index="${unit.id}">
