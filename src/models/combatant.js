@@ -127,11 +127,9 @@ export default class Combatant extends ActingUnit {
   }
 
   get modifiedRangedVolume() {
-    if (this.unit.rangedWeapon.effectiveAtCloseRange) {
-      return this.unit.rangedWeapon.volume * dropOffWithBoost(this.encounter.yardsOfSeparation / this.unit.rangedWeapon.range, this.unit.rangedWeapon.dropOff);
-    } else {
-      return this.unit.rangedWeapon.volume * dropOff(this.encounter.yardsOfSeparation / this.unit.rangedWeapon.range, this.unit.rangedWeapon.dropOff);
-    }
+    return this.unit.rangedWeapon.effectiveAtCloseRange
+      ? this.unit.rangedWeapon.volume * dropOffWithBoost(this.encounter.yardsOfSeparation / this.unit.rangedWeapon.range, this.unit.rangedWeapon.dropOff)
+      : this.unit.rangedWeapon.volume * dropOff(this.encounter.yardsOfSeparation / this.unit.rangedWeapon.range, this.unit.rangedWeapon.dropOff);
   }
 
   get volume() {
