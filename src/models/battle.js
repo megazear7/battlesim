@@ -73,7 +73,8 @@ export default class Battle {
 
   get playingArmy() {
     const battlesimDevice = JSON.parse(localStorage.getItem("battlesimDevice"));
-    const army = battlesimDevice ? this.connectedDevices.find(device => device.id === battlesimDevice.id).army : ARMY_BOTH;
+    const foundArmy = battlesimDevice ? this.connectedDevices.find(device => device.id === battlesimDevice.id) : ARMY_BOTH;
+    const army = foundArmy !== undefined ? foundArmy.army : ARMY_BOTH;
     return army !== undefined ? army : ARMY_BOTH;
   }
 

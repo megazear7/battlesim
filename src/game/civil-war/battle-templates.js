@@ -365,7 +365,7 @@ export default {
         ...FRESH_UNION_REGIMENT,
         name: "Tyler's 3rd Regiment",
       },
-      {
+      /*{
         ...FRESH_CONFEDERATE_REGIMENT,
         name: "1st Potomac Regiment",
       },
@@ -373,7 +373,7 @@ export default {
         name: "Howard's Battery",
         rangedWeapon: CANNON_12_POUNDER_CIVIL_WAR,
         stands: 3,
-      },
+      },*/
       { ...FRESH_CONFEDERATE_CAVALRY_REGIMENT,
         name: "Harrison's Cavalry",
       },
