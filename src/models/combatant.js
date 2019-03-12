@@ -146,10 +146,6 @@ export default class Combatant extends ActingUnit {
     return statModFor(this.unit.energy) * this.engagedMod * this.terrainMod;
   }
 
-  get terrainMod() {
-    return 1 - Math.min(this.areaTerrain.reduce((sum, next) => sum + next[this.encounterType].volumeMod, 0), 1);
-  }
-
   get targetTroopType() {
     return this.target.unitType === FOOT_TROOP ? POWER_VS_FOOT : POWER_VS_MOUNTED;
   }

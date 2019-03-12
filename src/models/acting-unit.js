@@ -28,13 +28,8 @@ export default class ActingUnit {
     return weightedRandomTowards(0, 100, 1, 2);
   }
 
-  get terrainMovePenalty() {
-    // TODO This should be based upon this.unit.openness and this.unit.isMounted
-    return Math.min(this.environment.movementTerrain.reduce((sum, terrain) => sum += terrain.movePenalty, 0), 100);
-  }
-
-  get terrainSpeedMod() {
-    return ((MAX_TERRAIN - this.terrainMovePenalty) / MAX_TERRAIN);
+  get terrainPenalty() {
+    return Math.max(Math.min(this.environment.movementTerrain.reduce((sum, terrain) => sum += terrain.movePenalty, 0), 100) - (this.unit.openness * this.unitTypeTerrainMod), 0);
   }
 
   get equipmentMod() {
@@ -42,7 +37,7 @@ export default class ActingUnit {
   }
 
   get speedMod() {
-    return this.terrainSpeedMod * this.energySpeedMod * this.equipmentMod * this.pace * this.slopeMod;
+    return this.terrainMod * this.energySpeedMod * this.equipmentMod * this.pace * this.slopeMod;
   }
 
   get speed() {
@@ -74,7 +69,7 @@ export default class ActingUnit {
   }
 
   get terrainMod() {
-    return ((MAX_TERRAIN - this.terrainMovePenalty) / MAX_TERRAIN) * statModFor(this.unit.openness) * this.unitTypeTerrainMod;
+    return (MAX_TERRAIN - this.terrainPenalty) / MAX_TERRAIN
   }
 
   get energySpeedMod() {
