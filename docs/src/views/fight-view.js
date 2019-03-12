@@ -506,7 +506,7 @@ class Encounter {
     }
 
     if (this.inchesDefenderFled > 1) {
-      return `${actionMessage} ${this.defender.unit.name} fled ${this.inchesDefenderFled} inches but was then caught by ${this.attacker.unit.name}. ${this.timeEngagedMessage(secondsOfCombat)}`;
+      return `${actionMessage} ${this.defender.unit.name} fled ${this.inchesDefenderFled} ${this.inchesWord(this.inchesDefenderFled)} but was then caught by ${this.attacker.unit.name}. ${this.timeEngagedMessage(secondsOfCombat)}`;
     } else if (this.defenderFled) {
       return `${actionMessage} ${this.defender.unit.name} attempted to fall back but was quickly caught by ${this.attacker.unit.name}. ${this.timeEngagedMessage(secondsOfCombat)}`;
     } else {
@@ -516,16 +516,16 @@ class Encounter {
 
   get couldNotReachTargetMessage() {
     if (this.defenderFled) {
-      return `${this.defender.unit.name} fled ${this.inchesDefenderFled} inches and ${this.attacker.unit.name} could not reach it's target but may persue up to ${this.inchesOfSeparationAfter} inches.`;
+      return `${this.defender.unit.name} fled ${this.inchesDefenderFled} ${this.inchesWord(this.inchesDefenderFled)} and ${this.attacker.unit.name} could not reach it's target but may persue up to ${this.inchesOfSeparationAfter} ${this.inchesWord(this.inchesOfSeparationAfter)}.`;
     } else if (this.attacker.status === MORALE_FAILURE) {
       return `${this.attacker.unit.name} refused to make the attack.`;
     } else {
-      return `${this.attacker.unit.name} could not reach ${this.defender.unit.name} but moved ${this.inchesAttackerTravelled} inches towards it's target.`;
+      return `${this.attacker.unit.name} could not reach ${this.defender.unit.name} but moved ${this.inchesAttackerTravelled} ${this.inchesWord(this.inchesAttackerTravelled)} towards it's target.`;
     }
   }
 
   get chargeMovementMessage() {
-    return `${this.attacker.unit.name} may move his stands ${this.attackerMovementInches} inches in order to make it into combat. Then ${this.defender.unit.name} may follow this by moving his unengaged stands ${this.defenderMovementInches} inches.`;
+    return `${this.attacker.unit.name} may move his stands ${this.attackerMovementInches} ${this.inchesWord(this.attackerMovementInches)} in order to make it into combat. Then ${this.defender.unit.name} may follow this by moving his unengaged stands ${this.defenderMovementInches} ${this.inchesWord(this.defenderMovementInches)}.`;
   }
 
   get attackerMovementInches() {
@@ -541,7 +541,7 @@ class Encounter {
   }
 
   get graceWindow() {
-    return this.secondsSpentFighting * 0.5; // Stands that could have made it in time to partake in half of the combat are allowed to be counted.
+    return this.secondsSpentFighting * 0.3;
   }
 
   fight() {
