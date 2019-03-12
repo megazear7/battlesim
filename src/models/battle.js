@@ -38,7 +38,6 @@ export default class Battle {
     actionLog = [ ],
     turnStarted = 0,
     armies = [ ],
-    playingArmy = ARMY_BOTH,
     units = [ ],
     activeAction = { },
   }, id, active = false) {
@@ -68,9 +67,13 @@ export default class Battle {
     this.activeAction = activeAction;
     this.createdAt = createdAt;
     this.armies = armies;
-    this.playingArmy = playingArmy;
     this.id = id;
     this.active = active;
+  }
+
+  get playingArmy() {
+    let battlesimDevice = JSON.parse(localStorage.getItem("battlesimDevice"));
+    return battlesimDevice ? this.connectedDevices.find(device => device.id === battlesimDevice.id).army || ARMY_BOTH : ARMY_BOTH;
   }
 
   get prettyUrl() {

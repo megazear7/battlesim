@@ -41,7 +41,7 @@ class BattleView extends BattleViewWrapper {
           <h2>Players</h2>
           <ul>
           ${repeat(this._activeBattle.connectedDevices, device => html`
-            <li><h4>${device.displayName}</h4></li>
+            <li><h4>${device.displayName} ${device.army ? html`(${this._activeBattle.armies[device.army].name})` : '(Both armies)'}</h4></li>
           `)}
           </ul>
         </section>

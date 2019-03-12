@@ -109,13 +109,10 @@ const battle = (state = initialState, action) => {
   } else if (action.type === PLAY_ARMY) {
     let sharedBattle = newState.sharedBattles[action.battleId];
     if (sharedBattle) {
-      let sharedBattles = JSON.parse(localStorage.getItem("sharedBattles")) || [];
-      sharedBattles.forEach(battle => {
-        if (battle.id === action.battleId) {
-          battle.playingArmy = action.army;
-        }
-      });
-      localStorage.setItem("sharedBattles", JSON.stringify(sharedBattles));
+      let battlesimDevice = JSON.parse(localStorage.getItem("battlesimDevice"));
+      if (battlesimDevice) {
+        sharedBattle.connectedDevices.find(device => device.id === battlesimDevice.id).army = action.army
+      }
       sharedBattle.playingArmy = action.army;
     }
   } else if (action.type === CREATE_NEW_BATTLE) {
@@ -164,7 +161,7 @@ const battle = (state = initialState, action) => {
     if (battlesimDevice) {
       let connectedDevices = newState.sharedBattles[action.id].connectedDevices
       .filter(device => device.id !== battlesimDevice.id);
-      
+
       firebase.firestore().collection('apps/battlesim/battles')
       .doc(action.id)
       .update({'battle.connectedDevices': connectedDevices});
@@ -186,7 +183,7 @@ const battle = (state = initialState, action) => {
     Object.keys(newState.sharedBattles).forEach(battleId => addDevice(battleId, battlesimDevice));
   }
 
-  if (activeBattle && newState.activeBattle.type === SHARED_BATTLE && action.type !== ADD_SHARED_BATTLE && action.type !== SET_ACTIVE_BATTLE && action.type !== PLAY_ARMY) {
+  if (activeBattle && newState.activeBattle.type === SHARED_BATTLE && action.type !== ADD_SHARED_BATTLE && action.type !== SET_ACTIVE_BATTLE) {
     firebase.firestore().collection('apps/battlesim/battles')
     .doc(newState.activeBattle.id)
     .set({ battle: JSON.parse(JSON.stringify(activeBattle)) }); // The stringify / parse gets rid of undefined attributes which firestore will complain about.
