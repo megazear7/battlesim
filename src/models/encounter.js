@@ -55,7 +55,7 @@ export default class Encounter {
   }
 
   attackerEngages() {
-    let secondsOfCombat = combat(this.attacker, this.defender, SECONDS_PER_TURN);
+    let secondsOfCombat = combat(this.attacker, this.defender, this.secondsSpentFighting);
 
     let actionMessage = ``;
     if (this.attacker.fallingback && this.attacker.inchesFallenback >= 1) {
