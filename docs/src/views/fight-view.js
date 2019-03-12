@@ -1259,6 +1259,14 @@ class FightView extends BattleViewWrapper {
     }
   }
 
+  get separation() {
+    if (this.get('separation')) {
+      return parseInt(this.get('separation').value);
+    } else {
+      return null;
+    }
+  }
+
   get target() {
     if (this.get('target')) {
       return parseInt(this.get('target').value);
