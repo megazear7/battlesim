@@ -8,7 +8,7 @@ import { store } from '../store.js';
 import { SharedStyles } from '../styles/shared-styles.js';
 import { ButtonSharedStyles } from '../styles/button-shared-styles.js';
 import { prettyTime } from '../utils/math-utils.js';
-import { REST, MOVE, CHARGE, FIRE, SHARED_BATTLE, LOCAL_BATTLE } from '../game.js';
+import { REST, MOVE, CHARGE, FIRE, SHARED_BATTLE, LOCAL_BATTLE, ARMY_BOTH } from '../game.js';
 import Battle from '../models/battle.js';
 
 class BattleView extends BattleViewWrapper {
@@ -41,7 +41,7 @@ class BattleView extends BattleViewWrapper {
           <h2>Players</h2>
           <ul>
           ${repeat(this._activeBattle.connectedDevices, device => html`
-            <li><h4>${device.displayName} ${device.army ? html`(${this._activeBattle.armies[device.army].name})` : '(Both armies)'}</h4></li>
+            <li><h4>${device.displayName} ${device.army !== undefined && device.army !== ARMY_BOTH ? html`(${this._activeBattle.armies[device.army].name})` : '(Both armies)'}</h4></li>
           `)}
           </ul>
         </section>

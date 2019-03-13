@@ -12,6 +12,7 @@ import RULES from '../game/rules.js';
 import Battle from '../models/battle.js';
 import { makeid } from '../utils/math-utils.js';
 import { SHARED_BATTLE, LOCAL_BATTLE, ARMY_0, ARMY_1, ARMY_BOTH } from '../game.js';
+import BattleDeviceStorage from '../models/battle-device-storage.js';
 
 class WarView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -186,11 +187,7 @@ class WarView extends connect(store)(PageViewElement) {
       let battle = store.getState().battle.battles[battleIndex];
       battle.uuid = makeid();
       battle.connectedDevices = [];
-
-      let battlesimDevice = JSON.parse(localStorage.getItem("battlesimDevice"));
-      if (battlesimDevice) {
-        battle.connectedDevices.push(battlesimDevice);
-      }
+      battle.connectedDevices.push(BattleDeviceStorage.get);
 
       firebase.firestore().collection('apps/battlesim/battles')
       .add({ battle })

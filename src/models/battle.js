@@ -11,6 +11,7 @@ import UNITS from '../game/units.js';
 import SCENARIOS from '../game/scenarios.js';
 import RULESETS from '../game/rules.js';
 import Unit from './unit.js';
+import BattleDeviceStorage from './battle-device-storage.js';
 import { prettyDateTime, SECONDS_IN_AN_HOUR, MILLISECONDS_PER_SECOND } from '../utils/math-utils.js';
 
 export default class Battle {
@@ -74,8 +75,8 @@ export default class Battle {
   }
 
   get playingArmy() {
-    const battlesimDevice = JSON.parse(localStorage.getItem("battlesimDevice"));
-    const foundArmy = battlesimDevice ? this.connectedDevices.find(device => device.id === battlesimDevice.id) : ARMY_BOTH;
+    const battlesimDeviceId = BattleDeviceStorage.id;
+    const foundArmy = this.connectedDevices.find(device => device.id === battlesimDeviceId);
     const army = foundArmy !== undefined ? foundArmy.army : ARMY_BOTH;
     return army !== undefined ? army : ARMY_BOTH;
   }

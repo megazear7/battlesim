@@ -26,23 +26,14 @@ import { makeid } from '../utils/math-utils.js';
 import Battle from '../models/battle.js';
 import ActiveBattleStorage from '../models/active-battle-storage.js';
 import BattleStorage from '../models/battle-storage.js';
+import BattleDeviceStorage from '../models/battle-device-storage.js';
 
 const initialState = {
   activeBattle: ActiveBattleStorage.get,
   battles: BattleStorage.get,
   sharedBattles: { },
-  battlesimUserId: { },
+  battlesimDevice: BattleDeviceStorage.get,
 };
-
-let battlesimDevice = JSON.parse(localStorage.getItem("battlesimDevice"));
-if (! battlesimDevice) {
-  battlesimDevice = {
-    id: makeid(10),
-    displayName: "",
-  }
-  localStorage.setItem("battlesimDevice", JSON.stringify(battlesimDevice));
-}
-initialState.battlesimDevice = battlesimDevice;
 
 const battle = (state = initialState, action) => {
   var newState = { ...state };
@@ -101,10 +92,8 @@ const battle = (state = initialState, action) => {
   } else if (action.type === PLAY_ARMY) {
     let sharedBattle = newState.sharedBattles[action.battleId];
     if (sharedBattle) {
-      let battlesimDevice = JSON.parse(localStorage.getItem("battlesimDevice"));
-      if (battlesimDevice) {
-        sharedBattle.connectedDevices.find(device => device.id === battlesimDevice.id).army = action.army
-      }
+      let deviceId = BattleDeviceStorage.id;
+      sharedBattle.connectedDevices.find(device => device.id === deviceId).army = action.army
       sharedBattle.playingArmy = action.army;
     }
   } else if (action.type === CREATE_NEW_BATTLE) {
@@ -149,10 +138,10 @@ const battle = (state = initialState, action) => {
     }
   } else if (action.type === REMOVE_SHARED_BATTLE) {
 
-    let battlesimDevice = JSON.parse(localStorage.getItem("battlesimDevice"));
-    if (battlesimDevice) {
+    let deviceId = BattleDeviceStorage.id;
+    if (deviceId) {
       let connectedDevices = newState.sharedBattles[action.id].connectedDevices
-      .filter(device => device.id !== battlesimDevice.id);
+      .filter(device => device.id !== deviceId);
 
       firebase.firestore().collection('apps/battlesim/battles')
       .doc(action.id)
@@ -168,11 +157,9 @@ const battle = (state = initialState, action) => {
     newState.activeBattle = action.activeBattle;
   } else if (action.type === UPDATE_DISPLAY_NAME) {
     newState.battlesimDevice.displayName = action.displayName;
-    let battlesimDevice = JSON.parse(localStorage.getItem("battlesimDevice"));
-    battlesimDevice.displayName = action.displayName;
-    localStorage.setItem("battlesimDevice", JSON.stringify(battlesimDevice));
+    BattleDeviceStorage.displayName = action.displayName;
 
-    Object.keys(newState.sharedBattles).forEach(battleId => addDevice(battleId, battlesimDevice));
+    Object.keys(newState.sharedBattles).forEach(battleId => addDevice(battleId, BattleDeviceStorage.get));
   }
 
   if (activeBattle && newState.activeBattle.type === SHARED_BATTLE && action.type !== ADD_SHARED_BATTLE && action.type !== SET_ACTIVE_BATTLE) {

@@ -1,8 +1,8 @@
-const BATTLES_STORAGE_ID = 'battles';
+const BATTLE_STORAGE_ID = 'battles';
 
 export default class BattleStorage {
   static _getStorage() {
-    const storageString = localStorage.getItem(BATTLES_STORAGE_ID);
+    const storageString = localStorage.getItem(BATTLE_STORAGE_ID);
 
     try {
       return JSON.parse(storageString);
@@ -28,6 +28,6 @@ export default class BattleStorage {
   }
 
   static update(battles = []) {
-    localStorage.setItem(BATTLES_STORAGE_ID, JSON.stringify(battles));
+    localStorage.setItem(BATTLE_STORAGE_ID, JSON.stringify(battles));
   }
 }

@@ -6,6 +6,7 @@ import { store } from '../store.js';
 import { setActiveBattle, addSharedBattle } from '../actions/battle.js';
 import { SHARED_BATTLE, ARMY_BOTH } from '../game.js';
 import { addDeviceToList, addDevice } from '../reducers/battle.js';
+import BattleDeviceStorage from '../models/battle-device-storage.js';
 
 class SharedView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -39,11 +40,8 @@ class SharedView extends connect(store)(PageViewElement) {
           } ]));
         }
 
-        let battlesimDevice = JSON.parse(localStorage.getItem("battlesimDevice"));
-        if (battlesimDevice) {
-          addDevice(doc.id, battlesimDevice);
-          battle.connectedDevices = addDeviceToList(battle.connectedDevices, battlesimDevice);
-        }
+        addDevice(doc.id, BattleDeviceStorage.get);
+        battle.connectedDevices = addDeviceToList(battle.connectedDevices, BattleDeviceStorage.get);
 
         store.dispatch(addSharedBattle(doc.id, battle));
 
