@@ -126,20 +126,28 @@ export default class Combatant extends ActingUnit {
     return Math.ceil(this.yardsFallenback / YARDS_PER_INCH);
   }
 
-  get modifiedMeleeVolume() {
+  get meleeVolume() {
     return this.unit.meleeWeapon.volume;
   }
 
-  get modifiedRangedVolume() {
+  get meleeMultiplier() {
+    return this.unit.meleeWeapon.multiplier || 1;
+  }
+
+  get rangedVolume() {
     return this.unit.rangedWeapon.effectiveAtCloseRange
       ? this.unit.rangedWeapon.volume * dropOffWithBoost(this.encounter.yardsOfSeparation / this.unit.rangedWeapon.range, this.unit.rangedWeapon.dropOff)
       : this.unit.rangedWeapon.volume * dropOff(this.encounter.yardsOfSeparation / this.unit.rangedWeapon.range, this.unit.rangedWeapon.dropOff);
   }
 
+  get rangedMultiplier() {
+    return this.unit.rangedWeapon.multiplier || 1;
+  }
+
   get volume() {
     return this.encounter.melee
-      ? this.modifiedMeleeVolume
-      : this.modifiedRangedVolume;
+      ? this.meleeVolume * this.meleeMultiplier
+      : this.rangedVolume * this.rangedMultiplier;
   }
 
   get modifiedVolume() {
