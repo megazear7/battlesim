@@ -7,7 +7,7 @@ export default class ActiveBattleStorage {
     const storageString = localStorage.getItem(ACTIVE_BATTLE_STORAGE_ID);
 
     try {
-      return JSON.parse(ActiveBattleStorage._getStorageString());
+      return JSON.parse(storageString);
     } catch {
       return {};
     }
@@ -38,7 +38,7 @@ export default class ActiveBattleStorage {
     ActiveBattleStorage.update(type, id);
   }
 
-  static update(type, id) {
+  static update(type = NO_BATTLE, id = "") {
     localStorage.setItem(ACTIVE_BATTLE_STORAGE_ID, JSON.stringify({ type, id }));
   }
 }

@@ -25,18 +25,14 @@ import { LOCAL_BATTLE, SHARED_BATTLE } from '../game.js';
 import { makeid } from '../utils/math-utils.js';
 import Battle from '../models/battle.js';
 import ActiveBattleStorage from '../models/active-battle-storage.js';
+import BattleStorage from '../models/battle-storage.js';
 
 const initialState = {
   activeBattle: ActiveBattleStorage.get,
-  battles: [ ],
+  battles: BattleStorage.get,
   sharedBattles: { },
   battlesimUserId: { },
 };
-
-let savedBattles = JSON.parse(localStorage.getItem("battles"));
-if (savedBattles) {
-  initialState.battles = savedBattles;
-}
 
 let battlesimDevice = JSON.parse(localStorage.getItem("battlesimDevice"));
 if (! battlesimDevice) {
@@ -185,7 +181,7 @@ const battle = (state = initialState, action) => {
     .set({ battle: JSON.parse(JSON.stringify(activeBattle)) }); // The stringify / parse gets rid of undefined attributes which firestore will complain about.
   }
 
-  localStorage.setItem("battles", JSON.stringify(newState.battles));
+  BattleStorage.set = newState.battles;
   ActiveBattleStorage.set = newState.activeBattle;
   return newState
 };
