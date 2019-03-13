@@ -12,6 +12,7 @@ import { addSharedBattle } from '../actions/battle.js';
 import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-scroll-effects/effects/waterfall.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import SharedBattleStorage from '../models/shared-battle-storage.js';
 import './snack-bar.js';
 import './battle-sim-alert.js';
 import './battle-sim-selector.js';
@@ -264,10 +265,7 @@ class BattleSim extends connect(store)(LitElement) {
     setPassiveTouchGestures(true);
     this._showMobileNav = true;
 
-    let state = store.getState();
-    let sharedBattles = JSON.parse(localStorage.getItem("sharedBattles")) || [];
-
-    sharedBattles.forEach(sharedBattle => {
+    SharedBattleStorage.get.forEach(sharedBattle => {
       firebase.firestore().collection('apps/battlesim/battles')
       .doc(sharedBattle.id)
       .onSnapshot(doc => {
@@ -276,9 +274,7 @@ class BattleSim extends connect(store)(LitElement) {
           battle.playingArmy = sharedBattle.playingArmy;
           store.dispatch(addSharedBattle(doc.id, battle));
         } else {
-          let sharedBattles = JSON.parse(localStorage.getItem("sharedBattles")) || [];
-          sharedBattles = sharedBattles.filter(battle => battle.id !== sharedBattle.id);
-          localStorage.setItem("sharedBattles", JSON.stringify(sharedBattles));
+          SharedBattleStorage.removeById(sharedBattle.id);
         }
       });
     });

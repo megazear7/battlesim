@@ -27,6 +27,7 @@ import Battle from '../models/battle.js';
 import ActiveBattleStorage from '../models/active-battle-storage.js';
 import BattleStorage from '../models/battle-storage.js';
 import BattleDeviceStorage from '../models/battle-device-storage.js';
+import SharedBattleStorage from '../models/shared-battle-storage.js';
 
 const initialState = {
   activeBattle: ActiveBattleStorage.get,
@@ -150,9 +151,7 @@ const battle = (state = initialState, action) => {
 
     delete newState.sharedBattles[action.id];
     newState.activeBattle = { };
-    let sharedBattles = JSON.parse(localStorage.getItem("sharedBattles")) || [];
-    sharedBattles = sharedBattles.filter(battle => battle.id !== action.id);
-    localStorage.setItem("sharedBattles", JSON.stringify(sharedBattles));
+    SharedBattleStorage.removeById(action.id);
   } else if (action.type === SET_ACTIVE_BATTLE) {
     newState.activeBattle = action.activeBattle;
   } else if (action.type === UPDATE_DISPLAY_NAME) {

@@ -13,6 +13,7 @@ import Battle from '../models/battle.js';
 import { makeid } from '../utils/math-utils.js';
 import { SHARED_BATTLE, LOCAL_BATTLE, ARMY_0, ARMY_1, ARMY_BOTH } from '../game.js';
 import BattleDeviceStorage from '../models/battle-device-storage.js';
+import SharedBattleStorage from '../models/shared-battle-storage.js';
 
 class WarView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -192,9 +193,8 @@ class WarView extends connect(store)(PageViewElement) {
       firebase.firestore().collection('apps/battlesim/battles')
       .add({ battle })
       .then(docRef => {
-        let sharedBattleIds = JSON.parse(localStorage.getItem("sharedBattles")) || [];
         store.dispatch(removeBattle(battleIndex));
-        localStorage.setItem("sharedBattles", JSON.stringify([...sharedBattleIds, { id: docRef.id }]));
+        SharedBattleStorage.add({ id: docRef.id });
         docRef.get().then(doc => store.dispatch(addSharedBattle(doc.id, doc.data().battle)));
 
         let battleModel = new Battle(battle, docRef.id);

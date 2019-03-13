@@ -7,6 +7,7 @@ import { setActiveBattle, addSharedBattle } from '../actions/battle.js';
 import { SHARED_BATTLE, ARMY_BOTH } from '../game.js';
 import { addDeviceToList, addDevice } from '../reducers/battle.js';
 import BattleDeviceStorage from '../models/battle-device-storage.js';
+import SharedBattleStorage from '../models/shared-battle-storage.js';
 
 class SharedView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -32,12 +33,9 @@ class SharedView extends connect(store)(PageViewElement) {
       if (querySnapshot.docs.length > 0) {
         let doc = querySnapshot.docs[0];
         let battle = doc.data().battle;
-        let sharedBattleIds = JSON.parse(localStorage.getItem("sharedBattles")) || [];
+        let sharedBattleIds = SharedBattleStorage.get;
         if (sharedBattleIds.indexOf(doc.id) === -1) {
-          localStorage.setItem("sharedBattles", JSON.stringify([...sharedBattleIds, {
-            playingArmy: ARMY_BOTH,
-            id: doc.id
-          } ]));
+          SharedBattleStorage.add({ playingArmy: ARMY_BOTH, id: doc.id });
         }
 
         addDevice(doc.id, BattleDeviceStorage.get);

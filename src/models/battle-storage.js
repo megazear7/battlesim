@@ -17,7 +17,7 @@ export default class BattleStorage {
 
   static add(battle) {
     if (battle) {
-      BattleStorage.update([...battles, battle]);
+      BattleStorage.update([...BattleStorage.get, battle]);
     } else {
       console.error('Attempted to add malformed battle', battle);
     }
