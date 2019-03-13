@@ -24,9 +24,10 @@ import {
 import { LOCAL_BATTLE, SHARED_BATTLE } from '../game.js';
 import { makeid } from '../utils/math-utils.js';
 import Battle from '../models/battle.js';
+import ActiveBattleStorage from '../models/active-battle-storage.js';
 
 const initialState = {
-  activeBattle: { type: LOCAL_BATTLE, id: 0 },
+  activeBattle: ActiveBattleStorage.get,
   battles: [ ],
   sharedBattles: { },
   battlesimUserId: { },
@@ -35,11 +36,6 @@ const initialState = {
 let savedBattles = JSON.parse(localStorage.getItem("battles"));
 if (savedBattles) {
   initialState.battles = savedBattles;
-}
-
-let savedActiveBattle = JSON.parse(localStorage.getItem("activeBattle"));
-if (savedActiveBattle) {
-  initialState.activeBattle = savedActiveBattle;
 }
 
 let battlesimDevice = JSON.parse(localStorage.getItem("battlesimDevice"));
@@ -190,7 +186,7 @@ const battle = (state = initialState, action) => {
   }
 
   localStorage.setItem("battles", JSON.stringify(newState.battles));
-  localStorage.setItem("activeBattle", JSON.stringify(newState.activeBattle));
+  ActiveBattleStorage.set = newState.activeBattle;
   return newState
 };
 

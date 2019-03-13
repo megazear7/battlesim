@@ -17,6 +17,7 @@ export const MELEE = 'melee';
 export const RANGED = 'ranged';
 export const SHARED_BATTLE = 'SHARED_BATTLE';
 export const LOCAL_BATTLE = 'LOCAL_BATTLE';
+export const NO_BATTLE = 'NO_BATTLE';
 export const MORALE_SUCCESS = 'MORALE_SUCCESS';
 export const MORALE_FAILURE = 'MORALE_FAILURE';
 export const STAT_PERCENTAGE = 'STAT_PERCENTAGE';
