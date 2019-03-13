@@ -5,7 +5,7 @@ export default class SharedBattleStorage {
     const storageString = localStorage.getItem(SHARED_BATTLE_STORAGE_ID);
 
     try {
-      return JSON.parse(storageString);
+      return JSON.parse(storageString) || [];
     } catch {
       return [];
     }

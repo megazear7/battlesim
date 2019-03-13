@@ -3,13 +3,19 @@ import { NO_BATTLE } from '../game.js';
 const ACTIVE_BATTLE_STORAGE_ID = 'activeBattle';
 
 export default class ActiveBattleStorage {
+  static get _empty() {
+    return {
+      type: NO_BATTLE
+    }
+  }
+
   static _getStorage() {
     const storageString = localStorage.getItem(ACTIVE_BATTLE_STORAGE_ID);
 
     try {
-      return JSON.parse(storageString);
+      return JSON.parse(storageString) || ActiveBattleStorage._empty;
     } catch {
-      return {};
+      return ActiveBattleStorage._empty;
     }
   }
 

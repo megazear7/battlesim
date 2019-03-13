@@ -5,7 +5,7 @@ export default class BattleStorage {
     const storageString = localStorage.getItem(BATTLE_STORAGE_ID);
 
     try {
-      return JSON.parse(storageString);
+      return JSON.parse(storageString) || [];
     } catch {
       return [];
     }
