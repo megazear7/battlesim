@@ -22,7 +22,6 @@ import {
   UPDATE_DISPLAY_NAME,
 } from '../actions/battle.js';
 import { LOCAL_BATTLE, SHARED_BATTLE } from '../game.js';
-import { makeid } from '../utils/math-utils.js';
 import Battle from '../models/battle.js';
 import ActiveBattleStorage from '../models/active-battle-storage.js';
 import BattleStorage from '../models/battle-storage.js';

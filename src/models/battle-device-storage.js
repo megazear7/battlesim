@@ -1,8 +1,11 @@
+import { makeid } from '../utils/math-utils.js';
+
 const BATTLE_DEVICE_STORAGE_ID = 'battlesimDevice';
 
 export default class BattleDeviceStorage {
   static get _empty() {
     return {
+      id: makeid(10),
       displayName: ""
     }
   }
@@ -38,11 +41,12 @@ export default class BattleDeviceStorage {
     BattleDeviceStorage.update(BattleDeviceStorage.displayName, id);
   }
 
-  static set set({displayName = "", id = ""}) {
+  static set set({displayName, id}) {
     BattleDeviceStorage.update(displayName, id);
   }
 
-  static update(displayName = "", id = makeid(10)) {
+  static update(displayName = "", id) {
+    if (id === undefined) id = BattleDeviceStorage.id;
     localStorage.setItem(BATTLE_DEVICE_STORAGE_ID, JSON.stringify({ displayName, id }));
   }
 }
