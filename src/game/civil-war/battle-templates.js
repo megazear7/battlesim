@@ -311,6 +311,7 @@ export default {
     casualtyReporting: 1,
     statReporting: STAT_PERCENTAGE,
     usesPoints: false,
+    useAmmo: true,
     activeArmy: 0,
     actionLog: [ ],
     activeAction: {
@@ -364,7 +365,7 @@ export default {
       {
         ...FRESH_UNION_REGIMENT,
         name: "Tyler's 3rd Regiment",
-        openness: 100,
+        ammunition: 0,
       },
       /*{
         ...FRESH_CONFEDERATE_REGIMENT,
@@ -377,7 +378,7 @@ export default {
       },*/
       { ...FRESH_CONFEDERATE_CAVALRY_REGIMENT,
         name: "Harrison's Cavalry",
-        openness: 0,
+        ammunition: 1000,
       },
     ],
     unitTemplates: CIVIL_WAR_UNITS_ID,

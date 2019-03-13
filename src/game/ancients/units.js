@@ -34,6 +34,7 @@ const BASIC_UNIT = {
   minFallback: 10,
   maxFallback: 20,
   ammunition: 0,
+  maxAmmo: 0,
   armor: NO_ARMOR,
   [MELEE_WEAPON]: NO_WEAPON,
   [RANGED_WEAPON]: NO_WEAPON,

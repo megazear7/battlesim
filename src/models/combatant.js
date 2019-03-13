@@ -199,7 +199,7 @@ export default class Combatant extends ActingUnit {
   }
 
   get lowOnAmmo() {
-    return this.unit.ammunition < this.unit.strength * this.volume * 2;
+    return this.unit.ammunition - this.ammunitionUsed < this.unit.strength * this.volume * 2;
   }
 
   updates(delay) {
@@ -238,15 +238,24 @@ export default class Combatant extends ActingUnit {
     } else if (this.unit.morale - this.moraleLoss <= 0) {
       return `${this.unit.name} fled the battlefield.`;
     } else {
-      return `${this.unit.name}
-              ${this.casualtyMessage}${this.leadershipMessage ? ' and' : '.'}
-              ${this.leadershipMessage}${this.leadershipMessage ? '.' : ''}
-              ${this.moraleMessage || this.energyMessage ? 'They lost' : ''}
-              ${this.moraleMessage}${this.moraleMessage && ! this.energyMessage ? '.' : ''}
-              ${this.moraleMessage && this.energyMessage ? 'and' : ''}
-              ${this.energyMessage}${this.energyMessage ? '.' : ''}
+      return `${this.casualtyMessage || this.leadershipMessage ? `
+                ${this.unit.name}
+                ${this.casualtyMessage}${this.leadershipMessage ? ' and' : '.'}
+                ${this.leadershipMessage}${this.leadershipMessage ? '.' : ''}
+              ` : ''}
+              ${this.moraleMessage || this.energyMessage ? `
+                ${this.moraleMessage || this.energyMessage ? `They lost` : ''}
+                ${this.moraleMessage}${this.moraleMessage && ! this.energyMessage ? '.' : ''}
+                ${this.moraleMessage && this.energyMessage ? 'and' : ''}
+                ${this.energyMessage}${this.energyMessage ? '.' : ''}
+              ` : ''}
               ${this.ammoMessage}${this.ammoMessage ? '.' : ''}`
     }
+  }
+
+  shootReport() {
+    return `${this.energyMessage ? `${this.unit.name} lost ${this.energyMessage}.` : ''}
+            ${this.ammoMessage}${this.ammoMessage ? '.' : ''}`
   }
 
   get ammoMessage() {

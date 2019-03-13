@@ -101,6 +101,14 @@ export default class Unit {
     }[this.troopType];
   }
 
+  get outOfAmmo() {
+    return this.ammunition <= 0;
+  }
+
+  get lowOnAmmo() {
+    return this.ammunition < this.strength * this.volume * 2;
+  }
+
   get strengthPercentage() {
     return (this.strength / this.fullStrength) * 100;
   }
@@ -111,7 +119,7 @@ export default class Unit {
     } else if (this.morale <= 0) {
       return `${this.name} has fled the battlefield.`;
     } else {
-      return `${this.strengthMessage} ${this.moraleMessage} ${this.energyMessage} ${this.mountedStatus}`;
+      return `${this.strengthMessage} ${this.moraleMessage} ${this.energyMessage} ${this.mountedStatus} ${this.ammoMessage}`;
     }
   }
 
@@ -131,6 +139,20 @@ export default class Unit {
 
   get desc() {
     return `${upperCaseFirst(this.experienceDesc)} ${this.troopTypeName.toLowerCase()} weilding ${this.rangedWeapon.name.toLowerCase()} and ${this.meleeWeapon.name.toLowerCase()} with ${this.leaderDesc.toLowerCase()} leaders consisting of ${this.stands} stands fighting in ${this.openness > 50 ? 'open' : 'closed'} order.`;
+  }
+
+  get ammoMessage() {
+    if (this.battle.useAmmo) {
+      if (this.outOfAmmo) {
+        return `They are out of ammunition.`;
+      } else if (this.lowOnAmmo) {
+        return `They are low on ammunition.`;
+      } else {
+        return '';
+      }
+    } else {
+      return '';
+    }
   }
 
   get experienceDesc() {

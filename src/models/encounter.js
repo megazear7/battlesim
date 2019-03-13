@@ -120,7 +120,7 @@ export default class Encounter {
       messages: [
         actionMessage,
         this.defender.battleReport(),
-        this.melee ? this.attacker.battleReport() : '',
+        this.melee ? this.attacker.battleReport() : this.attacker.shootReport(),
       ],
       updates: [
         this.defender.updates(0),
