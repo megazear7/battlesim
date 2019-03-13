@@ -25,21 +25,12 @@ class ActingUnit {
     return weightedRandomTowards(0, 100, 1, 2);
   }
 
-  get terrainMovePenalty() {
-    // TODO This should be based upon this.unit.openness and this.unit.isMounted
-    return Math.min(this.environment.movementTerrain.reduce((sum, terrain) => sum += terrain.movePenalty, 0), 100);
-  }
-
-  get terrainSpeedMod() {
-    return (MAX_TERRAIN - this.terrainMovePenalty) / MAX_TERRAIN;
-  }
-
   get equipmentMod() {
     return (MAX_EQUIPMENT_WEIGHT - this.unit.carriedWeight) / MAX_EQUIPMENT_WEIGHT;
   }
 
   get speedMod() {
-    return this.terrainSpeedMod * this.energySpeedMod * this.equipmentMod * this.pace * this.slopeMod;
+    return this.terrainMod * this.energySpeedMod * this.equipmentMod * this.pace * this.slopeMod;
   }
 
   get speed() {
@@ -70,8 +61,12 @@ class ActingUnit {
     }[this.unit.unitType];
   }
 
+  get terrainPenalty() {
+    return Math.max(Math.min(this.environment.movementTerrain.reduce((sum, terrain) => sum + terrain.movePenalty, 0), 100) - this.unit.openness * this.unitTypeTerrainMod, 0);
+  }
+
   get terrainMod() {
-    return (MAX_TERRAIN - this.terrainMovePenalty) / MAX_TERRAIN * statModFor(this.unit.openness) * this.unitTypeTerrainMod;
+    return (MAX_TERRAIN - this.terrainPenalty) / MAX_TERRAIN;
   }
 
   get energySpeedMod() {
@@ -128,7 +123,7 @@ class Combatant extends ActingUnit {
     this.yardsPersued = 0;
     this.leaderSurviveRoll = Math.random();
     this.energyModRoll = randomBellMod();
-    this.moraleModRoll = randomBellMod();
+    this.moraleModRoll = weightedRandomTowards(0.5, 1.5, 1, 2);
   }
 
   skillRoll() {
@@ -151,7 +146,11 @@ class Combatant extends ActingUnit {
   }
 
   get moraleLoss() {
-    return weightedAverage(this.moraleModRoll, this.hardinessMod, this.casualties / this.unit.strength, this.unit.strength / this.unit.fullStrength) * 50 * this.timeSpentFightingMod;
+    return this.percentageLoss * this.moraleModRoll * this.hardinessMod;
+  }
+
+  get percentageLoss() {
+    return this.casualties / this.unit.strength * 100;
   }
 
   get timeSpentFightingMod() {
@@ -183,7 +182,7 @@ class Combatant extends ActingUnit {
   }
 
   get hardinessMod() {
-    return (MAX_STAT - this.unit.experience) / MAX_STAT;
+    return 1 + (MAX_STAT - this.unit.experience) / MAX_STAT;
   }
 
   get inchesPersued() {
@@ -199,11 +198,7 @@ class Combatant extends ActingUnit {
   }
 
   get modifiedRangedVolume() {
-    if (this.unit.rangedWeapon.effectiveAtCloseRange) {
-      return this.unit.rangedWeapon.volume * dropOffWithBoost(this.encounter.yardsOfSeparation / this.unit.rangedWeapon.range, this.unit.rangedWeapon.dropOff);
-    } else {
-      return this.unit.rangedWeapon.volume * dropOff(this.encounter.yardsOfSeparation / this.unit.rangedWeapon.range, this.unit.rangedWeapon.dropOff);
-    }
+    return this.unit.rangedWeapon.effectiveAtCloseRange ? this.unit.rangedWeapon.volume * dropOffWithBoost(this.encounter.yardsOfSeparation / this.unit.rangedWeapon.range, this.unit.rangedWeapon.dropOff) : this.unit.rangedWeapon.volume * dropOff(this.encounter.yardsOfSeparation / this.unit.rangedWeapon.range, this.unit.rangedWeapon.dropOff);
   }
 
   get volume() {
@@ -215,11 +210,15 @@ class Combatant extends ActingUnit {
   }
 
   get volumeModifier() {
-    return statModFor(this.unit.energy) * this.engagedMod * this.terrainMod;
+    return statModFor(this.unit.energy) * this.engagedMod * this.combatTerrainMod;
   }
 
-  get terrainMod() {
-    return 1 - Math.min(this.areaTerrain.reduce((sum, next) => sum + next[this.encounterType].volumeMod, 0), 1);
+  get terrainModSum() {
+    return this.areaTerrain.reduce((mod, terrain) => mod + (this.encounter.melee ? terrain.melee.volumeMod : terrain.ranged.volumeMod), 0);
+  }
+
+  get combatTerrainMod() {
+    return Math.max(Math.min(1 - (this.terrainModSum - this.unit.openness / 100), 1), 0);
   }
 
   get targetTroopType() {
