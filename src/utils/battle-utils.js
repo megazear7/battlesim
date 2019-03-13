@@ -37,21 +37,24 @@ function makeAttacks(attacker, defender, duration) {
     if (attacker.attacksRequireAmmunition) {
       attacker.ammunitionUsed += 1;
     }
-    let attackHits = true;
-    if (attacker.skillRoll() * DEADLYNESS < defender.skillRoll()) {
-      attackHits = false;
-    }
-    let powerRoll = attacker.powerRoll();
-    if (powerRoll * DEADLYNESS < defender.armorRoll()) {
-      attackHits = false;
-    }
-    defender.protectingTerrainModel.forEach(terrain => {
-      if (powerRoll * DEADLYNESS < terrain.armorRoll()) {
+
+    if (! attacker.outOfAmmo || ! attacker.unit.battle.useAmmo) {
+      let attackHits = true;
+      if (attacker.skillRoll() * DEADLYNESS < defender.skillRoll()) {
         attackHits = false;
       }
-    });
-    if (attackHits) {
-      defender.casualties += 1;
+      let powerRoll = attacker.powerRoll();
+      if (powerRoll * DEADLYNESS < defender.armorRoll()) {
+        attackHits = false;
+      }
+      defender.protectingTerrainModel.forEach(terrain => {
+        if (powerRoll * DEADLYNESS < terrain.armorRoll()) {
+          attackHits = false;
+        }
+      });
+      if (attackHits) {
+        defender.casualties += 1;
+      }
     }
   }
 }

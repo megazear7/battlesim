@@ -23,6 +23,7 @@ export default class Battle {
     connectedDevices = [],
     messages = [ ],
     events = [ ],
+    useAmmo = false,
     terrain,
     unitTemplates,
     rules,
@@ -48,7 +49,8 @@ export default class Battle {
     this.startTime = startTime;
     this.connectedDevices = connectedDevices;
     this.messages = messages;
-    this.events = events ;
+    this.events = events;
+    this.useAmmo = useAmmo;
     this.terrain = terrain;
     this.unitTemplates = unitTemplates;
     this.rules = rules;

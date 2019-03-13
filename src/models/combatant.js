@@ -90,6 +90,10 @@ export default class Combatant extends ActingUnit {
     return ! this.encounter.melee;
   }
 
+  get outOfAmmo() {
+    return this.attacksRequireAmmunition && this.unit.ammunition - this.ammunitionUsed <= 0;
+  }
+
   get fallingback() {
     return this.casualties > this.fallbackCasualtyCount;
   }
@@ -194,6 +198,10 @@ export default class Combatant extends ActingUnit {
     return this.unit.strength * this.modifiedVolume * (duration / SECONDS_IN_AN_HOUR);
   }
 
+  get lowOnAmmo() {
+    return this.unit.ammunition < this.unit.strength * this.volume * 2;
+  }
+
   updates(delay) {
     return {
       id: this.unit.id,
@@ -215,6 +223,9 @@ export default class Combatant extends ActingUnit {
         prop: "leadership",
         value: this.unit.leadership - this.leadershipLoss
       }, {
+        prop: "ammunition",
+        value: this.unit.ammunition - this.ammunitionUsed
+      }, {
         prop: 'nextAction',
         value: this.unit.nextAction + delay
       }
@@ -233,7 +244,22 @@ export default class Combatant extends ActingUnit {
               ${this.moraleMessage || this.energyMessage ? 'They lost' : ''}
               ${this.moraleMessage}${this.moraleMessage && ! this.energyMessage ? '.' : ''}
               ${this.moraleMessage && this.energyMessage ? 'and' : ''}
-              ${this.energyMessage}${this.energyMessage ? '.' : ''}`
+              ${this.energyMessage}${this.energyMessage ? '.' : ''}
+              ${this.ammoMessage}${this.ammoMessage ? '.' : ''}`
+    }
+  }
+
+  get ammoMessage() {
+    if (this.unit.battle.useAmmo && this.attacksRequireAmmunition) {
+      if (this.outOfAmmo) {
+        return `They are out of ammunition`;
+      } else if (this.lowOnAmmo) {
+        return `They are low on ammunition`;
+      } else {
+        return '';
+      }
+    } else {
+      return '';
     }
   }
 
