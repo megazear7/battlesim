@@ -1,9 +1,10 @@
-import { randomBellMod, dropOff, dropOffWithBoost, weightedAverage, roundToNearest, SECONDS_IN_AN_HOUR } from '../utils/math-utils.js';
-import { SLOPE_NONE } from './terrain.js';
-import { FOOT_TROOP, MELEE_WEAPON, RANGED_WEAPON } from '../game.js';
+import { randomBellMod, dropOff, weightedRandomTowards, dropOffWithBoost, weightedAverage, roundToNearest, SECONDS_IN_AN_HOUR } from '../utils/math-utils.js';
+import { SLOPE_NONE, Terrain } from './terrain.js';
 import ActingUnit from './acting-unit.js';
-import { Terrain } from './terrain.js';
 import {
+  FOOT_TROOP,
+  MELEE_WEAPON,
+  RANGED_WEAPON,
   statModFor,
   MAX_STAT,
   SECONDS_PER_TURN,
@@ -47,7 +48,7 @@ export default class Combatant extends ActingUnit {
     this.yardsPersued = 0;
     this.leaderSurviveRoll = Math.random();
     this.energyModRoll = randomBellMod();
-    this.moraleModRoll = randomBellMod();
+    this.moraleModRoll = weightedRandomTowards(0.5, 1.5, 1, 2);
   }
 
   skillRoll() {
@@ -74,12 +75,11 @@ export default class Combatant extends ActingUnit {
   }
 
   get moraleLoss() {
-    return weightedAverage(
-      this.moraleModRoll,
-      this.hardinessMod,
-      this.casualties / this.unit.strength,
-      this.unit.strength / this.unit.fullStrength
-    ) * 50 * this.timeSpentFightingMod;
+    return this.percentageLoss * this.moraleModRoll * this.hardinessMod;
+  }
+
+  get percentageLoss() {
+    return (this.casualties / this.unit.strength) * 100
   }
 
   get timeSpentFightingMod() {
@@ -111,7 +111,7 @@ export default class Combatant extends ActingUnit {
   }
 
   get hardinessMod() {
-    return (MAX_STAT - this.unit.experience) / MAX_STAT;
+    return 1 + ((MAX_STAT - this.unit.experience) / MAX_STAT);
   }
 
   get inchesPersued() {

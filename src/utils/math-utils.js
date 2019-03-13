@@ -88,7 +88,7 @@ export function randomMinutesBetween(x, y) {
 }
 
 /** @function weightedRandomTowards
- *  @returns A random number between x and y weight towards z with a weight as given.
+ *  @returns A random number between x and y weighted towards z with a weight as given.
  */
 export function weightedRandomTowards(x, y, z, weight) {
   return (getRandomNumber(x, y) + (z * weight)) / (weight + 1);
