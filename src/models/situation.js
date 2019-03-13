@@ -9,6 +9,7 @@ export default class Situation {
   constructor({ unit,
                 armyLeadership = 0,
                 movementTerrain = [],
+                resupply = false,
                 mount = false,
                 unmount = false,
                 pace = 1,
@@ -19,6 +20,7 @@ export default class Situation {
     this.soloUnit = new SoloUnit({
       unit: unit,
       situation: this,
+      resupply,
       mount,
       unmount,
       pace,

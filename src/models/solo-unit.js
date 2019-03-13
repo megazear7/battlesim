@@ -9,6 +9,7 @@ export default class SoloUnit extends ActingUnit {
                   situation,
                   armyLeadership = 0,
                   status = MORALE_SUCCESS,
+                  resupply = false,
                   mount = false,
                   unmount = false,
                   pace = 1,
@@ -18,6 +19,7 @@ export default class SoloUnit extends ActingUnit {
     this.situation = situation;
     this.armyLeadership = armyLeadership;
     this.status = status;
+    this.resupply = resupply;
     this.mount = mount;
     this.unmount = unmount;
     this.slope = slope;
@@ -50,6 +52,10 @@ export default class SoloUnit extends ActingUnit {
            + (this.situation.percentageOfATurnSpentMoving * this.energyMoveModRoll * (0.75 - this.pace));
   }
 
+  get ammunitionSupplied() {
+    return this.resupply ? this.unit.maxAmmo : 0;
+  }
+
   get updates() {
     return {
       id: this.unit.id,
@@ -65,6 +71,9 @@ export default class SoloUnit extends ActingUnit {
       }, {
         prop: "morale",
         value: this.unit.morale + this.moraleChange
+      }, {
+        prop: "ammunition",
+        value: this.unit.ammunition + this.ammunitionSupplied
       }, {
         prop: 'nextAction',
         value: this.unit.nextAction + this.situation.totalSecondsSpent

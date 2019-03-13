@@ -264,6 +264,7 @@ class FightView extends BattleViewWrapper {
       unit: this._activeBattle.activeUnit,
       armyLeadership: this._options._activeArmyLeadership,
       movementTerrain: this._options._selectedTerrain(TERRAIN_TYPE_MOVEMENT),
+      resupply: this._options.resupply,
       mount: this._options.mount,
       unmount: this._options.unmount,
       pace: this._options.pace,

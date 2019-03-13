@@ -15,6 +15,7 @@ export default class Unit {
                 minFallback = 10,
                 maxFallback = 20,
                 ammunition = 0,
+                maxAmmo = 0,
                 stands = 8,
                 strength,
                 morale = 90,
@@ -48,6 +49,7 @@ export default class Unit {
     this.minFallback = minFallback;
     this.maxFallback = maxFallback;
     this.ammunition = ammunition;
+    this.maxAmmo = maxAmmo;
     this.stands = stands;
     this.strength = strength || fullStrength;
     this.morale = morale;
