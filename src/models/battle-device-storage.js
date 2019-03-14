@@ -15,7 +15,7 @@ export default class BattleDeviceStorage {
 
     try {
       return JSON.parse(storageString) || BattleDeviceStorage._empty;
-    } catch {
+    } catch (e) {
       return BattleDeviceStorage._empty;
     }
   }

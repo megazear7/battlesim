@@ -14,7 +14,7 @@ export default class ActiveBattleStorage {
 
     try {
       return JSON.parse(storageString) || ActiveBattleStorage._empty;
-    } catch {
+    } catch (e) {
       return ActiveBattleStorage._empty;
     }
   }

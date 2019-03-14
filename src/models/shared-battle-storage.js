@@ -6,7 +6,7 @@ export default class SharedBattleStorage {
 
     try {
       return JSON.parse(storageString) || [];
-    } catch {
+    } catch (e) {
       return [];
     }
   }

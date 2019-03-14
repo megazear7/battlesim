@@ -6,7 +6,7 @@ export default class BattleStorage {
 
     try {
       return JSON.parse(storageString) || [];
-    } catch {
+    } catch (e) {
       return [];
     }
   }
