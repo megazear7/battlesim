@@ -1,4 +1,4 @@
-import { html, css, repeat, classMap, PageViewElement, createNewBattle, setActiveBattle, removeBattle, addSharedBattle, playArmy, removeSharedBattle, updateDisplayName, connect, store, SharedStyles, ButtonSharedStyles, $battleTemplatesDefault as BATTLE_TEMPLATES, $rulesDefault as RULES, $battleDefault as Battle, makeid, SHARED_BATTLE, LOCAL_BATTLE, ARMY_0, ARMY_1, ARMY_BOTH } from '../components/battle-sim.js';
+import { html, css, repeat, classMap, PageViewElement, createNewBattle, setActiveBattle, removeBattle, addSharedBattle, playArmy, removeSharedBattle, updateDisplayName, connect, store, SharedStyles, ButtonSharedStyles, $battleTemplatesDefault as BATTLE_TEMPLATES, $rulesDefault as RULES, $battleDefault as Battle, makeid, SHARED_BATTLE, LOCAL_BATTLE, ARMY_0, ARMY_1, ARMY_BOTH, $battleDeviceStorageDefault as BattleDeviceStorage, $sharedBattleStorageDefault as SharedBattleStorage } from '../components/battle-sim.js';
 
 class WarView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -191,20 +191,14 @@ class WarView extends connect(store)(PageViewElement) {
       let battle = store.getState().battle.battles[battleIndex];
       battle.uuid = makeid();
       battle.connectedDevices = [];
-      let battlesimDevice = JSON.parse(localStorage.getItem("battlesimDevice"));
-
-      if (battlesimDevice) {
-        battle.connectedDevices.push(battlesimDevice);
-      }
-
+      battle.connectedDevices.push(BattleDeviceStorage.get);
       firebase.firestore().collection('apps/battlesim/battles').add({
         battle
       }).then(docRef => {
-        let sharedBattleIds = JSON.parse(localStorage.getItem("sharedBattles")) || [];
         store.dispatch(removeBattle(battleIndex));
-        localStorage.setItem("sharedBattles", JSON.stringify([...sharedBattleIds, {
+        SharedBattleStorage.add({
           id: docRef.id
-        }]));
+        });
         docRef.get().then(doc => store.dispatch(addSharedBattle(doc.id, doc.data().battle)));
         let battleModel = new Battle(battle, docRef.id);
 

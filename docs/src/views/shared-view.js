@@ -1,4 +1,4 @@
-import { html, PageViewElement, SharedStyles, connect, store, setActiveBattle, addSharedBattle, SHARED_BATTLE, ARMY_BOTH, addDeviceToList, addDevice } from '../components/battle-sim.js';
+import { html, PageViewElement, SharedStyles, connect, store, setActiveBattle, addSharedBattle, SHARED_BATTLE, ARMY_BOTH, addDeviceToList, addDevice, $battleDeviceStorageDefault as BattleDeviceStorage, $sharedBattleStorageDefault as SharedBattleStorage } from '../components/battle-sim.js';
 
 class SharedView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -19,22 +19,17 @@ class SharedView extends connect(store)(PageViewElement) {
       if (querySnapshot.docs.length > 0) {
         let doc = querySnapshot.docs[0];
         let battle = doc.data().battle;
-        let sharedBattleIds = JSON.parse(localStorage.getItem("sharedBattles")) || [];
+        let sharedBattleIds = SharedBattleStorage.get;
 
         if (sharedBattleIds.indexOf(doc.id) === -1) {
-          localStorage.setItem("sharedBattles", JSON.stringify([...sharedBattleIds, {
+          SharedBattleStorage.add({
             playingArmy: ARMY_BOTH,
             id: doc.id
-          }]));
+          });
         }
 
-        let battlesimDevice = JSON.parse(localStorage.getItem("battlesimDevice"));
-
-        if (battlesimDevice) {
-          addDevice(doc.id, battlesimDevice);
-          battle.connectedDevices = addDeviceToList(battle.connectedDevices, battlesimDevice);
-        }
-
+        addDevice(doc.id, BattleDeviceStorage.get);
+        battle.connectedDevices = addDeviceToList(battle.connectedDevices, BattleDeviceStorage.get);
         store.dispatch(addSharedBattle(doc.id, battle));
         store.dispatch(setActiveBattle({
           type: SHARED_BATTLE,

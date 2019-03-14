@@ -161,6 +161,10 @@ class Combatant extends ActingUnit {
     return !this.encounter.melee;
   }
 
+  get outOfAmmo() {
+    return this.attacksRequireAmmunition && this.unit.ammunition - this.ammunitionUsed <= 0;
+  }
+
   get fallingback() {
     return this.casualties > this.fallbackCasualtyCount;
   }
@@ -193,16 +197,24 @@ class Combatant extends ActingUnit {
     return Math.ceil(this.yardsFallenback / YARDS_PER_INCH);
   }
 
-  get modifiedMeleeVolume() {
+  get meleeVolume() {
     return this.unit.meleeWeapon.volume;
   }
 
-  get modifiedRangedVolume() {
+  get meleeMultiplier() {
+    return this.unit.meleeWeapon.multiplier || 1;
+  }
+
+  get rangedVolume() {
     return this.unit.rangedWeapon.effectiveAtCloseRange ? this.unit.rangedWeapon.volume * dropOffWithBoost(this.encounter.yardsOfSeparation / this.unit.rangedWeapon.range, this.unit.rangedWeapon.dropOff) : this.unit.rangedWeapon.volume * dropOff(this.encounter.yardsOfSeparation / this.unit.rangedWeapon.range, this.unit.rangedWeapon.dropOff);
   }
 
+  get rangedMultiplier() {
+    return this.unit.rangedWeapon.multiplier || 1;
+  }
+
   get volume() {
-    return this.encounter.melee ? this.modifiedMeleeVolume : this.modifiedRangedVolume;
+    return this.encounter.melee ? this.meleeVolume * this.meleeMultiplier : this.rangedVolume * this.rangedMultiplier;
   }
 
   get modifiedVolume() {
@@ -261,6 +273,10 @@ class Combatant extends ActingUnit {
     return this.unit.strength * this.modifiedVolume * (duration / SECONDS_IN_AN_HOUR);
   }
 
+  get lowOnAmmo() {
+    return this.unit.ammunition - this.ammunitionUsed < this.unit.strength * this.volume * 2;
+  }
+
   updates(delay) {
     return {
       id: this.unit.id,
@@ -282,6 +298,9 @@ class Combatant extends ActingUnit {
       prop: "leadership",
       value: this.unit.leadership - this.leadershipLoss
     }, {
+      prop: "ammunition",
+      value: this.unit.ammunition - this.ammunitionUsed
+    }, {
       prop: 'nextAction',
       value: this.unit.nextAction + delay
     }];
@@ -293,13 +312,37 @@ class Combatant extends ActingUnit {
     } else if (this.unit.morale - this.moraleLoss <= 0) {
       return `${this.unit.name} fled the battlefield.`;
     } else {
-      return `${this.unit.name}
-              ${this.casualtyMessage}${this.leadershipMessage ? ' and' : '.'}
-              ${this.leadershipMessage}${this.leadershipMessage ? '.' : ''}
-              ${this.moraleMessage || this.energyMessage ? 'They lost' : ''}
-              ${this.moraleMessage}${this.moraleMessage && !this.energyMessage ? '.' : ''}
-              ${this.moraleMessage && this.energyMessage ? 'and' : ''}
-              ${this.energyMessage}${this.energyMessage ? '.' : ''}`;
+      return `${this.casualtyMessage || this.leadershipMessage ? `
+                ${this.unit.name}
+                ${this.casualtyMessage}${this.leadershipMessage ? ' and' : '.'}
+                ${this.leadershipMessage}${this.leadershipMessage ? '.' : ''}
+              ` : ''}
+              ${this.moraleMessage || this.energyMessage ? `
+                ${this.moraleMessage || this.energyMessage ? `They lost` : ''}
+                ${this.moraleMessage}${this.moraleMessage && !this.energyMessage ? '.' : ''}
+                ${this.moraleMessage && this.energyMessage ? 'and' : ''}
+                ${this.energyMessage}${this.energyMessage ? '.' : ''}
+              ` : ''}
+              ${this.ammoMessage}${this.ammoMessage ? '.' : ''}`;
+    }
+  }
+
+  shootReport() {
+    return `${this.energyMessage ? `${this.unit.name} lost ${this.energyMessage}.` : ''}
+            ${this.ammoMessage}${this.ammoMessage ? '.' : ''}`;
+  }
+
+  get ammoMessage() {
+    if (this.unit.battle.useAmmo && this.attacksRequireAmmunition) {
+      if (this.outOfAmmo) {
+        return `They are out of ammunition`;
+      } else if (this.lowOnAmmo) {
+        return `They are low on ammunition`;
+      } else {
+        return '';
+      }
+    } else {
+      return '';
     }
   }
 
@@ -409,26 +452,28 @@ function makeAttacks(attacker, defender, duration) {
       attacker.ammunitionUsed += 1;
     }
 
-    let attackHits = true;
+    if (!attacker.outOfAmmo || !attacker.unit.battle.useAmmo) {
+      let attackHits = true;
 
-    if (attacker.skillRoll() * DEADLYNESS < defender.skillRoll()) {
-      attackHits = false;
-    }
-
-    let powerRoll = attacker.powerRoll();
-
-    if (powerRoll * DEADLYNESS < defender.armorRoll()) {
-      attackHits = false;
-    }
-
-    defender.protectingTerrainModel.forEach(terrain => {
-      if (powerRoll * DEADLYNESS < terrain.armorRoll()) {
+      if (attacker.skillRoll() * DEADLYNESS < defender.skillRoll()) {
         attackHits = false;
       }
-    });
 
-    if (attackHits) {
-      defender.casualties += 1;
+      let powerRoll = attacker.powerRoll();
+
+      if (powerRoll * DEADLYNESS < defender.armorRoll()) {
+        attackHits = false;
+      }
+
+      defender.protectingTerrainModel.forEach(terrain => {
+        if (powerRoll * DEADLYNESS < terrain.armorRoll()) {
+          attackHits = false;
+        }
+      });
+
+      if (attackHits) {
+        defender.casualties += 1;
+      }
     }
   }
 }
@@ -546,7 +591,7 @@ class Encounter {
   fight() {
     const actionMessage = this.attackerReachedDefender ? this.attackerEngages() : ``;
     return {
-      messages: [actionMessage, this.defender.battleReport(), this.melee ? this.attacker.battleReport() : ''],
+      messages: [actionMessage, this.defender.battleReport(), this.melee ? this.attacker.battleReport() : this.attacker.shootReport()],
       updates: [this.defender.updates(0), this.attacker.updates(SECONDS_PER_TURN + randomMinutesBetween(5, 10))]
     };
   }
@@ -675,6 +720,7 @@ class SoloUnit extends ActingUnit {
     situation,
     armyLeadership = 0,
     status = MORALE_SUCCESS,
+    resupply = false,
     mount = false,
     unmount = false,
     pace = 1,
@@ -690,6 +736,7 @@ class SoloUnit extends ActingUnit {
     this.situation = situation;
     this.armyLeadership = armyLeadership;
     this.status = status;
+    this.resupply = resupply;
     this.mount = mount;
     this.unmount = unmount;
     this.slope = slope;
@@ -720,6 +767,10 @@ class SoloUnit extends ActingUnit {
     return this.situation.percentageOfATurnSpentResting * this.energyRestModRoll + this.situation.percentageOfATurnSpentMoving * this.energyMoveModRoll * (0.75 - this.pace);
   }
 
+  get ammunitionSupplied() {
+    return this.resupply ? this.unit.maxAmmo : 0;
+  }
+
   get updates() {
     return {
       id: this.unit.id,
@@ -734,6 +785,9 @@ class SoloUnit extends ActingUnit {
     }, {
       prop: "morale",
       value: this.unit.morale + this.moraleChange
+    }, {
+      prop: "ammunition",
+      value: this.unit.ammunition + this.ammunitionSupplied
     }, {
       prop: 'nextAction',
       value: this.unit.nextAction + this.situation.totalSecondsSpent
@@ -829,6 +883,7 @@ class Situation {
     unit,
     armyLeadership = 0,
     movementTerrain = [],
+    resupply = false,
     mount = false,
     unmount = false,
     pace = 1,
@@ -839,6 +894,7 @@ class Situation {
     this.soloUnit = new SoloUnit({
       unit: unit,
       situation: this,
+      resupply,
       mount,
       unmount,
       pace,
@@ -1101,7 +1157,7 @@ class FightView extends BattleViewWrapper {
         skipResults = this._selectedAction === CHARGE && !encounter.attackerReachedDefender;
       }
 
-      store.dispatch(updateMessage([actionResult.messages.join(' ')]));
+      store.dispatch(updateMessage(actionResult.messages));
       this._actionMessages = actionResult.messages;
       this._actionUpdates = actionResult.updates;
       this._savedEnvironment = this._environment;
@@ -1224,6 +1280,7 @@ class FightView extends BattleViewWrapper {
       unit: this._activeBattle.activeUnit,
       armyLeadership: this._options._activeArmyLeadership,
       movementTerrain: this._options._selectedTerrain(TERRAIN_TYPE_MOVEMENT),
+      resupply: this._options.resupply,
       mount: this._options.mount,
       unmount: this._options.unmount,
       pace: this._options.pace,

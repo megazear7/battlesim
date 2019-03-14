@@ -1,4 +1,4 @@
-import { html, css, repeat, $battleViewWrapperDefault as BattleViewWrapper, add, remove, store, SharedStyles, ButtonSharedStyles, prettyTime, REST, MOVE, CHARGE, FIRE } from '../components/battle-sim.js';
+import { html, css, repeat, $battleViewWrapperDefault as BattleViewWrapper, add, remove, store, SharedStyles, ButtonSharedStyles, prettyTime, REST, MOVE, CHARGE, FIRE, ARMY_BOTH } from '../components/battle-sim.js';
 
 class BattleView extends BattleViewWrapper {
   static get styles() {
@@ -26,7 +26,7 @@ class BattleView extends BattleViewWrapper {
           <h2>Players</h2>
           <ul>
           ${repeat(this._activeBattle.connectedDevices, device => html`
-            <li><h4>${device.displayName} ${device.army ? html`(${this._activeBattle.armies[device.army].name})` : '(Both armies)'}</h4></li>
+            <li><h4>${device.displayName ? device.displayName : 'Anonymous'} ${device.army !== undefined && device.army !== ARMY_BOTH ? html`(${this._activeBattle.armies[device.army].name})` : '(Both armies)'}</h4></li>
           `)}
           </ul>
         </section>
