@@ -84,6 +84,14 @@ export default {
         {
           heading: 'Moving as far as possible',
           text: 'If you move as far as possible you will spend a full 30 minutes moving. This reduced the complexity of the movement by limiting the number of commands that are issued. However it also exposes the unit for a full 30 minutes of time where they will not be able to react.',
+        },
+        {
+          heading: 'Limbering',
+          text: 'Artillary must make a movement of 1 inch without moving before they can move as normal. This means they are limbered. Turn the cannons around as an indication. At the end of any movement they can deploy and turn arround. Then they cannot move or rotate again unit they are limbered.'
+        },
+        {
+          heading: 'March column',
+          text: 'Infantry can spend a movement of 1 inch to enter or exit the march column. Move all stands behind a singal designated lead stand to enter march column or move all non lead stands adjacent to the lead stand to exit march column. When in march column double the movement distances reported by the game.'
         }
       ]
     },
@@ -107,6 +115,10 @@ export default {
           heading: 'Combat outcomes',
           text: 'The outcome of ranged combat will likely include a status update for both units as they trade fire. See the combat outcomes section for more details.'
         },
+        {
+          heading: 'Cannon fire',
+          text: 'Elevated cannon fire can shoot beyond friendly troops a number of inches equal to the distance between the cannons and the furthest friendly troops in the direction of the target.'
+        }
       ]
     },
     {
@@ -137,6 +149,20 @@ export default {
           heading: 'Making the attack',
           text: 'Determine how many engaged stands there are in each unit and enter this information. Then click the do combat button to see what the results of the combat are. There might be follow up actions such as a fall back or persuit.'
         },
+      ]
+    },
+    {
+      heading: 'Flanks',
+      text: 'Depending on the angle of the attack the defender might not get to defend with all of their stands.',
+      subsections: [
+        {
+          heading: 'Flank attack',
+          text: 'When the the entire attacking unit is to the flank of the defending unit the defending unit only fights with 1 stand.'
+        },
+        {
+          heading: 'Rear attack',
+          text: 'When the entire attacking unit is behind the defending unit the defending unit fights with 0 stands.'
+        }
       ]
     },
     {

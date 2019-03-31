@@ -17,7 +17,7 @@ export default class ActingUnit {
     this.environment = environment;
     this.armyLeadership = armyLeadership;
     this.slope = slope;
-    this.status = this.moraleRoll() > this.unit.morale ? MORALE_FAILURE : this.status = MORALE_SUCCESS;
+    this.status = this.moraleRoll() > this.unit.morale ? MORALE_FAILURE : MORALE_SUCCESS;
   }
 
   yardsMovedPer(seconds) {

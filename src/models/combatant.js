@@ -75,7 +75,7 @@ export default class Combatant extends ActingUnit {
   }
 
   get moraleLoss() {
-    return this.percentageLoss * this.moraleModRoll * this.hardinessMod;
+    return this.percentageLoss * this.moraleModRoll * this.hardinessMod * this.encounter.melee ? 3 : 2;
   }
 
   get percentageLoss() {
