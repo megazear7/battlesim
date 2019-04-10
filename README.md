@@ -2,6 +2,12 @@
 
 > Mass combat simulation for tabletop gaming.
 
+### TODO
+
+1. Update icon at /images/swords.png to use the battlesim colors.
+1. Make each size of this image and the ico image.
+1. Update html to use this icon.
+
 ### Setup
 
 Requires Node.js version 11.0.0 or higher.

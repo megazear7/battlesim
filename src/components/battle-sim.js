@@ -250,6 +250,14 @@ class BattleSim extends connect(store)(LitElement) {
       <footer>
         <h1>${this.appTitle}</h1>
         <p>Mass combat simulation for tabletop gaming.</p>
+        <p>
+          Icons made by
+          <a href="https://www.freepik.com/" title="Freepik">Freepik</a>
+          from
+          <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
+          is licensed by
+          <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a>
+        </p>
       </footer>
 
       <snack-bar ?active="${this._snackbarOpened}">
