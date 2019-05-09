@@ -107,18 +107,20 @@
     <noscript>
       Please enable JavaScript to view this website.
     </noscript>
-    <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.0.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.0.1/firebase-firestore.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/2.2.7/webcomponents-loader.js"></script>
     <script>
-      // Initialize Firebase
-      var config = {
+      var firebaseConfig = {
         apiKey: "AIzaSyDbEOGC6V5EdjJ9d5hL5gronYvjXSO9R50",
         authDomain: "alex-lockhart.firebaseapp.com",
         databaseURL: "https://alex-lockhart.firebaseio.com",
         projectId: "alex-lockhart",
         storageBucket: "alex-lockhart.appspot.com",
+        messagingSenderId: "934890453503",
+        appId: "1:934890453503:web:0195e3832f46240b"
       };
-      firebase.initializeApp(config);
+      firebase.initializeApp(firebaseConfig);
     </script>
     <script type="module" src="src/components/battle-sim.js"></script>
   </body>
