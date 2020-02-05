@@ -157,6 +157,14 @@ class BattleSim extends connect(store)(LitElement) {
           text-align: center;
         }
 
+        footer a {
+          color: white;
+        }
+
+        footer a:hover {
+          color: var(--app-primary-color);
+        }
+
         .mobile-nav {
           position: fixed;
           bottom: -4rem;
@@ -252,6 +260,7 @@ class BattleSim extends connect(store)(LitElement) {
       <footer>
         <h1>${this.appTitle}</h1>
         <p>Mass combat simulation for tabletop gaming.</p>
+        <p>&copy; 2020 - Alex Lockhart - All rights reserved.<p>
         <p>
           Icons made by
           <a href="https://www.freepik.com/" title="Freepik">Freepik</a>

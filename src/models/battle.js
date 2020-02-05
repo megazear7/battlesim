@@ -180,6 +180,13 @@ export default class Battle {
     return this.allUnitTemplates.filter(({unit}) => unit.army === army);
   }
 
+  unitsByActivation(numberOfUnits = 0) {
+    let allUnits = this.army0Units.concat(this.army1Units);
+    return allUnits
+      .sort((unitA, unitB) => unitA.timeUntilNextMove - unitB.timeUntilNextMove)
+      .slice(1, numberOfUnits > 0 ? numberOfUnits + 1 : allUnits.length);
+  }
+
   get unitsByArmy() {
     return [
       {

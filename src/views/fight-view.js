@@ -114,6 +114,17 @@ class FightView extends BattleViewWrapper {
           </section>
         `
       }
+      <section>
+        <h3>Upcoming units</h3>
+        ${repeat(this._activeBattle.unitsByActivation(5), (unit, index) => html`
+          <div class="unit" data-index="${unit.id}">
+            <h4 class="unit-name">${index+1}: ${unit.name} <small>(${unit.nextMovePrettyTime})</small></h4>
+            <p>${unit.detailedStatus}</p>
+            <p>${unit.desc}</p>
+          </div>
+          <hr>
+        `)}
+      </section>
     `;
   }
 
