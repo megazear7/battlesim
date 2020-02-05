@@ -132,6 +132,16 @@ export function msSinceMidnight(date) {
   return date.getTime() - previousMidnight.getTime();
 }
 
+export function prettyLengthOfTime(seconds) {
+  if (seconds > SECONDS_IN_AN_HOUR) {
+    return Math.round(seconds / SECONDS_IN_AN_HOUR) + ' hours';
+  } else if (seconds > SECONDS_IN_AN_MINUTE) {
+    return Math.round(seconds / SECONDS_IN_AN_MINUTE) + ' minutes';
+  } else {
+    return Math.round(seconds) + ' seconds';
+  }
+}
+
 export function prettyTime(date) {
     var hour;
     var hourSuf;

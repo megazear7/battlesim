@@ -1,6 +1,6 @@
 import { FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP } from '../game.js';
 import { upperCaseFirst } from '../utils/string-utils.js';
-import { getRandomInt, roundToNearest } from '../utils/math-utils.js';
+import { getRandomInt, roundToNearest, prettyLengthOfTime } from '../utils/math-utils.js';
 import { STAT_PERCENTAGE, STAT_DESCRIPTION, STRENGTH_MESSAGE_DESCRIPTIVE } from '../game.js';
 import WEAPONS from '../game/weapons.js';
 import ARMOR from '../game/armor.js';
@@ -73,6 +73,22 @@ export default class Unit {
     this.unmountedSpeed = unmountedSpeed;
     this.maneuverTime = maneuverTime;
     this.fallback = getRandomInt(this.minFallback, this.maxFallback);
+  }
+
+  get timeUntilNextMove() {
+    return this.nextAction - this.battle.second;
+  }
+
+  get nextMovePrettyTime() {
+    if (this.isNotEliminated) {
+      if (this.timeUntilNextMove > 0) {
+        return prettyLengthOfTime(this.timeUntilNextMove);
+      } else {
+        return 'Active unit';
+      }
+    } else {
+      return 'Eliminated';
+    }
   }
 
   get isNotEliminated() {

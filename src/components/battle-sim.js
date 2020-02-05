@@ -13,6 +13,7 @@ import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-scroll-effects/effects/waterfall.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import SharedBattleStorage from '../models/shared-battle-storage.js';
+import Battle from '../models/battle.js';
 import './snack-bar.js';
 import './battle-sim-alert.js';
 import './battle-sim-selector.js';
@@ -27,6 +28,7 @@ class BattleSim extends connect(store)(LitElement) {
     return {
       appTitle: { type: String },
       _title: { type: String },
+      _titlePostfix: { type: String },
       _page: { type: String },
       _drawerOpened: { type: Boolean },
       _snackbarOpened: { type: Boolean },
@@ -220,7 +222,7 @@ class BattleSim extends connect(store)(LitElement) {
     return html`
       <app-header condenses reveals effects="waterfall">
         <app-toolbar class="toolbar-top">
-          <div main-title>${this._title}</div>
+          <div main-title>${this._title} - <small>${this._titlePostfix}</small></div>
         </app-toolbar>
 
         <nav class="toolbar-list">
@@ -348,9 +350,13 @@ class BattleSim extends connect(store)(LitElement) {
 
   stateChanged(state) {
     if (state.battle.battles.length > state.battle.activeBattle.id && state.app.page !== 'war') {
-      this._title = state.battle.battles[state.battle.activeBattle.id].name;
+      let battle = new Battle(state.battle.battles[state.battle.activeBattle.id]);
+      this._title = battle.name;
+      this._titlePostfix = battle.shortTimeMessage;
     } else if (Object.keys(state.battle.sharedBattles).indexOf(state.battle.activeBattle.id) >= 0 && state.app.page !== 'war') {
-      this._title = state.battle.sharedBattles[state.battle.activeBattle.id].name;
+      let battle = new Battle(state.battle.sharedBattles[state.battle.activeBattle.id]);
+      this._title = battle.name;
+      this._titlePostfix = battle.shortTimeMessage;
     } else {
       this._title = this.appTitle;
     }

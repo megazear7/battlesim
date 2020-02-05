@@ -12,7 +12,7 @@ import SCENARIOS from '../game/scenarios.js';
 import RULESETS from '../game/rules.js';
 import Unit from './unit.js';
 import BattleDeviceStorage from './battle-device-storage.js';
-import { prettyDateTime, SECONDS_IN_AN_HOUR, MILLISECONDS_PER_SECOND } from '../utils/math-utils.js';
+import { prettyDateTime, prettyTime, SECONDS_IN_AN_HOUR, MILLISECONDS_PER_SECOND } from '../utils/math-utils.js';
 
 export default class Battle {
   constructor({
@@ -114,6 +114,10 @@ export default class Battle {
 
   get currentTimeMessage() {
     return prettyDateTime(this.currentTime);
+  }
+
+  get shortTimeMessage() {
+    return prettyTime(this.currentTime);
   }
 
   get unitIsActing() {
