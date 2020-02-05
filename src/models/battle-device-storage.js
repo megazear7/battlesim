@@ -6,18 +6,28 @@ export default class BattleDeviceStorage {
   static get _empty() {
     return {
       id: makeid(10),
-      displayName: ""
+      displayName: ''
     }
   }
 
   static _getStorage() {
     const storageString = localStorage.getItem(BATTLE_DEVICE_STORAGE_ID);
+    let battleDevice;
 
     try {
-      return JSON.parse(storageString) || BattleDeviceStorage._empty;
+      let parsedStorage = JSON.parse(storageString);
+      if (parsedStorage && parsedStorage.id && parsedStorage.displayName != undefined) {
+        battleDevice = parsedStorage;
+      } else {
+        battleDevice = BattleDeviceStorage._empty;
+        localStorage.setItem(BATTLE_DEVICE_STORAGE_ID, JSON.stringify(battleDevice));
+      }
     } catch (e) {
-      return BattleDeviceStorage._empty;
+      battleDevice = BattleDeviceStorage._empty;
+      localStorage.setItem(BATTLE_DEVICE_STORAGE_ID, JSON.stringify(battleDevice));
     }
+
+    return battleDevice;
   }
 
   static get displayName() {

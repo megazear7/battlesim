@@ -157,7 +157,7 @@ const battle = (state = initialState, action) => {
     newState.battlesimDevice.displayName = action.displayName;
     BattleDeviceStorage.displayName = action.displayName;
 
-    Object.keys(newState.sharedBattles).forEach(battleId => addDevice(battleId, BattleDeviceStorage.get));
+    Object.keys(newState.sharedBattles).forEach(battleId => addDevice(state.sharedBattles[battleId], battleId, BattleDeviceStorage.get));
   }
 
   if (activeBattle && newState.activeBattle.type === SHARED_BATTLE && action.type !== ADD_SHARED_BATTLE && action.type !== SET_ACTIVE_BATTLE) {
@@ -171,7 +171,7 @@ const battle = (state = initialState, action) => {
   return newState
 };
 
-export function addDevice(battleId, battlsimDevice) {
+export function addDevice(battle, battleId, battlsimDevice) {
   firebase.firestore().collection('apps/battlesim/battles')
   .doc(battleId)
   .get()
@@ -180,6 +180,7 @@ export function addDevice(battleId, battlsimDevice) {
 
     addDeviceToList(connectedDevices, battlsimDevice);
 
+    battle.connectedDevices = connectedDevices;
     firebase.firestore().collection('apps/battlesim/battles')
     .doc(battleId)
     .update({'battle.connectedDevices': connectedDevices});
