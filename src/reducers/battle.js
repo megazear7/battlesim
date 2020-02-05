@@ -220,13 +220,12 @@ function updateTime(battle) {
 }
 
 function nextAction(battle) {
+  var battleModel = new Battle(battle);
   var nextTime = Number.MAX_SAFE_INTEGER;
   var nextAction;
-  battle.units.forEach((unit, index) => {
+  battleModel.unitModels.forEach((unit, index) => {
     if ((battle.playerTurnDuration === NO_PLAYER_TURNS || unit.army === battle.activeArmy) &&
-        unit.nextAction < nextTime &&
-        unit.strength > 0 &&
-        unit.morale > 0) {
+        unit.nextAction < nextTime && unit.isNotEliminated) {
       nextTime = unit.nextAction;
       nextAction = {
         type: ACTION_TYPE_UNIT,

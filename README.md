@@ -18,6 +18,8 @@ Requires Node.js version 11.0.0 or higher.
 
 `npm start`
 
+Open [localhost:8081](localhost:8081).
+
 ### Deployment
 
 This will do a git commit of the docs folder and a push in order to deploy to github pages.

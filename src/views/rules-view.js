@@ -39,6 +39,20 @@ class RulesView extends BattleViewWrapper {
           `)}
         </section>
       `)}
+      <section>
+        <h3>Gameplay overview</h3>
+
+        <h5>Movement</h5>
+        <p>Moving at fast pace will cost energy.</p>
+        <p>Moving at marching pace will be slower but it will not cost energy.</p>
+        <p>Moving at slow pace will be even slower but it regain energy.</p>
+
+        <h5></h5>
+        <p></p>
+
+        <h5></h5>
+        <p></p>
+      </section>
     `;
   }
 }

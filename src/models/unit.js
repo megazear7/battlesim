@@ -75,6 +75,14 @@ export default class Unit {
     this.fallback = getRandomInt(this.minFallback, this.maxFallback);
   }
 
+  get isNotEliminated() {
+    return ! this.isEliminated;
+  }
+
+  get isEliminated() {
+    return this.morale <= 0 || this.strength <= 0 || this.energy <= 0;
+  }
+
   get secondsToIssueOrder() {
     return (this.leadership * 3) + (this.experience * 2);
   }
