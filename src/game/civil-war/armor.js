@@ -8,7 +8,7 @@ export const ARMOR = {
     weight: 0,
   },
   [MOUNTED_ARMOR_BONUS]: {
-    defense: 6,
+    defense: 5,
     weight: 0,
   }
 };

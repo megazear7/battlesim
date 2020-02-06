@@ -2,7 +2,7 @@ import WEAPONS from '../game/weapons.js';
 import ARMOR from '../game/armor.js';
 import { combat } from '../utils/battle-utils.js';
 import { randomMinutesBetween, SECONDS_IN_AN_MINUTE } from '../utils/math-utils.js';
-import { FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP } from '../game.js';
+import { FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP, FALLBACK_AMPLIFIER } from '../game.js';
 import { SLOPE_UP, SLOPE_DOWN, SLOPE_NONE } from './terrain.js';
 import { SECONDS_PER_TURN, YARDS_PER_INCH, YARDS_TO_FIGHT, MORALE_SUCCESS, MORALE_FAILURE } from '../game.js';
 import Combatant from './combatant.js';
@@ -56,21 +56,27 @@ export default class Encounter {
 
   attackerEngages() {
     let secondsOfCombat = combat(this.attacker, this.defender, this.secondsSpentFighting);
-
     let actionMessage = ``;
-    if (this.attacker.fallingback && this.attacker.inchesFallenback >= 1) {
-      actionMessage += `${this.attacker.unit.name} fell back ${this.attacker.inchesFallenback} ${this.inchesWord(this.attacker.inchesFallenback)}. `;
 
-      if (this.defender.persueing && this.defender.inchesPersued >= 2) {
-        actionMessage += `${this.defender.unit.name} persued ${this.defender.inchesPersued} ${this.inchesWord(this.defender.inchesPersued)}. `;
+    let effectiveAttackerFallBack = this.attacker.inchesFallenback * FALLBACK_AMPLIFIER;
+    if (this.attacker.fallingback && effectiveAttackerFallBack >= 1) {
+      actionMessage += `${this.attacker.unit.name} fell back ${effectiveAttackerFallBack} ${this.inchesWord(effectiveAttackerFallBack)}. `;
+
+      let effectivePersuit = this.defender.inchesPersued > effectiveAttackerFallBack ? effectiveAttackerFallBack : this.defender.inchesPersued;
+
+      if (this.defender.persueing && effectivePersuit >= 1) {
+        actionMessage += `${this.defender.unit.name} persued ${effectivePersuit} ${this.inchesWord(effectivePersuit)}. `;
       }
     }
 
-    if (this.defender.fallingback && this.defender.inchesFallenback >= 1) {
-      actionMessage += `${this.defender.unit.name} fell back ${this.defender.inchesFallenback} ${this.inchesWord(this.defender.inchesFallenback)}.`;
+    let effectiveDefenderFallBack = this.defender.inchesFallenback * FALLBACK_AMPLIFIER;
+    if (this.defender.fallingback && effectiveDefenderFallBack >= 1) {
+      actionMessage += `${this.defender.unit.name} fell back ${effectiveDefenderFallBack} ${this.inchesWord(effectiveDefenderFallBack)}. `;
 
-      if (this.attacker.persueing && this.attacker.inchesPersued >= 2) {
-        actionMessage += `${this.attacker.unit.name} persued ${this.attacker.inchesPersued} ${this.inchesWord(this.attacker.inchesPersued)}.`;
+      let effectivePersuit = this.attacker.inchesPersued > effectiveDefenderFallBack ? effectiveDefenderFallBack : this.attacker.inchesPersued;
+
+      if (this.attacker.persueing && effectivePersuit >= 1) {
+        actionMessage += `${this.attacker.unit.name} persued ${effectivePersuit} ${this.inchesWord(effectivePersuit)}. `;
       }
     }
 
