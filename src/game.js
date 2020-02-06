@@ -47,6 +47,14 @@ export const ARMY_0 = 0;
 export const ARMY_1 = 1;
 export const ARMY_BOTH = 'ARMY_BOTH';
 
+export const STAT_TYPES = [{
+  name: 'Percentages',
+  id: STAT_PERCENTAGE
+}, {
+  name: 'Descriptions',
+  id: STAT_DESCRIPTION
+}];
+
 export function statModFor(stat) {
   return weightedRandomTowards(20, 100, stat, 2) / 100;
 }

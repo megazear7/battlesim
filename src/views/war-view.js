@@ -11,7 +11,7 @@ import BATTLE_TEMPLATES from '../game/battle-templates.js';
 import RULES from '../game/rules.js';
 import Battle from '../models/battle.js';
 import { makeid } from '../utils/math-utils.js';
-import { SHARED_BATTLE, LOCAL_BATTLE, ARMY_0, ARMY_1, ARMY_BOTH } from '../game.js';
+import { SHARED_BATTLE, LOCAL_BATTLE, ARMY_0, ARMY_1, ARMY_BOTH, STAT_TYPES } from '../game.js';
 import BattleDeviceStorage from '../models/battle-device-storage.js';
 import SharedBattleStorage from '../models/shared-battle-storage.js';
 
@@ -122,6 +122,12 @@ class WarView extends connect(store)(PageViewElement) {
           <input id="battle-name" type="text" placeholder="Battle name"></input>
           <input id="army1-name" type="text" placeholder="First army name"></input>
           <input id="army2-name" type="text" placeholder="Second army name"></input>
+          <select id="stat-type">
+            <option value="">How would you like unit status's reported?</option>
+            ${repeat(STAT_TYPES, statType => html`
+              <option value="${statType.id}">${statType.name}</option>
+            `)}
+          </select>
         </div>
       </section>
     `;
@@ -286,6 +292,10 @@ class WarView extends connect(store)(PageViewElement) {
     return this.shadowRoot.getElementById('army2-name');
   }
 
+  get newBattleStatTypeElement() {
+    return this.shadowRoot.getElementById('stat-type');
+  }
+
   get newBattleName() {
     return this.newBattleNameElement.value;
   }
@@ -296,6 +306,10 @@ class WarView extends connect(store)(PageViewElement) {
 
   get newBattleArmy2Name() {
     return this.newBattleArmy2NameElement.value;
+  }
+
+  get newBattleStatType() {
+    return this.newBattleStatTypeElement.value;
   }
 
   set newBattleName(value) {
@@ -316,6 +330,7 @@ class WarView extends connect(store)(PageViewElement) {
       name: this.newBattleName,
       army1Name: this.newBattleArmy1Name,
       army2Name: this.newBattleArmy2Name,
+      statType: this.newBattleStatType
     };
   }
 
