@@ -20,9 +20,9 @@ export const LEE_ENFIELD_303 = 'LEE_ENFIELD_303';
 export const WEAPONS = {
   [SWORD]: {
     name: 'Sword',
-    [POWER_VS_FOOT]: 40,
+    [POWER_VS_FOOT]: 50,
     [POWER_VS_MOUNTED]: 40,
-    volume: 25,
+    volume: 35,
     weight: 1,
     range: 0,
     dropoff: 2,
