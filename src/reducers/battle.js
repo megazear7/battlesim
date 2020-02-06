@@ -113,6 +113,12 @@ const battle = (state = initialState, action) => {
     if (action.battleStats.statType) {
       newBattle.statReporting = action.battleStats.statType;
     }
+    if (action.battleStats.casualtyReporting) {
+      newBattle.casualtyReporting = action.battleStats.casualtyReporting;
+    }
+    if (action.battleStats.strengthReporting) {
+      newBattle.strengthReporting = action.battleStats.strengthReporting;
+    }
     newBattle.units.forEach(unit => {
       unit.nextAction = Math.random() * SECONDS_PER_TURN;
     });

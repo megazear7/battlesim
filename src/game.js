@@ -48,10 +48,10 @@ export const ARMY_1 = 1;
 export const ARMY_BOTH = 'ARMY_BOTH';
 
 export const STAT_TYPES = [{
-  name: 'Percentages',
+  name: 'Percentage status report',
   id: STAT_PERCENTAGE
 }, {
-  name: 'Descriptions',
+  name: 'Descriptive status report',
   id: STAT_DESCRIPTION
 }];
 

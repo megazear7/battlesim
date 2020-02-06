@@ -11,7 +11,7 @@ import BATTLE_TEMPLATES from '../game/battle-templates.js';
 import RULES from '../game/rules.js';
 import Battle from '../models/battle.js';
 import { makeid } from '../utils/math-utils.js';
-import { SHARED_BATTLE, LOCAL_BATTLE, ARMY_0, ARMY_1, ARMY_BOTH, STAT_TYPES } from '../game.js';
+import { SHARED_BATTLE, LOCAL_BATTLE, ARMY_0, ARMY_1, ARMY_BOTH, STAT_TYPES, CASUALTY_MESSAGE_DESCRIPTIVE, STRENGTH_MESSAGE_DESCRIPTIVE } from '../game.js';
 import BattleDeviceStorage from '../models/battle-device-storage.js';
 import SharedBattleStorage from '../models/shared-battle-storage.js';
 
@@ -127,6 +127,20 @@ class WarView extends connect(store)(PageViewElement) {
             ${repeat(STAT_TYPES, statType => html`
               <option value="${statType.id}">${statType.name}</option>
             `)}
+          </select>
+          <select id="casualty-reporting">
+            <option value="">How would you like casualties reported?</option>
+            <option value="${CASUALTY_MESSAGE_DESCRIPTIVE}">Descriptive casualties</option>
+            <option value="1">Exact casualties</option>
+            <option value="10">Casualties rounded to nearest 10</option>
+            <option value="100">Casualties rounded to nearest 100</option>
+          </select>
+          <select id="strength-reporting">
+            <option value="">How would you like unit strength reported?</option>
+            <option value="${STRENGTH_MESSAGE_DESCRIPTIVE}">Descriptive unit strength</option>
+            <option value="1">Exact unit strength</option>
+            <option value="10">Unit strength rounded to nearest 10</option>
+            <option value="100">Unit strength rounded to nearest 100</option>
           </select>
         </div>
       </section>
@@ -296,6 +310,14 @@ class WarView extends connect(store)(PageViewElement) {
     return this.shadowRoot.getElementById('stat-type');
   }
 
+  get newBattleCasualtyReportingElement() {
+    return this.shadowRoot.getElementById('casualty-reporting');
+  }
+
+  get newBattleStrengthReportingElement() {
+    return this.shadowRoot.getElementById('strength-reporting');
+  }
+
   get newBattleName() {
     return this.newBattleNameElement.value;
   }
@@ -310,6 +332,14 @@ class WarView extends connect(store)(PageViewElement) {
 
   get newBattleStatType() {
     return this.newBattleStatTypeElement.value;
+  }
+
+  get newBattleCasualtyReporting() {
+    return this.newBattleCasualtyReportingElement.value;
+  }
+
+  get newBattleStrengthReporting() {
+    return this.newBattleStrengthReportingElement.value;
   }
 
   set newBattleName(value) {
@@ -330,7 +360,9 @@ class WarView extends connect(store)(PageViewElement) {
       name: this.newBattleName,
       army1Name: this.newBattleArmy1Name,
       army2Name: this.newBattleArmy2Name,
-      statType: this.newBattleStatType
+      statType: this.newBattleStatType,
+      casualtyReporting: this.newBattleCasualtyReporting,
+      strengthReporting: this.newBattleStrengthReporting,
     };
   }
 
