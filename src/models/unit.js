@@ -180,24 +180,34 @@ export default class Unit {
   }
 
   get experienceDesc() {
-    if (this.experience > 90) {
+    if (this.experience >= 90) {
+      return 'Legendary';
+    } else if (this.experience >= 85) {
+      return 'Heroic';
+    } else if (this.experience >= 80) {
+      return 'Crack';
+    } else if (this.experience >= 75) {
       return 'Elite';
-    } else if (this.experience > 80) {
+    } else if (this.experience >= 70) {
       return 'Veteran';
-    } else if (this.experience > 70) {
+    } else if (this.experience >= 65) {
+      return 'Superior';
+    } else if (this.experience >= 60) {
       return 'Experienced';
-    } else if (this.experience > 60) {
-      return 'Well trained';
-    } else if (this.experience > 50) {
-      return 'Trained';
-    } else if (this.experience > 40) {
-      return 'Poorly trained';
-    } else if (this.experience > 30) {
-      return 'Untrained';
-    } else if (this.experience > 20) {
-      return 'Somewhat inexperienced';
-    } else if (this.experience > 10) {
+    } else if (this.experience >= 55) {
+      return 'Somewhat experienced';
+    } else if (this.experience >= 45) {
+      return 'Average';
+    } else if (this.experience >= 40) {
       return 'Inexperienced';
+    } else if (this.experience >= 35) {
+      return 'Undisciplined';
+    } else if (this.experience >= 30) {
+      return 'Green';
+    } else if (this.experience >= 20) {
+      return 'Inept';
+    } else if (this.experience >= 10) {
+      return 'Incapable';
     } else {
       return 'Totally inexperienced';
     }

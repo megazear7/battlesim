@@ -48,7 +48,7 @@ export default class Combatant extends ActingUnit {
     this.yardsPersued = 0;
     this.leaderSurviveRoll = Math.random();
     this.energyModRoll = randomBellMod();
-    this.moraleModRoll = weightedRandomTowards(0.5, 1.5, 1, 2);
+    this.moraleModRoll = weightedRandomTowards(0.5, 1.5, 1, 1);
   }
 
   skillRoll() {
@@ -75,7 +75,7 @@ export default class Combatant extends ActingUnit {
   }
 
   get moraleLoss() {
-    return this.percentageLoss * this.moraleModRoll * this.hardinessMod * this.encounter.melee ? 3 : 2;
+    return this.percentageLoss * this.moraleModRoll * this.hardinessMod * (this.encounter.melee ? 3 : 2);
   }
 
   get percentageLoss() {
@@ -115,7 +115,7 @@ export default class Combatant extends ActingUnit {
   }
 
   get hardinessMod() {
-    return 1 + ((MAX_STAT - this.unit.experience) / MAX_STAT);
+    return 0.3 + (1.4 * ((MAX_STAT - this.unit.experience) / MAX_STAT));
   }
 
   get inchesPersued() {
