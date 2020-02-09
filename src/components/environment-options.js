@@ -5,7 +5,7 @@ import { SharedStyles } from '../styles/shared-styles.js';
 import { ButtonSharedStyles } from '../styles/button-shared-styles.js';
 import TERRAIN from '../game/terrain.js';
 import { SLOPE_UP, SLOPE_DOWN, SLOPE_NONE } from '../models/terrain.js';
-import { MINUTES_PER_TURN, REST, MOVE, CHARGE, FIRE } from '../game.js';
+import { MINUTES_PER_TURN, REST, MOVE, CHARGE, FIRE, DEFENDER_POSITION_NORMAL, DEFENDER_POSITION_FLANKED, DEFENDER_POSITION_REAR } from '../game.js';
 
 export const TERRAIN_TYPE_MOVEMENT = 'movement-terrain';
 export const TERRAIN_TYPE_DEFENDER = 'defender-terrain';
@@ -74,6 +74,12 @@ class EnvironmentOptions extends LitElement {
           </battle-sim-selector>
         </div>
         <div class="${classMap({hidden: ! this.showHill && ! this.showLeader})}">
+          ${this.targetUnit && this.action === CHARGE ? html`
+            <battle-sim-selector radio id="defender-position" title="Defender Position">
+              <battle-sim-option value="${DEFENDER_POSITION_FLANKED}">Flanked</battle-sim-option>
+              <battle-sim-option value="${DEFENDER_POSITION_REAR}">Rear</battle-sim-option>
+            </battle-sim-selector>
+          ` : ''}
           <battle-sim-selector radio id="hill" none="${SLOPE_NONE}" class="${classMap({hidden: ! this.showHill})}" title="Hill">
             <battle-sim-option value="${SLOPE_UP}">Uphill</battle-sim-option>
             <battle-sim-option value="${SLOPE_DOWN}">Downhill</battle-sim-option>
@@ -156,6 +162,10 @@ class EnvironmentOptions extends LitElement {
     return this.shadowRoot.getElementById('defender-leadership') && this.shadowRoot.getElementById('defender-leadership').value;
   }
 
+  get defenderPosition() {
+    return this.shadowRoot.getElementById('defender-position') && this.shadowRoot.getElementById('defender-position').value;
+  }
+
   get distance() {
     return parseInt(this.shadowRoot.getElementById('distance').value === ''
       ? -1
@@ -183,6 +193,7 @@ class EnvironmentOptions extends LitElement {
       return 0;
     }
   }
+
   get _defenderTerrain() {
     return this.action === CHARGE
       ? this._selectedTerrain(TERRAIN_TYPE_DEFENDER)

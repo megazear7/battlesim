@@ -11,7 +11,7 @@ import Encounter from '../models/encounter.js';
 import Situation from '../models/situation.js';
 import Battle from '../models/battle.js';
 import Unit from '../models/unit.js';
-import { REST, MOVE, CHARGE, FIRE, NO_ACTION, ARMY_BOTH } from '../game.js';
+import { REST, MOVE, CHARGE, FIRE, NO_ACTION, ARMY_BOTH, DEFENDER_POSITION_NORMAL } from '../game.js';
 import { TERRAIN_TYPE_MOVEMENT, TERRAIN_TYPE_MELEE_COMBAT } from '../components/environment-options.js';
 
 class FightView extends BattleViewWrapper {
@@ -262,6 +262,7 @@ class FightView extends BattleViewWrapper {
       defender: this._activeBattle.unitModels[this.target],
       defenderArmyLeadership: this._options._defenderArmyLeadership,
       defenderEngagedStands: this._options.engagedDefenders,
+      defenderPosition: this._options.defenderPosition || DEFENDER_POSITION_NORMAL,
       melee: this._selectedAction === CHARGE,
       separation: this.separation,
       attackerChargeTerrain: this._options._selectedTerrain(TERRAIN_TYPE_MOVEMENT),

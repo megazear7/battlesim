@@ -47,6 +47,9 @@ export const ARMY_0 = 0;
 export const ARMY_1 = 1;
 export const ARMY_BOTH = 'ARMY_BOTH';
 export const FALLBACK_AMPLIFIER = 2;
+export const DEFENDER_POSITION_NORMAL = 'DEFENDER_POSITION_NORMAL';
+export const DEFENDER_POSITION_FLANKED = 'DEFENDER_POSITION_FLANKED';
+export const DEFENDER_POSITION_REAR = 'DEFENDER_POSITION_REAR';
 
 export const STAT_TYPES = [{
   name: 'Percentage status report',

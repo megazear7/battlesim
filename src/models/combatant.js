@@ -17,7 +17,8 @@ import {
   STAT_PERCENTAGE,
   STAT_DESCRIPTION,
   CASUALTY_MESSAGE_DESCRIPTIVE,
-  STRENGTH_MESSAGE_DESCRIPTIVE
+  STRENGTH_MESSAGE_DESCRIPTIVE,
+  DEFENDER_POSITION_NORMAL
 } from '../game.js';
 
 /** @class Situation
@@ -31,6 +32,7 @@ export default class Combatant extends ActingUnit {
                   protectingTerrain =  [],
                   areaTerrain = [],
                   engagedStands = -1,
+                  position = DEFENDER_POSITION_NORMAL,
                   slope = SLOPE_NONE }) {
     super({ unit, environment: encounter, armyLeadership });
     this.unit = unit;
@@ -41,6 +43,7 @@ export default class Combatant extends ActingUnit {
     this.protectingTerrain = protectingTerrain;
     this.areaTerrain = areaTerrain;
     this.engagedStands = engagedStands <= -1 || engagedStands > unit.stands ? unit.stands : engagedStands;
+    this.position = position;
     this.slope = slope;
     this.casualties = 0;
     this.ammunitionUsed = 0;
@@ -52,15 +55,15 @@ export default class Combatant extends ActingUnit {
   }
 
   skillRoll() {
-    return Math.random() * this.skill * statModFor(this.unit.energy);
+    return Math.random() * this.skill * statModFor(this.unit.energy) * this.positionMod;
   }
 
   armorRoll() {
-    return Math.random() * this.armor;
+    return Math.random() * this.armor * this.positionMod;
   }
 
   powerRoll() {
-    return Math.random() * this.modifiedPower;
+    return Math.random() * this.modifiedPower * this.positionMod;
   }
 
   get energyLoss() {
@@ -84,6 +87,14 @@ export default class Combatant extends ActingUnit {
 
   get timeSpentFightingMod() {
     return this.encounter.secondsSpentFighting / SECONDS_PER_TURN;
+  }
+
+  get positionMod() {
+    return {
+      DEFENDER_POSITION_NORMAL: 1,
+      DEFENDER_POSITION_FLANKED: this.unit.battle.flankedMod || 0.8,
+      DEFENDER_POSITION_REAR: this.unit.battle.rearMod || 0.6
+    }[this.position] || 1;
   }
 
   get attacksRequireAmmunition() {
