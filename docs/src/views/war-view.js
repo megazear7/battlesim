@@ -1,4 +1,4 @@
-import { html, css, repeat, classMap, PageViewElement, createNewBattle, setActiveBattle, removeBattle, addSharedBattle, playArmy, removeSharedBattle, updateDisplayName, connect, store, SharedStyles, ButtonSharedStyles, $battleTemplatesDefault as BATTLE_TEMPLATES, $rulesDefault as RULES, $battleDefault as Battle, makeid, SHARED_BATTLE, LOCAL_BATTLE, ARMY_0, ARMY_1, ARMY_BOTH, $battleDeviceStorageDefault as BattleDeviceStorage, $sharedBattleStorageDefault as SharedBattleStorage } from '../components/battle-sim.js';
+import { html, css, repeat, classMap, PageViewElement, createNewBattle, setActiveBattle, removeBattle, addSharedBattle, playArmy, removeSharedBattle, updateDisplayName, connect, store, SharedStyles, ButtonSharedStyles, $battleTemplatesDefault as BATTLE_TEMPLATES, $rulesDefault as RULES, $battleDefault as Battle, makeid, SHARED_BATTLE, LOCAL_BATTLE, ARMY_0, ARMY_1, ARMY_BOTH, STAT_TYPES, CASUALTY_MESSAGE_DESCRIPTIVE, STRENGTH_MESSAGE_DESCRIPTIVE, $battleDeviceStorageDefault as BattleDeviceStorage, $sharedBattleStorageDefault as SharedBattleStorage } from '../components/battle-sim.js';
 
 class WarView extends connect(store)(PageViewElement) {
   static get properties() {
@@ -129,6 +129,26 @@ class WarView extends connect(store)(PageViewElement) {
           <input id="battle-name" type="text" placeholder="Battle name"></input>
           <input id="army1-name" type="text" placeholder="First army name"></input>
           <input id="army2-name" type="text" placeholder="Second army name"></input>
+          <select id="stat-type">
+            <option value="">How would you like unit status's reported?</option>
+            ${repeat(STAT_TYPES, statType => html`
+              <option value="${statType.id}">${statType.name}</option>
+            `)}
+          </select>
+          <select id="casualty-reporting">
+            <option value="">How would you like casualties reported?</option>
+            <option value="${CASUALTY_MESSAGE_DESCRIPTIVE}">Descriptive casualties</option>
+            <option value="1">Exact casualties</option>
+            <option value="10">Casualties rounded to nearest 10</option>
+            <option value="100">Casualties rounded to nearest 100</option>
+          </select>
+          <select id="strength-reporting">
+            <option value="">How would you like unit strength reported?</option>
+            <option value="${STRENGTH_MESSAGE_DESCRIPTIVE}">Descriptive unit strength</option>
+            <option value="1">Exact unit strength</option>
+            <option value="10">Unit strength rounded to nearest 10</option>
+            <option value="100">Unit strength rounded to nearest 100</option>
+          </select>
         </div>
       </section>
     `;
@@ -294,6 +314,18 @@ class WarView extends connect(store)(PageViewElement) {
     return this.shadowRoot.getElementById('army2-name');
   }
 
+  get newBattleStatTypeElement() {
+    return this.shadowRoot.getElementById('stat-type');
+  }
+
+  get newBattleCasualtyReportingElement() {
+    return this.shadowRoot.getElementById('casualty-reporting');
+  }
+
+  get newBattleStrengthReportingElement() {
+    return this.shadowRoot.getElementById('strength-reporting');
+  }
+
   get newBattleName() {
     return this.newBattleNameElement.value;
   }
@@ -304,6 +336,18 @@ class WarView extends connect(store)(PageViewElement) {
 
   get newBattleArmy2Name() {
     return this.newBattleArmy2NameElement.value;
+  }
+
+  get newBattleStatType() {
+    return this.newBattleStatTypeElement.value;
+  }
+
+  get newBattleCasualtyReporting() {
+    return this.newBattleCasualtyReportingElement.value;
+  }
+
+  get newBattleStrengthReporting() {
+    return this.newBattleStrengthReportingElement.value;
   }
 
   set newBattleName(value) {
@@ -323,7 +367,10 @@ class WarView extends connect(store)(PageViewElement) {
       templateIndex: this.newBattleTemplate,
       name: this.newBattleName,
       army1Name: this.newBattleArmy1Name,
-      army2Name: this.newBattleArmy2Name
+      army2Name: this.newBattleArmy2Name,
+      statType: this.newBattleStatType,
+      casualtyReporting: this.newBattleCasualtyReporting,
+      strengthReporting: this.newBattleStrengthReporting
     };
   }
 

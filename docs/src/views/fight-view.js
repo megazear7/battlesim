@@ -1,4 +1,4 @@
-import { weightedRandomTowards, weightedAverage, randomBellMod, dropOff, dropOffWithBoost, roundToNearest, SECONDS_IN_AN_HOUR, SECONDS_IN_AN_MINUTE, randomMinutesBetween, SLOPE_UP, SLOPE_DOWN, SLOPE_NONE as SLOPE_NONE$1, MAX_TERRAIN, Terrain, statModFor, MAX_EQUIPMENT_WEIGHT, MORALE_SUCCESS, MORALE_FAILURE, FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP, MELEE_WEAPON, RANGED_WEAPON, MAX_STAT, SECONDS_PER_TURN, YARDS_PER_INCH, POWER_VS_FOOT, POWER_VS_MOUNTED, MELEE, RANGED, STAT_PERCENTAGE, CASUALTY_MESSAGE_DESCRIPTIVE, DEADLYNESS, SECONDS_PER_ROUND, YARDS_TO_FIGHT, MINUTES_PER_TURN, REST, MOVE, CHARGE, FIRE, NO_ACTION, html, css, repeat, classMap, $battleViewWrapperDefault as BattleViewWrapper, store, takeAction, takeArmyAction, finishEvent, updateMessage, SharedStyles, ButtonSharedStyles, TERRAIN_TYPE_MOVEMENT, TERRAIN_TYPE_MELEE_COMBAT } from '../components/battle-sim.js';
+import { weightedRandomTowards, weightedAverage, randomBellMod, dropOff, dropOffWithBoost, roundToNearest, SECONDS_IN_AN_HOUR, SECONDS_IN_AN_MINUTE, randomMinutesBetween, SLOPE_UP, SLOPE_DOWN, SLOPE_NONE as SLOPE_NONE$1, MAX_TERRAIN, Terrain, statModFor, MAX_EQUIPMENT_WEIGHT, MORALE_SUCCESS, MORALE_FAILURE, FOOT_TROOP, CAVALRY_TROOP, ARTILLERY_TROOP, MELEE_WEAPON, RANGED_WEAPON, MAX_STAT, SECONDS_PER_TURN, YARDS_PER_INCH, POWER_VS_FOOT, POWER_VS_MOUNTED, MELEE, RANGED, STAT_PERCENTAGE, CASUALTY_MESSAGE_DESCRIPTIVE, DEFENDER_POSITION_NORMAL, DEADLYNESS, SECONDS_PER_ROUND, YARDS_TO_FIGHT, FALLBACK_AMPLIFIER, MINUTES_PER_TURN, REST, MOVE, CHARGE, FIRE, NO_ACTION, html, css, repeat, classMap, $battleViewWrapperDefault as BattleViewWrapper, store, takeAction, takeArmyAction, finishEvent, updateMessage, SharedStyles, ButtonSharedStyles, TERRAIN_TYPE_MOVEMENT, TERRAIN_TYPE_MELEE_COMBAT } from '../components/battle-sim.js';
 
 class ActingUnit {
   constructor({
@@ -14,7 +14,7 @@ class ActingUnit {
     this.environment = environment;
     this.armyLeadership = armyLeadership;
     this.slope = slope;
-    this.status = this.moraleRoll() > this.unit.morale ? MORALE_FAILURE : this.status = MORALE_SUCCESS;
+    this.status = this.moraleRoll() > this.unit.morale ? MORALE_FAILURE : MORALE_SUCCESS;
   }
 
   yardsMovedPer(seconds) {
@@ -101,6 +101,7 @@ class Combatant extends ActingUnit {
     protectingTerrain = [],
     areaTerrain = [],
     engagedStands = -1,
+    position = DEFENDER_POSITION_NORMAL,
     slope = SLOPE_NONE$1
   }) {
     super({
@@ -116,6 +117,7 @@ class Combatant extends ActingUnit {
     this.protectingTerrain = protectingTerrain;
     this.areaTerrain = areaTerrain;
     this.engagedStands = engagedStands <= -1 || engagedStands > unit.stands ? unit.stands : engagedStands;
+    this.position = position;
     this.slope = slope;
     this.casualties = 0;
     this.ammunitionUsed = 0;
@@ -123,19 +125,19 @@ class Combatant extends ActingUnit {
     this.yardsPersued = 0;
     this.leaderSurviveRoll = Math.random();
     this.energyModRoll = randomBellMod();
-    this.moraleModRoll = weightedRandomTowards(0.5, 1.5, 1, 2);
+    this.moraleModRoll = weightedRandomTowards(0.5, 1.5, 1, 1);
   }
 
   skillRoll() {
-    return Math.random() * this.skill * statModFor(this.unit.energy);
+    return Math.random() * this.skill * statModFor(this.unit.energy) * this.positionMod;
   }
 
   armorRoll() {
-    return Math.random() * this.armor;
+    return Math.random() * this.armor * this.positionMod;
   }
 
   powerRoll() {
-    return Math.random() * this.modifiedPower;
+    return Math.random() * this.modifiedPower * this.positionMod;
   }
 
   get energyLoss() {
@@ -146,7 +148,7 @@ class Combatant extends ActingUnit {
   }
 
   get moraleLoss() {
-    return this.percentageLoss * this.moraleModRoll * this.hardinessMod;
+    return this.percentageLoss * this.moraleModRoll * this.hardinessMod * (this.encounter.melee ? 3 : 2);
   }
 
   get percentageLoss() {
@@ -155,6 +157,14 @@ class Combatant extends ActingUnit {
 
   get timeSpentFightingMod() {
     return this.encounter.secondsSpentFighting / SECONDS_PER_TURN;
+  }
+
+  get positionMod() {
+    return {
+      DEFENDER_POSITION_NORMAL: 1,
+      DEFENDER_POSITION_FLANKED: this.unit.battle.flankedMod || 0.8,
+      DEFENDER_POSITION_REAR: this.unit.battle.rearMod || 0.6
+    }[this.position] || 1;
   }
 
   get attacksRequireAmmunition() {
@@ -186,7 +196,7 @@ class Combatant extends ActingUnit {
   }
 
   get hardinessMod() {
-    return 1 + (MAX_STAT - this.unit.experience) / MAX_STAT;
+    return 0.3 + 1.4 * ((MAX_STAT - this.unit.experience) / MAX_STAT);
   }
 
   get inchesPersued() {
@@ -490,6 +500,7 @@ class Encounter {
     defender,
     defenderArmyLeadership = 0,
     defenderEngagedStands = -1,
+    defenderPosition = DEFENDER_POSITION_NORMAL,
     melee = true,
     separation = 0,
     slope = SLOPE_NONE$1,
@@ -517,6 +528,7 @@ class Encounter {
       encounter: this,
       target: attacker,
       engagedStands: defenderEngagedStands,
+      position: defenderPosition,
       movementTerrain: [],
       protectingTerrain: defenderTerrain,
       areaTerrain: this.melee ? meleeCombatTerrain : [],
@@ -532,20 +544,25 @@ class Encounter {
   attackerEngages() {
     let secondsOfCombat = combat(this.attacker, this.defender, this.secondsSpentFighting);
     let actionMessage = ``;
+    let effectiveAttackerFallBack = this.attacker.inchesFallenback * FALLBACK_AMPLIFIER;
 
-    if (this.attacker.fallingback && this.attacker.inchesFallenback >= 1) {
-      actionMessage += `${this.attacker.unit.name} fell back ${this.attacker.inchesFallenback} ${this.inchesWord(this.attacker.inchesFallenback)}. `;
+    if (this.attacker.fallingback && effectiveAttackerFallBack >= 1) {
+      actionMessage += `${this.attacker.unit.name} fell back ${effectiveAttackerFallBack} ${this.inchesWord(effectiveAttackerFallBack)}. `;
+      let effectivePersuit = this.defender.inchesPersued > effectiveAttackerFallBack ? effectiveAttackerFallBack : this.defender.inchesPersued;
 
-      if (this.defender.persueing && this.defender.inchesPersued >= 2) {
-        actionMessage += `${this.defender.unit.name} persued ${this.defender.inchesPersued} ${this.inchesWord(this.defender.inchesPersued)}. `;
+      if (this.defender.persueing && effectivePersuit >= 1) {
+        actionMessage += `${this.defender.unit.name} persued ${effectivePersuit} ${this.inchesWord(effectivePersuit)}. `;
       }
     }
 
-    if (this.defender.fallingback && this.defender.inchesFallenback >= 1) {
-      actionMessage += `${this.defender.unit.name} fell back ${this.defender.inchesFallenback} ${this.inchesWord(this.defender.inchesFallenback)}.`;
+    let effectiveDefenderFallBack = this.defender.inchesFallenback * FALLBACK_AMPLIFIER;
 
-      if (this.attacker.persueing && this.attacker.inchesPersued >= 2) {
-        actionMessage += `${this.attacker.unit.name} persued ${this.attacker.inchesPersued} ${this.inchesWord(this.attacker.inchesPersued)}.`;
+    if (this.defender.fallingback && effectiveDefenderFallBack >= 1) {
+      actionMessage += `${this.defender.unit.name} fell back ${effectiveDefenderFallBack} ${this.inchesWord(effectiveDefenderFallBack)}. `;
+      let effectivePersuit = this.attacker.inchesPersued > effectiveDefenderFallBack ? effectiveDefenderFallBack : this.attacker.inchesPersued;
+
+      if (this.attacker.persueing && effectivePersuit >= 1) {
+        actionMessage += `${this.attacker.unit.name} persued ${effectivePersuit} ${this.inchesWord(effectivePersuit)}. `;
       }
     }
 
@@ -1115,6 +1132,17 @@ class FightView extends BattleViewWrapper {
             <battle-event .battle="${this._activeBattle}" @done="${this._finishEvent}"></battle-event>
           </section>
         `}
+      <section>
+        <h3>Upcoming units</h3>
+        ${repeat(this._activeBattle.unitsByActivation(5), (unit, index) => html`
+          <div class="unit" data-index="${unit.id}">
+            <h4 class="unit-name">${index + 1}: ${unit.name} <small>(${unit.nextMovePrettyTime})</small></h4>
+            <p>${unit.detailedStatus}</p>
+            <p>${unit.desc}</p>
+          </div>
+          <hr>
+        `)}
+      </section>
     `;
   }
 
@@ -1266,6 +1294,7 @@ class FightView extends BattleViewWrapper {
       defender: this._activeBattle.unitModels[this.target],
       defenderArmyLeadership: this._options._defenderArmyLeadership,
       defenderEngagedStands: this._options.engagedDefenders,
+      defenderPosition: this._options.defenderPosition || DEFENDER_POSITION_NORMAL,
       melee: this._selectedAction === CHARGE,
       separation: this.separation,
       attackerChargeTerrain: this._options._selectedTerrain(TERRAIN_TYPE_MOVEMENT),

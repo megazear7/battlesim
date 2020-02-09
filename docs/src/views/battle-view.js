@@ -37,13 +37,14 @@ class BattleView extends BattleViewWrapper {
     }) => html`
         <section>
           <h2>${name}</h2>
+          <div class="muted centered">${this._activeBattle.currentTimeMessage}</div>
           ${this._activeBattle.usesPoints ? html`
             <p>${units.map(unit => unit.points).reduce((total, cost) => total + cost, 0)} points</p>
           ` : ''}
           ${repeat(units, unit => html`
             <div class="unit" data-index="${unit.id}">
               <h4 class="unit-name">
-                ${unit.name}
+                ${unit.name} <small>(${unit.nextMovePrettyTime})</small>
                 ${this._activeBattle.usesPoints ? html`<small class="point-cost">${unit.points} points</small>` : ''}
               </h4>
               <button class="btn-link remove-unit" @click="${this._remove}">Remove</button>
